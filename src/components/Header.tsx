@@ -26,11 +26,18 @@ export default function Header({ userName = 'Usuário', userRole = 'LexAI', onTo
         </button>
         <div className="header-status">
           <span className="dot" />
-          Sistema Operacional
+          Online
         </div>
       </div>
 
       <div className="header-user">
+        {/* Notificações */}
+        <button className="notif-bell" title="Notificações">
+          <i className="bi bi-bell" />
+          <span className="notif-dot" />
+        </button>
+
+        {/* Theme toggle */}
         <button
           className="header-theme-toggle"
           onClick={toggleTheme}
@@ -38,11 +45,16 @@ export default function Header({ userName = 'Usuário', userRole = 'LexAI', onTo
         >
           <i className={`bi ${theme === 'light' ? 'bi-moon' : 'bi-sun'}`} />
         </button>
+
         <div className="header-user-info">
           <div className="name">{userName}</div>
           <div className="role">{userRole}</div>
         </div>
-        <div className="header-avatar">{initials}</div>
+        <div className="header-avatar" style={{ transition: 'border-color 0.2s ease' }}
+          onMouseEnter={e => (e.currentTarget.style.borderColor = '#F5A623')}
+          onMouseLeave={e => (e.currentTarget.style.borderColor = '')}>
+          {initials}
+        </div>
       </div>
     </header>
   )

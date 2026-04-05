@@ -60,24 +60,50 @@ export default function DashboardPage() {
     return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
   }
 
-  const today = new Date().toLocaleDateString('pt-BR', {
+  const now = new Date()
+  const hour = now.getHours()
+  const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
+
+  const today = now.toLocaleDateString('pt-BR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   })
-
   const todayCapitalized = today.charAt(0).toUpperCase() + today.slice(1)
 
   return (
     <div className="page-content">
 
-      {/* Welcome */}
-      <div>
-        <h1 className="page-title">Bem-vindo ao LexAI</h1>
-        <p className="page-subtitle">{todayCapitalized} · 6 agentes ativos</p>
+      {/* Welcome — personalizado */}
+      <div className="animate-in" style={{ marginBottom: 4 }}>
+        <h1 className="page-title" style={{ fontSize: 30 }}>{greeting}!</h1>
+        <p className="page-subtitle">{todayCapitalized}</p>
+      </div>
+
+      {/* Streak bar */}
+      <div className="animate-in delay-1" style={{
+        display: 'flex', alignItems: 'center', gap: 14,
+        padding: '12px 18px', borderRadius: 12,
+        background: 'var(--card-bg)', border: '1px solid var(--border)',
+        marginBottom: 8,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <i className="bi bi-fire" style={{ color: '#F5A623', fontSize: 18 }} />
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
+            {stats.documentos > 0 ? `${stats.documentos} documentos analisados` : 'Comece sua jornada'}
+          </span>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div className="streak-bar">
+            <div className="streak-bar-fill" style={{ width: `${Math.min(stats.documentos * 10, 100)}%` }} />
+          </div>
+        </div>
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>
+          8 agentes ativos
+        </span>
       </div>
 
       {/* Stat Cards */}
       <div className="stat-grid">
-        <Link href="/dashboard/resumidor" className="stat-card">
+        <Link href="/dashboard/resumidor" className="stat-card animate-in delay-1">
           <div className="stat-card-header">
             <span className="stat-card-label">Documentos</span>
             <div className="stat-card-icon docs"><i className="bi bi-file-earmark-text" /></div>
@@ -88,7 +114,7 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        <Link href="/dashboard/prazos" className="stat-card">
+        <Link href="/dashboard/prazos" className="stat-card animate-in delay-2">
           <div className="stat-card-header">
             <span className="stat-card-label">Prazos Urgentes</span>
             <div className="stat-card-icon deadline"><i className="bi bi-exclamation-triangle" /></div>
@@ -99,7 +125,7 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        <Link href="/dashboard/financeiro" className="stat-card">
+        <Link href="/dashboard/financeiro" className="stat-card animate-in delay-3">
           <div className="stat-card-header">
             <span className="stat-card-label">Financeiro</span>
             <div className="stat-card-icon finance"><i className="bi bi-wallet2" /></div>
@@ -108,20 +134,20 @@ export default function DashboardPage() {
           <div className="stat-card-footer">Saldo atual</div>
         </Link>
 
-        <div className="stat-card">
+        <Link href="/dashboard/historico" className="stat-card animate-in delay-4">
           <div className="stat-card-header">
-            <span className="stat-card-label">Agentes Ativos</span>
+            <span className="stat-card-label">Agentes IA</span>
             <div className="stat-card-icon agents"><i className="bi bi-cpu" /></div>
           </div>
-          <div className="stat-card-value">6</div>
+          <div className="stat-card-value">8</div>
           <div className="stat-card-footer">
-            <span className="highlight">Todos operacionais</span>
+            <span className="highlight">Powered by Claude</span>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Two Column */}
-      <div className="content-grid">
+      <div className="content-grid animate-in delay-5">
 
         {/* Agents */}
         <div className="section-card">
@@ -136,12 +162,14 @@ export default function DashboardPage() {
           </div>
           <div className="agent-list">
             {[
-              { href: '/dashboard/resumidor',  cls: 'resumidor',   icon: 'bi-text-paragraph',   name: 'Agente Resumidor',   desc: 'Resume contratos, acórdãos e documentos jurídicos' },
-              { href: '/dashboard/prazos',     cls: 'prazos',      icon: 'bi-clock-history',    name: 'Agente de Prazos',   desc: 'Monitora e alerta sobre datas processuais críticas' },
-              { href: '/dashboard/historico',  cls: 'redator',     icon: 'bi-pencil',           name: 'Agente Redator',     desc: 'Elabora petições e peças processuais' },
-              { href: '/dashboard/historico',  cls: 'pesquisador', icon: 'bi-journal-bookmark', name: 'Agente Pesquisador', desc: 'Busca jurisprudência no STJ, STF e tribunais' },
-              { href: '/dashboard/financeiro', cls: 'financeiro',  icon: 'bi-wallet2',          name: 'Agente Financeiro',  desc: 'Controla gastos acadêmicos e profissionais' },
-              { href: '/dashboard/historico',  cls: 'rotina',      icon: 'bi-calendar-check',   name: 'Agente de Rotina',   desc: 'Organiza grade de aulas e compromissos' },
+              { href: '/dashboard/resumidor',   cls: 'resumidor',   icon: 'bi-text-paragraph',   name: 'Agente Resumidor',   desc: 'Analisa contratos, acórdãos e documentos jurídicos com IA' },
+              { href: '/dashboard/redator',     cls: 'redator',     icon: 'bi-pencil-square',    name: 'Agente Redator',     desc: 'Gera petições, recursos e peças processuais completas' },
+              { href: '/dashboard/pesquisador', cls: 'pesquisador', icon: 'bi-journal-bookmark', name: 'Agente Pesquisador', desc: 'Pesquisa jurisprudência no STJ, STF e tribunais' },
+              { href: '/dashboard/prazos',      cls: 'prazos',      icon: 'bi-calendar-check',   name: 'Controle de Prazos', desc: 'Monitora e alerta sobre datas processuais críticas' },
+              { href: '/dashboard/negociador',  cls: 'redator',     icon: 'bi-lightning',        name: 'Agente Negociador',  desc: 'Estrategia de negociacao e mediacao de conflitos' },
+              { href: '/dashboard/professor',   cls: 'pesquisador', icon: 'bi-mortarboard',      name: 'Agente Professor',   desc: 'Ensino juridico em 3 niveis com questoes OAB' },
+              { href: '/dashboard/financeiro',  cls: 'financeiro',  icon: 'bi-wallet2',          name: 'Financeiro',         desc: 'Controla receitas e despesas do escritorio' },
+              { href: '/dashboard/rotina',      cls: 'rotina',      icon: 'bi-calendar-week',    name: 'Rotina Semanal',     desc: 'Organiza grade de aulas e compromissos' },
             ].map(ag => (
               <Link key={ag.name} href={ag.href} className="agent-item">
                 <div className={`agent-icon ${ag.cls}`}><i className={`bi ${ag.icon}`} /></div>
@@ -206,19 +234,11 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="finance-content">
-              <div className="finance-amount">{fmt(Math.abs(stats.saldo))}</div>
+              <div className="finance-amount" style={{ color: stats.saldo >= 0 ? '#2d6a4f' : '#c0392b' }}>{fmt(stats.saldo)}</div>
               <div className="finance-label">Saldo atual</div>
-              <div className="finance-rows">
-                <div className="finance-row">
-                  <span className="finance-row-label">Mensalidade LexAI</span>
-                  <span className="finance-row-value">R$ 97,00</span>
-                </div>
-                <div className="finance-row">
-                  <span className="finance-row-label">Materiais e Livros</span>
-                  <span className="finance-row-value">R$ 0,00</span>
-                </div>
-              </div>
-              <div className="finance-limit">Limite mensal: R$ 500,00</div>
+              <Link href="/dashboard/financeiro" className="section-action" style={{ marginTop: '12px', display: 'inline-flex' }}>
+                Ver detalhes <i className="bi bi-arrow-right" />
+              </Link>
             </div>
           </div>
 
@@ -226,7 +246,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="quick-actions">
+      <div className="quick-actions animate-in delay-6">
         <div className="quick-actions-title">Ações Rápidas</div>
         <div className="actions-grid">
           <Link href="/dashboard/resumidor" className="action-card">

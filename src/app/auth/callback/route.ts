@@ -7,10 +7,9 @@ export async function GET(request: Request) {
   const next = searchParams.get('next') ?? '/dashboard'
 
   if (code) {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      // Redireciona para /dashboard (ou next param se fornecido)
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv    = process.env.NODE_ENV === 'development'
 
@@ -21,9 +20,10 @@ export async function GET(request: Request) {
       } else {
         return NextResponse.redirect(`${origin}${next}`)
       }
+    } else {
+      console.error('[auth/callback] Exchange error:', error.message)
     }
   }
 
-  // Erro — volta ao login com mensagem
   return NextResponse.redirect(`${origin}/login?error=oauth_error`)
 }

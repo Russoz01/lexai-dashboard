@@ -335,10 +335,10 @@ export default function ConfiguracoesPage() {
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Canais de Atendimento</div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
               {[
-                { icon:'bi-envelope-fill',  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'suporte@lexai.com.br', href:'mailto:suporte@lexai.com.br' },
-                { icon:'bi-whatsapp',       color:'#25D366', bg:'#f0fdf4', label:'WhatsApp',  value:'(11) 99999-9999',       href:'https://wa.me/5511999999999' },
+                { icon:'bi-envelope-fill',  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'luizfernandoleonardoleonardo@gmail.com', href:'mailto:luizfernandoleonardoleonardo@gmail.com' },
+                { icon:'bi-whatsapp',       color:'#25D366', bg:'#f0fdf4', label:'WhatsApp',  value:'(34) 99302-6456',       href:'https://wa.me/5534993026456' },
                 { icon:'bi-instagram',      color:'#E1306C', bg:'#fdf2f8', label:'Instagram', value:'@lexai.oficial',        href:'#' },
-                { icon:'bi-linkedin',       color:'#0077B5', bg:'#eff6ff', label:'LinkedIn',  value:'LexAI Jurídico',        href:'#' },
+                { icon:'bi-linkedin',       color:'#0077B5', bg:'#eff6ff', label:'LinkedIn',  value:'LexAI Juridico',        href:'#' },
               ].map(ch => (
                 <a key={ch.label} href={ch.href} target="_blank" rel="noopener noreferrer" style={{
                   display:'flex', alignItems:'center', gap:12, padding:'14px', borderRadius:10,

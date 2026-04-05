@@ -161,6 +161,7 @@ export default function JuridicalCanvas() {
 
     // ── Animation ───────────────────────────────────────────────
     function animate() {
+      if (paused) return
       rafId = requestAnimationFrame(animate)
 
       const lp = 0.06
@@ -208,9 +209,22 @@ export default function JuridicalCanvas() {
       if (e.touches.length > 0) { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY }
     }
 
+    // Pause animation when tab is not visible (saves CPU/battery)
+    let paused = false
+    function onVisibilityChange() {
+      if (document.hidden) {
+        paused = true
+        cancelAnimationFrame(rafId)
+      } else {
+        paused = false
+        rafId = requestAnimationFrame(animate)
+      }
+    }
+
     window.addEventListener('mousemove', onMouseMove)
     window.addEventListener('touchmove', onTouchMove, { passive: true })
     window.addEventListener('resize',    resize)
+    document.addEventListener('visibilitychange', onVisibilityChange)
 
     animate()
 
@@ -219,6 +233,7 @@ export default function JuridicalCanvas() {
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('touchmove', onTouchMove)
       window.removeEventListener('resize',    resize)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
     }
   }, [])
 

@@ -4,16 +4,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-/* ── Ícones ─────────────────────────────────────────────────── */
 function LexLogoIcon({ size = 56 }: { size?: number }) {
   const sc = size / 36
   return (
     <div style={{
       width: size, height: size, flexShrink: 0,
-      background: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
+      background: 'linear-gradient(135deg, #1A1816, #2E2A27, #3A3532)',
       borderRadius: Math.round(size * 0.28),
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      boxShadow: '0 4px 24px rgba(201,168,76,0.35)',
+      boxShadow: '0 4px 24px rgba(245,166,35,0.35)',
     }}>
       <svg viewBox="0 0 28 24" fill="none" width={Math.round(22 * sc)} height={Math.round(19 * sc)}>
         <path d="M3 3 L3 21 L11 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
@@ -44,38 +43,51 @@ function Spinner() {
   )
 }
 
-/* ── Componente principal ───────────────────────────────────── */
+const FEATURES = [
+  { icon: 'bi-file-earmark-text', title: 'Resumidor Jurídico', desc: 'Analise contratos e petições com IA' },
+  { icon: 'bi-pencil-square', title: 'Redator de Peças', desc: 'Gere petições, recursos e pareceres' },
+  { icon: 'bi-journal-bookmark', title: 'Pesquisador', desc: 'Jurisprudência do STF, STJ e tribunais' },
+  { icon: 'bi-calendar-check', title: 'Controle de Prazos', desc: 'Alertas automáticos de deadlines' },
+]
+
+const STATS = [
+  { value: '2.500+', label: 'Documentos analisados' },
+  { value: '8', label: 'Agentes IA ativos' },
+  { value: '99.7%', label: 'Disponibilidade' },
+]
+
 export default function LoginPage() {
   const router   = useRouter()
   const supabase = createClient()
 
-  // OAuth
   const [oauthLoading, setOauthLoading] = useState<'google' | null>(null)
-
-  // Email / senha
-  const [email,       setEmail]       = useState('')
-  const [senha,       setSenha]       = useState('')
-  const [showSenha,   setShowSenha]   = useState(false)
-  const [emailLoading,setEmailLoading]= useState(false)
-
-  // Erro compartilhado
+  const [email, setEmail]       = useState('')
+  const [senha, setSenha]       = useState('')
+  const [showSenha, setShowSenha] = useState(false)
+  const [emailLoading, setEmailLoading] = useState(false)
   const [erro, setErro] = useState('')
 
-  const redirectTo =
-    (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000') + '/auth/callback'
-
-  /* Google OAuth — sem mudanças */
   async function signInGoogle() {
     setOauthLoading('google')
     setErro('')
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo },
-    })
-    if (error) { setErro('Erro ao iniciar login com Google.'); setOauthLoading(null) }
+    try {
+      const redirectTo = window.location.origin + '/auth/callback'
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo },
+      })
+      if (error) {
+        console.error('Erro OAuth:', error.message)
+        setErro('Erro ao iniciar login com Google: ' + error.message)
+        setOauthLoading(null)
+      }
+    } catch (err) {
+      console.error('Erro geral OAuth:', err)
+      setErro('Erro inesperado ao conectar com Google.')
+      setOauthLoading(null)
+    }
   }
 
-  /* Email + senha */
   async function signInEmail(e: React.FormEvent) {
     e.preventDefault()
     setEmailLoading(true)
@@ -95,8 +107,40 @@ export default function LoginPage() {
     <>
       <style dangerouslySetInnerHTML={{ __html: `
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', 'Segoe UI', sans-serif; background: #0b1220; }
+        body { font-family: 'DM Sans', 'Segoe UI', sans-serif; background: #1A1816; }
         @keyframes lx-spin { to { transform: rotate(360deg); } }
+        @keyframes lx-fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes lx-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        .lx-page {
+          min-height: 100vh;
+          background: linear-gradient(135deg, #1A1816 0%, #252220 50%, #1A1816 100%);
+          display: grid; grid-template-columns: 1fr 1fr;
+          position: relative; overflow: hidden;
+        }
+
+        .lx-form-side {
+          display: flex; align-items: center; justify-content: center;
+          padding: 40px; position: relative; z-index: 1;
+        }
+
+        .lx-showcase-side {
+          display: flex; flex-direction: column; justify-content: center;
+          padding: 60px 48px;
+          background: linear-gradient(135deg, rgba(245,166,35,0.08) 0%, rgba(15,25,35,0.95) 100%);
+          border-left: 1px solid rgba(255,255,255,0.05);
+          position: relative; z-index: 1;
+        }
+
+        .lx-card {
+          background: rgba(37,34,32,0.92);
+          backdrop-filter: blur(24px);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 24px; padding: 44px 40px;
+          width: 100%; max-width: 420;
+          box-shadow: 0 32px 64px rgba(0,0,0,0.55);
+          animation: lx-fadeIn 0.6s ease both;
+        }
 
         .lx-oauth-btn {
           width: 100%; height: 52px;
@@ -117,7 +161,7 @@ export default function LoginPage() {
         .lx-oauth-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
         .lx-input {
-          width: 100%; height: 48px; padding: 0 44px 0 16px;
+          width: 100%; height: 48px; padding: 0 44px 0 44px;
           background: rgba(255,255,255,0.05);
           border: 1px solid rgba(255,255,255,0.10);
           border-radius: 12px;
@@ -127,13 +171,14 @@ export default function LoginPage() {
         }
         .lx-input::placeholder { color: rgba(255,255,255,0.28); }
         .lx-input:focus {
-          border-color: rgba(201,168,76,0.55);
-          box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+          border-color: rgba(245,166,35,0.55);
+          box-shadow: 0 0 0 3px rgba(245,166,35,0.08);
         }
 
         .lx-submit {
           width: 100%; height: 48px;
-          background: #c9a84c; color: #0f1923;
+          background: linear-gradient(135deg, #F5A623, #FBBD5E);
+          color: #1A1816;
           border: none; border-radius: 12px;
           font-size: 15px; font-weight: 700;
           font-family: 'DM Sans', sans-serif;
@@ -141,9 +186,9 @@ export default function LoginPage() {
           display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .lx-submit:hover:not(:disabled) {
-          background: #d4b86a;
+          background: linear-gradient(135deg, #FBBD5E, #e0c97a);
           transform: translateY(-1px);
-          box-shadow: 0 4px 16px rgba(201,168,76,0.30);
+          box-shadow: 0 6px 24px rgba(245,166,35,0.35);
         }
         .lx-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -164,133 +209,196 @@ export default function LoginPage() {
           transition: color 0.15s;
         }
         .lx-eye:hover { color: rgba(255,255,255,0.7); }
+
+        .lx-glass {
+          background: rgba(255,255,255,0.04);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 16px; padding: 20px;
+          transition: all 0.2s ease;
+        }
+        .lx-glass:hover {
+          background: rgba(255,255,255,0.07);
+          border-color: rgba(245,166,35,0.20);
+          transform: translateY(-2px);
+        }
+
+        .lx-feature {
+          display: flex; align-items: center; gap: 14px;
+          padding: 12px 0;
+          animation: lx-fadeIn 0.6s ease both;
+        }
+        .lx-feature-icon {
+          width: 40px; height: 40px; border-radius: 12px;
+          background: rgba(245,166,35,0.12);
+          display: flex; align-items: center; justify-content: center;
+          color: #F5A623; font-size: 16px; flex-shrink: 0;
+        }
+
+        @media (max-width: 900px) {
+          .lx-page { grid-template-columns: 1fr; }
+          .lx-showcase-side { display: none; }
+        }
       ` }} />
 
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0b1220 0%, #0f1923 50%, #0d1a2e 100%)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '24px', position: 'relative', overflow: 'hidden',
-      }}>
+      <div className="lx-page">
         {/* Glow decorativo */}
         <div style={{
-          position: 'absolute', top: '15%', left: '50%', transform: 'translateX(-50%)',
-          width: 700, height: 700, borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 65%)',
+          position: 'absolute', top: '10%', left: '25%',
+          width: 600, height: 600, borderRadius: '50%', pointerEvents: 'none',
+          background: 'radial-gradient(circle, rgba(245,166,35,0.06) 0%, transparent 65%)',
         }} />
 
-        {/* Card */}
-        <div style={{
-          background: 'rgba(22,29,46,0.92)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 24, padding: '44px 40px',
-          width: '100%', maxWidth: 420,
-          boxShadow: '0 32px 64px rgba(0,0,0,0.55)',
-          position: 'relative', zIndex: 1,
-        }}>
+        {/* ══ LEFT — Login Form ══ */}
+        <div className="lx-form-side">
+          <div className="lx-card">
+            {/* Logo */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}>
+              <LexLogoIcon size={64} />
+              <div style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: 28, fontWeight: 700, color: '#fff',
+                letterSpacing: '-0.5px', marginTop: 14, marginBottom: 5,
+              }}>LexAI</div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.40)', textAlign: 'center' }}>
+                Inteligência Artificial para o Direito
+              </div>
+            </div>
 
-          {/* Logo */}
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', marginBottom:32 }}>
-            <LexLogoIcon size={64} />
+            {/* Erro */}
+            {erro && (
+              <div style={{
+                padding: '11px 14px', borderRadius: 10, marginBottom: 20,
+                background: 'rgba(192,57,43,0.14)', border: '1px solid rgba(192,57,43,0.28)',
+                color: '#e07070', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8,
+              }}>
+                <i className="bi bi-exclamation-circle" />
+                {erro}
+              </div>
+            )}
+
+            {/* Google OAuth */}
+            <button className="lx-oauth-btn" onClick={signInGoogle} disabled={anyLoading}>
+              {oauthLoading === 'google' ? <Spinner /> : <GoogleIcon />}
+              Continuar com Google
+            </button>
+
+            <div className="lx-divider">ou entre com email</div>
+
+            {/* Form */}
+            <form onSubmit={signInEmail} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ position: 'relative' }}>
+                <i className="bi bi-envelope" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', fontSize: 15, pointerEvents: 'none' }} />
+                <input className="lx-input" type="email" placeholder="seu@email.com"
+                  value={email} onChange={e => setEmail(e.target.value)}
+                  required autoComplete="email" />
+              </div>
+
+              <div style={{ position: 'relative' }}>
+                <i className="bi bi-lock" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', fontSize: 15, pointerEvents: 'none' }} />
+                <input className="lx-input" type={showSenha ? 'text' : 'password'} placeholder="Senha"
+                  value={senha} onChange={e => setSenha(e.target.value)}
+                  required autoComplete="current-password" />
+                <button type="button" className="lx-eye" onClick={() => setShowSenha(v => !v)}
+                  tabIndex={-1} aria-label={showSenha ? 'Ocultar senha' : 'Mostrar senha'}>
+                  <i className={`bi ${showSenha ? 'bi-eye-slash' : 'bi-eye'}`} style={{ fontSize: 16 }} />
+                </button>
+              </div>
+
+              <button type="submit" className="lx-submit" disabled={anyLoading}>
+                {emailLoading ? <Spinner /> : 'Entrar'}
+              </button>
+            </form>
+
             <div style={{
+              marginTop: 28, paddingTop: 20,
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+              textAlign: 'center',
+              fontSize: 12, color: 'rgba(255,255,255,0.22)', lineHeight: 1.6,
+            }}>
+              Ao continuar, você concorda com os{' '}
+              <a href="#" style={{ color: 'rgba(245,166,35,0.65)', textDecoration: 'none' }}>Termos de Uso</a>
+              {' '}e a{' '}
+              <a href="#" style={{ color: 'rgba(245,166,35,0.65)', textDecoration: 'none' }}>Política de Privacidade</a>
+            </div>
+          </div>
+        </div>
+
+        {/* ══ RIGHT — Showcase Panel ══ */}
+        <div className="lx-showcase-side">
+          {/* Title */}
+          <div style={{ marginBottom: 36, animation: 'lx-fadeIn 0.6s ease 0.1s both' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#F5A623', marginBottom: 10 }}>
+              Plataforma Jurídica com IA
+            </div>
+            <h2 style={{
               fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: 28, fontWeight: 700, color: '#fff',
-              letterSpacing: '-0.5px', marginTop: 14, marginBottom: 5,
-            }}>LexAI</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.40)', textAlign: 'center' }}>
-              Inteligência Artificial para o Direito
+              fontSize: 32, fontWeight: 700, color: '#fff',
+              lineHeight: 1.2, letterSpacing: '-0.5px', marginBottom: 12,
+            }}>
+              Seu escritório digital<br />inteligente
+            </h2>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, maxWidth: 380 }}>
+              Automatize a análise de documentos, pesquise jurisprudência e gere peças processuais com inteligência artificial de última geração.
+            </p>
+          </div>
+
+          {/* Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32, animation: 'lx-fadeIn 0.6s ease 0.2s both' }}>
+            {STATS.map((s, i) => (
+              <div key={i} className="lx-glass" style={{ textAlign: 'center', padding: '18px 12px' }}>
+                <div style={{ fontSize: 24, fontWeight: 700, color: '#F5A623', letterSpacing: '-0.5px' }}>{s.value}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Features */}
+          <div style={{ marginBottom: 32 }}>
+            {FEATURES.map((f, i) => (
+              <div key={i} className="lx-feature" style={{ animationDelay: `${0.3 + i * 0.08}s` }}>
+                <div className="lx-feature-icon">
+                  <i className={`bi ${f.icon}`} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{f.title}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.40)', marginTop: 2 }}>{f.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Testimonial */}
+          <div style={{
+            padding: '20px 24px', borderRadius: 16,
+            background: 'rgba(255,255,255,0.03)',
+            borderLeft: '3px solid rgba(245,166,35,0.4)',
+            animation: 'lx-fadeIn 0.6s ease 0.6s both',
+          }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, fontStyle: 'italic', marginBottom: 12 }}>
+              &ldquo;O LexAI transformou a forma como analiso documentos. O que levava horas agora leva minutos, com uma precisão impressionante.&rdquo;
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: '50%',
+                background: 'linear-gradient(135deg, #F5A623, #C4841A)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 700, color: '#fff',
+              }}>DR</div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>Dr. Rafael Mendes</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Advogado Cível — OAB/SP</div>
+              </div>
             </div>
           </div>
 
-          {/* Erro */}
-          {erro && (
-            <div style={{
-              padding: '11px 14px', borderRadius: 10, marginBottom: 20,
-              background: 'rgba(192,57,43,0.14)', border: '1px solid rgba(192,57,43,0.28)',
-              color: '#e07070', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8,
-            }}>
-              <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12zm-.5-4h1V5h-1v5zm0 2h1v-1.5h-1V12z"/>
-              </svg>
-              {erro}
-            </div>
-          )}
-
-          {/* ── Google OAuth ─────────────────────────────────── */}
-          <button className="lx-oauth-btn" onClick={signInGoogle} disabled={anyLoading}>
-            {oauthLoading === 'google' ? <Spinner /> : <GoogleIcon />}
-            Continuar com Google
-          </button>
-
-          {/* ── Divisor ──────────────────────────────────────── */}
-          <div className="lx-divider">ou entre com email</div>
-
-          {/* ── Formulário email / senha ─────────────────────── */}
-          <form onSubmit={signInEmail} style={{ display:'flex', flexDirection:'column', gap:12 }}>
-            {/* Email */}
-            <div style={{ position:'relative' }}>
-              <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.8"
-                viewBox="0 0 24 24" style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', pointerEvents:'none' }}>
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
-              <input
-                className="lx-input"
-                style={{ paddingLeft: 44 }}
-                type="email" placeholder="seu@email.com"
-                value={email} onChange={e => setEmail(e.target.value)}
-                required autoComplete="email"
-              />
-            </div>
-
-            {/* Senha */}
-            <div style={{ position:'relative' }}>
-              <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.8"
-                viewBox="0 0 24 24" style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', pointerEvents:'none' }}>
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              <input
-                className="lx-input"
-                style={{ paddingLeft: 44 }}
-                type={showSenha ? 'text' : 'password'}
-                placeholder="Senha"
-                value={senha} onChange={e => setSenha(e.target.value)}
-                required autoComplete="current-password"
-              />
-              <button type="button" className="lx-eye" onClick={() => setShowSenha(v => !v)}
-                tabIndex={-1} aria-label={showSenha ? 'Ocultar senha' : 'Mostrar senha'}>
-                {showSenha ? (
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                )}
-              </button>
-            </div>
-
-            <button type="submit" className="lx-submit" disabled={anyLoading}>
-              {emailLoading ? <Spinner /> : 'Entrar'}
-            </button>
-          </form>
-
-          {/* Rodapé */}
+          {/* Powered by */}
           <div style={{
-            marginTop: 28, paddingTop: 20,
-            borderTop: '1px solid rgba(255,255,255,0.06)',
-            textAlign: 'center',
-            fontSize: 12, color: 'rgba(255,255,255,0.22)', lineHeight: 1.6,
+            marginTop: 28, display: 'flex', alignItems: 'center', gap: 8,
+            fontSize: 11, color: 'rgba(255,255,255,0.25)',
           }}>
-            Ao continuar, você concorda com os{' '}
-            <a href="#" style={{ color:'rgba(201,168,76,0.65)', textDecoration:'none' }}>Termos de Uso</a>
-            {' '}e a{' '}
-            <a href="#" style={{ color:'rgba(201,168,76,0.65)', textDecoration:'none' }}>Política de Privacidade</a>
+            <i className="bi bi-cpu" style={{ fontSize: 13 }} />
+            Powered by Claude — Anthropic
           </div>
         </div>
       </div>

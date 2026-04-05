@@ -10,7 +10,21 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans:  ['var(--font-dm-sans)', 'DM Sans', 'sans-serif'],
-        serif: ['var(--font-source-serif)', 'Source Serif 4', 'serif'],
+        serif: ['var(--font-playfair)', 'Playfair Display', 'serif'],
+      },
+      colors: {
+        brand: {
+          50:  '#e8f5ee',
+          100: '#c6e6d3',
+          200: '#a3d7b8',
+          300: '#7fc89d',
+          400: '#52b07a',
+          500: '#2d6a4f',
+          600: '#255a43',
+          700: '#1d4a36',
+          800: '#153a2a',
+          900: '#0d2a1e',
+        },
       },
     },
   },

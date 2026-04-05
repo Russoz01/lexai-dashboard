@@ -3,13 +3,33 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
+interface Risco {
+  descricao: string
+  gravidade: string
+  fundamentacao: string
+}
+
+interface Parte {
+  nome: string
+  qualificacao: string
+}
+
+interface Prazo {
+  prazo: string
+  data: string
+  base_legal: string
+}
+
 interface Analise {
   resumo: string
   tipo_documento: string
+  ramo_direito: string
   pontos_principais: string[]
-  riscos: string[]
-  partes_envolvidas: string[]
-  prazos_identificados: string[]
+  riscos: Risco[] | string[]
+  partes_envolvidas: Parte[] | string[]
+  prazos_identificados: Prazo[] | string[]
+  fundamentacao_legal: string[]
+  sugestoes: string[]
 }
 
 // ── Inline SVG da balança da justiça ──────────────────────────────────────
@@ -422,7 +442,7 @@ export default function ResumidorPage() {
                 <div className="section-card">
                   <div style={{ padding: '16px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <span style={{
                           display: 'inline-flex', alignItems: 'center', gap: '6px',
                           background: 'var(--accent-light)', color: 'var(--accent)',
@@ -433,6 +453,15 @@ export default function ResumidorPage() {
                           <ScalesIcon size={13} color="var(--accent)" strokeWidth={2} />
                           {analise.tipo_documento}
                         </span>
+                        {analise.ramo_direito && (
+                          <span style={{
+                            fontSize: '11px', fontWeight: 600,
+                            padding: '3px 10px', borderRadius: '20px',
+                            background: '#eef2ff', color: '#4f46e5',
+                          }}>
+                            {analise.ramo_direito}
+                          </span>
+                        )}
                       </div>
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <button
@@ -511,7 +540,7 @@ export default function ResumidorPage() {
                 <ResultSection
                   title="Riscos e Cláusulas Importantes"
                   icon={<i className="bi bi-exclamation-triangle-fill" style={{ color: 'var(--warning)', fontSize: '14px' }} />}
-                  items={analise.riscos}
+                  items={analise.riscos.map(r => typeof r === 'string' ? r : `[${(r as Risco).gravidade?.toUpperCase()}] ${(r as Risco).descricao}${(r as Risco).fundamentacao ? ` — ${(r as Risco).fundamentacao}` : ''}`)}
                   accent={{ bg: 'var(--warning-light)', text: 'var(--warning)', dot: 'var(--warning)' }}
                   defaultOpen
                 />
@@ -520,7 +549,7 @@ export default function ResumidorPage() {
                 <ResultSection
                   title="Partes Envolvidas"
                   icon={<i className="bi bi-people-fill" style={{ color: '#4f46e5', fontSize: '14px' }} />}
-                  items={analise.partes_envolvidas}
+                  items={analise.partes_envolvidas.map(p => typeof p === 'string' ? p : `${(p as Parte).nome} — ${(p as Parte).qualificacao}`)}
                   accent={{ bg: '#eef2ff', text: '#4f46e5', dot: '#4f46e5' }}
                   defaultOpen={false}
                 />
@@ -529,10 +558,32 @@ export default function ResumidorPage() {
                 <ResultSection
                   title="Prazos Identificados"
                   icon={<i className="bi bi-calendar-event-fill" style={{ color: 'var(--danger)', fontSize: '14px' }} />}
-                  items={analise.prazos_identificados}
+                  items={analise.prazos_identificados.map(p => typeof p === 'string' ? p : `${(p as Prazo).prazo} (${(p as Prazo).data})${(p as Prazo).base_legal ? ` — ${(p as Prazo).base_legal}` : ''}`)}
                   accent={{ bg: 'var(--danger-light)', text: 'var(--danger)', dot: 'var(--danger)' }}
                   defaultOpen={false}
                 />
+
+                {/* Fundamentação Legal */}
+                {analise.fundamentacao_legal?.length > 0 && (
+                  <ResultSection
+                    title="Fundamentação Legal"
+                    icon={<i className="bi bi-book-fill" style={{ color: '#2d6a4f', fontSize: '14px' }} />}
+                    items={analise.fundamentacao_legal}
+                    accent={{ bg: 'var(--accent-light)', text: 'var(--accent)', dot: 'var(--accent)' }}
+                    defaultOpen={false}
+                  />
+                )}
+
+                {/* Sugestões */}
+                {analise.sugestoes?.length > 0 && (
+                  <ResultSection
+                    title="Sugestões e Recomendações"
+                    icon={<i className="bi bi-lightbulb-fill" style={{ color: '#e67e22', fontSize: '14px' }} />}
+                    items={analise.sugestoes}
+                    accent={{ bg: '#fef5e7', text: '#e67e22', dot: '#e67e22' }}
+                    defaultOpen={false}
+                  />
+                )}
 
                 {/* Nova análise */}
                 <button

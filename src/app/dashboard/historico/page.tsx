@@ -2,8 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
-import { MessageSquare, Loader2, ChevronDown, ChevronUp } from 'lucide-react'
-import clsx from 'clsx'
 
 interface HistoricoItem {
   id: string
@@ -14,14 +12,16 @@ interface HistoricoItem {
   created_at: string
 }
 
-const AGENTE_CORES: Record<string, string> = {
-  resumidor:    'bg-blue-500/20 text-blue-400',
-  prazos:       'bg-amber-500/20 text-amber-400',
-  redator:      'bg-purple-500/20 text-purple-400',
-  pesquisador:  'bg-emerald-500/20 text-emerald-400',
-  financeiro:   'bg-green-500/20 text-green-400',
-  rotina:       'bg-slate-500/20 text-slate-400',
-  orquestrador: 'bg-brand-500/20 text-brand-400',
+const AGENTE_CORES: Record<string, { bg: string; color: string }> = {
+  resumidor:    { bg: '#dbeafe', color: '#2563eb' },
+  prazos:       { bg: '#fef5e7', color: '#d97706' },
+  redator:      { bg: '#ede9fe', color: '#7c3aed' },
+  pesquisador:  { bg: '#d1fae5', color: '#059669' },
+  financeiro:   { bg: '#e8f5ee', color: '#2d6a4f' },
+  rotina:       { bg: '#f1f5f9', color: '#64748b' },
+  negociador:   { bg: '#fef5e7', color: '#b45309' },
+  professor:    { bg: '#fce7f3', color: '#be185d' },
+  orquestrador: { bg: '#e8f5ee', color: '#2d6a4f' },
 }
 
 export default function HistoricoPage() {
@@ -54,64 +54,99 @@ export default function HistoricoPage() {
     })
   }
 
+  const cores = (agente: string) => AGENTE_CORES[agente] ?? { bg: '#f1f5f9', color: '#64748b' }
+
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <MessageSquare className="w-4 h-4 text-emerald-500" />
-          <span className="text-emerald-400 text-sm font-medium">Registro de Atividades</span>
+    <div className="page-content" style={{ maxWidth: 900 }}>
+      {/* Header */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, fontWeight: 600, color: '#059669',
+            letterSpacing: '0.5px', textTransform: 'uppercase',
+          }}>
+            <i className="bi bi-chat-square-text" style={{ fontSize: 13 }} />
+            Registro de Atividades
+          </span>
         </div>
-        <h1 className="text-3xl font-bold text-white">Histórico</h1>
-        <p className="text-slate-400 mt-1">Todas as interações com os agentes de IA</p>
+        <h1 className="page-title">Histórico</h1>
+        <p className="page-subtitle">Todas as interações com os agentes de IA</p>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
+        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ animation: 'hist-spin 0.8s linear infinite', marginBottom: 8 }}>
+            <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" />
+          </svg>
+          <div>Carregando...</div>
         </div>
       ) : historico.length === 0 ? (
-        <div className="card border-dashed border-slate-600/50 flex flex-col items-center justify-center py-16">
-          <MessageSquare className="w-10 h-10 text-slate-600 mb-3" />
-          <p className="text-slate-500">Nenhuma interação registrada ainda</p>
+        <div className="section-card" style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: '56px 24px', textAlign: 'center', border: '1px dashed var(--border)',
+        }}>
+          <i className="bi bi-chat-square-text" style={{ fontSize: 36, color: 'var(--text-muted)', opacity: 0.4, marginBottom: 12 }} />
+          <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>Nenhuma interação registrada ainda</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {historico.map(item => (
-            <div key={item.id} className="card">
-              <button
-                onClick={() => setExpandido(expandido === item.id ? null : item.id)}
-                className="w-full flex items-start gap-3 text-left"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className={clsx('badge text-xs', AGENTE_CORES[item.agente] ?? 'bg-slate-500/20 text-slate-400')}>
-                      {item.agente}
-                    </span>
-                    <span className="text-slate-500 text-xs">{formatarData(item.created_at)}</span>
-                    {item.tokens_usados && (
-                      <span className="text-slate-600 text-xs">{item.tokens_usados} tokens</span>
-                    )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {historico.map(item => {
+            const c = cores(item.agente)
+            return (
+              <div key={item.id} className="section-card" style={{ padding: 0, overflow: 'hidden' }}>
+                <button
+                  onClick={() => setExpandido(expandido === item.id ? null : item.id)}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'flex-start', gap: 12,
+                    textAlign: 'left', padding: '14px 18px',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
+                      <span style={{
+                        fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+                        background: c.bg, color: c.color,
+                      }}>
+                        {item.agente}
+                      </span>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{formatarData(item.created_at)}</span>
+                      {item.tokens_usados && (
+                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{item.tokens_usados} tokens</span>
+                      )}
+                    </div>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.mensagem_usuario}
+                    </p>
                   </div>
-                  <p className="text-slate-300 text-sm truncate">{item.mensagem_usuario}</p>
-                </div>
-                {expandido === item.id
-                  ? <ChevronUp className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                  : <ChevronDown className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                }
-              </button>
+                  <i className={`bi bi-chevron-${expandido === item.id ? 'up' : 'down'}`}
+                    style={{ fontSize: 12, color: 'var(--text-muted)', flexShrink: 0, marginTop: 2 }} />
+                </button>
 
-              {expandido === item.id && item.resposta_agente && (
-                <div className="mt-3 pt-3 border-t border-slate-700/50">
-                  <p className="text-xs text-slate-500 mb-2 uppercase tracking-wide font-semibold">Resposta do agente</p>
-                  <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
-                    {item.resposta_agente}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
+                {expandido === item.id && item.resposta_agente && (
+                  <div style={{
+                    padding: '14px 18px', borderTop: '1px solid var(--border)',
+                    background: 'var(--hover)',
+                  }}>
+                    <div style={{
+                      fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                      letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 8,
+                    }}>
+                      Resposta do agente
+                    </div>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0 }}>
+                      {item.resposta_agente}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
+
+      <style>{`@keyframes hist-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }

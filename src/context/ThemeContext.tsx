@@ -7,16 +7,18 @@ type Theme = 'light' | 'dark'
 const ThemeContext = createContext<{
   theme: Theme
   toggleTheme: () => void
-}>({ theme: 'light', toggleTheme: () => {} })
+}>({ theme: 'dark', toggleTheme: () => {} })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light')
+  const [theme, setTheme] = useState<Theme>('dark')
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('lexai-theme') as Theme | null
     const preferred = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     setTheme(preferred)
     document.documentElement.setAttribute('data-theme', preferred)
+    setMounted(true)
   }, [])
 
   function toggleTheme() {
@@ -28,7 +30,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+      <div style={{ visibility: mounted ? 'visible' : 'hidden' }}>
+        {children}
+      </div>
     </ThemeContext.Provider>
   )
 }
