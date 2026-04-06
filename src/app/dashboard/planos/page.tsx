@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 
 const PLANOS_BASE = [
   {
-    id: 'starter', nome: 'Starter', precoMensal: 47, precoAnual: 37, usuariosAtivos: 1240,
+    id: 'starter', nome: 'Starter', precoMensal: 57, precoAnual: 47,
     features: [
       { label: 'Agentes disponiveis', valor: '3 (Resumidor, Pesquisador, Professor)', disponivel: true },
       { label: 'Documentos/mes', valor: '50', disponivel: true },
@@ -16,7 +16,7 @@ const PLANOS_BASE = [
     ],
   },
   {
-    id: 'pro', nome: 'Pro', precoMensal: 97, precoAnual: 77, usuariosAtivos: 870,
+    id: 'pro', nome: 'Pro', precoMensal: 117, precoAnual: 96,
     features: [
       { label: 'Agentes disponiveis', valor: '6 (todos os basicos)', disponivel: true },
       { label: 'Documentos/mes', valor: '200', disponivel: true },
@@ -28,7 +28,7 @@ const PLANOS_BASE = [
     ],
   },
   {
-    id: 'enterprise', nome: 'Enterprise', precoMensal: 197, precoAnual: 157, usuariosAtivos: 390,
+    id: 'enterprise', nome: 'Enterprise', precoMensal: 237, precoAnual: 194,
     features: [
       { label: 'Agentes disponiveis', valor: '10 (todos + exclusivos)', disponivel: true },
       { label: 'Documentos/mes', valor: 'Ilimitado', disponivel: true },
@@ -93,13 +93,13 @@ export default function PlanosPage() {
       {/* Social proof bar */}
       <div style={{
         textAlign: 'center', margin: '0 auto 24px', padding: '10px 20px',
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.03))',
-        borderRadius: 10, border: '1px solid rgba(201,168,76,0.15)',
+        background: 'var(--accent-light)',
+        borderRadius: 10, border: '1px solid var(--border)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
       }}>
         <i className="bi bi-shield-check" style={{ color: 'var(--accent)', fontSize: 15 }} />
         <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
-          Mais de <strong style={{ color: 'var(--accent)' }}>2.500 documentos</strong> analisados pela comunidade LexAI
+          Mais de <strong style={{ color: 'var(--accent)' }}>200 documentos</strong> revisados e analisados
         </span>
       </div>
 
@@ -144,7 +144,7 @@ export default function PlanosPage() {
             padding: '3px 10px', borderRadius: 20,
             animation: 'fadeIn 0.2s',
           }}>
-            Economize 20%
+            Economize 18%
           </span>
         )}
       </div>
@@ -193,19 +193,9 @@ export default function PlanosPage() {
               )}
 
               <div style={{ padding: badgeLabel ? '52px 24px 28px' : '28px 24px' }}>
-                {/* Name + active users */}
+                {/* Name */}
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>{plano.nome}</div>
-                  <div style={{
-                    fontSize: 11, color: 'var(--text-muted)', marginBottom: 12,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                  }}>
-                    <span style={{
-                      width: 6, height: 6, borderRadius: '50%', background: 'var(--success)',
-                      display: 'inline-block',
-                    }} />
-                    {plano.usuariosAtivos.toLocaleString('pt-BR')} usuarios ativos
-                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, letterSpacing: '-0.3px' }}>{plano.nome}</div>
 
                   {/* Price */}
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
@@ -221,7 +211,7 @@ export default function PlanosPage() {
                   {ciclo === 'anual' && (
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
                       <span style={{ textDecoration: 'line-through', marginRight: 6 }}>R$ {plano.precoMensal}</span>
-                      <span style={{ color: 'var(--success)', fontWeight: 600 }}>-20%</span>
+                      <span style={{ color: 'var(--success)', fontWeight: 600 }}>-18%</span>
                     </div>
                   )}
                 </div>

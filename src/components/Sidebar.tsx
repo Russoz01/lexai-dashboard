@@ -6,9 +6,9 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 
 const PLANOS: Record<string, { nome: string; preco: string }> = {
-  starter: { nome: 'Starter', preco: 'R$ 47 / mes' },
-  pro: { nome: 'Pro', preco: 'R$ 97 / mes' },
-  enterprise: { nome: 'Enterprise', preco: 'R$ 197 / mes' },
+  starter: { nome: 'Starter', preco: 'R$ 57 / mes' },
+  pro: { nome: 'Pro', preco: 'R$ 117 / mes' },
+  enterprise: { nome: 'Enterprise', preco: 'R$ 237 / mes' },
 }
 
 interface NavItem { href: string; icon: string; label: string; badge?: number; badgeWarn?: boolean }

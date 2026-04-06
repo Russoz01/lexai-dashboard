@@ -208,7 +208,7 @@ body {
 
 .sidebar-brand span {
   color: var(--sidebar-active);
-  font-family: var(--font-playfair, 'Playfair Display'), serif;
+  font-family: var(--font-dm-sans, 'DM Sans'), sans-serif;
   font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
 }
 [data-theme="dark"] .sidebar-brand span { color: #fff; }
@@ -395,10 +395,10 @@ body {
 }
 
 .page-title {
-  font-family: var(--font-playfair, 'Playfair Display'), serif;
-  font-size: 27px; font-weight: 700;
-  color: var(--text-primary); letter-spacing: -0.4px;
-  line-height: 1.2;
+  font-family: var(--font-dm-sans, 'DM Sans'), sans-serif;
+  font-size: 28px; font-weight: 700;
+  color: var(--text-primary); letter-spacing: -0.5px;
+  line-height: 1.25;
 }
 
 .page-subtitle {
@@ -710,7 +710,7 @@ input[type="date"] { cursor: pointer; }
 }
 
 .modal-title {
-  font-family: var(--font-playfair, 'Playfair Display'), serif;
+  font-family: var(--font-dm-sans, 'DM Sans'), sans-serif;
   font-size: 22px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px;
 }
 
