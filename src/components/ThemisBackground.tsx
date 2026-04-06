@@ -20,12 +20,11 @@ export default function ThemisBackground() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    let dpr = window.devicePixelRatio || 1
     let paused = false
 
     function resize() {
       if (!canvas) return
-      dpr = window.devicePixelRatio || 1
+      const dpr = window.devicePixelRatio || 1
       canvas.width = window.innerWidth * dpr
       canvas.height = window.innerHeight * dpr
       canvas.style.width = window.innerWidth + 'px'
@@ -56,7 +55,6 @@ export default function ThemisBackground() {
       const h = window.innerHeight
       ctx!.clearRect(0, 0, w, h)
 
-      // Smooth mouse follow
       mouseRef.current.x += (targetRef.current.x - mouseRef.current.x) * 0.06
       mouseRef.current.y += (targetRef.current.y - mouseRef.current.y) * 0.06
 
@@ -65,28 +63,30 @@ export default function ThemisBackground() {
 
       if (imgRef.current) {
         const img = imgRef.current
-        const imgH = h * 1.2
+        // Image covers entire viewport, centered, 120% height for parallax room
+        const imgH = h * 1.3
         const imgW = imgH * (img.width / img.height)
-        // Parallax — image moves opposite to cursor
-        const px = -(mx - w / 2) * 0.01
-        const py = -(my - h / 2) * 0.01
-        const imgX = w * 0.55 + px
+        // Parallax — image shifts opposite to cursor direction
+        const px = -(mx - w / 2) * 0.015
+        const py = -(my - h / 2) * 0.015
+        // Center the image on viewport
+        const imgX = (w - imgW) / 2 + px
         const imgY = (h - imgH) / 2 + py
 
-        // Draw image with grayscale filter
+        // Draw Themis covering full screen with grayscale
         ctx!.save()
-        ctx!.globalAlpha = 0.18
-        ctx!.filter = 'grayscale(100%) brightness(0.6) contrast(1.1)'
+        ctx!.globalAlpha = 0.20
+        ctx!.filter = 'grayscale(100%) brightness(0.15) contrast(1.2)'
         ctx!.drawImage(img, imgX, imgY, imgW, imgH)
         ctx!.restore()
 
-        // Spotlight mask — reveals image around cursor
+        // Spotlight mask — only shows image around cursor as a flashlight
         ctx!.save()
         ctx!.globalCompositeOperation = 'destination-in'
-        const grad = ctx!.createRadialGradient(mx, my, 0, mx, my, 280)
+        const grad = ctx!.createRadialGradient(mx, my, 0, mx, my, 300)
         grad.addColorStop(0, 'rgba(255,255,255,1)')
-        grad.addColorStop(0.5, 'rgba(255,255,255,0.4)')
-        grad.addColorStop(0.8, 'rgba(255,255,255,0.08)')
+        grad.addColorStop(0.4, 'rgba(255,255,255,0.6)')
+        grad.addColorStop(0.7, 'rgba(255,255,255,0.15)')
         grad.addColorStop(1, 'rgba(255,255,255,0)')
         ctx!.fillStyle = grad
         ctx!.fillRect(0, 0, w, h)
@@ -94,9 +94,9 @@ export default function ThemisBackground() {
 
         // Blue glow at cursor point
         ctx!.save()
-        ctx!.globalAlpha = 0.03
-        const glowGrad = ctx!.createRadialGradient(mx, my, 0, mx, my, 200)
-        glowGrad.addColorStop(0, 'rgba(37,99,235,0.4)')
+        ctx!.globalAlpha = 0.04
+        const glowGrad = ctx!.createRadialGradient(mx, my, 0, mx, my, 220)
+        glowGrad.addColorStop(0, 'rgba(37,99,235,0.5)')
         glowGrad.addColorStop(1, 'rgba(37,99,235,0)')
         ctx!.fillStyle = glowGrad
         ctx!.fillRect(0, 0, w, h)
@@ -122,9 +122,12 @@ export default function ThemisBackground() {
       ref={canvasRef}
       aria-hidden="true"
       style={{
-        position: 'fixed', top: 0, left: 0,
+        position: 'fixed',
+        top: 0, left: 0,
         width: '100vw', height: '100vh',
-        zIndex: 1, pointerEvents: 'none',
+        zIndex: 1,
+        pointerEvents: 'none',
+        mixBlendMode: 'luminosity',
       }}
     />
   )
