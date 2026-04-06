@@ -133,7 +133,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         <div className="sidebar-plan-badge">
           <div className="plan-label">Plano ativo</div>
           <div className="plan-name">{PLANOS[plano]?.nome || 'Enterprise'}</div>
-          <div className="plan-price">{PLANOS[plano]?.preco || 'R$ 197 / mes'}</div>
+          <div className="plan-price">{PLANOS[plano]?.preco || 'R$ 237 / mes'}</div>
         </div>
       </div>
     </aside>

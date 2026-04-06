@@ -55,6 +55,19 @@ export default function ConfiguracoesPage() {
   const [msg, setMsg]         = useState('')
   const [erro, setErro]       = useState('')
 
+  // Dynamic plan from localStorage
+  const planoMap: Record<string, { nome: string; preco: number }> = {
+    starter: { nome: 'Starter', preco: 57 },
+    pro: { nome: 'Pro', preco: 117 },
+    enterprise: { nome: 'Enterprise', preco: 237 },
+  }
+  const [planoId, setPlanoId] = useState('enterprise')
+  useEffect(() => {
+    const saved = localStorage.getItem('lexai-plano')
+    if (saved && planoMap[saved]) setPlanoId(saved)
+  }, [])
+  const planoAtual = planoMap[planoId] || planoMap.enterprise
+
   // Perfil
   const [nome, setNome]       = useState('')
   const [telefone, setTelefone] = useState('')
@@ -267,11 +280,11 @@ export default function ConfiguracoesPage() {
             <div style={{ background:'linear-gradient(135deg,var(--accent),#3d8b6a)', borderRadius:12, padding:'20px 24px', color:'#fff', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
               <div>
                 <div style={{ fontSize:11, fontWeight:600, letterSpacing:'0.8px', textTransform:'uppercase', opacity:0.8 }}>Plano ativo</div>
-                <div style={{ fontSize:24, fontWeight:700, marginTop:4 }}>Pro</div>
-                <div style={{ fontSize:13, opacity:0.8, marginTop:2 }}>Renovação em 30/04/2026</div>
+                <div style={{ fontSize:24, fontWeight:700, marginTop:4 }}>{planoAtual.nome}</div>
+                <div style={{ fontSize:13, opacity:0.8, marginTop:2 }}>Renovacao automatica</div>
               </div>
               <div style={{ textAlign:'right' }}>
-                <div style={{ fontSize:28, fontWeight:700, fontVariantNumeric:'tabular-nums' }}>R$ 97</div>
+                <div style={{ fontSize:28, fontWeight:700, fontVariantNumeric:'tabular-nums' }}>R$ {planoAtual.preco}</div>
                 <div style={{ fontSize:12, opacity:0.75 }}>/mês</div>
               </div>
             </div>
