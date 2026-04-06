@@ -21,7 +21,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
       const meta = data.user.user_metadata
       setUser({
-        name: meta?.nome || data.user.email?.split('@')[0] || 'Usuário',
+        name: meta?.nome || data.user.email?.split('@')[0] || 'Usuario',
         role: meta?.role || 'Estudante · Direito',
       })
     })
@@ -29,22 +29,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', width: '100%', background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}>
-      {/* Background canvas effect — z-index 0, pointer-events none */}
+      {/* z-0: Themis canvas behind everything */}
       <ThemisBackground />
 
-      {/* Overlay mobile */}
+      {/* Mobile overlay */}
       <div
         className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
         onClick={() => setSidebarOpen(false)}
       />
 
-      {/* Sidebar — z-index 100 */}
+      {/* z-100: Sidebar */}
       <div className={sidebarOpen ? 'open' : ''} id="sidebar-wrapper">
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
-      {/* Main — z-index 1 so it sits above canvas but below sidebar */}
-      <div className="main-content" style={{ position: 'relative', zIndex: 1 }}>
+      {/* z-10: Main content area (above Themis canvas) */}
+      <div className="main-content" style={{ position: 'relative', zIndex: 10 }}>
         <Header
           userName={user?.name}
           userRole={user?.role}
