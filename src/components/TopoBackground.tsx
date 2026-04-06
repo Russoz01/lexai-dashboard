@@ -66,7 +66,7 @@ export default function TopoBackground() {
         const frequency = 2.5 - i * 0.05
         const phase = time + i * 0.4
         // Lines get more visible toward the bottom
-        const alpha = 0.012 + (i / numLines) * 0.025
+        const alpha = 0.04 + (i / numLines) * 0.06
         drawWave(yBase, amplitude, frequency, phase, alpha)
       }
 
@@ -76,7 +76,7 @@ export default function TopoBackground() {
         const amplitude = 8 + i * 1.5
         const frequency = 3 - i * 0.1
         const phase = time * 0.7 + i * 0.6
-        const alpha = 0.006 + (i / 8) * 0.01
+        const alpha = 0.025 + (i / 8) * 0.035
         drawWave(yBase, amplitude, frequency, phase, alpha)
       }
     }

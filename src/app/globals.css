@@ -145,7 +145,7 @@ body {
 /* Dark wave background handled by TopoBackground canvas component */
 
 /* Vaulto-style dark overrides */
-[data-theme="dark"] .main-content { background: #0E0E0E; }
+[data-theme="dark"] .main-content { background: transparent; }
 [data-theme="dark"] .sidebar { background: #0A0A0A; border-right: 1px solid rgba(255,255,255,0.06); }
 [data-theme="dark"] .sidebar-brand { border-bottom: 1px solid rgba(255,255,255,0.06); }
 [data-theme="dark"] .sidebar-link.active { background: rgba(255,255,255,0.06); }
