@@ -62,6 +62,9 @@ export async function POST(req: NextRequest) {
     if (!instrucoes || instrucoes.trim().length < 20) {
       return NextResponse.json({ error: 'Instrucoes muito curtas.' }, { status: 400 })
     }
+    if (instrucoes.length > 50000) {
+      return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
+    }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const message = await client.messages.create({
@@ -90,6 +93,6 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Erro interno'
     console.error('[API /redigir]', message)
-    return NextResponse.json({ error: 'Erro ao gerar documento: ' + message }, { status: 500 })
+    return NextResponse.json({ error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }, { status: 500 })
   }
 }

@@ -49,6 +49,9 @@ export async function POST(req: NextRequest) {
 
     const { consulta } = await req.json()
     if (!consulta || consulta.trim().length < 10) return NextResponse.json({ error: 'Descreva o calculo com mais detalhes.' }, { status: 400 })
+    if (consulta.length > 50000) {
+      return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
+    }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const message = await client.messages.create({
@@ -75,6 +78,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ resultado })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Erro interno'
-    return NextResponse.json({ error: 'Erro: ' + msg }, { status: 500 })
+    console.error('[API /calcular]', msg)
+    return NextResponse.json({ error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }, { status: 500 })
   }
 }
