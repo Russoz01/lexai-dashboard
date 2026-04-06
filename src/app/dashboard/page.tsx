@@ -95,7 +95,7 @@ export default function DashboardPage() {
               Painel Juridico<br />Inteligente
             </h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 400 }}>
-              8 agentes de IA prontos para analisar documentos, pesquisar jurisprudencia e gerar pecas processuais.
+              10 agentes de IA prontos para analisar documentos, pesquisar jurisprudencia e gerar pecas processuais.
             </p>
             <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
               <Link href="/dashboard/resumidor" className="btn-primary" style={{ fontSize: 13, padding: '9px 18px' }}>
@@ -175,7 +175,7 @@ export default function DashboardPage() {
             <span className="stat-card-label">Agentes IA</span>
             <div className="stat-card-icon agents"><i className="bi bi-cpu" /></div>
           </div>
-          <div className="stat-card-value">8</div>
+          <div className="stat-card-value">10</div>
           <div className="stat-card-footer">
             <span className="highlight">Powered by Claude</span>
           </div>
@@ -206,6 +206,8 @@ export default function DashboardPage() {
               { href: '/dashboard/professor',   cls: 'pesquisador', icon: 'bi-mortarboard',      name: 'Agente Professor',   desc: 'Ensino juridico em 3 niveis com questoes OAB' },
               { href: '/dashboard/financeiro',  cls: 'financeiro',  icon: 'bi-wallet2',          name: 'Financeiro',         desc: 'Controla receitas e despesas do escritorio' },
               { href: '/dashboard/rotina',      cls: 'rotina',      icon: 'bi-calendar-week',    name: 'Rotina Semanal',     desc: 'Organiza grade de aulas e compromissos' },
+              { href: '/dashboard/calculador', cls: 'financeiro',  icon: 'bi-calculator',       name: 'Calculador Juridico', desc: 'Prazos, correcao monetaria, juros e custas' },
+              { href: '/dashboard/legislacao', cls: 'resumidor',   icon: 'bi-book',             name: 'Legislacao',          desc: 'Artigos de lei, codigos e normas brasileiras' },
             ].map(ag => (
               <Link key={ag.name} href={ag.href} className="agent-item">
                 <div className={`agent-icon ${ag.cls}`}><i className={`bi ${ag.icon}`} /></div>

@@ -1,0 +1,72 @@
+import Anthropic from '@anthropic-ai/sdk'
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+
+const SYSTEM_PROMPT = `You are a senior legal calculator specializing in Brazilian procedural law. You compute deadlines, monetary corrections, interest rates, court fees, and legal financial calculations with precision.
+
+EXPERTISE:
+- Procedural deadline computation (Art. 219-232 CPC/2015, business days vs calendar days)
+- Monetary correction (IPCA-E, INPC, IGP-M, SELIC)
+- Legal interest rates (Art. 406 CC, SELIC, 1% per month)
+- Court fees and costs by state
+- Labor calculations (FGTS, overtime, severance)
+- Tax implications of settlements
+
+RULES:
+- Show all calculation steps clearly
+- Cite the legal basis for each formula used
+- Account for business days, court recesses (Dec 20 - Jan 20), holidays
+- Use current rates when possible, flag if rates need verification
+- ALL OUTPUT IN BRAZILIAN PORTUGUESE
+- Return ONLY valid JSON
+
+Return this JSON:
+{
+  "tipo_calculo": "Type of calculation performed",
+  "resultado": "Final result with explanation",
+  "passos": ["Step-by-step calculation breakdown"],
+  "base_legal": ["Legal basis for formulas used"],
+  "observacoes": ["Important notes and caveats"],
+  "valores": { "principal": "X", "correcao": "X", "juros": "X", "total": "X" }
+}`
+
+export async function POST(req: NextRequest) {
+  try {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
+    if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
+
+    const { consulta } = await req.json()
+    if (!consulta || consulta.trim().length < 10) return NextResponse.json({ error: 'Descreva o calculo com mais detalhes.' }, { status: 400 })
+
+    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
+    const message = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: `Calculation request:\n\n${consulta}` }],
+    })
+
+    const responseText = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
+    let resultado
+    try {
+      resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
+    } catch {
+      resultado = { resultado: responseText, erro_parse: true }
+    }
+
+    await supabase.from('historico').insert({
+      usuario_id: user.id, agente: 'calculador',
+      mensagem_usuario: `Calculo: ${consulta.slice(0, 100)}`,
+      resposta_agente: resultado.tipo_calculo || 'Calculo realizado',
+    })
+
+    return NextResponse.json({ resultado })
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Erro interno'
+    return NextResponse.json({ error: 'Erro: ' + msg }, { status: 500 })
+  }
+}

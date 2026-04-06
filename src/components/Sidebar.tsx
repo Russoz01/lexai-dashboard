@@ -25,6 +25,8 @@ const nav: { title: string; items: NavItem[] }[] = [
       { href: '/dashboard/negociador',  icon: 'bi-lightning',         label: 'Negociador'  },
       { href: '/dashboard/professor',   icon: 'bi-mortarboard',       label: 'Professor'   },
       { href: '/dashboard/rotina',      icon: 'bi-calendar-week',     label: 'Rotina'      },
+      { href: '/dashboard/calculador', icon: 'bi-calculator',        label: 'Calculador'  },
+      { href: '/dashboard/legislacao', icon: 'bi-book',              label: 'Legislacao'  },
     ],
   },
   {
