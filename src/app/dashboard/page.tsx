@@ -78,27 +78,63 @@ export default function DashboardPage() {
         <p className="page-subtitle">{todayCapitalized}</p>
       </div>
 
-      {/* Streak bar */}
-      <div className="animate-in delay-1" style={{
-        display: 'flex', alignItems: 'center', gap: 14,
-        padding: '12px 18px', borderRadius: 12,
-        background: 'var(--card-bg)', border: '1px solid var(--border)',
-        marginBottom: 8,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-fire" style={{ color: '#3B82F6', fontSize: 18 }} />
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
-            {stats.documentos > 0 ? `${stats.documentos} documentos analisados` : 'Comece sua jornada'}
-          </span>
-        </div>
-        <div style={{ flex: 1 }}>
-          <div className="streak-bar">
-            <div className="streak-bar-fill" style={{ width: `${Math.min(stats.documentos * 10, 100)}%` }} />
+      {/* Hero Card — estilo Monolith */}
+      <div className="section-card animate-in delay-1" style={{ padding: 0, marginBottom: 8, overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', minHeight: 180 }}>
+          <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 14 }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6, width: 'fit-content',
+              fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase',
+              padding: '4px 12px', borderRadius: 20,
+              background: 'rgba(16,185,129,0.10)', color: '#10B981',
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite' }} />
+              SISTEMA ATIVO
+            </span>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
+              Painel Juridico<br />Inteligente
+            </h2>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 400 }}>
+              8 agentes de IA prontos para analisar documentos, pesquisar jurisprudencia e gerar pecas processuais.
+            </p>
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <Link href="/dashboard/resumidor" className="btn-primary" style={{ fontSize: 13, padding: '9px 18px' }}>
+                <i className="bi bi-cpu" /> Usar Agente
+              </Link>
+              <Link href="/dashboard/historico" className="btn-ghost" style={{ fontSize: 13, padding: '9px 18px' }}>
+                Ver Historico
+              </Link>
+            </div>
+          </div>
+          <div style={{
+            width: 280, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 16,
+            padding: '24px 28px',
+            background: 'rgba(15,23,42,0.04)', borderLeft: '1px solid rgba(0,0,0,0.04)',
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>
+                DOCUMENTOS ANALISADOS
+              </div>
+              <div style={{ fontSize: 36, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-1px' }}>
+                {stats.documentos}
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#10B981', marginTop: 2 }}>
+                Powered by Claude
+              </div>
+            </div>
+            <div style={{ width: '100%', height: 1, background: 'rgba(0,0,0,0.06)' }} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>
+                AGENTES ATIVOS
+              </div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>8</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
+                Todos operacionais
+              </div>
+            </div>
           </div>
         </div>
-        <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>
-          8 agentes ativos
-        </span>
       </div>
 
       {/* Stat Cards */}

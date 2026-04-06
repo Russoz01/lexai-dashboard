@@ -31,6 +31,7 @@ const nav: { title: string; items: NavItem[] }[] = [
     title: 'Conta',
     items: [
       { href: '/dashboard/planos',        icon: 'bi-gem',     label: 'Planos'        },
+      { href: '/dashboard/design',        icon: 'bi-palette', label: 'Design'        },
       { href: '/dashboard/configuracoes', icon: 'bi-gear',    label: 'Configurações' },
     ],
   },
