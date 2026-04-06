@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const PLANOS = [
   {
@@ -30,7 +30,7 @@ const PLANOS = [
   {
     id: 'enterprise', nome: 'Enterprise', preco: 197, destaque: false,
     features: [
-      { label: 'Agentes disponiveis', valor: '8 (todos + exclusivos)', disponivel: true },
+      { label: 'Agentes disponiveis', valor: '10 (todos + exclusivos)', disponivel: true },
       { label: 'Documentos/mes', valor: 'Ilimitado', disponivel: true },
       { label: 'Suporte', valor: 'Prioritario (24h) + WhatsApp', disponivel: true },
       { label: 'API propria', valor: '', disponivel: true },
@@ -42,7 +42,14 @@ const PLANOS = [
 ]
 
 export default function PlanosPage() {
-  const [planoAtual] = useState('pro')
+  const [planoAtual, setPlanoAtual] = useState('enterprise')
+
+  // Load saved plan from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('lexai-plano')
+    if (saved) setPlanoAtual(saved)
+    else localStorage.setItem('lexai-plano', 'enterprise')
+  }, [])
 
   return (
     <div className="page-content" style={{ maxWidth: 1100 }}>
@@ -110,8 +117,15 @@ export default function PlanosPage() {
                 background: plano.id === planoAtual ? 'var(--hover)' : plano.destaque ? 'linear-gradient(135deg, #c9a84c, #d4b86a)' : 'var(--primary)',
                 color: plano.id === planoAtual ? 'var(--text-muted)' : plano.destaque ? '#0f1923' : '#fff',
                 border: plano.id === planoAtual ? '1px solid var(--border)' : 'none',
-              }} disabled={plano.id === planoAtual}>
-                {plano.id === planoAtual ? 'Plano Atual' : plano.preco > 97 ? 'Fazer Upgrade' : plano.preco < 97 ? 'Mudar Plano' : 'Assinar Pro'}
+              }} disabled={plano.id === planoAtual}
+              onClick={() => {
+                if (plano.id !== planoAtual) {
+                  setPlanoAtual(plano.id)
+                  localStorage.setItem('lexai-plano', plano.id)
+                  window.location.reload()
+                }
+              }}>
+                {plano.id === planoAtual ? 'Plano Atual' : plano.preco > (PLANOS.find(p => p.id === planoAtual)?.preco || 0) ? 'Fazer Upgrade' : 'Mudar Plano'}
               </button>
             </div>
           </div>
@@ -125,7 +139,7 @@ export default function PlanosPage() {
           { q: 'Posso trocar de plano a qualquer momento?', a: 'Sim, voce pode fazer upgrade ou downgrade do seu plano a qualquer momento. A diferenca sera calculada proporcionalmente.' },
           { q: 'Como funciona o limite de documentos?', a: 'Cada analise de documento, pesquisa ou geracao de peca conta como 1 documento. O contador reseta no inicio de cada mes.' },
           { q: 'O que acontece quando atinjo o limite?', a: 'Voce recebera um aviso e podera fazer upgrade do plano ou aguardar o proximo ciclo mensal.' },
-          { q: 'Os agentes IA sao diferentes entre os planos?', a: 'Sim. O plano Starter inclui 3 agentes basicos. O Pro inclui 6 agentes. O Enterprise inclui todos os 8 agentes atuais e acesso prioritario a novos agentes.' },
+          { q: 'Os agentes IA sao diferentes entre os planos?', a: 'Sim. O plano Starter inclui 3 agentes basicos. O Pro inclui 6 agentes. O Enterprise inclui todos os 10 agentes atuais e acesso prioritario a novos agentes exclusivos.' },
         ].map((item, i) => (
           <div key={i} style={{ padding: '14px 0', borderBottom: i < 3 ? '1px solid var(--border)' : 'none' }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{item.q}</div>
