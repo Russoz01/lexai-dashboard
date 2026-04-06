@@ -69,8 +69,53 @@ export default function DashboardPage() {
   })
   const todayCapitalized = today.charAt(0).toUpperCase() + today.slice(1)
 
+  // Onboarding — show once on first visit
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  useEffect(() => {
+    if (!localStorage.getItem('lexai-onboarded')) setShowOnboarding(true)
+  }, [])
+  function dismissOnboarding() {
+    localStorage.setItem('lexai-onboarded', 'true')
+    setShowOnboarding(false)
+  }
+
   return (
     <div className="page-content">
+
+      {/* Onboarding modal */}
+      {showOnboarding && (
+        <div className="modal-overlay" onClick={dismissOnboarding}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 500 }}>
+            <div style={{ padding: '32px 28px', textAlign: 'center' }}>
+              <div style={{ width: 56, height: 56, borderRadius: 16, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 24, color: '#fff' }}>
+                <i className="bi bi-cpu" />
+              </div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
+                Bem-vindo ao LexAI
+              </h2>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 24 }}>
+                Sua plataforma juridica com 10 agentes de inteligencia artificial. Analise documentos, pesquise jurisprudencia, gere pecas processuais e muito mais.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left', marginBottom: 24 }}>
+                {[
+                  { icon: 'bi-file-earmark-text', text: 'Cole um documento no Resumidor para analise completa' },
+                  { icon: 'bi-pencil-square', text: 'Use o Redator para gerar pecas processuais' },
+                  { icon: 'bi-journal-bookmark', text: 'Pesquise jurisprudencia com o Pesquisador' },
+                  { icon: 'bi-calendar-check', text: 'Cadastre seus prazos para nao perder nenhum' },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderRadius: 10, background: 'var(--hover)' }}>
+                    <i className={`bi ${item.icon}`} style={{ fontSize: 16, color: 'var(--accent)', flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{item.text}</span>
+                  </div>
+                ))}
+              </div>
+              <button onClick={dismissOnboarding} className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px' }}>
+                Comecar a usar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Welcome */}
       <div className="animate-in" style={{ marginBottom: 20 }}>

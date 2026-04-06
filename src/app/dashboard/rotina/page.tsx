@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -29,6 +29,18 @@ export default function RotinaPage() {
   const [modal, setModal]   = useState(false)
   const [form, setForm]     = useState(EMPTY_COMP)
   const [hoje]              = useState(new Date())
+
+  // Persist to localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('lexai-rotina')
+    if (saved) {
+      try { setCompromissos(JSON.parse(saved)) } catch { /* use mock */ }
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('lexai-rotina', JSON.stringify(compromissos))
+  }, [compromissos])
 
   const inicioSemana = new Date(hoje)
   inicioSemana.setDate(hoje.getDate() - hoje.getDay())
