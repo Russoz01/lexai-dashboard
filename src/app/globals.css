@@ -70,7 +70,7 @@
   --accent-dark:    #2563EB;
   --accent-bg:      rgba(59,130,246,0.06);
 
-  --bg:             #0B1120;
+  --bg:             transparent;
   --sidebar-bg:     #060D1B;
   --sidebar-text:   rgba(255,255,255,0.45);
   --sidebar-active: #E2E8F0;
@@ -140,11 +140,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(20,80,60,0.30), transparent),
-    radial-gradient(ellipse 70% 50% at 85% 15%, rgba(20,50,90,0.30), transparent),
-    radial-gradient(ellipse 60% 50% at 75% 80%, rgba(80,60,20,0.20), transparent);
-  background-color: #0B1120;
+  background: #0B1120;
 }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -284,10 +280,10 @@ body {
    TOP HEADER
    ══════════════════════════════════════════════════════════════ */
 .top-header {
-  background: rgba(255,255,255,0.60);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+  border-bottom: 1px solid var(--glass-border);
   box-shadow: 0 1px 12px rgba(0,0,0,0.04);
   padding: 0 32px;
   display: flex; align-items: center; justify-content: space-between;
@@ -378,19 +374,18 @@ body {
 }
 
 .stat-card {
-  background: rgba(255,255,255,0.55);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.65);
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+  border: 1px solid var(--glass-border);
   border-radius: 20px; padding: 22px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer; text-decoration: none; color: inherit; display: block;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+  box-shadow: var(--glass-shadow);
 }
 .stat-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
-  border-color: rgba(255,255,255,0.8);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
   color: inherit;
 }
 
@@ -427,18 +422,17 @@ body {
 }
 
 .section-card {
-  background: rgba(255,255,255,0.55);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.65);
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+  border: 1px solid var(--glass-border);
   border-radius: 20px; overflow: hidden;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+  box-shadow: var(--glass-shadow);
 }
 .section-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
-  border-color: rgba(255,255,255,0.8);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
 }
 
 .section-header {
@@ -537,19 +531,18 @@ body {
 .actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
 .action-card {
-  background: rgba(255,255,255,0.55);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.65);
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+  border: 1px solid var(--glass-border);
   border-radius: 20px; padding: 22px; cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none; color: inherit; display: block;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+  box-shadow: var(--glass-shadow);
 }
 .action-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
-  border-color: rgba(255,255,255,0.8);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
   color: inherit;
 }
 
