@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 const PLANOS_BASE = [
   {
     id: 'starter', nome: 'Starter', precoMensal: 59, precoAnual: 48,
+    stripeLink: 'https://buy.stripe.com/test_dRm4gy6gG1Nb2T14ZA2oE01',
     features: [
       { label: 'Agentes disponiveis', valor: '3 (Resumidor, Pesquisador, Professor)', disponivel: true },
       { label: 'Documentos/mes', valor: '50', disponivel: true },
@@ -17,6 +18,7 @@ const PLANOS_BASE = [
   },
   {
     id: 'pro', nome: 'Pro', precoMensal: 119, precoAnual: 98,
+    stripeLink: 'https://buy.stripe.com/test_9B69ASawWajH5192Rs2oE02',
     features: [
       { label: 'Agentes disponiveis', valor: '6 (todos os basicos)', disponivel: true },
       { label: 'Documentos/mes', valor: '200', disponivel: true },
@@ -29,6 +31,7 @@ const PLANOS_BASE = [
   },
   {
     id: 'enterprise', nome: 'Enterprise', precoMensal: 239, precoAnual: 196,
+    stripeLink: 'https://buy.stripe.com/test_cNicN434u0J7fFN1No2oE03',
     features: [
       { label: 'Agentes disponiveis', valor: '10 (todos + exclusivos)', disponivel: true },
       { label: 'Documentos/mes', valor: 'Ilimitado', disponivel: true },
@@ -251,10 +254,12 @@ export default function PlanosPage() {
                   border: isCurrentPlan ? '1px solid var(--border)' : 'none',
                 }} disabled={isCurrentPlan}
                 onClick={() => {
-                  if (!isCurrentPlan) {
+                  if (!isCurrentPlan && plano.stripeLink) {
+                    // Open Stripe checkout for upgrade
+                    window.open(plano.stripeLink, '_blank')
+                    // Also update local plan state
                     setPlanoAtual(plano.id)
                     localStorage.setItem('lexai-plano', plano.id)
-                    window.location.reload()
                   }
                 }}>
                   {getCtaLabel(plano.id, planoAtual, plano.precoMensal, precoAtual)}
