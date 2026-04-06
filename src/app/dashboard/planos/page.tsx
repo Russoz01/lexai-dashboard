@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 
 const PLANOS_BASE = [
   {
-    id: 'starter', nome: 'Starter', precoMensal: 57, precoAnual: 47,
+    id: 'starter', nome: 'Starter', precoMensal: 59, precoAnual: 48,
     features: [
       { label: 'Agentes disponiveis', valor: '3 (Resumidor, Pesquisador, Professor)', disponivel: true },
       { label: 'Documentos/mes', valor: '50', disponivel: true },
@@ -16,7 +16,7 @@ const PLANOS_BASE = [
     ],
   },
   {
-    id: 'pro', nome: 'Pro', precoMensal: 117, precoAnual: 96,
+    id: 'pro', nome: 'Pro', precoMensal: 119, precoAnual: 98,
     features: [
       { label: 'Agentes disponiveis', valor: '6 (todos os basicos)', disponivel: true },
       { label: 'Documentos/mes', valor: '200', disponivel: true },
@@ -28,7 +28,7 @@ const PLANOS_BASE = [
     ],
   },
   {
-    id: 'enterprise', nome: 'Enterprise', precoMensal: 237, precoAnual: 194,
+    id: 'enterprise', nome: 'Enterprise', precoMensal: 239, precoAnual: 196,
     features: [
       { label: 'Agentes disponiveis', valor: '10 (todos + exclusivos)', disponivel: true },
       { label: 'Documentos/mes', valor: 'Ilimitado', disponivel: true },

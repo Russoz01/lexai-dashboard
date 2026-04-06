@@ -57,9 +57,9 @@ export default function ConfiguracoesPage() {
 
   // Dynamic plan from localStorage
   const planoMap: Record<string, { nome: string; preco: number }> = {
-    starter: { nome: 'Starter', preco: 57 },
-    pro: { nome: 'Pro', preco: 117 },
-    enterprise: { nome: 'Enterprise', preco: 237 },
+    starter: { nome: 'Starter', preco: 59 },
+    pro: { nome: 'Pro', preco: 119 },
+    enterprise: { nome: 'Enterprise', preco: 239 },
   }
   const [planoId, setPlanoId] = useState('enterprise')
   useEffect(() => {
