@@ -13,7 +13,9 @@
       "Bash(netstat -ano)",
       "Bash(taskkill //F //PID 9468)",
       "Bash(node -e \":*)",
-      "mcp__filesystem__write_file"
+      "mcp__filesystem__write_file",
+      "Bash(jq -e '.hooks.PostToolUse[] | select\\(.matcher == \"\"Write\"\"\\) | .hooks[] | select\\(.type == \"\"command\"\"\\) | .command' \"C:/Users/ruzzi/.claude/settings.json\")",
+      "Bash(node -e \"const s=require\\(''C:/Users/ruzzi/.claude/settings.json''\\); console.log\\(''OK:'', s.hooks.PostToolUse[0].matcher, ''→'', s.hooks.PostToolUse[0].hooks[0].type\\)\")"
     ]
   }
 }
