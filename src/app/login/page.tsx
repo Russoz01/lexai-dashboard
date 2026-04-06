@@ -9,7 +9,7 @@ function LexLogoIcon({ size = 56 }: { size?: number }) {
   return (
     <div style={{
       width: size, height: size, flexShrink: 0,
-      background: 'linear-gradient(135deg, #1E293B, #334155, #475569)',
+      background: 'linear-gradient(135deg, #141414, #1C1C1C, #2A2A2A)',
       borderRadius: Math.round(size * 0.28),
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       boxShadow: '0 4px 24px rgba(59,130,246,0.35)',
@@ -51,9 +51,9 @@ const FEATURES = [
 ]
 
 const STATS = [
-  { value: '2.500+', label: 'Documentos analisados' },
-  { value: '8', label: 'Agentes IA ativos' },
-  { value: '99.7%', label: 'Disponibilidade' },
+  { value: '200+', label: 'Documentos revisados' },
+  { value: '10', label: 'Agentes IA' },
+  { value: '99.9%', label: 'Uptime' },
 ]
 
 export default function LoginPage() {
@@ -107,17 +107,14 @@ export default function LoginPage() {
     <>
       <style dangerouslySetInnerHTML={{ __html: `
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', 'Segoe UI', sans-serif; background: #0B1120; }
+        body { font-family: 'DM Sans', 'Segoe UI', sans-serif; background: #0A0A0A; }
         @keyframes lx-spin { to { transform: rotate(360deg); } }
         @keyframes lx-fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes lx-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
         .lx-page {
           min-height: 100vh;
-          background:
-            radial-gradient(ellipse 60% 50% at 20% 80%, rgba(37,99,235,0.06), transparent),
-            radial-gradient(ellipse 50% 40% at 80% 20%, rgba(124,58,237,0.04), transparent),
-            linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 40%, #F1F5F9 70%, #FFFFFF 100%);
+          background: #0A0A0A;
           display: grid; grid-template-columns: 1fr 1fr;
           position: relative; overflow: hidden;
         }
@@ -130,35 +127,35 @@ export default function LoginPage() {
         .lx-showcase-side {
           display: flex; flex-direction: column; justify-content: center;
           padding: 60px 48px;
-          background: linear-gradient(135deg, rgba(37,99,235,0.04) 0%, rgba(241,245,249,0.98) 100%);
-          border-left: 1px solid rgba(0,0,0,0.06);
+          background: rgba(14,14,14,0.60);
+          border-left: 1px solid rgba(255,255,255,0.06);
           position: relative; z-index: 1;
         }
 
         .lx-card {
-          background: rgba(255,255,255,0.90);
+          background: rgba(18,18,18,0.85);
           backdrop-filter: blur(32px) saturate(150%);
           -webkit-backdrop-filter: blur(32px) saturate(150%);
-          border: 1px solid rgba(0,0,0,0.08);
+          border: 1px solid rgba(255,255,255,0.06);
           border-radius: 28px; padding: 48px 44px;
           width: 100%; max-width: 420;
-          box-shadow: 0 32px 64px rgba(0,0,0,0.06);
+          box-shadow: 0 32px 64px rgba(0,0,0,0.40);
           animation: lx-fadeIn 0.6s ease both;
         }
 
         .lx-oauth-btn {
           width: 100%; height: 52px;
-          background: rgba(241,245,249,0.60);
-          border: 1px solid rgba(0,0,0,0.10);
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.10);
           border-radius: 14px;
           display: flex; align-items: center; justify-content: center; gap: 12px;
-          color: #0F172A; font-size: 15px; font-weight: 600;
+          color: #F1F1F1; font-size: 15px; font-weight: 600;
           font-family: 'DM Sans', sans-serif;
           cursor: pointer; transition: all 0.15s ease;
         }
         .lx-oauth-btn:hover:not(:disabled) {
-          background: rgba(241,245,249,0.80);
-          border-color: rgba(0,0,0,0.15);
+          background: rgba(255,255,255,0.08);
+          border-color: rgba(255,255,255,0.20);
           transform: translateY(-1px);
           box-shadow: 0 4px 16px rgba(0,0,0,0.35);
         }
@@ -166,14 +163,14 @@ export default function LoginPage() {
 
         .lx-input {
           width: 100%; height: 48px; padding: 0 44px 0 44px;
-          background: rgba(241,245,249,0.60);
-          border: 1px solid rgba(0,0,0,0.10);
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.10);
           border-radius: 12px;
-          color: #0F172A; font-size: 14px;
+          color: #F1F1F1; font-size: 14px;
           font-family: 'DM Sans', sans-serif;
           outline: none; transition: border-color 0.15s, box-shadow 0.15s;
         }
-        .lx-input::placeholder { color: rgba(0,0,0,0.35); }
+        .lx-input::placeholder { color: rgba(255,255,255,0.28); }
         .lx-input:focus {
           border-color: rgba(59,130,246,0.55);
           box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
@@ -198,32 +195,32 @@ export default function LoginPage() {
 
         .lx-divider {
           display: flex; align-items: center; gap: 12px;
-          color: rgba(0,0,0,0.25); font-size: 12px;
+          color: rgba(255,255,255,0.20); font-size: 12px;
           margin: 20px 0;
         }
         .lx-divider::before, .lx-divider::after {
           content: ''; flex: 1; height: 1px;
-          background: rgba(0,0,0,0.08);
+          background: rgba(255,255,255,0.08);
         }
 
         .lx-eye {
           position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
           background: none; border: none; cursor: pointer;
-          color: rgba(0,0,0,0.35); padding: 4px; line-height: 1;
+          color: rgba(255,255,255,0.35); padding: 4px; line-height: 1;
           transition: color 0.15s;
         }
-        .lx-eye:hover { color: rgba(0,0,0,0.7); }
+        .lx-eye:hover { color: rgba(255,255,255,0.7); }
 
         .lx-glass {
-          background: rgba(255,255,255,0.65);
+          background: rgba(255,255,255,0.04);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(0,0,0,0.06);
+          border: 1px solid rgba(255,255,255,0.08);
           border-radius: 16px; padding: 20px;
           transition: all 0.2s ease;
         }
         .lx-glass:hover {
-          background: rgba(255,255,255,0.80);
-          border-color: rgba(0,0,0,0.10);
+          background: rgba(255,255,255,0.07);
+          border-color: rgba(255,255,255,0.12);
           transform: translateY(-2px);
         }
 
@@ -234,9 +231,9 @@ export default function LoginPage() {
         }
         .lx-feature-icon {
           width: 40px; height: 40px; border-radius: 12px;
-          background: rgba(37,99,235,0.08);
+          background: rgba(59,130,246,0.12);
           display: flex; align-items: center; justify-content: center;
-          color: #2563EB; font-size: 16px; flex-shrink: 0;
+          color: #3B82F6; font-size: 16px; flex-shrink: 0;
         }
 
         @media (max-width: 900px) {
@@ -250,7 +247,7 @@ export default function LoginPage() {
         <div style={{
           position: 'absolute', top: '10%', left: '25%',
           width: 600, height: 600, borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(37,99,235,0.04) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 65%)',
         }} />
 
         {/* ══ LEFT — Login Form ══ */}
@@ -261,10 +258,10 @@ export default function LoginPage() {
               <LexLogoIcon size={64} />
               <div style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
-                fontSize: 28, fontWeight: 700, color: '#0F172A',
+                fontSize: 28, fontWeight: 700, color: '#F1F1F1',
                 letterSpacing: '-0.5px', marginTop: 14, marginBottom: 5,
               }}>LexAI</div>
-              <div style={{ fontSize: 13, color: '#94A3B8', textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>
                 Inteligência Artificial para o Direito
               </div>
             </div>
@@ -318,7 +315,7 @@ export default function LoginPage() {
               marginTop: 28, paddingTop: 20,
               borderTop: '1px solid rgba(255,255,255,0.06)',
               textAlign: 'center',
-              fontSize: 12, color: '#94A3B8', lineHeight: 1.6,
+              fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6,
             }}>
               Ao continuar, você concorda com os{' '}
               <a href="#" style={{ color: 'rgba(59,130,246,0.65)', textDecoration: 'none' }}>Termos de Uso</a>
@@ -337,12 +334,12 @@ export default function LoginPage() {
             </div>
             <h2 style={{
               fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: 32, fontWeight: 700, color: '#0F172A',
+              fontSize: 32, fontWeight: 700, color: '#F1F1F1',
               lineHeight: 1.2, letterSpacing: '-0.5px', marginBottom: 12,
             }}>
               Seu escritório digital<br />inteligente
             </h2>
-            <p style={{ fontSize: 14, color: '#64748B', lineHeight: 1.6, maxWidth: 380 }}>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, maxWidth: 380 }}>
               Automatize a análise de documentos, pesquise jurisprudência e gere peças processuais com inteligência artificial de última geração.
             </p>
           </div>
@@ -352,7 +349,7 @@ export default function LoginPage() {
             {STATS.map((s, i) => (
               <div key={i} className="lx-glass" style={{ textAlign: 'center', padding: '18px 12px' }}>
                 <div style={{ fontSize: 24, fontWeight: 700, color: '#3B82F6', letterSpacing: '-0.5px' }}>{s.value}</div>
-                <div style={{ fontSize: 11, color: '#64748B', marginTop: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -366,7 +363,7 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{f.title}</div>
-                  <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{f.desc}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{f.desc}</div>
                 </div>
               </div>
             ))}
@@ -379,7 +376,7 @@ export default function LoginPage() {
             borderLeft: '3px solid rgba(59,130,246,0.4)',
             animation: 'lx-fadeIn 0.6s ease 0.6s both',
           }}>
-            <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.7, fontStyle: 'italic', marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, fontStyle: 'italic', marginBottom: 12 }}>
               &ldquo;O LexAI transformou a forma como analiso documentos. O que levava horas agora leva minutos, com uma precisão impressionante.&rdquo;
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -391,7 +388,7 @@ export default function LoginPage() {
               }}>DR</div>
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>Dr. Rafael Mendes</div>
-                <div style={{ fontSize: 11, color: '#94A3B8' }}>Advogado Cível — OAB/SP</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Advogado Cível — OAB/SP</div>
               </div>
             </div>
           </div>
@@ -399,7 +396,7 @@ export default function LoginPage() {
           {/* Powered by */}
           <div style={{
             marginTop: 28, display: 'flex', alignItems: 'center', gap: 8,
-            fontSize: 11, color: '#94A3B8',
+            fontSize: 11, color: 'rgba(255,255,255,0.35)',
           }}>
             <i className="bi bi-cpu" style={{ fontSize: 13 }} />
             Powered by Claude — Anthropic
