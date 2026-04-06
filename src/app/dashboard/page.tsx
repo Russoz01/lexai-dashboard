@@ -72,14 +72,14 @@ export default function DashboardPage() {
   return (
     <div className="page-content">
 
-      {/* Welcome — personalizado */}
-      <div className="animate-in" style={{ marginBottom: 4 }}>
-        <h1 className="page-title" style={{ fontSize: 30 }}>{greeting}!</h1>
+      {/* Welcome */}
+      <div className="animate-in" style={{ marginBottom: 20 }}>
+        <h1 className="page-title" style={{ fontSize: 32 }}>{greeting}!</h1>
         <p className="page-subtitle">{todayCapitalized}</p>
       </div>
 
-      {/* Hero Card — estilo Monolith */}
-      <div className="section-card animate-in delay-1" style={{ padding: 0, marginBottom: 8, overflow: 'hidden' }}>
+      {/* Hero Card */}
+      <div className="section-card animate-in delay-1" style={{ padding: 0, marginBottom: 24, overflow: 'hidden' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', minHeight: 180 }}>
           <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 14 }}>
             <span style={{

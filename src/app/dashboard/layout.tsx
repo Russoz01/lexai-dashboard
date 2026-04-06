@@ -28,8 +28,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [])
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', width: '100%', background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}>
-      {/* z-0: Themis canvas behind everything */}
+    <>
+      {/* Fixed backgrounds — z-0 */}
       <ThemisBackground />
 
       {/* Mobile overlay */}
@@ -38,20 +38,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         onClick={() => setSidebarOpen(false)}
       />
 
-      {/* z-100: Sidebar */}
+      {/* Sidebar — z-100 */}
       <div className={sidebarOpen ? 'open' : ''} id="sidebar-wrapper">
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
-      {/* z-10: Main content area (above Themis canvas) */}
+      {/* Main content — z-10 */}
       <div className="main-content" style={{ position: 'relative', zIndex: 10 }}>
         <Header
           userName={user?.name}
           userRole={user?.role}
           onToggleSidebar={() => setSidebarOpen(v => !v)}
         />
-        {children}
+        <div style={{ animation: 'fadeInPage 0.4s ease both' }}>
+          {children}
+        </div>
       </div>
-    </div>
+
+      <style>{`
+        @keyframes fadeInPage {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </>
   )
 }

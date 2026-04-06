@@ -18,6 +18,37 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const preferred = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     setTheme(preferred)
     document.documentElement.setAttribute('data-theme', preferred)
+
+    // Apply saved design preferences
+    try {
+      const prefs = localStorage.getItem('lexai-design-prefs')
+      if (prefs) {
+        const p = JSON.parse(prefs)
+        const root = document.documentElement
+        if (p.colors) {
+          if (p.colors.primary) {
+            root.style.setProperty('--accent', p.colors.primary)
+            root.style.setProperty('--accent-light', `${p.colors.primary}18`)
+            root.style.setProperty('--accent-dark', p.colors.primary)
+            root.style.setProperty('--sidebar-active-bar', p.colors.primary)
+          }
+          if (p.colors.success) {
+            root.style.setProperty('--success', p.colors.success)
+            root.style.setProperty('--success-light', `${p.colors.success}14`)
+          }
+          if (p.colors.warning) {
+            root.style.setProperty('--warning', p.colors.warning)
+            root.style.setProperty('--warning-light', `${p.colors.warning}14`)
+          }
+          if (p.colors.danger) {
+            root.style.setProperty('--danger', p.colors.danger)
+            root.style.setProperty('--danger-light', `${p.colors.danger}14`)
+          }
+          if (p.colors.info) root.style.setProperty('--info', p.colors.info)
+        }
+      }
+    } catch { /* ignore */ }
+
     setMounted(true)
   }, [])
 

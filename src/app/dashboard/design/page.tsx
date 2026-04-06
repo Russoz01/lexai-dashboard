@@ -41,17 +41,23 @@ export default function DesignPage() {
     } catch { /* ignore */ }
   }, [])
 
-  // Apply CSS variables in real time
+  // Apply CSS variables in real time — maps to actual app variables
   const applyStyles = useCallback(() => {
     const root = document.documentElement
-    root.style.setProperty('--color-primary', colors.primary)
-    root.style.setProperty('--color-success', colors.success)
-    root.style.setProperty('--color-warning', colors.warning)
-    root.style.setProperty('--color-danger', colors.danger)
-    root.style.setProperty('--color-info', colors.info)
-    root.style.setProperty('--radius-global', `${radius}px`)
-    root.style.setProperty('--shadow-intensity', String(shadowIntensity / 100))
-  }, [colors, radius, shadowIntensity])
+    // Map design colors to app CSS variables
+    root.style.setProperty('--accent', colors.primary)
+    root.style.setProperty('--accent-light', `${colors.primary}18`)
+    root.style.setProperty('--accent-dark', colors.primary)
+    root.style.setProperty('--success', colors.success)
+    root.style.setProperty('--success-light', `${colors.success}14`)
+    root.style.setProperty('--warning', colors.warning)
+    root.style.setProperty('--warning-light', `${colors.warning}14`)
+    root.style.setProperty('--danger', colors.danger)
+    root.style.setProperty('--danger-light', `${colors.danger}14`)
+    root.style.setProperty('--info', colors.info)
+    // Sidebar active bar color
+    root.style.setProperty('--sidebar-active-bar', colors.primary)
+  }, [colors])
 
   useEffect(() => { applyStyles() }, [applyStyles])
 
@@ -73,13 +79,10 @@ export default function DesignPage() {
     setSpacing('standard')
     localStorage.removeItem('lexai-design-prefs')
     const root = document.documentElement
-    root.style.removeProperty('--color-primary')
-    root.style.removeProperty('--color-success')
-    root.style.removeProperty('--color-warning')
-    root.style.removeProperty('--color-danger')
-    root.style.removeProperty('--color-info')
-    root.style.removeProperty('--radius-global')
-    root.style.removeProperty('--shadow-intensity')
+    // Remove all custom overrides
+    ;['--accent','--accent-light','--accent-dark','--success','--success-light',
+      '--warning','--warning-light','--danger','--danger-light','--info',
+      '--sidebar-active-bar'].forEach(v => root.style.removeProperty(v))
   }
 
   const colorEntries = Object.entries(colors) as [keyof typeof colors, string][]
