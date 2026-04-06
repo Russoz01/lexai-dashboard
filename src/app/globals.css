@@ -142,21 +142,7 @@ body {
   z-index: -1;
   background: #0A0A0A;
 }
-[data-theme="dark"] body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 100% 40% at 50% 95%, rgba(255,255,255,0.025), transparent),
-    radial-gradient(ellipse 80% 30% at 50% 85%, rgba(255,255,255,0.018), transparent),
-    radial-gradient(ellipse 60% 20% at 50% 75%, rgba(255,255,255,0.012), transparent),
-    radial-gradient(ellipse 90% 25% at 30% 90%, rgba(255,255,255,0.015), transparent),
-    radial-gradient(ellipse 70% 20% at 70% 80%, rgba(255,255,255,0.010), transparent),
-    radial-gradient(ellipse 50% 15% at 20% 70%, rgba(255,255,255,0.008), transparent),
-    radial-gradient(ellipse 40% 10% at 80% 65%, rgba(255,255,255,0.006), transparent);
-}
+/* Dark wave background handled by TopoBackground canvas component */
 
 /* Vaulto-style dark overrides */
 [data-theme="dark"] .main-content { background: #0E0E0E; }
@@ -327,6 +313,7 @@ body {
   flex-direction: column;
   transition: background-color 0.2s ease;
   position: relative;
+  overflow-x: hidden;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -686,8 +673,9 @@ input[type="date"] { cursor: pointer; }
    ══════════════════════════════════════════════════════════════ */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(15,25,35,0.55);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.40);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
   z-index: 200; padding: 20px;
   animation: modalBgIn 0.2s ease;

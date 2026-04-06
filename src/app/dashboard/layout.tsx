@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { useTheme } from '@/context/ThemeContext'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 import ThemisBackground from '@/components/ThemisBackground'
+import TopoBackground from '@/components/TopoBackground'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const supabase = createClient()
+  const { theme } = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<{ name: string; role: string } | null>(null)
 
@@ -29,8 +32,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <>
-      {/* Fixed backgrounds — z-0 */}
-      <ThemisBackground />
+      {/* Background layers — z-0 */}
+      {theme === 'dark' ? <TopoBackground /> : <ThemisBackground />}
 
       {/* Mobile overlay */}
       <div
