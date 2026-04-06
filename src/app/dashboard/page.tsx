@@ -127,7 +127,7 @@ export default function DashboardPage() {
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>
                 AGENTES ATIVOS
               </div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>8</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>10</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
                 Todos operacionais
