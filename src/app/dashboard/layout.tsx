@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
-import JuridicalCanvas from '@/components/JuridicalCanvas'
+import ThemisBackground from '@/components/ThemisBackground'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div style={{ display: 'flex', minHeight: '100vh', width: '100%', background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}>
       {/* Background canvas effect — z-index 0, pointer-events none */}
-      <JuridicalCanvas />
+      <ThemisBackground />
 
       {/* Overlay mobile */}
       <div

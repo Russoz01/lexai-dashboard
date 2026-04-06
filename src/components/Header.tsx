@@ -1,6 +1,7 @@
 'use client'
 
 import { useTheme } from '@/context/ThemeContext'
+import { useState, useEffect } from 'react'
 
 interface HeaderProps {
   userName?: string
@@ -8,8 +9,18 @@ interface HeaderProps {
   onToggleSidebar: () => void
 }
 
-export default function Header({ userName = 'Usuário', userRole = 'LexAI', onToggleSidebar }: HeaderProps) {
+export default function Header({ userName = 'Usuario', userRole = 'LexAI', onToggleSidebar }: HeaderProps) {
   const { theme, toggleTheme } = useTheme()
+  const [time, setTime] = useState('')
+
+  useEffect(() => {
+    function tick() {
+      setTime(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
+    }
+    tick()
+    const id = setInterval(tick, 30000)
+    return () => clearInterval(id)
+  }, [])
 
   const initials = userName
     .split(' ')
@@ -20,7 +31,7 @@ export default function Header({ userName = 'Usuário', userRole = 'LexAI', onTo
 
   return (
     <header className="top-header">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <button className="mobile-toggle" onClick={onToggleSidebar}>
           <i className="bi bi-list" />
         </button>
@@ -28,21 +39,21 @@ export default function Header({ userName = 'Usuário', userRole = 'LexAI', onTo
           <span className="dot" />
           Online
         </div>
+        {time && (
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.5px' }}>
+            {time}
+          </span>
+        )}
       </div>
 
       <div className="header-user">
-        {/* Notificações */}
-        <button className="notif-bell" title="Notificações">
+        <button className="notif-bell" title="Notificacoes">
           <i className="bi bi-bell" />
           <span className="notif-dot" />
         </button>
 
-        {/* Theme toggle */}
-        <button
-          className="header-theme-toggle"
-          onClick={toggleTheme}
-          title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
-        >
+        <button className="header-theme-toggle" onClick={toggleTheme}
+          title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}>
           <i className={`bi ${theme === 'light' ? 'bi-moon' : 'bi-sun'}`} />
         </button>
 
@@ -50,9 +61,12 @@ export default function Header({ userName = 'Usuário', userRole = 'LexAI', onTo
           <div className="name">{userName}</div>
           <div className="role">{userRole}</div>
         </div>
-        <div className="header-avatar" style={{ transition: 'border-color 0.2s ease' }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = '#F5A623')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = '')}>
+        <div className="header-avatar" style={{
+          transition: 'all 0.3s ease',
+          background: 'linear-gradient(135deg, #2563EB, #3B82F6)',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 16px rgba(59,130,246,0.40)' }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = '' }}>
           {initials}
         </div>
       </div>

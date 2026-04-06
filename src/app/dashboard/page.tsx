@@ -86,7 +86,7 @@ export default function DashboardPage() {
         marginBottom: 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-fire" style={{ color: '#F5A623', fontSize: 18 }} />
+          <i className="bi bi-fire" style={{ color: '#3B82F6', fontSize: 18 }} />
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
             {stats.documentos > 0 ? `${stats.documentos} documentos analisados` : 'Comece sua jornada'}
           </span>

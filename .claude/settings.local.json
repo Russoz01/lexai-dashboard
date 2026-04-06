@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Read(//c/Users/ruzzi/lexai-dashboard/**)",
+      "Bash(ls -la \"C:/Users/ruzzi/lexai-dashboard/.claude/worktrees/adoring-herschel/.env\"*)",
+      "Bash(cp \"C:/Users/ruzzi/lexai-dashboard/.env.local\" \"C:/Users/ruzzi/lexai-dashboard/.claude/worktrees/adoring-herschel/.env.local\")",
+      "Bash(cp \"C:/Users/ruzzi/lexai-dashboard/.env\" \"C:/Users/ruzzi/lexai-dashboard/.claude/worktrees/adoring-herschel/.env\")",
+      "Bash(npx next:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 9468)",
+      "Bash(node -e \":*)",
+      "mcp__filesystem__write_file"
+    ]
+  }
+}

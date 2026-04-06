@@ -9,10 +9,10 @@ function LexLogoIcon({ size = 56 }: { size?: number }) {
   return (
     <div style={{
       width: size, height: size, flexShrink: 0,
-      background: 'linear-gradient(135deg, #1A1816, #2E2A27, #3A3532)',
+      background: 'linear-gradient(135deg, #0B1120, #14213D, #1E3A5F)',
       borderRadius: Math.round(size * 0.28),
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      boxShadow: '0 4px 24px rgba(245,166,35,0.35)',
+      boxShadow: '0 4px 24px rgba(59,130,246,0.35)',
     }}>
       <svg viewBox="0 0 28 24" fill="none" width={Math.round(22 * sc)} height={Math.round(19 * sc)}>
         <path d="M3 3 L3 21 L11 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
@@ -107,14 +107,14 @@ export default function LoginPage() {
     <>
       <style dangerouslySetInnerHTML={{ __html: `
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', 'Segoe UI', sans-serif; background: #1A1816; }
+        body { font-family: 'DM Sans', 'Segoe UI', sans-serif; background: #0B1120; }
         @keyframes lx-spin { to { transform: rotate(360deg); } }
         @keyframes lx-fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes lx-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
         .lx-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #1A1816 0%, #252220 50%, #1A1816 100%);
+          background: linear-gradient(135deg, #0B1120 0%, #111827 50%, #0B1120 100%);
           display: grid; grid-template-columns: 1fr 1fr;
           position: relative; overflow: hidden;
         }
@@ -127,13 +127,15 @@ export default function LoginPage() {
         .lx-showcase-side {
           display: flex; flex-direction: column; justify-content: center;
           padding: 60px 48px;
-          background: linear-gradient(135deg, rgba(245,166,35,0.08) 0%, rgba(15,25,35,0.95) 100%);
+          background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(15,25,35,0.95) 100%);
           border-left: 1px solid rgba(255,255,255,0.05);
           position: relative; z-index: 1;
         }
 
         .lx-card {
-          background: rgba(37,34,32,0.92);
+          background: rgba(17,24,39,0.85);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
           backdrop-filter: blur(24px);
           border: 1px solid rgba(255,255,255,0.07);
           border-radius: 24px; padding: 44px 40px;
@@ -171,14 +173,14 @@ export default function LoginPage() {
         }
         .lx-input::placeholder { color: rgba(255,255,255,0.28); }
         .lx-input:focus {
-          border-color: rgba(245,166,35,0.55);
-          box-shadow: 0 0 0 3px rgba(245,166,35,0.08);
+          border-color: rgba(59,130,246,0.55);
+          box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
         }
 
         .lx-submit {
           width: 100%; height: 48px;
-          background: linear-gradient(135deg, #F5A623, #FBBD5E);
-          color: #1A1816;
+          background: linear-gradient(135deg, #3B82F6, #60A5FA);
+          color: #0B1120;
           border: none; border-radius: 12px;
           font-size: 15px; font-weight: 700;
           font-family: 'DM Sans', sans-serif;
@@ -186,9 +188,9 @@ export default function LoginPage() {
           display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .lx-submit:hover:not(:disabled) {
-          background: linear-gradient(135deg, #FBBD5E, #e0c97a);
+          background: linear-gradient(135deg, #60A5FA, #e0c97a);
           transform: translateY(-1px);
-          box-shadow: 0 6px 24px rgba(245,166,35,0.35);
+          box-shadow: 0 6px 24px rgba(59,130,246,0.35);
         }
         .lx-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -219,7 +221,7 @@ export default function LoginPage() {
         }
         .lx-glass:hover {
           background: rgba(255,255,255,0.07);
-          border-color: rgba(245,166,35,0.20);
+          border-color: rgba(59,130,246,0.20);
           transform: translateY(-2px);
         }
 
@@ -230,9 +232,9 @@ export default function LoginPage() {
         }
         .lx-feature-icon {
           width: 40px; height: 40px; border-radius: 12px;
-          background: rgba(245,166,35,0.12);
+          background: rgba(59,130,246,0.12);
           display: flex; align-items: center; justify-content: center;
-          color: #F5A623; font-size: 16px; flex-shrink: 0;
+          color: #3B82F6; font-size: 16px; flex-shrink: 0;
         }
 
         @media (max-width: 900px) {
@@ -246,7 +248,7 @@ export default function LoginPage() {
         <div style={{
           position: 'absolute', top: '10%', left: '25%',
           width: 600, height: 600, borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(245,166,35,0.06) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 65%)',
         }} />
 
         {/* ══ LEFT — Login Form ══ */}
@@ -317,9 +319,9 @@ export default function LoginPage() {
               fontSize: 12, color: 'rgba(255,255,255,0.22)', lineHeight: 1.6,
             }}>
               Ao continuar, você concorda com os{' '}
-              <a href="#" style={{ color: 'rgba(245,166,35,0.65)', textDecoration: 'none' }}>Termos de Uso</a>
+              <a href="#" style={{ color: 'rgba(59,130,246,0.65)', textDecoration: 'none' }}>Termos de Uso</a>
               {' '}e a{' '}
-              <a href="#" style={{ color: 'rgba(245,166,35,0.65)', textDecoration: 'none' }}>Política de Privacidade</a>
+              <a href="#" style={{ color: 'rgba(59,130,246,0.65)', textDecoration: 'none' }}>Política de Privacidade</a>
             </div>
           </div>
         </div>
@@ -328,7 +330,7 @@ export default function LoginPage() {
         <div className="lx-showcase-side">
           {/* Title */}
           <div style={{ marginBottom: 36, animation: 'lx-fadeIn 0.6s ease 0.1s both' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#F5A623', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#3B82F6', marginBottom: 10 }}>
               Plataforma Jurídica com IA
             </div>
             <h2 style={{
@@ -347,7 +349,7 @@ export default function LoginPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32, animation: 'lx-fadeIn 0.6s ease 0.2s both' }}>
             {STATS.map((s, i) => (
               <div key={i} className="lx-glass" style={{ textAlign: 'center', padding: '18px 12px' }}>
-                <div style={{ fontSize: 24, fontWeight: 700, color: '#F5A623', letterSpacing: '-0.5px' }}>{s.value}</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: '#3B82F6', letterSpacing: '-0.5px' }}>{s.value}</div>
                 <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
@@ -372,7 +374,7 @@ export default function LoginPage() {
           <div style={{
             padding: '20px 24px', borderRadius: 16,
             background: 'rgba(255,255,255,0.03)',
-            borderLeft: '3px solid rgba(245,166,35,0.4)',
+            borderLeft: '3px solid rgba(59,130,246,0.4)',
             animation: 'lx-fadeIn 0.6s ease 0.6s both',
           }}>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, fontStyle: 'italic', marginBottom: 12 }}>
@@ -381,7 +383,7 @@ export default function LoginPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 32, height: 32, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #F5A623, #C4841A)',
+                background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 12, fontWeight: 700, color: '#fff',
               }}>DR</div>
