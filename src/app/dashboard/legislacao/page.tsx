@@ -50,6 +50,16 @@ export default function LegislacaoPage() {
         </button>
       </div>
 
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, marginBottom: 16 }}>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
+        {['Art. 5 CF/88', 'Art. 927 Codigo Civil', 'Art. 300 CPC', 'Lei 8.078/90 CDC'].map((ex, i) => (
+          <button key={i} type="button" onClick={() => setConsulta(ex)}
+            style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+            {ex}
+          </button>
+        ))}
+      </div>
+
       {erro && <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{erro}</div>}
 
       {loading ? (

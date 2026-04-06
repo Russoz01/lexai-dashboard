@@ -317,6 +317,15 @@ export default function ResumidorPage() {
                     </button>
                   )}
                 </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
+                  {['Contrato de prestacao de servicos', 'Peticao inicial indenizacao', 'Acordao do STJ'].map((ex, i) => (
+                    <button key={i} type="button" onClick={() => setTexto(ex)}
+                      style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                      {ex}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Erro */}

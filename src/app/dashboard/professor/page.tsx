@@ -60,6 +60,41 @@ export default function ProfessorPage() {
         </button>
       </div>
 
+      {/* Study categories */}
+      {!aula && !loading && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+            Areas de Estudo
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {[
+              { area: 'Direito Civil', temas: ['Responsabilidade Civil', 'Contratos', 'Prescricao', 'Posse e Propriedade'], icon: 'bi-file-earmark-text', color: '#2563EB' },
+              { area: 'Direito Penal', temas: ['Legitima Defesa', 'Crimes contra o patrimonio', 'Principio da Legalidade', 'Dosimetria da Pena'], icon: 'bi-shield-exclamation', color: '#EF4444' },
+              { area: 'Direito Constitucional', temas: ['Direitos Fundamentais', 'Controle de Constitucionalidade', 'Remedio Constitucional', 'Separacao de Poderes'], icon: 'bi-building', color: '#8B5CF6' },
+              { area: 'Direito do Trabalho', temas: ['Rescisao Indireta', 'Horas Extras', 'Acidente de Trabalho', 'FGTS'], icon: 'bi-briefcase', color: '#F59E0B' },
+            ].map((cat, i) => (
+              <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer' }}
+                onClick={() => { setTema(cat.temas[0]); }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cat.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className={`bi ${cat.icon}`} style={{ color: cat.color, fontSize: 14 }} />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{cat.area}</span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {cat.temas.map((t, j) => (
+                    <button key={j} onClick={(e) => { e.stopPropagation(); setTema(t); }}
+                      style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {erro && (
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
           <i className="bi bi-exclamation-triangle-fill" /> {erro}

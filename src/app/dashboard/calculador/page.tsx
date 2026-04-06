@@ -45,6 +45,15 @@ export default function CalculadorPage() {
           <textarea value={consulta} onChange={e => setConsulta(e.target.value)}
             placeholder={"Descreva o calculo que precisa:\n\n- Prazo processual: data de intimacao, tipo de prazo\n- Correcao monetaria: valor, data inicial, indice\n- Juros: taxa, periodo, base de calculo\n- Custas: tribunal, valor da causa"}
             className="form-input" style={{ resize: 'vertical', minHeight: 220, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6 }} />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
+            {['Prazo para contestacao CPC', 'Correcao monetaria IPCA-E desde 2020', 'Custas processuais TJSP'].map((ex, i) => (
+              <button key={i} type="button" onClick={() => setConsulta(ex)}
+                style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                {ex}
+              </button>
+            ))}
+          </div>
           {erro && <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginTop: 12 }}>{erro}</div>}
           <button onClick={calcular} disabled={!consulta.trim() || loading} className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
             {loading ? 'Calculando...' : <><i className="bi bi-calculator" /> Calcular</>}

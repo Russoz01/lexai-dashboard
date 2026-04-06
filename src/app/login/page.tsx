@@ -362,7 +362,7 @@ export default function LoginPage() {
                   <i className={`bi ${f.icon}`} />
                 </div>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{f.title}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#F1F1F1' }}>{f.title}</div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{f.desc}</div>
                 </div>
               </div>
@@ -387,7 +387,7 @@ export default function LoginPage() {
                 fontSize: 12, fontWeight: 700, color: '#fff',
               }}>DR</div>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>Dr. Rafael Mendes</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#F1F1F1' }}>Dr. Rafael Mendes</div>
                 <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Advogado Cível — OAB/SP</div>
               </div>
             </div>

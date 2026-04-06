@@ -102,6 +102,16 @@ export default function PesquisadorPage() {
           </button>
         </div>
 
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
+          {['Responsabilidade civil do fornecedor', 'Dano moral in re ipsa', 'Prescricao intercorrente'].map((ex, i) => (
+            <button key={i} type="button" onClick={() => setQuery(ex)}
+              style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+              {ex}
+            </button>
+          ))}
+        </div>
+
         {/* Filtros */}
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
           <select value={tribunal} onChange={e => setTribunal(e.target.value)} className="form-input" style={{ flex: '1 1 160px', maxWidth: 180 }}>

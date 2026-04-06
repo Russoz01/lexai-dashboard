@@ -50,6 +50,15 @@ export default function NegociadorPage() {
           <textarea value={situacao} onChange={e => setSituacao(e.target.value)}
             placeholder={"Descreva a situacao de conflito com detalhes:\n\n- Partes envolvidas\n- Objeto da disputa\n- Valor em discussao\n- Historico de tentativas de acordo\n- Posicao do seu cliente"}
             className="form-input" style={{ resize: 'vertical', minHeight: 280, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6 }} />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
+            {['Acordo trabalhista por horas extras', 'Mediacao contrato de aluguel', 'Negociacao divida bancaria'].map((ex, i) => (
+              <button key={i} type="button" onClick={() => setSituacao(ex)}
+                style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                {ex}
+              </button>
+            ))}
+          </div>
           {erro && (
             <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
               <i className="bi bi-exclamation-triangle-fill" /> {erro}

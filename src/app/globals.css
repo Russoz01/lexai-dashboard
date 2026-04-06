@@ -146,7 +146,7 @@ body {
 
 /* Vaulto-style dark overrides */
 [data-theme="dark"] .main-content { background: transparent; }
-[data-theme="dark"] .sidebar { background: #0A0A0A; border-right: 1px solid rgba(255,255,255,0.06); }
+[data-theme="dark"] .sidebar { background: #111111; border-right: 1px solid rgba(255,255,255,0.08); }
 [data-theme="dark"] .sidebar-brand { border-bottom: 1px solid rgba(255,255,255,0.06); }
 [data-theme="dark"] .sidebar-link.active { background: rgba(255,255,255,0.06); }
 [data-theme="dark"] .sidebar-link:hover:not(.active) { background: rgba(255,255,255,0.03); }
@@ -181,9 +181,9 @@ body {
   box-shadow: 4px 0 24px rgba(0,0,0,0.08);
 }
 [data-theme="dark"] .sidebar {
-  background: linear-gradient(180deg, #0C0F1A 0%, #111827 100%);
+  background: #111111;
   backdrop-filter: none;
-  border-right: 1px solid rgba(255,255,255,0.06);
+  border-right: 1px solid rgba(255,255,255,0.08);
   box-shadow: 4px 0 24px rgba(0,0,0,0.30);
 }
 
@@ -228,7 +228,7 @@ body {
   padding: 0 12px 8px;
 }
 [data-theme="dark"] .sidebar-section-title {
-  color: rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.30);
 }
 
 .sidebar-link {
