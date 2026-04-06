@@ -117,8 +117,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="sidebar-plan">
         <div className="sidebar-plan-badge">
           <div className="plan-label">Plano ativo</div>
-          <div className="plan-name">Pro</div>
-          <div className="plan-price">R$ 97 / mês</div>
+          <div className="plan-name">Enterprise</div>
+          <div className="plan-price">R$ 197 / mes</div>
         </div>
       </div>
     </aside>

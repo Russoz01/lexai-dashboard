@@ -114,7 +114,10 @@ export default function LoginPage() {
 
         .lx-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #0B1120 0%, #111827 50%, #0B1120 100%);
+          background:
+            radial-gradient(ellipse 60% 50% at 20% 80%, rgba(37,99,235,0.15), transparent),
+            radial-gradient(ellipse 50% 40% at 80% 20%, rgba(124,58,237,0.10), transparent),
+            linear-gradient(135deg, #080D1B 0%, #0F172A 40%, #111827 70%, #0B1120 100%);
           display: grid; grid-template-columns: 1fr 1fr;
           position: relative; overflow: hidden;
         }
@@ -133,12 +136,11 @@ export default function LoginPage() {
         }
 
         .lx-card {
-          background: rgba(17,24,39,0.85);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          backdrop-filter: blur(24px);
-          border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 24px; padding: 44px 40px;
+          background: rgba(15,23,42,0.75);
+          backdrop-filter: blur(32px) saturate(150%);
+          -webkit-backdrop-filter: blur(32px) saturate(150%);
+          border: 1px solid rgba(255,255,255,0.10);
+          border-radius: 28px; padding: 48px 44px;
           width: 100%; max-width: 420;
           box-shadow: 0 32px 64px rgba(0,0,0,0.55);
           animation: lx-fadeIn 0.6s ease both;
@@ -178,9 +180,9 @@ export default function LoginPage() {
         }
 
         .lx-submit {
-          width: 100%; height: 48px;
-          background: linear-gradient(135deg, #3B82F6, #60A5FA);
-          color: #0B1120;
+          width: 100%; height: 50px;
+          background: linear-gradient(135deg, #2563EB, #3B82F6);
+          color: #FFFFFF;
           border: none; border-radius: 12px;
           font-size: 15px; font-weight: 700;
           font-family: 'DM Sans', sans-serif;
