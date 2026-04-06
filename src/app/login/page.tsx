@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import TopoBackground from '@/components/TopoBackground'
 
 function LexLogoIcon({ size = 56 }: { size?: number }) {
   const sc = size / 36
@@ -243,6 +244,9 @@ export default function LoginPage() {
       ` }} />
 
       <div className="lx-page">
+        {/* Waves background */}
+        <TopoBackground />
+
         {/* Glow decorativo */}
         <div style={{
           position: 'absolute', top: '10%', left: '25%',
@@ -257,7 +261,7 @@ export default function LoginPage() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}>
               <LexLogoIcon size={64} />
               <div style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "'DM Sans', sans-serif",
                 fontSize: 28, fontWeight: 700, color: '#F1F1F1',
                 letterSpacing: '-0.5px', marginTop: 14, marginBottom: 5,
               }}>LexAI</div>

@@ -313,18 +313,25 @@ export default function ConfiguracoesPage() {
                     <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)', marginBottom:2 }}>{intg.label}</div>
                     <div style={{ fontSize:12, color:'var(--text-muted)' }}>{intg.desc}</div>
                   </div>
-                  {/* Toggle switch */}
-                  <button onClick={() => toggleIntegracao(intg.id)} style={{
-                    width:44, height:24, borderRadius:12, border:'none', cursor:'pointer', flexShrink:0,
-                    background: ativos[intg.id] ? 'var(--accent)' : 'var(--border)',
-                    position:'relative', transition:'background 0.2s',
-                  }}>
-                    <span style={{
-                      position:'absolute', top:3, left: ativos[intg.id] ? 23 : 3,
-                      width:18, height:18, borderRadius:'50%', background:'#fff',
-                      transition:'left 0.2s', boxShadow:'0 1px 4px rgba(0,0,0,0.2)',
-                    }} />
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    {ativos[intg.id] && (
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--success)', padding: '2px 8px', borderRadius: 10, background: 'var(--success-light)' }}>
+                        Conectado
+                      </span>
+                    )}
+                    {/* Toggle switch */}
+                    <button onClick={() => toggleIntegracao(intg.id)} style={{
+                      width:44, height:24, borderRadius:12, border:'none', cursor:'pointer', flexShrink:0,
+                      background: ativos[intg.id] ? 'var(--accent)' : 'var(--border)',
+                      position:'relative', transition:'background 0.2s',
+                    }}>
+                      <span style={{
+                        position:'absolute', top:3, left: ativos[intg.id] ? 23 : 3,
+                        width:18, height:18, borderRadius:'50%', background:'#fff',
+                        transition:'left 0.2s', boxShadow:'0 1px 4px rgba(0,0,0,0.2)',
+                      }} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
