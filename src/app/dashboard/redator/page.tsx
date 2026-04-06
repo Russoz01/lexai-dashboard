@@ -143,6 +143,12 @@ export default function RedatorPage() {
                 <i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'}`} /> {copied ? 'Copiado' : 'Copiar'}
               </button>
             )}
+            {peca && (
+              <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5 }}
+                onClick={() => window.print()}>
+                <i className="bi bi-file-pdf" /> PDF
+              </button>
+            )}
           </div>
 
           {gerando ? (

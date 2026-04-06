@@ -3,34 +3,8 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
-interface Risco {
-  descricao: string
-  gravidade: string
-  fundamentacao: string
-}
-
-interface Parte {
-  nome: string
-  qualificacao: string
-}
-
-interface Prazo {
-  prazo: string
-  data: string
-  base_legal: string
-}
-
-interface Analise {
-  resumo: string
-  tipo_documento: string
-  ramo_direito: string
-  pontos_principais: string[]
-  riscos: Risco[] | string[]
-  partes_envolvidas: Parte[] | string[]
-  prazos_identificados: Prazo[] | string[]
-  fundamentacao_legal: string[]
-  sugestoes: string[]
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Analise = any
 
 // ── Inline SVG da balança da justiça ──────────────────────────────────────
 function ScalesIcon({ size = 48, color = 'currentColor', strokeWidth = 1.5 }: { size?: number; color?: string; strokeWidth?: number }) {
@@ -176,7 +150,7 @@ export default function ResumidorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro desconhecido')
       setAnalise(data.analise)
-      if (!titulo) setTitulo(data.analise.tipo_documento || 'Documento analisado')
+      if (!titulo) setTitulo(data.analise.classificacao?.tipo || data.analise.tipo_documento || 'Documento analisado')
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro ao processar documento')
     } finally {
@@ -194,11 +168,11 @@ export default function ResumidorPage() {
     await supabase.from('documentos').insert({
       usuario_id: user.id,
       titulo: titulo || 'Documento sem título',
-      tipo: mapTipo(analise.tipo_documento),
+      tipo: mapTipo(analise.classificacao?.tipo || analise.tipo_documento || ''),
       conteudo: texto,
-      resumo: analise.resumo,
-      pontos_principais: analise.pontos_principais.join('\n'),
-      riscos: analise.riscos.join('\n'),
+      resumo: analise.objeto || analise.resumo || '',
+      pontos_principais: (analise.pontos_principais || analise.pontos_chave || []).join?.('\n') || '',
+      riscos: (analise.riscos || []).map?.((r: any) => typeof r === 'string' ? r : r.descricao || '').join('\n') || '',
       status: 'concluido',
     })
 
@@ -206,7 +180,7 @@ export default function ResumidorPage() {
       usuario_id: user.id,
       agente: 'resumidor',
       mensagem_usuario: `Analisar: ${titulo || 'documento'}`,
-      resposta_agente: analise.resumo,
+      resposta_agente: analise.objeto || analise.resumo || '',
     })
 
     setSalvo(true)
@@ -216,10 +190,11 @@ export default function ResumidorPage() {
   function handleCopiar() {
     if (!analise) return
     const texto = [
-      `TIPO: ${analise.tipo_documento}`,
-      `\nRESUMO:\n${analise.resumo}`,
-      analise.pontos_principais.length ? `\nPONTOS PRINCIPAIS:\n${analise.pontos_principais.map(p => `• ${p}`).join('\n')}` : '',
-      analise.riscos.length ? `\nRISCOS:\n${analise.riscos.map(r => `• ${r}`).join('\n')}` : '',
+      `TIPO: ${analise.classificacao?.tipo || analise.tipo_documento || ''}`,
+      `\nRESUMO:\n${analise.objeto || analise.resumo || ''}`,
+      (analise.pontos_principais || analise.pontos_chave || []).length ? `\nPONTOS PRINCIPAIS:\n${(analise.pontos_principais || analise.pontos_chave || []).map((p: string) => `- ${p}`).join('\n')}` : '',
+      (analise.riscos || []).length ? `\nRISCOS:\n${(analise.riscos || []).map((r: any) => `- ${typeof r === 'string' ? r : r.descricao || r}`).join('\n')}` : '',
+      analise.conclusao ? `\nCONCLUSAO:\n${analise.conclusao}` : '',
     ].filter(Boolean).join('\n')
 
     navigator.clipboard.writeText(texto)
@@ -451,15 +426,15 @@ export default function ResumidorPage() {
                           border: '1px solid rgba(45,106,79,0.2)',
                         }}>
                           <ScalesIcon size={13} color="var(--accent)" strokeWidth={2} />
-                          {analise.tipo_documento}
+                          {analise.classificacao?.tipo || analise.tipo_documento || 'Documento'}
                         </span>
-                        {analise.ramo_direito && (
+                        {(analise.ramo_direito || analise.classificacao?.jurisdicao) && (
                           <span style={{
                             fontSize: '11px', fontWeight: 600,
                             padding: '3px 10px', borderRadius: '20px',
                             background: '#eef2ff', color: '#4f46e5',
                           }}>
-                            {analise.ramo_direito}
+                            {analise.ramo_direito || analise.classificacao?.jurisdicao || ''}
                           </span>
                         )}
                       </div>
@@ -501,6 +476,19 @@ export default function ResumidorPage() {
                             : <><i className="bi bi-floppy" /> Salvar</>
                           }
                         </button>
+                        <button
+                          onClick={() => window.print()}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '6px',
+                            padding: '7px 14px', borderRadius: '8px',
+                            background: 'none', border: '1px solid var(--border)',
+                            color: 'var(--text-secondary)',
+                            fontSize: '13px', fontWeight: 500, cursor: 'pointer',
+                            fontFamily: "'DM Sans', sans-serif",
+                          }}
+                        >
+                          <i className="bi bi-file-pdf" /> Exportar PDF
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -522,7 +510,7 @@ export default function ResumidorPage() {
                       fontSize: '14px', color: 'var(--text-primary)',
                       lineHeight: '1.75', whiteSpace: 'pre-wrap',
                     }}>
-                      {analise.resumo}
+                      {analise.objeto || analise.resumo || analise.conclusao || 'Analise concluida'}
                     </p>
                   </div>
                 </div>
@@ -531,7 +519,7 @@ export default function ResumidorPage() {
                 <ResultSection
                   title="Pontos Principais"
                   icon={<i className="bi bi-check-circle-fill" style={{ color: '#2d6a4f', fontSize: '14px' }} />}
-                  items={analise.pontos_principais}
+                  items={analise.pontos_principais || analise.pontos_chave || []}
                   accent={{ bg: 'var(--accent-light)', text: 'var(--accent)', dot: 'var(--accent)' }}
                   defaultOpen
                 />
@@ -540,7 +528,7 @@ export default function ResumidorPage() {
                 <ResultSection
                   title="Riscos e Cláusulas Importantes"
                   icon={<i className="bi bi-exclamation-triangle-fill" style={{ color: 'var(--warning)', fontSize: '14px' }} />}
-                  items={analise.riscos.map(r => typeof r === 'string' ? r : `[${(r as Risco).gravidade?.toUpperCase()}] ${(r as Risco).descricao}${(r as Risco).fundamentacao ? ` — ${(r as Risco).fundamentacao}` : ''}`)}
+                  items={(analise.riscos || []).map((r: any) => typeof r === 'string' ? r : `[${(r.gravidade || 'INFO').toUpperCase()}] ${r.descricao || r}${r.mitigacao ? ` — ${r.mitigacao}` : ''}`)}
                   accent={{ bg: 'var(--warning-light)', text: 'var(--warning)', dot: 'var(--warning)' }}
                   defaultOpen
                 />
@@ -549,7 +537,7 @@ export default function ResumidorPage() {
                 <ResultSection
                   title="Partes Envolvidas"
                   icon={<i className="bi bi-people-fill" style={{ color: '#4f46e5', fontSize: '14px' }} />}
-                  items={analise.partes_envolvidas.map(p => typeof p === 'string' ? p : `${(p as Parte).nome} — ${(p as Parte).qualificacao}`)}
+                  items={(analise.partes_envolvidas || analise.partes || []).map((p: any) => typeof p === 'string' ? p : `${p.nome || p} — ${p.qualificacao || p.documento || ''}`)}
                   accent={{ bg: '#eef2ff', text: '#4f46e5', dot: '#4f46e5' }}
                   defaultOpen={false}
                 />
@@ -558,17 +546,17 @@ export default function ResumidorPage() {
                 <ResultSection
                   title="Prazos Identificados"
                   icon={<i className="bi bi-calendar-event-fill" style={{ color: 'var(--danger)', fontSize: '14px' }} />}
-                  items={analise.prazos_identificados.map(p => typeof p === 'string' ? p : `${(p as Prazo).prazo} (${(p as Prazo).data})${(p as Prazo).base_legal ? ` — ${(p as Prazo).base_legal}` : ''}`)}
+                  items={(analise.prazos_identificados || analise.prazos || []).map((p: any) => typeof p === 'string' ? p : `${p.prazo || p.evento || p} (${p.data || ''})${p.base_legal || p.clausula ? ` — ${p.base_legal || p.clausula}` : ''}`)}
                   accent={{ bg: 'var(--danger-light)', text: 'var(--danger)', dot: 'var(--danger)' }}
                   defaultOpen={false}
                 />
 
                 {/* Fundamentação Legal */}
-                {analise.fundamentacao_legal?.length > 0 && (
+                {(analise.fundamentacao_legal || analise.fundamentacao || [])?.length > 0 && (
                   <ResultSection
                     title="Fundamentação Legal"
                     icon={<i className="bi bi-book-fill" style={{ color: '#2d6a4f', fontSize: '14px' }} />}
-                    items={analise.fundamentacao_legal}
+                    items={analise.fundamentacao_legal || analise.fundamentacao || []}
                     accent={{ bg: 'var(--accent-light)', text: 'var(--accent)', dot: 'var(--accent)' }}
                     defaultOpen={false}
                   />

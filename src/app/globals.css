@@ -925,4 +925,10 @@ input[type="date"] { cursor: pointer; }
 
   /* Redator — side-by-side collapses to single column */
   .redator-main-grid { grid-template-columns: 1fr !important; }
+
+  /* Hero card — stack columns */
+  .section-card [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+
+  /* Content grid — stack */
+  .content-grid { grid-template-columns: 1fr !important; }
 }
