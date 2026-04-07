@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkAndIncrementQuota } from '@/lib/quotas'
+import { events } from '@/lib/analytics'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -56,6 +58,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
     }
 
+    // Server-side quota enforcement (server-trusted, never localStorage)
+    const quota = await checkAndIncrementQuota(supabase, user.id, 'redator')
+    if (!quota.ok && quota.response) {
+      return quota.response
+    }
+
     const { template, instrucoes } = await req.json()
     if (!template || !TEMPLATES[template]) {
       return NextResponse.json({ error: 'Template invalido.' }, { status: 400 })
@@ -71,7 +79,13 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8192,
-      system: SYSTEM_PROMPT,
+      system: [
+        {
+          type: 'text' as const,
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' as const },
+        },
+      ],
       messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
     })
 
@@ -89,6 +103,8 @@ export async function POST(req: NextRequest) {
       mensagem_usuario: `Redigir: ${TEMPLATES[template]}`,
       resposta_agente: peca.titulo || TEMPLATES[template],
     })
+
+    events.agentUsed(user.id, 'redator', 'unknown').catch(() => {})
 
     return NextResponse.json({ peca })
   } catch (err: unknown) {

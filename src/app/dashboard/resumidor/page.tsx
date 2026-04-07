@@ -138,6 +138,7 @@ export default function ResumidorPage() {
   const [salvo, setSalvo]     = useState(false)
   const [copied, setCopied]   = useState(false)
   const [exportandoWord, setExportandoWord] = useState(false)
+  const [compartilhando, setCompartilhando] = useState(false)
 
   useDraft('lexai-draft-resumidor', texto, setTexto)
 
@@ -306,6 +307,33 @@ export default function ResumidorPage() {
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
     toast('info', 'Analise copiada para a area de transferencia')
+  }
+
+  async function handleCompartilhar() {
+    if (!analise || compartilhando) return
+    setCompartilhando(true)
+    try {
+      const shareTitulo = titulo || analise.classificacao?.tipo || analise.tipo_documento || 'Documento analisado'
+      const res = await fetch('/api/share/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titulo: String(shareTitulo).slice(0, 200),
+          conteudo: analise,
+          tipo: 'analise',
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erro ao criar link')
+
+      await navigator.clipboard.writeText(data.url)
+      toast('success', 'Link copiado! Valido por 7 dias')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao compartilhar'
+      toast('error', msg)
+    } finally {
+      setCompartilhando(false)
+    }
   }
 
   function mapTipo(tipo: string): string {
@@ -628,6 +656,25 @@ export default function ResumidorPage() {
                           {exportandoWord
                             ? <><Spinner size={14} color="var(--text-muted)" /> Exportando...</>
                             : <><i className="bi bi-file-word" /> Exportar Word</>
+                          }
+                        </button>
+                        <button
+                          onClick={handleCompartilhar}
+                          disabled={compartilhando}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '6px',
+                            padding: '7px 14px', borderRadius: '8px',
+                            background: 'none', border: '1px solid var(--border)',
+                            color: 'var(--text-secondary)',
+                            fontSize: '13px', fontWeight: 500,
+                            cursor: compartilhando ? 'default' : 'pointer',
+                            fontFamily: "'DM Sans', sans-serif",
+                            opacity: compartilhando ? 0.7 : 1,
+                          }}
+                        >
+                          {compartilhando
+                            ? <><Spinner size={14} color="var(--text-muted)" /> Gerando link...</>
+                            : <><i className="bi bi-link-45deg" /> Compartilhar link</>
                           }
                         </button>
                       </div>

@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkAndIncrementQuota } from '@/lib/quotas'
+import { events } from '@/lib/analytics'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -52,6 +54,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
     }
 
+    // Server-side quota enforcement (server-trusted, never localStorage)
+    const quota = await checkAndIncrementQuota(supabase, user.id, 'pesquisador')
+    if (!quota.ok && quota.response) {
+      return quota.response
+    }
+
     const { query, tribunal, area, periodo } = await req.json()
     if (!query || query.trim().length < 3) {
       return NextResponse.json({ error: 'Consulta muito curta.' }, { status: 400 })
@@ -70,7 +78,13 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8192,
-      system: SYSTEM_PROMPT,
+      system: [
+        {
+          type: 'text' as const,
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' as const },
+        },
+      ],
       messages: [{ role: 'user', content: `Research topic: ${query}${filtros ? `\n\nFilters:\n${filtros}` : ''}` }],
     })
 
@@ -88,6 +102,8 @@ export async function POST(req: NextRequest) {
       mensagem_usuario: `Pesquisa: ${query}`,
       resposta_agente: pesquisa.enquadramento?.slice(0, 200) || 'Pesquisa realizada',
     })
+
+    events.agentUsed(user.id, 'pesquisador', 'unknown').catch(() => {})
 
     return NextResponse.json({ pesquisa })
   } catch (err: unknown) {

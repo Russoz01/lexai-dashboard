@@ -42,13 +42,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section style={{ display: 'flex', justifyContent: 'center', gap: 48, padding: '40px 24px 60px' }}>
+      {/* Stats — fatos verificaveis, sem inventar numeros */}
+      <section style={{ display: 'flex', justifyContent: 'center', gap: 48, padding: '40px 24px 60px', flexWrap: 'wrap' }}>
         {[
-          { value: '10', label: 'Agentes IA' },
-          { value: '200+', label: 'Documentos revisados' },
-          { value: '99.9%', label: 'Disponibilidade' },
-          { value: '2 dias', label: 'Trial gratuito' },
+          { value: '10', label: 'Agentes IA especializados' },
+          { value: '7', label: 'Areas do Direito cobertas' },
+          { value: '36', label: 'Materias academicas' },
+          { value: '2 dias', label: 'Trial gratuito sem cartao' },
         ].map((s, i) => (
           <div key={i} style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 32, fontWeight: 800, color: '#3B82F6', letterSpacing: '-1px' }}>{s.value}</div>
@@ -226,10 +226,32 @@ export default function LandingPage() {
         </Link>
       </section>
 
+      {/* Disclaimer LGPD + responsabilidade tecnica */}
+      <section style={{ padding: '32px 48px', maxWidth: 900, margin: '0 auto' }}>
+        <div style={{
+          padding: '20px 24px', borderRadius: 12,
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          fontSize: 12, color: 'rgba(255,255,255,0.50)', lineHeight: 1.6,
+        }}>
+          <div style={{ fontWeight: 700, color: 'rgba(255,255,255,0.75)', marginBottom: 8, fontSize: 13 }}>
+            <i className="bi bi-info-circle" style={{ marginRight: 6 }} />Aviso importante
+          </div>
+          A LexAI e uma ferramenta de apoio baseada em inteligencia artificial. Os resultados gerados pelos agentes devem ser sempre revisados por profissional habilitado pela OAB antes de qualquer uso processual ou contratual. A plataforma nao substitui o aconselhamento juridico profissional. Estamos em conformidade com a Lei Geral de Protecao de Dados (LGPD) &mdash; seus dados sao criptografados e nunca usados para treinamento de modelos.
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.30)' }}>2026 LexAI. Powered by LexAI</div>
-        <div style={{ display: 'flex', gap: 20, fontSize: 13 }}>
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px 48px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.30)' }}>2026 LexAI. Powered by LexAI</div>
+          <div style={{ display: 'flex', gap: 16, fontSize: 13, flexWrap: 'wrap' }}>
+            <Link href="/empresas" style={{ color: 'rgba(255,255,255,0.50)', textDecoration: 'none' }}>Para Empresas</Link>
+            <Link href="/privacidade" style={{ color: 'rgba(255,255,255,0.50)', textDecoration: 'none' }}>Privacidade (LGPD)</Link>
+            <Link href="/termos" style={{ color: 'rgba(255,255,255,0.50)', textDecoration: 'none' }}>Termos de Uso</Link>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 20, fontSize: 13, flexWrap: 'wrap' }}>
           <span style={{ color: 'rgba(255,255,255,0.30)' }}>luizfernandoleonardoleonardo@gmail.com</span>
           <span style={{ color: 'rgba(255,255,255,0.30)' }}>(34) 99302-6456</span>
         </div>

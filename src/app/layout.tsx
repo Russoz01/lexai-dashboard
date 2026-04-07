@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { DM_Sans, Playfair_Display } from 'next/font/google'
 import { ThemeProvider } from '@/context/ThemeContext'
+import CookieConsent from '@/components/CookieConsent'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -63,11 +64,6 @@ const jsonLd = {
     { '@type': 'Offer', name: 'Pro', price: '119', priceCurrency: 'BRL', billingIncrement: 'P1M' },
     { '@type': 'Offer', name: 'Enterprise', price: '239', priceCurrency: 'BRL', billingIncrement: 'P1M' },
   ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.9',
-    reviewCount: '127',
-  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -92,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${dmSans.variable} ${playfair.variable}`}>
         <ThemeProvider>{children}</ThemeProvider>
+        <CookieConsent />
       </body>
     </html>
   )

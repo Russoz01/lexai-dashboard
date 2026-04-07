@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse }  from 'next/server'
+import { sendEmail, welcomeEmailHtml } from '@/lib/email'
+import { events } from '@/lib/analytics'
 
 // Validate redirect path to prevent open redirect attacks + directory traversal
 function sanitizeRedirect(path: string): string {
@@ -21,8 +23,28 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Fire-and-forget: send welcome email + track signup on first sign-in
+      // Detect "first sign-in" by checking if created_at == last_sign_in_at (within 10s)
+      const user = data?.user
+      if (user) {
+        try {
+          const created = new Date(user.created_at).getTime()
+          const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : created
+          const isFirstSignIn = Math.abs(lastSignIn - created) < 10_000
+          if (isFirstSignIn && user.email) {
+            const nome = (user.user_metadata?.nome as string) || user.email.split('@')[0]
+            sendEmail({
+              to: user.email,
+              subject: 'Bem-vindo a LexAI — seu trial de 2 dias esta ativo',
+              html: welcomeEmailHtml(nome),
+            }).catch(() => { /* never block auth on email failure */ })
+            events.signup(user.id, user.email).catch(() => { /* silent */ })
+          }
+        } catch { /* silent */ }
+      }
+
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv    = process.env.NODE_ENV === 'development'
 

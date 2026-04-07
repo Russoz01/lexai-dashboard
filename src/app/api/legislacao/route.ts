@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkAndIncrementQuota } from '@/lib/quotas'
+import { events } from '@/lib/analytics'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -50,6 +52,12 @@ export async function POST(req: NextRequest) {
     if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
     if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
 
+    // Server-side quota enforcement (server-trusted, never localStorage)
+    const quota = await checkAndIncrementQuota(supabase, user.id, 'legislacao')
+    if (!quota.ok && quota.response) {
+      return quota.response
+    }
+
     const { consulta } = await req.json()
     if (!consulta || consulta.trim().length < 5) return NextResponse.json({ error: 'Informe o dispositivo legal.' }, { status: 400 })
     if (consulta.length > 50000) {
@@ -58,9 +66,15 @@ export async function POST(req: NextRequest) {
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 4096,
-      system: SYSTEM_PROMPT,
+      system: [
+        {
+          type: 'text' as const,
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' as const },
+        },
+      ],
       messages: [{ role: 'user', content: `Legal provision to explain:\n\n${consulta}` }],
     })
 
@@ -77,6 +91,8 @@ export async function POST(req: NextRequest) {
       mensagem_usuario: `Legislacao: ${consulta.slice(0, 100)}`,
       resposta_agente: resultado.dispositivo || 'Consulta realizada',
     })
+
+    events.agentUsed(user.id, 'legislacao', 'unknown').catch(() => {})
 
     return NextResponse.json({ resultado })
   } catch (err: unknown) {

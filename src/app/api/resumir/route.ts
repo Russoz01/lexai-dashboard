@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkAndIncrementQuota } from '@/lib/quotas'
+import { events } from '@/lib/analytics'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -65,6 +67,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
     }
 
+    // Server-side quota enforcement (server-trusted, never localStorage)
+    const quota = await checkAndIncrementQuota(supabase, user.id, 'resumidor')
+    if (!quota.ok && quota.response) {
+      return quota.response
+    }
+
     const { texto } = await req.json()
     if (!texto || texto.trim().length < 50) {
       return NextResponse.json({ error: 'Texto muito curto. Forneca pelo menos 50 caracteres.' }, { status: 400 })
@@ -75,9 +83,15 @@ export async function POST(req: NextRequest) {
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 8192,
-      system: SYSTEM_PROMPT,
+      system: [
+        {
+          type: 'text' as const,
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' as const },
+        },
+      ],
       messages: [{ role: 'user', content: `Document to analyze:\n\n${texto}` }],
     })
 
@@ -89,6 +103,8 @@ export async function POST(req: NextRequest) {
     } catch {
       analise = { resumo: responseText, erro_parse: true }
     }
+
+    events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})
 
     return NextResponse.json({ analise })
   } catch (err: unknown) {
