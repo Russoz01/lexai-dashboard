@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 
 export default function NegociadorPage() {
   const [situacao, setSituacao] = useState('')
@@ -72,8 +73,11 @@ export default function NegociadorPage() {
 
         {/* Output */}
         <div className="section-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-            Estrategia de Negociacao
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Estrategia de Negociacao
+            </div>
+            {r && <ConfidenceBadge confianca={r?.confianca} />}
           </div>
           {loading ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)', minHeight: 280 }}>
@@ -110,6 +114,9 @@ export default function NegociadorPage() {
               <button onClick={() => { setResultado(null); setSituacao('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
                 <i className="bi bi-arrow-counterclockwise" /> Nova analise
               </button>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <PoweredByLexAI />
+              </div>
             </div>
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)', minHeight: 280 }}>

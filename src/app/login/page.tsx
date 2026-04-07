@@ -430,7 +430,7 @@ export default function LoginPage() {
             fontSize: 11, color: 'rgba(255,255,255,0.35)',
           }}>
             <i className="bi bi-cpu" style={{ fontSize: 13 }} />
-            Powered by Claude — Anthropic
+            Powered by LexAI
           </div>
         </div>
       </div>

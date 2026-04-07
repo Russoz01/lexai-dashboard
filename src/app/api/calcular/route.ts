@@ -37,7 +37,8 @@ Return this JSON:
   "passos": ["Step-by-step calculation breakdown"],
   "base_legal": ["Legal basis for formulas used"],
   "observacoes": ["Important notes and caveats"],
-  "valores": { "principal": "X", "correcao": "X", "juros": "X", "total": "X" }
+  "valores": { "principal": "X", "correcao": "X", "juros": "X", "total": "X" },
+  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
 }`
 
 export async function POST(req: NextRequest) {

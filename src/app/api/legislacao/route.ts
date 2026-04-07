@@ -39,7 +39,8 @@ Return this JSON:
   "jurisprudencia": ["Relevant court interpretations"],
   "artigos_relacionados": ["Cross-referenced articles"],
   "alteracoes_recentes": "Recent changes or pending modifications",
-  "observacoes": ["Important notes"]
+  "observacoes": ["Important notes"],
+  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
 }`
 
 export async function POST(req: NextRequest) {

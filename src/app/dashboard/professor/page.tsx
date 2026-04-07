@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 
 export default function ProfessorPage() {
   const [tema, setTema] = useState('')
@@ -175,6 +176,10 @@ export default function ProfessorPage() {
         </div>
       ) : aula ? (
         <>
+          {/* Confidence badge */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+            <ConfidenceBadge confianca={aula?.confianca} />
+          </div>
           {/* Level tabs */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
             {NIVEIS.map(n => (
@@ -272,6 +277,9 @@ export default function ProfessorPage() {
           <button onClick={() => { setAula(null); setTema('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 16 }}>
             <i className="bi bi-arrow-counterclockwise" /> Novo tema
           </button>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+            <PoweredByLexAI />
+          </div>
         </>
       ) : (
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>

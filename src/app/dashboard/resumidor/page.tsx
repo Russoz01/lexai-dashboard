@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
+import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Analise = any
@@ -446,6 +447,7 @@ export default function ResumidorPage() {
                             {analise.ramo_direito || analise.classificacao?.jurisdicao || ''}
                           </span>
                         )}
+                        <ConfidenceBadge confianca={analise?.confianca} />
                       </div>
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <button
@@ -503,6 +505,23 @@ export default function ResumidorPage() {
                   </div>
                 </div>
 
+                {/* Deadline Alert — appears when any deadlines were extracted */}
+                {(() => {
+                  const prazos = analise.prazos_identificados || analise.prazos || []
+                  if (!prazos.length) return null
+                  return (
+                    <div className="urgent-deadline" style={{ marginBottom: 0 }}>
+                      <div className="deadline-label">
+                        <i className="bi bi-clock-history" />
+                        {prazos.length} prazo(s) detectado(s) automaticamente
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                        A LexAI extraiu prazos importantes deste documento. Verifique a sessao &quot;Prazos Identificados&quot; abaixo e considere adicionar ao seu calendario para nao perder datas criticas.
+                      </div>
+                    </div>
+                  )
+                })()}
+
                 {/* Resumo executivo */}
                 <div className="section-card">
                   <div className="section-header">
@@ -551,13 +570,13 @@ export default function ResumidorPage() {
                   defaultOpen={false}
                 />
 
-                {/* Prazos Identificados */}
+                {/* Prazos Identificados — sempre aberto por importancia */}
                 <ResultSection
                   title="Prazos Identificados"
                   icon={<i className="bi bi-calendar-event-fill" style={{ color: 'var(--danger)', fontSize: '14px' }} />}
-                  items={(analise.prazos_identificados || analise.prazos || []).map((p: any) => typeof p === 'string' ? p : `${p.prazo || p.evento || p} (${p.data || ''})${p.base_legal || p.clausula ? ` — ${p.base_legal || p.clausula}` : ''}`)}
+                  items={(analise.prazos_identificados || analise.prazos || []).map((p: any) => typeof p === 'string' ? p : `${p.prazo || p.evento || p} (${p.data || ''})${p.base_legal || p.clausula ? ` — ${p.base_legal || p.clausula}` : ''}${p.consequencia ? ` | Consequencia: ${p.consequencia}` : ''}`)}
                   accent={{ bg: 'var(--danger-light)', text: 'var(--danger)', dot: 'var(--danger)' }}
-                  defaultOpen={false}
+                  defaultOpen
                 />
 
                 {/* Fundamentação Legal */}
@@ -599,6 +618,10 @@ export default function ResumidorPage() {
                 >
                   <i className="bi bi-arrow-counterclockwise" /> Nova análise
                 </button>
+
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                  <PoweredByLexAI />
+                </div>
 
               </>
             )}

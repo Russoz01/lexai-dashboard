@@ -41,7 +41,8 @@ Return this exact JSON structure:
   "documento": "Complete text of the legal document with paragraphs separated by \\n\\n. Must include: proper header addressing competent court, full party qualification, facts section, legal arguments with citations, specific numbered requests, closing with city/date/signature placeholder.",
   "referencias_legais": ["Every statute, article, sumula, and jurisprudence cited"],
   "observacoes": ["Points the attorney must review or complete before filing"],
-  "tipo": "document type key"
+  "tipo": "document type key",
+  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
 }`
 
 export async function POST(req: NextRequest) {

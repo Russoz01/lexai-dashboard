@@ -50,7 +50,8 @@ Return this exact JSON structure:
   "riscos": [
     { "descricao": "Issue description", "gravidade": "CRITICO | ALTO | MODERADO | BAIXO", "clausula": "Related clause", "consequencia": "Potential consequences", "mitigacao": "Suggested mitigation" }
   ],
-  "conclusao": "Strategic assessment: what this document means for the client, recommended next steps, and key decisions required."
+  "conclusao": "Strategic assessment: what this document means for the client, recommended next steps, and key decisions required.",
+  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
 }`
 
 export async function POST(req: NextRequest) {

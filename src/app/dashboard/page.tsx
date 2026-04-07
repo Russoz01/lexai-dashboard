@@ -164,7 +164,7 @@ export default function DashboardPage() {
                 {stats.documentos}
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#10B981', marginTop: 2 }}>
-                Powered by Claude
+                Powered by LexAI
               </div>
             </div>
             <div style={{ width: '100%', height: 1, background: 'rgba(0,0,0,0.06)' }} />
@@ -222,9 +222,91 @@ export default function DashboardPage() {
           </div>
           <div className="stat-card-value">10</div>
           <div className="stat-card-footer">
-            <span className="highlight">Powered by Claude</span>
+            <span className="highlight">Powered by LexAI</span>
           </div>
         </Link>
+      </div>
+
+      {/* Usage Analytics */}
+      <div className="animate-in delay-5" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+
+        {/* Agent Usage Chart */}
+        <div className="section-card analytics-chart-card">
+          <div className="section-header">
+            <div>
+              <div className="section-title">Uso dos Agentes</div>
+              <div className="section-subtitle">Interacoes desta semana</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '4px 0' }}>
+            {[
+              { name: 'Resumidor', count: 47 },
+              { name: 'Pesquisador', count: 38 },
+              { name: 'Redator', count: 31 },
+              { name: 'Professor', count: 28 },
+              { name: 'Negociador', count: 22 },
+              { name: 'Calculador', count: 19 },
+              { name: 'Legislacao', count: 15 },
+            ].map((agent, i) => (
+              <div key={agent.name} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', width: 90, flexShrink: 0, textAlign: 'right' }}>
+                  {agent.name}
+                </span>
+                <div style={{ flex: 1, height: 22, borderRadius: 6, background: 'var(--hover)', overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${(agent.count / 47) * 100}%`,
+                    borderRadius: 6,
+                    background: `linear-gradient(90deg, var(--accent), var(--accent))`,
+                    opacity: 1 - i * 0.08,
+                    transition: 'width 0.6s ease',
+                  }} />
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', width: 28, flexShrink: 0 }}>
+                  {agent.count}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="section-card analytics-activity-card">
+          <div className="section-header">
+            <div>
+              <div className="section-title">Atividade Recente</div>
+              <div className="section-subtitle">Ultimas interacoes</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {[
+              { agent: 'Resumidor', action: 'Documento analisado', time: '2 min atras', icon: 'bi-text-paragraph' },
+              { agent: 'Pesquisador', action: 'Jurisprudencia encontrada', time: '15 min atras', icon: 'bi-journal-bookmark' },
+              { agent: 'Professor', action: 'Aula sobre Direito Civil', time: '1h atras', icon: 'bi-mortarboard' },
+              { agent: 'Redator', action: 'Peticao gerada', time: '3h atras', icon: 'bi-pencil-square' },
+              { agent: 'Calculador', action: 'Prazo calculado', time: '5h atras', icon: 'bi-calculator' },
+            ].map((item) => (
+              <div key={item.agent} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '12px 0',
+                borderBottom: '1px solid var(--border)',
+              }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  background: 'var(--hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                }}>
+                  <i className={`bi ${item.icon}`} style={{ fontSize: 14, color: 'var(--accent)' }} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{item.agent}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>{item.action}</div>
+                </div>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>{item.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
 
       {/* Two Column */}

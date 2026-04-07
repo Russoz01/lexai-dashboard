@@ -37,7 +37,8 @@ Return this exact JSON structure:
   "posicionamento_atual": "Current dominant understanding, recent shifts, pending cases, and legislative proposals that could impact the topic.",
   "conclusao": "Which position to adopt, why, and risk level of the chosen strategy.",
   "termos_relacionados": ["Related search terms"],
-  "legislacao_aplicavel": ["Key applicable laws"]
+  "legislacao_aplicavel": ["Key applicable laws"],
+  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
 }`
 
 export async function POST(req: NextRequest) {

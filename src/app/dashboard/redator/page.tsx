@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 
 const TEMPLATES = [
   { id: 'peticao',      label: 'Petição Inicial',  icon: 'bi-file-earmark-text',  desc: 'Petição inicial para distribuição de ação' },
@@ -17,6 +18,7 @@ interface PecaResponse {
   referencias_legais: string[]
   observacoes: string[]
   tipo: string
+  confianca?: { nivel?: string; nota?: string }
 }
 
 export default function RedatorPage() {
@@ -133,9 +135,12 @@ export default function RedatorPage() {
 
         {/* Painel direito — Preview */}
         <div className="section-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              {peca ? peca.titulo : 'Prévia da Peça'}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, gap: 8, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                {peca ? peca.titulo : 'Prévia da Peça'}
+              </div>
+              {peca && <ConfidenceBadge confianca={peca?.confianca} />}
             </div>
             {peca && (
               <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5 }}
@@ -215,6 +220,10 @@ export default function RedatorPage() {
               >
                 <i className="bi bi-arrow-counterclockwise" /> Nova peça
               </button>
+
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <PoweredByLexAI />
+              </div>
             </div>
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)', minHeight: 300 }}>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import ConfidenceBadge, { PoweredByLexAI, VerifiedBadge } from '@/components/ConfidenceBadge'
 
 const TRIBUNAIS = ['Todos','STF','STJ','TST','TSE','TRF 1ª','TRF 2ª','TRF 3ª','TRF 4ª','TRF 5ª','TJSP','TJRJ','TJMG']
 const AREAS     = ['Todas','Civil','Penal','Trabalhista','Tributário','Constitucional','Administrativo','Ambiental','Consumidor']
@@ -23,6 +24,7 @@ interface PesquisaResponse {
   resultados: Resultado[]
   termos_relacionados: string[]
   legislacao_aplicavel: string[]
+  confianca?: { nivel?: string; nota?: string }
 }
 
 export default function PesquisadorPage() {
@@ -153,8 +155,11 @@ export default function PesquisadorPage() {
         </div>
       ) : resultados.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>
-            {resultados.length} resultado(s) encontrado(s)
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+              {resultados.length} resultado(s) encontrado(s)
+            </div>
+            {pesquisa && <ConfidenceBadge confianca={pesquisa?.confianca} />}
           </div>
 
           {resultados.map((r, idx) => (
@@ -176,6 +181,7 @@ export default function PesquisadorPage() {
                       <i className="bi bi-calendar3" /> {r.data}
                     </span>
                     <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{r.numero}</span>
+                    <VerifiedBadge />
                   </div>
                   {r.relator && (
                     <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
@@ -258,6 +264,9 @@ export default function PesquisadorPage() {
               )}
             </div>
           )}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+            <PoweredByLexAI />
+          </div>
         </div>
       ) : (
         <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>

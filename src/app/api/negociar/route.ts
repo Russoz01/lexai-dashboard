@@ -47,7 +47,8 @@ Return this JSON:
   "proposta_acordo": "Draft settlement proposal text with object, financial terms, obligations, penalties, confidentiality, and dispute resolution clauses.",
   "riscos_mitigacao": [
     { "risco": "What could go wrong", "mitigacao": "How to prevent it" }
-  ]
+  ],
+  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
 }`
 
 export async function POST(req: NextRequest) {

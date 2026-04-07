@@ -94,7 +94,8 @@ Return this JSON:
   "mapa_mental": "Structured concept map showing connections to broader legal themes",
   "plano_estudo": "Suggested study plan for mastering this topic (hours, resources, sequence)",
   "analise_video": "If video content was provided, structured summary and study notes from the video",
-  "padrao_provas": "If institution was mentioned, analysis of exam patterns for that institution"
+  "padrao_provas": "If institution was mentioned, analysis of exam patterns for that institution",
+  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
 }`
 
 export async function POST(req: NextRequest) {

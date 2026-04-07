@@ -141,7 +141,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.30)' }}>2026 LexAI. Powered by Claude &mdash; Anthropic</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.30)' }}>2026 LexAI. Powered by LexAI</div>
         <div style={{ display: 'flex', gap: 20, fontSize: 13 }}>
           <span style={{ color: 'rgba(255,255,255,0.30)' }}>luizfernandoleonardoleonardo@gmail.com</span>
           <span style={{ color: 'rgba(255,255,255,0.30)' }}>(34) 99302-6456</span>

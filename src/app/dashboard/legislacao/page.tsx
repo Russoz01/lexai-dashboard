@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 
 export default function LegislacaoPage() {
   const [consulta, setConsulta] = useState('')
@@ -69,7 +70,10 @@ export default function LegislacaoPage() {
       ) : resultado ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {resultado.dispositivo && <div className="section-card" style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)', marginBottom: 8 }}>Dispositivo Legal</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)' }}>Dispositivo Legal</div>
+              <ConfidenceBadge confianca={resultado?.confianca} />
+            </div>
             <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>{resultado.dispositivo}</div>
           </div>}
 
@@ -91,6 +95,9 @@ export default function LegislacaoPage() {
           <button onClick={() => { setResultado(null); setConsulta('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 8 }}>
             <i className="bi bi-arrow-counterclockwise" /> Nova pesquisa
           </button>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+            <PoweredByLexAI />
+          </div>
         </div>
       ) : (
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
