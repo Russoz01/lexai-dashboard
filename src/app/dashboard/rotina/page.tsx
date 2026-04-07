@@ -17,14 +17,7 @@ interface PlanoFuturo {
   id: string; data: string; titulo: string; descricao: string; cor: string
 }
 
-const MOCK: Compromisso[] = [
-  { id:'1', titulo:'Direito Civil — Contratos',     horario:'08:00–10:00', local:'Sala 205',        disciplina:'Civil',      dia:1, cor:'#2d6a4f' },
-  { id:'2', titulo:'Processo Civil',                horario:'10:00–12:00', local:'Sala 108',        disciplina:'Processo',   dia:1, cor:'#4f46e5' },
-  { id:'3', titulo:'Direito Penal',                 horario:'14:00–16:00', local:'Anfiteatro A',    disciplina:'Penal',      dia:2, cor:'#c0392b' },
-  { id:'4', titulo:'Estágio — escritório Mendes',   horario:'08:00–12:00', local:'R. XV, 800',     disciplina:'Estágio',    dia:3, cor:'#e67e22' },
-  { id:'5', titulo:'Direito Tributário',            horario:'16:00–18:00', local:'Sala 301',        disciplina:'Tributário', dia:4, cor:'#0284c7' },
-  { id:'6', titulo:'Seminário de Jurisprudência',   horario:'09:00–11:00', local:'Sala de reuniões',disciplina:'Pesquisa',   dia:5, cor:'#7c3aed' },
-]
+const MOCK: Compromisso[] = []
 
 function formatDataISO(d: Date) {
   const y = d.getFullYear()
@@ -34,15 +27,7 @@ function formatDataISO(d: Date) {
 }
 
 function gerarMockPlanos(): PlanoFuturo[] {
-  const hoje = new Date()
-  const d1 = new Date(hoje); d1.setDate(hoje.getDate() + 3)
-  const d2 = new Date(hoje); d2.setDate(hoje.getDate() + 7)
-  const d3 = new Date(hoje); d3.setDate(hoje.getDate() + 14)
-  return [
-    { id:'p1', data: formatDataISO(d1), titulo:'Prova de Direito Civil', descricao:'Estudar contratos e obrigações', cor:'#2d6a4f' },
-    { id:'p2', data: formatDataISO(d2), titulo:'Entrega do TCC',         descricao:'Revisão final do capítulo 3',     cor:'#4f46e5' },
-    { id:'p3', data: formatDataISO(d3), titulo:'Audiência trabalhista',  descricao:'Fórum Central — sala 12',         cor:'#e67e22' },
-  ]
+  return []
 }
 
 const EMPTY_COMP = { titulo:'', horario:'', local:'', disciplina:'', dia:1, cor:CORES_DISCIPLINA[0] }
@@ -160,7 +145,7 @@ export default function RotinaPage() {
       {/* Banner */}
       <div className="agent-banner">
         <i className="bi bi-stars" />
-        Agente em desenvolvimento — dados de exemplo exibidos. Sincronização com calendário em breve.
+        Organize seus compromissos da semana e planejamentos futuros. Tudo salvo automaticamente.
       </div>
 
       {/* Header */}
