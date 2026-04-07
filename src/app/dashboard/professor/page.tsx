@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
+import { parseDocument, truncateForAI, type ParsedDocument } from '@/lib/document-parser'
+import { toast } from '@/components/Toast'
 import {
   recordQuizAttempt,
   createFlashcard,
@@ -24,6 +26,44 @@ export default function ProfessorPage() {
   const [aula, setAula] = useState<any>(null)
   const [erro, setErro] = useState('')
   const [nivel, setNivel] = useState<'basico' | 'intermediario' | 'avancado' | 'questoes' | 'flashcards' | 'plano'>('basico')
+
+  // Material upload (PDF/DOCX/TXT)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [material, setMaterial] = useState<ParsedDocument | null>(null)
+  const [loadingMaterial, setLoadingMaterial] = useState(false)
+
+  async function handleMaterialUpload(file: File) {
+    setLoadingMaterial(true)
+    setErro('')
+    try {
+      const parsed = await parseDocument(file)
+      if (parsed.text.length < 100) {
+        toast('error', 'Arquivo parece vazio ou nao foi possivel extrair o texto.')
+        setLoadingMaterial(false)
+        return
+      }
+      setMaterial(parsed)
+      // Auto-fill tema if empty
+      if (!tema.trim()) {
+        const firstLine = parsed.text.split('\n').find(l => l.trim().length > 5)?.trim().slice(0, 80) || parsed.filename
+        setTema(firstLine)
+      }
+      const fmt = parsed.format.toUpperCase()
+      const pages = parsed.pages ? ` (${parsed.pages} paginas)` : ''
+      toast('success', `${fmt} carregado: ${parsed.filename}${pages}`)
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Erro ao ler arquivo'
+      setErro(msg)
+      toast('error', msg)
+    } finally {
+      setLoadingMaterial(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  function clearMaterial() {
+    setMaterial(null)
+  }
 
   // Quiz stats (for the questoes tab header)
   const [quizStats, setQuizStats] = useState<QuizStats | null>(null)
@@ -78,6 +118,11 @@ export default function ProfessorPage() {
     }
     if (studyHistory.length > 0) {
       body.historico = studyHistory.slice(-10).join(', ')
+    }
+    // Include uploaded study material (PDF/DOCX/TXT) — truncated to fit context
+    if (material && material.text.length > 0) {
+      body.material = truncateForAI(material.text, 50000)
+      body.materialNome = material.filename
     }
 
     try {
@@ -137,7 +182,7 @@ export default function ProfessorPage() {
 
       {/* Extra inputs — YouTube + Institution */}
       {!aula && !loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
           <div style={{ position: 'relative' }}>
             <i className="bi bi-youtube" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }} />
             <input type="text" value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)}
@@ -150,6 +195,116 @@ export default function ProfessorPage() {
               placeholder="Faculdade/Concurso (ex: OAB, TJSP, USP)"
               className="form-input" style={{ paddingLeft: 40, fontSize: 13 }} />
           </div>
+        </div>
+      )}
+
+      {/* Document upload — PDF / DOCX / TXT */}
+      {!aula && !loading && (
+        <div style={{ marginBottom: 16 }}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.docx,.doc,.txt,.md"
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) handleMaterialUpload(file)
+            }}
+          />
+          {!material ? (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loadingMaterial}
+              style={{
+                width: '100%',
+                padding: '14px 18px',
+                borderRadius: 10,
+                border: '2px dashed var(--border)',
+                background: 'var(--hover)',
+                color: 'var(--text-secondary)',
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: loadingMaterial ? 'wait' : 'pointer',
+                fontFamily: "'DM Sans', sans-serif",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)' }}
+            >
+              {loadingMaterial ? (
+                <>
+                  <span style={{ display: 'inline-block', width: 16, height: 16, border: '2px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  Lendo arquivo...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-file-earmark-arrow-up" style={{ fontSize: 18, color: 'var(--accent)' }} />
+                  <span><strong>Carregar PDF, DOCX ou TXT</strong> &mdash; gere uma aula a partir do seu material de estudo</span>
+                </>
+              )}
+            </button>
+          ) : (
+            <div style={{
+              padding: '14px 18px',
+              borderRadius: 10,
+              border: '1px solid var(--accent)',
+              background: 'var(--accent-light)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 10,
+                background: 'var(--card-bg)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <i className={`bi ${material.format === 'pdf' ? 'bi-file-earmark-pdf' : material.format === 'docx' || material.format === 'doc' ? 'bi-file-earmark-word' : 'bi-file-earmark-text'}`}
+                  style={{ fontSize: 20, color: 'var(--accent)' }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {material.filename}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+                  {material.format.toUpperCase()}
+                  {material.pages ? ` &middot; ${material.pages} paginas` : ''}
+                  {' '}&middot; {(material.size / 1024).toFixed(0)} KB
+                  {' '}&middot; {material.text.length.toLocaleString('pt-BR')} caracteres extraidos
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  padding: '6px 12px', borderRadius: 8,
+                  background: 'var(--card-bg)', border: '1px solid var(--border)',
+                  color: 'var(--text-secondary)', fontSize: 12, fontWeight: 500,
+                  cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+                }}
+                title="Trocar arquivo"
+              >
+                <i className="bi bi-arrow-repeat" /> Trocar
+              </button>
+              <button
+                type="button"
+                onClick={clearMaterial}
+                style={{
+                  padding: '6px 10px', borderRadius: 8,
+                  background: 'none', border: '1px solid var(--border)',
+                  color: 'var(--danger)', fontSize: 12, cursor: 'pointer',
+                }}
+                title="Remover arquivo"
+              >
+                <i className="bi bi-x-lg" />
+              </button>
+            </div>
+          )}
         </div>
       )}
 

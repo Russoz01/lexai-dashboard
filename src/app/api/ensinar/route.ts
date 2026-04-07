@@ -118,14 +118,20 @@ export async function POST(req: NextRequest) {
       return quota.response
     }
 
-    const { tema, videoContent, instituicao, historico } = await req.json()
+    const { tema, videoContent, instituicao, historico, material, materialNome } = await req.json()
     if (!tema || tema.trim().length < 3) return NextResponse.json({ error: 'Informe o tema.' }, { status: 400 })
     if (tema.length > 50000) return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
+    if (material && typeof material === 'string' && material.length > 60000) {
+      return NextResponse.json({ error: 'Material de estudo excede 60.000 caracteres. Tente um arquivo menor.' }, { status: 400 })
+    }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
 
     // Build context-aware message
     let userMessage = `Topic to teach:\n\n${tema}`
+    if (material && typeof material === 'string' && material.trim().length > 0) {
+      userMessage += `\n\nSTUDY MATERIAL${materialNome ? ` (from "${materialNome}")` : ''} — extract content, summarize key concepts, identify main topics, and build the lesson based on this source material:\n\n${material}`
+    }
     if (videoContent) {
       userMessage += `\n\nVIDEO TRANSCRIPT/CONTENT to analyze:\n${videoContent}`
     }
