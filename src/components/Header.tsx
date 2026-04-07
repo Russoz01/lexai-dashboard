@@ -14,8 +14,10 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
   const { theme, toggleTheme } = useTheme()
   const [time, setTime] = useState('')
   const [showHelp, setShowHelp] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     function tick() {
       setTime(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
     }
@@ -48,11 +50,9 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
           <span className="dot" />
           Online
         </div>
-        {time && (
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.5px' }}>
-            {time}
-          </span>
-        )}
+        <span suppressHydrationWarning style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.5px', minWidth: 36, display: 'inline-block' }}>
+          {mounted ? time : ''}
+        </span>
       </div>
 
       <div className="header-user">
@@ -66,8 +66,9 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
         </button>
 
         <button className="header-theme-toggle" onClick={toggleTheme}
+          suppressHydrationWarning
           title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}>
-          <i className={`bi ${theme === 'light' ? 'bi-moon' : 'bi-sun'}`} />
+          <i suppressHydrationWarning className={`bi ${mounted && theme === 'light' ? 'bi-moon' : 'bi-sun'}`} />
         </button>
 
         <div className="header-user-info">
