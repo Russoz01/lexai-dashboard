@@ -104,6 +104,14 @@ export async function POST(req: NextRequest) {
       analise = { resumo: responseText, erro_parse: true }
     }
 
+    // Save to historico (was missing — only agent without it)
+    await supabase.from('historico').insert({
+      usuario_id: user.id,
+      agente: 'resumidor',
+      mensagem_usuario: `Analise: ${texto.slice(0, 100)}`,
+      resposta_agente: typeof analise.objeto === 'string' ? analise.objeto.slice(0, 200) : 'Documento analisado',
+    })
+
     events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})
 
     return NextResponse.json({ analise })

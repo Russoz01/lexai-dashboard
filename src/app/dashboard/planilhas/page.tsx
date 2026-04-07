@@ -1,11 +1,48 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import * as Papa from 'papaparse'
 import * as XLSX from 'xlsx'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
+
+// ── Diff helpers ────────────────────────────────────────────────────────────
+const DIFF_MAX_ROWS = 50
+
+function parseCsvSafe(csv: string): string[][] {
+  if (!csv) return []
+  try {
+    const parsed = Papa.parse<string[]>(csv, { skipEmptyLines: true })
+    return (parsed.data as string[][]) || []
+  } catch {
+    return []
+  }
+}
+
+interface DiffStats {
+  celulasModificadas: number
+  linhasAdicionadas: number
+  linhasRemovidas: number
+  totalLinhas: number
+}
+
+function computeDiffStats(orig: string[][], melh: string[][]): DiffStats {
+  const totalLinhas = Math.max(orig.length, melh.length)
+  let celulasModificadas = 0
+  const minRows = Math.min(orig.length, melh.length)
+  for (let i = 0; i < minRows; i++) {
+    const a = orig[i] || []
+    const b = melh[i] || []
+    const cols = Math.max(a.length, b.length)
+    for (let j = 0; j < cols; j++) {
+      if ((a[j] ?? '') !== (b[j] ?? '')) celulasModificadas++
+    }
+  }
+  const linhasAdicionadas = Math.max(0, melh.length - orig.length)
+  const linhasRemovidas = Math.max(0, orig.length - melh.length)
+  return { celulasModificadas, linhasAdicionadas, linhasRemovidas, totalLinhas }
+}
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface Estrutura {
@@ -98,7 +135,18 @@ export default function PlanilhasPage() {
   const [dragOver, setDragOver]     = useState(false)
   const [parsing, setParsing]       = useState(false)
   const [copied, setCopied]         = useState(false)
+  const [showDiff, setShowDiff]     = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  // ── Diff visual ─────────────────────────────────────────────────────────
+  const diffData = useMemo(() => {
+    if (!analise?.versao_melhorada) return null
+    const orig = parseCsvSafe(csvText)
+    const melh = parseCsvSafe(analise.versao_melhorada)
+    if (orig.length === 0 && melh.length === 0) return null
+    const stats = computeDiffStats(orig, melh)
+    return { orig, melh, stats }
+  }, [csvText, analise?.versao_melhorada])
 
   // Auto-save the user instruction draft
   useDraft('lexai-draft-planilhas-instruction', instruction, setInstruction)
@@ -800,6 +848,221 @@ export default function PlanilhasPage() {
                         </button>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* ── Diff visual antes/depois ─────────────────────────── */}
+                {diffData && (
+                  <div className="section-card">
+                    <div className="section-header">
+                      <div>
+                        <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <i className="bi bi-arrow-left-right" style={{ color: 'var(--accent)' }} />
+                          Diff visual
+                        </div>
+                        <div className="section-subtitle">Compare a planilha original com a versao melhorada</div>
+                      </div>
+                      <button
+                        onClick={() => setShowDiff(s => !s)}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 6,
+                          padding: '7px 13px', borderRadius: 8,
+                          background: showDiff ? 'var(--accent)' : 'none',
+                          border: `1px solid ${showDiff ? 'var(--accent)' : 'var(--border)'}`,
+                          color: showDiff ? '#fff' : 'var(--text-secondary)',
+                          fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                          fontFamily: "'DM Sans', sans-serif",
+                        }}
+                      >
+                        <i className={`bi bi-${showDiff ? 'eye-slash' : 'eye'}`} />
+                        {showDiff ? 'Ocultar diff' : 'Mostrar diff'}
+                      </button>
+                    </div>
+
+                    <div style={{ padding: '14px 18px 6px', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      <span style={{
+                        fontSize: 11, fontWeight: 600,
+                        padding: '4px 10px', borderRadius: 12,
+                        background: 'var(--warning-light)', color: 'var(--warning)',
+                      }}>
+                        <i className="bi bi-pencil-square" /> {diffData.stats.celulasModificadas} celula(s) modificada(s)
+                      </span>
+                      <span style={{
+                        fontSize: 11, fontWeight: 600,
+                        padding: '4px 10px', borderRadius: 12,
+                        background: 'var(--success-light)', color: 'var(--success)',
+                      }}>
+                        <i className="bi bi-plus-circle" /> {diffData.stats.linhasAdicionadas} linha(s) adicionada(s)
+                      </span>
+                      <span style={{
+                        fontSize: 11, fontWeight: 600,
+                        padding: '4px 10px', borderRadius: 12,
+                        background: 'var(--danger-light)', color: 'var(--danger)',
+                      }}>
+                        <i className="bi bi-dash-circle" /> {diffData.stats.linhasRemovidas} linha(s) removida(s)
+                      </span>
+                    </div>
+
+                    {showDiff && (
+                      <div style={{ padding: '10px 18px 18px' }}>
+                        {(() => {
+                          const { orig, melh } = diffData
+                          const totalRows = Math.max(orig.length, melh.length)
+                          const visible = Math.min(totalRows, DIFF_MAX_ROWS)
+                          const hidden = totalRows - visible
+                          // Largura maxima de colunas: max entre orig e melh
+                          let maxCols = 0
+                          for (let i = 0; i < visible; i++) {
+                            const a = orig[i]?.length || 0
+                            const b = melh[i]?.length || 0
+                            if (a > maxCols) maxCols = a
+                            if (b > maxCols) maxCols = b
+                          }
+                          if (maxCols === 0) {
+                            return (
+                              <div style={{
+                                fontSize: 12, color: 'var(--text-muted)',
+                                padding: '12px 14px', borderRadius: 8,
+                                background: 'var(--hover)', textAlign: 'center',
+                              }}>
+                                Nenhum dado para comparar.
+                              </div>
+                            )
+                          }
+                          return (
+                            <>
+                              <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr 1fr',
+                                gap: 12,
+                                fontSize: 11,
+                                color: 'var(--text-muted)',
+                                marginBottom: 6,
+                                fontWeight: 600,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em',
+                              }}>
+                                <div>Original</div>
+                                <div>Melhorada</div>
+                              </div>
+                              <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr 1fr',
+                                gap: 12,
+                                maxHeight: 460,
+                                overflow: 'auto',
+                                border: '1px solid var(--border)',
+                                borderRadius: 8,
+                                padding: 8,
+                                background: 'var(--input-bg)',
+                              }}>
+                                {/* ─ Original side ─ */}
+                                <div style={{ overflow: 'auto' }}>
+                                  <table style={{
+                                    borderCollapse: 'collapse', width: '100%',
+                                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+                                    fontSize: 11,
+                                  }}>
+                                    <tbody>
+                                      {Array.from({ length: visible }).map((_, i) => {
+                                        const row = orig[i] || []
+                                        const otherRow = melh[i] || []
+                                        const isExtra = i >= melh.length // linha removida
+                                        return (
+                                          <tr key={i}>
+                                            {Array.from({ length: maxCols }).map((__, j) => {
+                                              const cell = row[j] ?? ''
+                                              const other = otherRow[j] ?? ''
+                                              const diff = !isExtra && cell !== other && (cell !== '' || other !== '')
+                                              return (
+                                                <td key={j} style={{
+                                                  padding: '4px 6px',
+                                                  border: '1px solid var(--border)',
+                                                  background: isExtra
+                                                    ? 'var(--danger-light)'
+                                                    : diff
+                                                      ? 'var(--danger-light)'
+                                                      : 'transparent',
+                                                  color: diff || isExtra ? 'var(--danger)' : 'var(--text-muted)',
+                                                  textDecoration: diff ? 'line-through' : 'none',
+                                                  whiteSpace: 'nowrap',
+                                                  maxWidth: 180,
+                                                  overflow: 'hidden',
+                                                  textOverflow: 'ellipsis',
+                                                }} title={cell}>
+                                                  {cell || <span style={{ opacity: 0.4 }}>—</span>}
+                                                </td>
+                                              )
+                                            })}
+                                          </tr>
+                                        )
+                                      })}
+                                    </tbody>
+                                  </table>
+                                </div>
+
+                                {/* ─ Improved side ─ */}
+                                <div style={{ overflow: 'auto' }}>
+                                  <table style={{
+                                    borderCollapse: 'collapse', width: '100%',
+                                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+                                    fontSize: 11,
+                                  }}>
+                                    <tbody>
+                                      {Array.from({ length: visible }).map((_, i) => {
+                                        const row = melh[i] || []
+                                        const otherRow = orig[i] || []
+                                        const isExtra = i >= orig.length // linha adicionada
+                                        return (
+                                          <tr key={i}>
+                                            {Array.from({ length: maxCols }).map((__, j) => {
+                                              const cell = row[j] ?? ''
+                                              const other = otherRow[j] ?? ''
+                                              const diff = !isExtra && cell !== other && (cell !== '' || other !== '')
+                                              return (
+                                                <td key={j} style={{
+                                                  padding: '4px 6px',
+                                                  border: '1px solid var(--border)',
+                                                  background: isExtra
+                                                    ? 'var(--success-light)'
+                                                    : diff
+                                                      ? 'var(--success-light)'
+                                                      : 'transparent',
+                                                  color: diff || isExtra ? 'var(--success)' : 'var(--text-muted)',
+                                                  fontWeight: diff || isExtra ? 600 : 400,
+                                                  whiteSpace: 'nowrap',
+                                                  maxWidth: 180,
+                                                  overflow: 'hidden',
+                                                  textOverflow: 'ellipsis',
+                                                }} title={cell}>
+                                                  {cell || <span style={{ opacity: 0.4 }}>—</span>}
+                                                </td>
+                                              )
+                                            })}
+                                          </tr>
+                                        )
+                                      })}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+
+                              {hidden > 0 && (
+                                <div style={{
+                                  marginTop: 8, padding: '8px 12px',
+                                  borderRadius: 8, background: 'var(--hover)',
+                                  border: '1px dashed var(--border)',
+                                  fontSize: 11, color: 'var(--text-muted)',
+                                  textAlign: 'center',
+                                }}>
+                                  + {hidden} linha(s) adicional(is) nao exibida(s) (mostrando primeiras {DIFF_MAX_ROWS}).
+                                </div>
+                              )}
+                            </>
+                          )
+                        })()}
+                      </div>
+                    )}
                   </div>
                 )}
 

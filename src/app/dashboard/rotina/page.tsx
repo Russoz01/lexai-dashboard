@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { createClient } from '@/lib/supabase'
 
 const DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -17,7 +18,11 @@ interface PlanoFuturo {
   id: string; data: string; titulo: string; descricao: string; cor: string
 }
 
-const MOCK: Compromisso[] = []
+const EMPTY_LIST: Compromisso[] = []
+
+const LS_COMPROMISSOS = 'lexai-rotina'
+const LS_PLANOS = 'lexai-planos-futuros'
+const LS_MIGRATED = 'lexai-rotina-migrated'
 
 function formatDataISO(d: Date) {
   const y = d.getFullYear()
@@ -26,44 +31,226 @@ function formatDataISO(d: Date) {
   return `${y}-${m}-${dia}`
 }
 
-function gerarMockPlanos(): PlanoFuturo[] {
-  return []
-}
-
 const EMPTY_COMP = { titulo:'', horario:'', local:'', disciplina:'', dia:1, cor:CORES_DISCIPLINA[0] }
 const EMPTY_PLANO = { titulo:'', descricao:'', cor:CORES_DISCIPLINA[0] }
 
 export default function RotinaPage() {
-  const [compromissos, setCompromissos] = useState<Compromisso[]>(MOCK)
+  const [compromissos, setCompromissos] = useState<Compromisso[]>(EMPTY_LIST)
   const [modal, setModal]   = useState(false)
   const [form, setForm]     = useState(EMPTY_COMP)
   const [hoje]              = useState(new Date())
 
   // Planejamento mensal
-  const [planosFuturos, setPlanosFuturos] = useState<PlanoFuturo[]>(gerarMockPlanos())
+  const [planosFuturos, setPlanosFuturos] = useState<PlanoFuturo[]>([])
   const [mesVisivel, setMesVisivel]       = useState(new Date(hoje.getFullYear(), hoje.getMonth(), 1))
   const [dataSelecionada, setDataSelecionada] = useState<string | null>(null)
   const [planoForm, setPlanoForm]         = useState(EMPTY_PLANO)
 
-  // Persist to localStorage
+  // Sincronização com Supabase
+  const [usuarioId, setUsuarioId] = useState<string | null>(null)
+  const [sincronizando, setSincronizando] = useState(true)
+
+  // Google Calendar connect state (stub)
+  const [googleConnecting, setGoogleConnecting] = useState(false)
+  const [gcalToast, setGcalToast] = useState<{ tipo: 'ok' | 'err' | 'info'; texto: string } | null>(null)
+
+  // Carrega tudo no mount: resolve usuarios.id, migra localStorage se necessário, popula state
   useEffect(() => {
-    const saved = localStorage.getItem('lexai-rotina')
-    if (saved) {
-      try { setCompromissos(JSON.parse(saved)) } catch { /* use mock */ }
+    let cancelled = false
+
+    async function load() {
+      const supabase = createClient()
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+
+        // Sem auth → fallback para localStorage (graceful degradation)
+        if (!user) {
+          if (cancelled) return
+          try {
+            const saved = localStorage.getItem(LS_COMPROMISSOS)
+            if (saved) setCompromissos(JSON.parse(saved))
+          } catch (e) { console.error('[rotina] parse compromissos LS:', e) }
+          try {
+            const savedPlanos = localStorage.getItem(LS_PLANOS)
+            if (savedPlanos) setPlanosFuturos(JSON.parse(savedPlanos))
+          } catch (e) { console.error('[rotina] parse planos LS:', e) }
+          setSincronizando(false)
+          return
+        }
+
+        // Com auth → resolve usuarios.id
+        const { data: usuario, error: usuarioErr } = await supabase
+          .from('usuarios')
+          .select('id')
+          .eq('auth_user_id', user.id)
+          .maybeSingle()
+
+        if (usuarioErr) {
+          console.error('[rotina] resolve usuarios.id:', usuarioErr)
+          if (!cancelled) setSincronizando(false)
+          return
+        }
+        if (!usuario) {
+          // auth user existe mas usuarios row não — degrada para LS
+          if (!cancelled) setSincronizando(false)
+          return
+        }
+
+        if (cancelled) return
+        setUsuarioId(usuario.id)
+
+        // Migração one-shot: se existe LS e ainda não migrou, sobe pro Supabase e limpa
+        const migrated = localStorage.getItem(LS_MIGRATED)
+        if (!migrated) {
+          try {
+            const savedComps = localStorage.getItem(LS_COMPROMISSOS)
+            if (savedComps) {
+              const parsed: Compromisso[] = JSON.parse(savedComps)
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                const rows = parsed.map(c => ({
+                  usuario_id: usuario.id,
+                  titulo: c.titulo,
+                  horario: c.horario,
+                  local: c.local,
+                  disciplina: c.disciplina,
+                  dia: c.dia,
+                  cor: c.cor,
+                }))
+                const { error: insErr } = await supabase.from('rotina_compromissos').insert(rows)
+                if (insErr) console.error('[rotina] migração compromissos:', insErr)
+              }
+            }
+          } catch (e) { console.error('[rotina] migração compromissos parse:', e) }
+
+          try {
+            const savedPlanos = localStorage.getItem(LS_PLANOS)
+            if (savedPlanos) {
+              const parsed: PlanoFuturo[] = JSON.parse(savedPlanos)
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                const rows = parsed.map(p => ({
+                  usuario_id: usuario.id,
+                  data: p.data,
+                  titulo: p.titulo,
+                  descricao: p.descricao,
+                  cor: p.cor,
+                  concluido: false,
+                }))
+                const { error: insErr } = await supabase.from('rotina_planos_futuros').insert(rows)
+                if (insErr) console.error('[rotina] migração planos:', insErr)
+              }
+            }
+          } catch (e) { console.error('[rotina] migração planos parse:', e) }
+
+          try {
+            localStorage.removeItem(LS_COMPROMISSOS)
+            localStorage.removeItem(LS_PLANOS)
+            localStorage.setItem(LS_MIGRATED, '1')
+          } catch (e) { console.error('[rotina] limpa LS:', e) }
+        }
+
+        // Carrega do Supabase (RLS já filtra por usuario)
+        const [compResp, planResp] = await Promise.all([
+          supabase.from('rotina_compromissos').select('id, titulo, horario, local, disciplina, dia, cor'),
+          supabase.from('rotina_planos_futuros').select('id, data, titulo, descricao, cor'),
+        ])
+
+        if (cancelled) return
+
+        if (compResp.error) {
+          console.error('[rotina] load compromissos:', compResp.error)
+        } else if (compResp.data) {
+          setCompromissos(compResp.data.map(r => ({
+            id: String(r.id),
+            titulo: r.titulo ?? '',
+            horario: r.horario ?? '',
+            local: r.local ?? '',
+            disciplina: r.disciplina ?? '',
+            dia: Number(r.dia ?? 0),
+            cor: r.cor ?? CORES_DISCIPLINA[0],
+          })))
+        }
+
+        if (planResp.error) {
+          console.error('[rotina] load planos:', planResp.error)
+        } else if (planResp.data) {
+          setPlanosFuturos(planResp.data.map(r => ({
+            id: String(r.id),
+            data: r.data ?? '',
+            titulo: r.titulo ?? '',
+            descricao: r.descricao ?? '',
+            cor: r.cor ?? CORES_DISCIPLINA[0],
+          })))
+        }
+      } catch (e) {
+        console.error('[rotina] load fatal:', e)
+      } finally {
+        if (!cancelled) setSincronizando(false)
+      }
     }
-    const savedPlanos = localStorage.getItem('lexai-planos-futuros')
-    if (savedPlanos) {
-      try { setPlanosFuturos(JSON.parse(savedPlanos)) } catch { /* use mock */ }
+
+    load()
+    return () => { cancelled = true }
+  }, [])
+
+  // Read ?google=... query param from OAuth callback and show a toast
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const status = params.get('google')
+    if (!status) return
+    if (status === 'connected') {
+      setGcalToast({ tipo: 'ok', texto: 'Google Calendar conectado com sucesso.' })
+    } else if (status === 'not_configured') {
+      setGcalToast({ tipo: 'info', texto: 'Google Calendar nao configurado pelo admin.' })
+    } else {
+      setGcalToast({ tipo: 'err', texto: 'Falha ao conectar Google Calendar. Tente novamente.' })
+    }
+    // Clear the query param without reloading
+    try {
+      params.delete('google')
+      const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : '')
+      window.history.replaceState({}, '', newUrl)
+    } catch { /* noop */ }
+    const timer = setTimeout(() => setGcalToast(null), 5000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const conectarGoogleCalendar = useCallback(async () => {
+    setGoogleConnecting(true)
+    setGcalToast(null)
+    try {
+      const res = await fetch('/api/google/auth', { method: 'GET' })
+      const data = await res.json().catch(() => ({}))
+      if (res.status === 503) {
+        setGcalToast({ tipo: 'info', texto: data?.error || 'Google Calendar nao configurado pelo admin.' })
+        return
+      }
+      if (!res.ok || !data?.url) {
+        setGcalToast({ tipo: 'err', texto: data?.error || 'Nao foi possivel iniciar a autenticacao.' })
+        return
+      }
+      window.location.href = data.url
+    } catch (e) {
+      setGcalToast({ tipo: 'err', texto: e instanceof Error ? e.message : 'Erro desconhecido' })
+    } finally {
+      setGoogleConnecting(false)
     }
   }, [])
 
+  // Persistência em LS quando não autenticado (fallback)
   useEffect(() => {
-    localStorage.setItem('lexai-rotina', JSON.stringify(compromissos))
-  }, [compromissos])
+    if (sincronizando || usuarioId) return
+    try { localStorage.setItem(LS_COMPROMISSOS, JSON.stringify(compromissos)) } catch (e) {
+      console.error('[rotina] save compromissos LS:', e)
+    }
+  }, [compromissos, sincronizando, usuarioId])
 
   useEffect(() => {
-    localStorage.setItem('lexai-planos-futuros', JSON.stringify(planosFuturos))
-  }, [planosFuturos])
+    if (sincronizando || usuarioId) return
+    try { localStorage.setItem(LS_PLANOS, JSON.stringify(planosFuturos)) } catch (e) {
+      console.error('[rotina] save planos LS:', e)
+    }
+  }, [planosFuturos, sincronizando, usuarioId])
 
   const inicioSemana = new Date(hoje)
   inicioSemana.setDate(hoje.getDate() - hoje.getDay())
@@ -76,15 +263,70 @@ export default function RotinaPage() {
 
   const diaHoje = hoje.getDay()
 
-  function salvar() {
+  const salvar = useCallback(async () => {
     if (!form.titulo || !form.horario) return
-    setCompromissos(prev => [...prev, { ...form, id: Date.now().toString() }])
-    setModal(false); setForm(EMPTY_COMP)
-  }
+    const localId = Date.now().toString()
+    const otimista: Compromisso = { ...form, id: localId }
 
-  function remover(id: string) {
-    setCompromissos(prev => prev.filter(c => c.id !== id))
-  }
+    if (!usuarioId) {
+      setCompromissos(prev => [...prev, otimista])
+      setModal(false); setForm(EMPTY_COMP)
+      return
+    }
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('rotina_compromissos')
+        .insert({
+          usuario_id: usuarioId,
+          titulo: form.titulo,
+          horario: form.horario,
+          local: form.local,
+          disciplina: form.disciplina,
+          dia: form.dia,
+          cor: form.cor,
+        })
+        .select('id, titulo, horario, local, disciplina, dia, cor')
+        .single()
+
+      if (error || !data) {
+        console.error('[rotina] insert compromisso:', error)
+        return
+      }
+
+      setCompromissos(prev => [...prev, {
+        id: String(data.id),
+        titulo: data.titulo ?? '',
+        horario: data.horario ?? '',
+        local: data.local ?? '',
+        disciplina: data.disciplina ?? '',
+        dia: Number(data.dia ?? 0),
+        cor: data.cor ?? CORES_DISCIPLINA[0],
+      }])
+      setModal(false); setForm(EMPTY_COMP)
+    } catch (e) {
+      console.error('[rotina] insert compromisso fatal:', e)
+    }
+  }, [form, usuarioId])
+
+  const remover = useCallback(async (id: string) => {
+    if (!usuarioId) {
+      setCompromissos(prev => prev.filter(c => c.id !== id))
+      return
+    }
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.from('rotina_compromissos').delete().eq('id', id)
+      if (error) {
+        console.error('[rotina] delete compromisso:', error)
+        return
+      }
+      setCompromissos(prev => prev.filter(c => c.id !== id))
+    } catch (e) {
+      console.error('[rotina] delete compromisso fatal:', e)
+    }
+  }, [usuarioId])
 
   const compHoje = compromissos.filter(c => c.dia === diaHoje).sort((a,b) => a.horario.localeCompare(b.horario))
 
@@ -120,21 +362,71 @@ export default function RotinaPage() {
     setPlanoForm(EMPTY_PLANO)
   }
 
-  function salvarPlano() {
+  const salvarPlano = useCallback(async () => {
     if (!dataSelecionada || !planoForm.titulo) return
-    setPlanosFuturos(prev => [...prev, {
-      id: Date.now().toString(),
-      data: dataSelecionada,
-      titulo: planoForm.titulo,
-      descricao: planoForm.descricao,
-      cor: planoForm.cor,
-    }])
-    setPlanoForm(EMPTY_PLANO)
-  }
 
-  function removerPlano(id: string) {
-    setPlanosFuturos(prev => prev.filter(p => p.id !== id))
-  }
+    if (!usuarioId) {
+      setPlanosFuturos(prev => [...prev, {
+        id: Date.now().toString(),
+        data: dataSelecionada,
+        titulo: planoForm.titulo,
+        descricao: planoForm.descricao,
+        cor: planoForm.cor,
+      }])
+      setPlanoForm(EMPTY_PLANO)
+      return
+    }
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('rotina_planos_futuros')
+        .insert({
+          usuario_id: usuarioId,
+          data: dataSelecionada,
+          titulo: planoForm.titulo,
+          descricao: planoForm.descricao,
+          cor: planoForm.cor,
+          concluido: false,
+        })
+        .select('id, data, titulo, descricao, cor')
+        .single()
+
+      if (error || !data) {
+        console.error('[rotina] insert plano:', error)
+        return
+      }
+
+      setPlanosFuturos(prev => [...prev, {
+        id: String(data.id),
+        data: data.data ?? '',
+        titulo: data.titulo ?? '',
+        descricao: data.descricao ?? '',
+        cor: data.cor ?? CORES_DISCIPLINA[0],
+      }])
+      setPlanoForm(EMPTY_PLANO)
+    } catch (e) {
+      console.error('[rotina] insert plano fatal:', e)
+    }
+  }, [dataSelecionada, planoForm, usuarioId])
+
+  const removerPlano = useCallback(async (id: string) => {
+    if (!usuarioId) {
+      setPlanosFuturos(prev => prev.filter(p => p.id !== id))
+      return
+    }
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.from('rotina_planos_futuros').delete().eq('id', id)
+      if (error) {
+        console.error('[rotina] delete plano:', error)
+        return
+      }
+      setPlanosFuturos(prev => prev.filter(p => p.id !== id))
+    } catch (e) {
+      console.error('[rotina] delete plano fatal:', e)
+    }
+  }, [usuarioId])
 
   const planosDataSelecionada = dataSelecionada
     ? planosFuturos.filter(p => p.data === dataSelecionada)
@@ -154,10 +446,33 @@ export default function RotinaPage() {
           <h1 className="page-title">Rotina</h1>
           <p className="page-subtitle">Organize sua agenda semanal de aulas, estágios e compromissos</p>
         </div>
-        <button className="btn-primary" onClick={() => setModal(true)}>
-          <i className="bi bi-plus-lg" /> Novo Compromisso
-        </button>
+        <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
+          {sincronizando && (
+            <span style={{ fontSize:12, color:'var(--text-muted)', display:'flex', alignItems:'center', gap:6 }}>
+              <i className="bi bi-arrow-repeat" style={{ animation:'spin 1s linear infinite', display:'inline-block' }} />
+              Sincronizando...
+            </span>
+          )}
+          <button className="btn-ghost" onClick={conectarGoogleCalendar} disabled={googleConnecting} type="button">
+            <i className="bi bi-google" /> {googleConnecting ? 'Conectando...' : 'Conectar Google Calendar'}
+          </button>
+          <button className="btn-primary" onClick={() => setModal(true)}>
+            <i className="bi bi-plus-lg" /> Novo Compromisso
+          </button>
+        </div>
       </div>
+
+      {gcalToast && (
+        <div style={{
+          padding:'10px 14px', borderRadius:8, fontSize:13, marginBottom:16,
+          background: gcalToast.tipo === 'ok' ? '#e8f5ee' : gcalToast.tipo === 'info' ? 'var(--accent-light)' : 'var(--danger-light)',
+          color: gcalToast.tipo === 'ok' ? '#2d6a4f' : gcalToast.tipo === 'info' ? 'var(--text-secondary)' : 'var(--danger)',
+          display:'flex', alignItems:'center', gap:8,
+        }}>
+          <i className={`bi ${gcalToast.tipo === 'ok' ? 'bi-check-circle-fill' : gcalToast.tipo === 'info' ? 'bi-info-circle' : 'bi-exclamation-triangle-fill'}`} />
+          {gcalToast.texto}
+        </div>
+      )}
 
       {/* Cabeçalho da semana */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>

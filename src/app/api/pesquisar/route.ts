@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
+import { buscarJurisprudenciaReal, isJusBrasilConfigured } from '@/lib/jusbrasil'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -95,6 +96,15 @@ export async function POST(req: NextRequest) {
       pesquisa = JSON.parse(jsonStr)
     } catch {
       pesquisa = { enquadramento: responseText, erro_parse: true }
+    }
+
+    // Enrich with real JusBrasil results when configured — degrades to AI results otherwise
+    if (isJusBrasilConfigured()) {
+      const realResults = await buscarJurisprudenciaReal(query, tribunal).catch(() => [])
+      if (realResults.length > 0) {
+        pesquisa.jurisprudencia_real = realResults
+        pesquisa.fonte = 'jusbrasil_api'
+      }
     }
 
     await supabase.from('historico').insert({

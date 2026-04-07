@@ -20,11 +20,22 @@ interface Resultado {
   tese_fixada: string | null
 }
 
+interface JurisprudenciaReal {
+  id: string
+  tribunal: string
+  numero: string
+  data: string
+  ementa: string
+  url: string
+}
+
 interface PesquisaResponse {
   resultados: Resultado[]
   termos_relacionados: string[]
   legislacao_aplicavel: string[]
   confianca?: { nivel?: string; nota?: string }
+  jurisprudencia_real?: JurisprudenciaReal[]
+  fonte?: string
 }
 
 export default function PesquisadorPage() {
@@ -148,7 +159,7 @@ export default function PesquisadorPage() {
           <div style={{ fontWeight: 600 }}>Nenhum resultado encontrado</div>
           <div style={{ fontSize: 13, marginTop: 4 }}>Tente termos diferentes ou remova filtros</div>
         </div>
-      ) : resultados.length > 0 ? (
+      ) : resultados.length > 0 || (pesquisa?.jurisprudencia_real?.length ?? 0) > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
             <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -156,6 +167,50 @@ export default function PesquisadorPage() {
             </div>
             {pesquisa && <ConfidenceBadge confianca={pesquisa?.confianca} />}
           </div>
+
+          {/* JusBrasil verified block — only shows when the API was configured and returned hits */}
+          {pesquisa?.jurisprudencia_real && pesquisa.jurisprudencia_real.length > 0 && (
+            <div className="section-card" style={{ padding: '16px 20px', border: '1px solid #2d6a4f40', background: '#f0fdf4' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
+                  background: '#2d6a4f', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em',
+                }}>
+                  <i className="bi bi-patch-check-fill" /> Verificado JusBrasil
+                </span>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                  {pesquisa.jurisprudencia_real.length} decisão(oes) reais recuperadas da base JusBrasil
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {pesquisa.jurisprudencia_real.map((j) => (
+                  <div key={j.id || `${j.tribunal}-${j.numero}`} style={{ padding: '12px 14px', borderRadius: 10, background: '#fff', border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: '#eef2ff', color: '#4f46e5' }}>{j.tribunal || 'Tribunal'}</span>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{j.numero}</span>
+                      {j.data && (
+                        <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <i className="bi bi-calendar3" /> {j.data}
+                        </span>
+                      )}
+                    </div>
+                    {j.ementa && (
+                      <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 8 }}>
+                        {j.ementa}
+                      </div>
+                    )}
+                    {j.url && (
+                      <a href={j.url} target="_blank" rel="noopener noreferrer"
+                         style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                        <i className="bi bi-box-arrow-up-right" /> Abrir no JusBrasil
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {resultados.map((r, idx) => (
             <div key={idx} className="section-card" style={{ padding: '16px 20px' }}>

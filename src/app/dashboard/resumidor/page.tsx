@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { generateDocx, downloadBlob } from '@/lib/word-export'
+import { extractPdfWithMeta } from '@/lib/pdf-parser'
+import { anonymize, deAnonymize, type AnonymizeResult } from '@/lib/anonymizer'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Analise = any
@@ -140,7 +142,185 @@ export default function ResumidorPage() {
   const [exportandoWord, setExportandoWord] = useState(false)
   const [compartilhando, setCompartilhando] = useState(false)
 
+  // ── PDF upload state ─────────────────────────────────────────────────
+  const fileInputRef  = useRef<HTMLInputElement | null>(null)
+  const fileInputARef = useRef<HTMLInputElement | null>(null)
+  const fileInputBRef = useRef<HTMLInputElement | null>(null)
+  const [carregandoPdf, setCarregandoPdf] = useState<null | 'single' | 'A' | 'B'>(null)
+
+  // ── LGPD anonymizer state ────────────────────────────────────────────
+  const [anonimizar, setAnonimizar] = useState(false)
+  const [mascarados, setMascarados] = useState(0)
+
+  // ── Compare 2 documents state ────────────────────────────────────────
+  const [modoComparar, setModoComparar] = useState(false)
+  const [textoA, setTextoA] = useState('')
+  const [textoB, setTextoB] = useState('')
+  const [analiseA, setAnaliseA] = useState<Analise | null>(null)
+  const [analiseB, setAnaliseB] = useState<Analise | null>(null)
+  const [comparando, setComparando] = useState(false)
+
   useDraft('lexai-draft-resumidor', texto, setTexto)
+
+  // ── PDF upload handlers ──────────────────────────────────────────────
+  async function handlePdfFile(file: File, target: 'single' | 'A' | 'B') {
+    if (!file) return
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      toast('error', 'Selecione um arquivo PDF')
+      return
+    }
+    setCarregandoPdf(target)
+    try {
+      const { text, numPages } = await extractPdfWithMeta(file)
+      if (!text.trim()) {
+        toast('error', 'PDF sem texto extraivel (verifique se nao e digitalizado)')
+        return
+      }
+      if (target === 'single') setTexto(text)
+      else if (target === 'A') setTextoA(text)
+      else setTextoB(text)
+      const baseName = file.name.replace(/\.pdf$/i, '').slice(0, 80)
+      if (target === 'single' && !titulo) setTitulo(baseName)
+      toast('success', `PDF carregado: ${numPages} ${numPages === 1 ? 'pagina' : 'paginas'}`)
+    } catch (e) {
+      console.error('PDF parse error:', e)
+      toast('error', 'Nao foi possivel ler o PDF')
+    } finally {
+      setCarregandoPdf(null)
+    }
+  }
+
+  // ── Helper to apply de-anonymization across analysis fields ──────────
+  function deAnonymizeAnalise(a: Analise, replacements: AnonymizeResult['replacements']): Analise {
+    if (!a || replacements.length === 0) return a
+    const decode = (s: unknown) =>
+      typeof s === 'string' ? deAnonymize(s, replacements) : s
+
+    const out: Analise = { ...a }
+    if (typeof out.objeto === 'string') out.objeto = decode(out.objeto)
+    if (typeof out.resumo === 'string') out.resumo = decode(out.resumo)
+    if (typeof out.conclusao === 'string') out.conclusao = decode(out.conclusao)
+
+    if (Array.isArray(out.pontos_principais)) {
+      out.pontos_principais = out.pontos_principais.map(decode)
+    }
+    if (Array.isArray(out.pontos_chave)) {
+      out.pontos_chave = out.pontos_chave.map(decode)
+    }
+    if (Array.isArray(out.sugestoes)) {
+      out.sugestoes = out.sugestoes.map(decode)
+    }
+    if (Array.isArray(out.fundamentacao_legal)) {
+      out.fundamentacao_legal = out.fundamentacao_legal.map(decode)
+    }
+    if (Array.isArray(out.fundamentacao)) {
+      out.fundamentacao = out.fundamentacao.map(decode)
+    }
+    if (Array.isArray(out.riscos)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      out.riscos = out.riscos.map((r: any) => {
+        if (typeof r === 'string') return decode(r)
+        return {
+          ...r,
+          descricao: decode(r.descricao),
+          mitigacao: decode(r.mitigacao),
+        }
+      })
+    }
+    if (Array.isArray(out.partes_envolvidas)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      out.partes_envolvidas = out.partes_envolvidas.map((p: any) => {
+        if (typeof p === 'string') return decode(p)
+        return { ...p, nome: decode(p.nome), qualificacao: decode(p.qualificacao), documento: decode(p.documento) }
+      })
+    }
+    if (Array.isArray(out.partes)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      out.partes = out.partes.map((p: any) => {
+        if (typeof p === 'string') return decode(p)
+        return { ...p, nome: decode(p.nome), qualificacao: decode(p.qualificacao), documento: decode(p.documento) }
+      })
+    }
+    if (Array.isArray(out.prazos_identificados)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      out.prazos_identificados = out.prazos_identificados.map((p: any) => {
+        if (typeof p === 'string') return decode(p)
+        return { ...p, prazo: decode(p.prazo), evento: decode(p.evento), base_legal: decode(p.base_legal), clausula: decode(p.clausula), consequencia: decode(p.consequencia) }
+      })
+    }
+    if (Array.isArray(out.prazos)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      out.prazos = out.prazos.map((p: any) => {
+        if (typeof p === 'string') return decode(p)
+        return { ...p, prazo: decode(p.prazo), evento: decode(p.evento), base_legal: decode(p.base_legal), clausula: decode(p.clausula), consequencia: decode(p.consequencia) }
+      })
+    }
+    return out
+  }
+
+  async function callResumirApi(rawText: string): Promise<Analise> {
+    let payloadText = rawText
+    let replacements: AnonymizeResult['replacements'] = []
+    if (anonimizar) {
+      const masked = anonymize(rawText)
+      payloadText = masked.text
+      replacements = masked.replacements
+    }
+    const res  = await fetch('/api/resumir', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto: payloadText }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'Erro desconhecido')
+    let result: Analise = data.analise
+    if (anonimizar && replacements.length > 0) {
+      result = deAnonymizeAnalise(result, replacements)
+    }
+    // Track total masked count for the badge (single mode uses this)
+    if (replacements.length > 0) setMascarados(prev => prev + replacements.length)
+    return result
+  }
+
+  async function handleComparar() {
+    if (!textoA.trim() || !textoB.trim() || comparando) return
+    setComparando(true)
+    setErro('')
+    setAnaliseA(null)
+    setAnaliseB(null)
+    setMascarados(0)
+    try {
+      const [a, b] = await Promise.all([callResumirApi(textoA), callResumirApi(textoB)])
+      setAnaliseA(a)
+      setAnaliseB(b)
+      toast('success', 'Comparacao concluida')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao comparar documentos'
+      setErro(msg)
+      toast('error', msg)
+    } finally {
+      setComparando(false)
+    }
+  }
+
+  // ── Comparison helpers (string match between riscos arrays) ──────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function riscoToString(r: any): string {
+    if (typeof r === 'string') return r
+    return String(r?.descricao || r || '').trim()
+  }
+  function diffRiscos(a: Analise | null, b: Analise | null) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const arrA: string[] = ((a?.riscos || []) as any[]).map(riscoToString).filter(Boolean)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const arrB: string[] = ((b?.riscos || []) as any[]).map(riscoToString).filter(Boolean)
+    const setA = new Set(arrA.map(s => s.toLowerCase()))
+    const setB = new Set(arrB.map(s => s.toLowerCase()))
+    const exclusivosA = arrA.filter(s => !setB.has(s.toLowerCase()))
+    const exclusivosB = arrB.filter(s => !setA.has(s.toLowerCase()))
+    const comuns      = arrA.filter(s => setB.has(s.toLowerCase()))
+    return { exclusivosA, exclusivosB, comuns }
+  }
 
   async function handleAnalisar() {
     if (!texto.trim() || loading) return
@@ -148,17 +328,12 @@ export default function ResumidorPage() {
     setErro('')
     setAnalise(null)
     setSalvo(false)
+    setMascarados(0)
 
     try {
-      const res  = await fetch('/api/resumir', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Erro desconhecido')
-      setAnalise(data.analise)
-      if (!titulo) setTitulo(data.analise.classificacao?.tipo || data.analise.tipo_documento || 'Documento analisado')
+      const result = await callResumirApi(texto)
+      setAnalise(result)
+      if (!titulo) setTitulo(result.classificacao?.tipo || result.tipo_documento || 'Documento analisado')
       toast('success', 'Documento analisado com sucesso')
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Erro ao processar documento'
@@ -374,9 +549,55 @@ export default function ResumidorPage() {
           <p className="page-subtitle">
             Cole qualquer documento jurídico e a IA retornará uma análise estruturada completa
           </p>
+
+          {/* Mode toggle */}
+          <div style={{ display: 'flex', gap: '8px', marginTop: '14px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setModoComparar(false)
+                setAnaliseA(null)
+                setAnaliseB(null)
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '8px 14px', borderRadius: '8px',
+                background: !modoComparar ? 'var(--accent)' : 'var(--card-bg)',
+                color: !modoComparar ? '#fff' : 'var(--text-secondary)',
+                border: `1px solid ${!modoComparar ? 'var(--accent)' : 'var(--border)'}`,
+                fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                fontFamily: "'DM Sans', sans-serif",
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <i className="bi bi-file-earmark-text" />
+              Documento único
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setModoComparar(true)
+                setAnalise(null)
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '8px 14px', borderRadius: '8px',
+                background: modoComparar ? 'var(--accent)' : 'var(--card-bg)',
+                color: modoComparar ? '#fff' : 'var(--text-secondary)',
+                border: `1px solid ${modoComparar ? 'var(--accent)' : 'var(--border)'}`,
+                fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                fontFamily: "'DM Sans', sans-serif",
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <i className="bi bi-files" />
+              Comparar 2 documentos
+            </button>
+          </div>
         </div>
 
-        {/* ── Split-view grid ── */}
+        {/* ── Split-view grid (single document mode) ── */}
+        {!modoComparar && (
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
@@ -415,7 +636,57 @@ export default function ResumidorPage() {
 
               {/* Textarea */}
               <div style={{ flex: 1 }}>
-                <label className="form-label">Texto do documento</label>
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  gap: '8px', marginBottom: '6px', flexWrap: 'wrap',
+                }}>
+                  <label className="form-label" style={{ marginBottom: 0 }}>Texto do documento</label>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    {mascarados > 0 && (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                        fontSize: '11px', fontWeight: 600,
+                        padding: '3px 8px', borderRadius: '10px',
+                        background: '#eef2ff', color: '#4f46e5',
+                        border: '1px solid rgba(79,70,229,0.2)',
+                      }}>
+                        <i className="bi bi-shield-lock-fill" />
+                        {mascarados} dado{mascarados === 1 ? '' : 's'} mascarado{mascarados === 1 ? '' : 's'}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={carregandoPdf === 'single'}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '6px 12px', borderRadius: '8px',
+                        background: 'var(--card-bg)', border: '1px solid var(--border)',
+                        color: 'var(--text-secondary)',
+                        fontSize: '12px', fontWeight: 600,
+                        cursor: carregandoPdf === 'single' ? 'default' : 'pointer',
+                        fontFamily: "'DM Sans', sans-serif",
+                        opacity: carregandoPdf === 'single' ? 0.7 : 1,
+                      }}
+                    >
+                      {carregandoPdf === 'single'
+                        ? <><Spinner size={12} color="var(--text-muted)" /> Carregando PDF...</>
+                        : <><i className="bi bi-file-earmark-pdf" /> Carregar PDF</>
+                      }
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0]
+                        if (f) handlePdfFile(f, 'single')
+                        e.target.value = ''
+                      }}
+                    />
+                  </div>
+                </div>
                 <textarea
                   value={texto}
                   onChange={e => setTexto(e.target.value)}
@@ -435,6 +706,27 @@ export default function ResumidorPage() {
                     lineHeight: '1.7',
                   }}
                 />
+                {/* LGPD anonymizer toggle */}
+                <label style={{
+                  display: 'flex', alignItems: 'flex-start', gap: '8px',
+                  marginTop: '8px', cursor: 'pointer',
+                  fontSize: '12px', color: 'var(--text-secondary)',
+                  lineHeight: 1.5,
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={anonimizar}
+                    onChange={e => setAnonimizar(e.target.checked)}
+                    style={{ marginTop: '2px', accentColor: 'var(--accent)' }}
+                  />
+                  <span>
+                    <strong style={{ color: 'var(--text-primary)' }}>Anonimizar dados pessoais (LGPD)</strong>
+                    <br />
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                      CPF, CNPJ, e-mail, telefone e CEP serao mascarados antes de enviar para a IA
+                    </span>
+                  </span>
+                </label>
                 <div style={{
                   display: 'flex', justifyContent: 'space-between',
                   marginTop: '6px', fontSize: '12px', color: 'var(--text-muted)',
@@ -804,6 +1096,348 @@ export default function ResumidorPage() {
             )}
           </div>
         </div>
+        )}
+
+        {/* ── Compare 2 documents mode ── */}
+        {modoComparar && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+            {/* Side-by-side textareas */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+              gap: '20px',
+              alignItems: 'start',
+            }}
+              className="resumidor-grid"
+            >
+              {/* Documento A */}
+              <div className="section-card" style={{ display: 'flex', flexDirection: 'column' }}>
+                <div className="section-header">
+                  <div>
+                    <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className="bi bi-file-earmark-text" style={{ color: 'var(--accent)', fontSize: '15px' }} />
+                      Documento A
+                    </div>
+                    <div className="section-subtitle">Cole o primeiro texto</div>
+                  </div>
+                </div>
+                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={() => fileInputARef.current?.click()}
+                      disabled={carregandoPdf === 'A'}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '6px 12px', borderRadius: '8px',
+                        background: 'var(--card-bg)', border: '1px solid var(--border)',
+                        color: 'var(--text-secondary)',
+                        fontSize: '12px', fontWeight: 600,
+                        cursor: carregandoPdf === 'A' ? 'default' : 'pointer',
+                        fontFamily: "'DM Sans', sans-serif",
+                        opacity: carregandoPdf === 'A' ? 0.7 : 1,
+                      }}
+                    >
+                      {carregandoPdf === 'A'
+                        ? <><Spinner size={12} color="var(--text-muted)" /> Carregando PDF...</>
+                        : <><i className="bi bi-file-earmark-pdf" /> Carregar PDF</>
+                      }
+                    </button>
+                    <input
+                      ref={fileInputARef}
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0]
+                        if (f) handlePdfFile(f, 'A')
+                        e.target.value = ''
+                      }}
+                    />
+                  </div>
+                  <textarea
+                    value={textoA}
+                    onChange={e => setTextoA(e.target.value)}
+                    placeholder="Cole aqui o primeiro documento..."
+                    className="form-input"
+                    style={{
+                      minHeight: '280px', resize: 'vertical',
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: '13px', lineHeight: '1.7',
+                    }}
+                  />
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    {textoA.length > 0
+                      ? `${textoA.length.toLocaleString('pt-BR')} caracteres`
+                      : 'Aguardando documento...'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Documento B */}
+              <div className="section-card" style={{ display: 'flex', flexDirection: 'column' }}>
+                <div className="section-header">
+                  <div>
+                    <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className="bi bi-file-earmark-text" style={{ color: 'var(--accent)', fontSize: '15px' }} />
+                      Documento B
+                    </div>
+                    <div className="section-subtitle">Cole o segundo texto</div>
+                  </div>
+                </div>
+                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={() => fileInputBRef.current?.click()}
+                      disabled={carregandoPdf === 'B'}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '6px 12px', borderRadius: '8px',
+                        background: 'var(--card-bg)', border: '1px solid var(--border)',
+                        color: 'var(--text-secondary)',
+                        fontSize: '12px', fontWeight: 600,
+                        cursor: carregandoPdf === 'B' ? 'default' : 'pointer',
+                        fontFamily: "'DM Sans', sans-serif",
+                        opacity: carregandoPdf === 'B' ? 0.7 : 1,
+                      }}
+                    >
+                      {carregandoPdf === 'B'
+                        ? <><Spinner size={12} color="var(--text-muted)" /> Carregando PDF...</>
+                        : <><i className="bi bi-file-earmark-pdf" /> Carregar PDF</>
+                      }
+                    </button>
+                    <input
+                      ref={fileInputBRef}
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0]
+                        if (f) handlePdfFile(f, 'B')
+                        e.target.value = ''
+                      }}
+                    />
+                  </div>
+                  <textarea
+                    value={textoB}
+                    onChange={e => setTextoB(e.target.value)}
+                    placeholder="Cole aqui o segundo documento..."
+                    className="form-input"
+                    style={{
+                      minHeight: '280px', resize: 'vertical',
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: '13px', lineHeight: '1.7',
+                    }}
+                  />
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    {textoB.length > 0
+                      ? `${textoB.length.toLocaleString('pt-BR')} caracteres`
+                      : 'Aguardando documento...'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* LGPD toggle (compare mode) */}
+            <div className="section-card" style={{ padding: '14px 18px' }}>
+              <label style={{
+                display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer',
+                fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5,
+              }}>
+                <input
+                  type="checkbox"
+                  checked={anonimizar}
+                  onChange={e => setAnonimizar(e.target.checked)}
+                  style={{ marginTop: '3px', accentColor: 'var(--accent)' }}
+                />
+                <span>
+                  <strong style={{ color: 'var(--text-primary)' }}>Anonimizar dados pessoais (LGPD)</strong>
+                  <br />
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                    CPF, CNPJ, e-mail, telefone e CEP serao mascarados nos dois documentos antes de enviar para a IA
+                  </span>
+                </span>
+              </label>
+            </div>
+
+            {/* Erro */}
+            {erro && (
+              <div style={{
+                padding: '12px 14px', borderRadius: '8px',
+                background: 'var(--danger-light)', color: 'var(--danger)',
+                fontSize: '13px', display: 'flex', alignItems: 'flex-start', gap: '8px',
+              }}>
+                <i className="bi bi-exclamation-triangle-fill" style={{ marginTop: '1px', flexShrink: 0 }} />
+                {erro}
+              </div>
+            )}
+
+            {/* Comparar button */}
+            <button
+              onClick={handleComparar}
+              disabled={comparando || !textoA.trim() || !textoB.trim()}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                gap: '10px', width: '100%', padding: '14px',
+                background: (!textoA.trim() || !textoB.trim() || comparando) ? 'var(--border)' : 'var(--accent)',
+                color: (!textoA.trim() || !textoB.trim() || comparando) ? 'var(--text-muted)' : '#fff',
+                border: 'none', borderRadius: '10px',
+                fontSize: '14px', fontWeight: 600,
+                cursor: (comparando || !textoA.trim() || !textoB.trim()) ? 'not-allowed' : 'pointer',
+                fontFamily: "'DM Sans', sans-serif",
+                transition: 'all 0.15s ease',
+              }}
+            >
+              {comparando
+                ? <><Spinner size={17} color="var(--text-muted)" /> Comparando documentos...</>
+                : <><i className="bi bi-arrows-collapse-vertical" /> Comparar</>
+              }
+            </button>
+
+            {/* Loading state */}
+            {comparando && (
+              <div className="section-card" style={{
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                padding: '40px 24px',
+              }}>
+                <Spinner size={32} color="var(--accent)" />
+                <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '14px' }}>
+                  Analisando documentos em paralelo...
+                </p>
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  Isso pode levar alguns segundos
+                </p>
+              </div>
+            )}
+
+            {/* Comparison results */}
+            {analiseA && analiseB && !comparando && (() => {
+              const diff = diffRiscos(analiseA, analiseB)
+              return (
+                <>
+                  {mascarados > 0 && (
+                    <div style={{
+                      display: 'inline-flex', alignSelf: 'flex-start', alignItems: 'center', gap: '6px',
+                      fontSize: '12px', fontWeight: 600,
+                      padding: '6px 12px', borderRadius: '20px',
+                      background: '#eef2ff', color: '#4f46e5',
+                      border: '1px solid rgba(79,70,229,0.2)',
+                    }}>
+                      <i className="bi bi-shield-lock-fill" />
+                      {mascarados} dado{mascarados === 1 ? '' : 's'} mascarado{mascarados === 1 ? '' : 's'}
+                    </div>
+                  )}
+
+                  {/* Diferencas detectadas */}
+                  <div className="section-card">
+                    <div className="section-header">
+                      <div>
+                        <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <i className="bi bi-diagram-2-fill" style={{ color: 'var(--accent)' }} />
+                          Diferencas detectadas
+                        </div>
+                        <div className="section-subtitle">Comparacao automatica entre os documentos</div>
+                      </div>
+                    </div>
+                    <div style={{ padding: '18px 20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+                      {/* Riscos exclusivos de A */}
+                      <div style={{
+                        padding: '14px', borderRadius: '10px',
+                        background: 'var(--warning-light)',
+                        border: '1px solid rgba(234,179,8,0.2)',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: 'var(--warning)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          <i className="bi bi-exclamation-triangle-fill" />
+                          Riscos exclusivos de A
+                          <span style={{ marginLeft: 'auto', background: 'rgba(234,179,8,0.15)', borderRadius: '10px', padding: '1px 8px' }}>{diff.exclusivosA.length}</span>
+                        </div>
+                        {diff.exclusivosA.length === 0 ? (
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Nenhum risco exclusivo</div>
+                        ) : (
+                          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {diff.exclusivosA.map((r, i) => (
+                              <li key={i} style={{ fontSize: '12px', color: 'var(--warning)', lineHeight: 1.5, paddingLeft: '10px', borderLeft: '2px solid var(--warning)' }}>
+                                {r}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      {/* Riscos exclusivos de B */}
+                      <div style={{
+                        padding: '14px', borderRadius: '10px',
+                        background: 'var(--danger-light)',
+                        border: '1px solid rgba(220,38,38,0.18)',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: 'var(--danger)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          <i className="bi bi-exclamation-triangle-fill" />
+                          Riscos exclusivos de B
+                          <span style={{ marginLeft: 'auto', background: 'rgba(220,38,38,0.15)', borderRadius: '10px', padding: '1px 8px' }}>{diff.exclusivosB.length}</span>
+                        </div>
+                        {diff.exclusivosB.length === 0 ? (
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Nenhum risco exclusivo</div>
+                        ) : (
+                          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {diff.exclusivosB.map((r, i) => (
+                              <li key={i} style={{ fontSize: '12px', color: 'var(--danger)', lineHeight: 1.5, paddingLeft: '10px', borderLeft: '2px solid var(--danger)' }}>
+                                {r}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      {/* Pontos em comum */}
+                      <div style={{
+                        padding: '14px', borderRadius: '10px',
+                        background: 'var(--accent-light)',
+                        border: '1px solid rgba(45,106,79,0.2)',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: 'var(--accent)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          <i className="bi bi-check-circle-fill" />
+                          Pontos em comum
+                          <span style={{ marginLeft: 'auto', background: 'rgba(45,106,79,0.15)', borderRadius: '10px', padding: '1px 8px' }}>{diff.comuns.length}</span>
+                        </div>
+                        {diff.comuns.length === 0 ? (
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Nenhum risco em comum</div>
+                        ) : (
+                          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {diff.comuns.map((r, i) => (
+                              <li key={i} style={{ fontSize: '12px', color: 'var(--accent)', lineHeight: 1.5, paddingLeft: '10px', borderLeft: '2px solid var(--accent)' }}>
+                                {r}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Side-by-side analyses */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+                    gap: '20px',
+                    alignItems: 'start',
+                  }}
+                    className="resumidor-grid"
+                  >
+                    <CompareAnalysisCard label="Documento A" analise={analiseA} />
+                    <CompareAnalysisCard label="Documento B" analise={analiseB} />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                    <PoweredByLexAI />
+                  </div>
+                </>
+              )
+            })()}
+          </div>
+        )}
       </div>
 
       {/* ── Mobile responsive styles ── */}
@@ -815,5 +1449,76 @@ export default function ResumidorPage() {
         }
       `}</style>
     </>
+  )
+}
+
+// ── Reusable card to render a single analysis in compare mode ──────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function CompareAnalysisCard({ label, analise }: { label: string; analise: any }) {
+  const tipoDoc = analise.classificacao?.tipo || analise.tipo_documento || 'Documento'
+  const objeto  = analise.objeto || analise.resumo || analise.conclusao || 'Analise concluida'
+  const pontos  = analise.pontos_principais || analise.pontos_chave || []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const riscos  = (analise.riscos || []).map((r: any) =>
+    typeof r === 'string'
+      ? r
+      : `[${(r.gravidade || 'INFO').toString().toUpperCase()}] ${r.descricao || r}${r.mitigacao ? ` — ${r.mitigacao}` : ''}`
+  )
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div className="section-card">
+        <div style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <span style={{
+            fontSize: '11px', fontWeight: 700,
+            padding: '3px 10px', borderRadius: '20px',
+            background: 'var(--accent)', color: '#fff',
+            textTransform: 'uppercase', letterSpacing: '0.5px',
+          }}>
+            {label}
+          </span>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            background: 'var(--accent-light)', color: 'var(--accent)',
+            fontSize: '12px', fontWeight: 600,
+            padding: '4px 12px', borderRadius: '20px',
+            border: '1px solid rgba(45,106,79,0.2)',
+          }}>
+            {tipoDoc}
+          </span>
+        </div>
+      </div>
+
+      <div className="section-card">
+        <div className="section-header">
+          <div>
+            <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <i className="bi bi-text-paragraph" style={{ color: 'var(--accent)' }} />
+              Resumo Executivo
+            </div>
+          </div>
+        </div>
+        <div style={{ padding: '16px 18px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>
+            {objeto}
+          </p>
+        </div>
+      </div>
+
+      <ResultSection
+        title="Pontos Principais"
+        icon={<i className="bi bi-check-circle-fill" style={{ color: '#2d6a4f', fontSize: '14px' }} />}
+        items={pontos}
+        accent={{ bg: 'var(--accent-light)', text: 'var(--accent)', dot: 'var(--accent)' }}
+        defaultOpen
+      />
+      <ResultSection
+        title="Riscos e Cláusulas Importantes"
+        icon={<i className="bi bi-exclamation-triangle-fill" style={{ color: 'var(--warning)', fontSize: '14px' }} />}
+        items={riscos}
+        accent={{ bg: 'var(--warning-light)', text: 'var(--warning)', dot: 'var(--warning)' }}
+        defaultOpen
+      />
+    </div>
   )
 }

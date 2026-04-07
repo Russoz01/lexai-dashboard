@@ -1,8 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
+import {
+  recordQuizAttempt,
+  createFlashcard,
+  listDueFlashcards,
+  reviewFlashcard,
+  getQuizStats,
+  getFlashcardStats,
+  type FlashcardRow,
+  type QuizStats,
+  type FlashcardStats,
+} from '@/lib/professor-store'
 
 export default function ProfessorPage() {
   const [tema, setTema] = useState('')
@@ -12,7 +23,35 @@ export default function ProfessorPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [aula, setAula] = useState<any>(null)
   const [erro, setErro] = useState('')
-  const [nivel, setNivel] = useState<'basico' | 'intermediario' | 'avancado' | 'questoes' | 'plano'>('basico')
+  const [nivel, setNivel] = useState<'basico' | 'intermediario' | 'avancado' | 'questoes' | 'flashcards' | 'plano'>('basico')
+
+  // Quiz stats (for the questoes tab header)
+  const [quizStats, setQuizStats] = useState<QuizStats | null>(null)
+  const refreshQuizStats = useCallback(async () => {
+    try {
+      const s = await getQuizStats()
+      setQuizStats(s)
+    } catch { /* ignore */ }
+  }, [])
+
+  // Flashcards (SRS)
+  const [flashStats, setFlashStats] = useState<FlashcardStats | null>(null)
+  const [dueCards, setDueCards] = useState<FlashcardRow[]>([])
+  const [loadingFlash, setLoadingFlash] = useState(false)
+  const refreshFlashcards = useCallback(async () => {
+    setLoadingFlash(true)
+    try {
+      const [stats, due] = await Promise.all([getFlashcardStats(), listDueFlashcards(20)])
+      setFlashStats(stats)
+      setDueCards(due)
+    } catch { /* ignore */ } finally { setLoadingFlash(false) }
+  }, [])
+
+  // Refresh stats when entering the relevant tab
+  useEffect(() => {
+    if (nivel === 'questoes') refreshQuizStats()
+    if (nivel === 'flashcards') refreshFlashcards()
+  }, [nivel, refreshQuizStats, refreshFlashcards])
 
   useDraft('lexai-draft-professor', tema, setTema)
 
@@ -65,6 +104,7 @@ export default function ProfessorPage() {
     { key: 'intermediario' as const, label: 'Intermediario', icon: 'bi-journal-text', color: '#4f46e5' },
     { key: 'avancado' as const, label: 'Avancado', icon: 'bi-mortarboard', color: '#c0392b' },
     { key: 'questoes' as const, label: 'Questoes', icon: 'bi-patch-question', color: '#e67e22' },
+    { key: 'flashcards' as const, label: 'Flashcards', icon: 'bi-collection', color: '#8B5CF6' },
     { key: 'plano' as const, label: 'Plano de Estudo', icon: 'bi-calendar-check', color: '#3B82F6' },
   ]
 
@@ -407,10 +447,77 @@ export default function ProfessorPage() {
 
             {nivel === 'questoes' && Array.isArray(aula.questoes) && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {/* Estatisticas globais (apenas quando ha tentativas) */}
+                {quizStats && quizStats.total > 0 && (
+                  <div className="section-card" style={{ padding: '14px 16px', background: 'var(--card-bg)' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 12 }}>
+                      <i className="bi bi-bar-chart" style={{ marginRight: 6 }} />Suas estatisticas
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{quizStats.total}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>respondidas</div>
+                      </div>
+                      <div style={{ height: 32, width: 1, background: 'var(--border)' }} />
+                      <div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: quizStats.taxa >= 0.7 ? 'var(--success)' : quizStats.taxa >= 0.4 ? '#e67e22' : 'var(--danger)', lineHeight: 1 }}>
+                          {Math.round(quizStats.taxa * 100)}%
+                        </div>
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>taxa de acerto</div>
+                      </div>
+                      {(() => {
+                        const piores = quizStats.porTema
+                          .filter(t => t.total > 0)
+                          .map(t => ({ ...t, taxa: t.acertos / t.total }))
+                          .sort((a, b) => a.taxa - b.taxa)
+                          .slice(0, 3)
+                        if (piores.length === 0) return null
+                        return (
+                          <>
+                            <div style={{ height: 32, width: 1, background: 'var(--border)' }} />
+                            <div style={{ flex: 1, minWidth: 220 }}>
+                              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Topicos mais errados</div>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                                {piores.map((t, idx) => (
+                                  <span key={idx} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 6, background: 'rgba(192,57,43,0.10)', color: 'var(--danger)', fontWeight: 600 }}>
+                                    {t.tema} <span style={{ opacity: 0.7, marginLeft: 4 }}>{Math.round(t.taxa * 100)}%</span>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                )}
+
                 {(aula.questoes as any[]).map((q, i) => (
-                  <QuestaoCard key={i} questao={q} index={i} />
+                  <QuestaoCard
+                    key={i}
+                    questao={q}
+                    index={i}
+                    tema={tema}
+                    onAttempt={refreshQuizStats}
+                    onFlashcardSaved={refreshFlashcards}
+                  />
                 ))}
               </div>
+            )}
+
+            {nivel === 'flashcards' && (
+              <FlashcardsTab
+                stats={flashStats}
+                cards={dueCards}
+                loading={loadingFlash}
+                onReview={async (id, q) => {
+                  await reviewFlashcard(id, q)
+                  // remove the reviewed card from the list optimistically
+                  setDueCards(prev => prev.filter(c => c.id !== id))
+                  refreshFlashcards()
+                }}
+                onRefresh={refreshFlashcards}
+              />
             )}
 
             {nivel === 'plano' && (
@@ -469,17 +576,92 @@ export default function ProfessorPage() {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function QuestaoCard({ questao: q, index: i }: { questao: any; index: number }) {
+function QuestaoCard({ questao: q, index: i, tema, onAttempt, onFlashcardSaved }: { questao: any; index: number; tema: string; onAttempt?: () => void; onFlashcardSaved?: () => void }) {
   const [mostrar, setMostrar] = useState(false)
   const [selecionada, setSelecionada] = useState<string | null>(null)
+  const [tempoSeg, setTempoSeg] = useState<number | null>(null)
+  const [startedAt] = useState<number>(() => Date.now())
+  const [savingAttempt, setSavingAttempt] = useState(false)
+  // Flashcard form
+  const [showFlashForm, setShowFlashForm] = useState(false)
+  const [flashPergunta, setFlashPergunta] = useState('')
+  const [flashResposta, setFlashResposta] = useState('')
+  const [savingFlash, setSavingFlash] = useState(false)
+  const [flashSaved, setFlashSaved] = useState(false)
+
   const alt = (q.alternativas || {}) as Record<string, string>
   const correta = String(q.resposta_correta || '').toLowerCase()
+  const acertou = mostrar && selecionada === correta
+
+  async function escolherAlternativa(letra: string) {
+    if (mostrar) return
+    const elapsed = Math.max(1, Math.round((Date.now() - startedAt) / 1000))
+    setSelecionada(letra)
+    setMostrar(true)
+    setTempoSeg(elapsed)
+    setSavingAttempt(true)
+    try {
+      await recordQuizAttempt(
+        tema || '(sem tema)',
+        q,
+        letra,
+        correta,
+        letra === correta,
+        elapsed,
+      )
+      onAttempt?.()
+    } catch { /* ignore */ } finally {
+      setSavingAttempt(false)
+    }
+  }
+
+  function abrirFormFlashcard() {
+    if (!showFlashForm) {
+      // Pre-fill from question
+      setFlashPergunta(String(q.enunciado || ''))
+      const respostaTexto = (alt[correta] ? `${correta.toUpperCase()}) ${alt[correta]}` : correta.toUpperCase())
+      const just = q.justificativa ? `\n\n${String(q.justificativa)}` : ''
+      setFlashResposta(`${respostaTexto}${just}`)
+    }
+    setShowFlashForm(s => !s)
+  }
+
+  async function salvarFlashcard() {
+    if (!flashPergunta.trim() || !flashResposta.trim()) return
+    setSavingFlash(true)
+    try {
+      const card = await createFlashcard(tema || '(sem tema)', flashPergunta.trim(), flashResposta.trim())
+      if (card) {
+        setFlashSaved(true)
+        setShowFlashForm(false)
+        onFlashcardSaved?.()
+      }
+    } catch { /* ignore */ } finally {
+      setSavingFlash(false)
+    }
+  }
 
   return (
     <div style={{ padding: '18px 20px', borderRadius: 12, background: 'var(--hover)', border: '1px solid var(--border)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: 'var(--accent-light)', color: 'var(--accent)' }}>Questao {i + 1}</span>
         {q.estilo_prova && <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 20, background: 'var(--hover)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{String(q.estilo_prova)}</span>}
+        {mostrar && (
+          <span style={{
+            fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
+            background: acertou ? 'rgba(45,134,89,0.14)' : 'rgba(192,57,43,0.14)',
+            color: acertou ? 'var(--success)' : 'var(--danger)',
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+          }}>
+            <i className={`bi ${acertou ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}`} />
+            {acertou ? 'Acertou!' : 'Errou'}
+          </span>
+        )}
+        {tempoSeg !== null && (
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <i className="bi bi-stopwatch" />{tempoSeg}s
+          </span>
+        )}
       </div>
       <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.7, marginBottom: 14 }}>{String(q.enunciado)}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -487,7 +669,7 @@ function QuestaoCard({ questao: q, index: i }: { questao: any; index: number }) 
           const isCorreta = mostrar && letra === correta
           const isErrada = mostrar && selecionada === letra && letra !== correta
           return (
-            <button key={letra} onClick={() => { setSelecionada(letra); setMostrar(true) }} disabled={mostrar} style={{
+            <button key={letra} onClick={() => escolherAlternativa(letra)} disabled={mostrar} style={{
               display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 14px', borderRadius: 8, textAlign: 'left', cursor: mostrar ? 'default' : 'pointer', fontFamily: "'DM Sans',sans-serif",
               background: isCorreta ? 'rgba(45,134,89,0.12)' : isErrada ? 'rgba(192,57,43,0.12)' : 'var(--card-bg)',
               border: isCorreta ? '1.5px solid var(--success)' : isErrada ? '1.5px solid var(--danger)' : '1px solid var(--border)',
@@ -504,6 +686,209 @@ function QuestaoCard({ questao: q, index: i }: { questao: any; index: number }) 
           <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)', marginBottom: 6 }}>Justificativa</div>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{String(q.justificativa)}</p>
         </div>
+      )}
+      {mostrar && (
+        <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <button
+              onClick={abrirFormFlashcard}
+              disabled={flashSaved}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontSize: 12, padding: '6px 12px', borderRadius: 8,
+                background: flashSaved ? 'var(--accent-light)' : 'var(--card-bg)',
+                border: '1px solid var(--border)',
+                color: flashSaved ? 'var(--accent)' : 'var(--text-secondary)',
+                cursor: flashSaved ? 'default' : 'pointer',
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+              }}
+            >
+              <i className={`bi ${flashSaved ? 'bi-check2-circle' : 'bi-collection'}`} />
+              {flashSaved ? 'Flashcard salvo' : 'Salvar como flashcard'}
+            </button>
+            {savingAttempt && (
+              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                <i className="bi bi-arrow-repeat" style={{ marginRight: 4 }} />Registrando...
+              </span>
+            )}
+          </div>
+          {showFlashForm && (
+            <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--card-bg)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div>
+                <label style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>Pergunta</label>
+                <textarea value={flashPergunta} onChange={e => setFlashPergunta(e.target.value)} rows={2} className="form-input" style={{ width: '100%', fontSize: 12, marginTop: 4, resize: 'vertical' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>Resposta</label>
+                <textarea value={flashResposta} onChange={e => setFlashResposta(e.target.value)} rows={3} className="form-input" style={{ width: '100%', fontSize: 12, marginTop: 4, resize: 'vertical' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={salvarFlashcard}
+                  disabled={savingFlash || !flashPergunta.trim() || !flashResposta.trim()}
+                  className="btn-primary"
+                  style={{ fontSize: 12, padding: '6px 14px' }}
+                >
+                  {savingFlash ? 'Salvando...' : 'Salvar'}
+                </button>
+                <button
+                  onClick={() => setShowFlashForm(false)}
+                  style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Flashcards tab
+// ---------------------------------------------------------------------------
+
+function FlashcardsTab({
+  stats,
+  cards,
+  loading,
+  onReview,
+  onRefresh,
+}: {
+  stats: FlashcardStats | null
+  cards: FlashcardRow[]
+  loading: boolean
+  onReview: (id: string, quality: number) => Promise<void>
+  onRefresh: () => void
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#8B5CF6' }}>
+          <i className="bi bi-collection" style={{ marginRight: 6 }} />Flashcards &mdash; Spaced Repetition
+        </div>
+        <button onClick={onRefresh} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+          <i className="bi bi-arrow-clockwise" style={{ marginRight: 4 }} />Atualizar
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div className="section-card" style={{ padding: '14px 16px', textAlign: 'center', background: 'var(--card-bg)' }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{stats?.total ?? 0}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500, marginTop: 4 }}>total de cards</div>
+        </div>
+        <div className="section-card" style={{ padding: '14px 16px', textAlign: 'center', background: 'var(--card-bg)' }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: (stats?.due ?? 0) > 0 ? '#8B5CF6' : 'var(--text-primary)', lineHeight: 1 }}>{stats?.due ?? 0}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500, marginTop: 4 }}>para revisar hoje</div>
+        </div>
+        <div className="section-card" style={{ padding: '14px 16px', textAlign: 'center', background: 'var(--card-bg)' }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{stats ? stats.facilidadeMedia.toFixed(2) : '0.00'}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500, marginTop: 4 }}>facilidade media</div>
+        </div>
+      </div>
+
+      {/* Review queue */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
+          <span style={{ display: 'inline-block', width: 28, height: 28, border: '3px solid var(--border)', borderTopColor: '#8B5CF6', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        </div>
+      ) : cards.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
+          <i className="bi bi-check2-circle" style={{ fontSize: 36, display: 'block', marginBottom: 10, color: '#8B5CF6', opacity: 0.7 }} />
+          <div style={{ fontWeight: 600, marginBottom: 4 }}>Nenhum card para revisar hoje</div>
+          <div style={{ fontSize: 12 }}>Volte amanha! Salve flashcards a partir das questoes para comecar.</div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {cards.map(card => (
+            <FlashcardReview key={card.id} card={card} onReview={onReview} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function FlashcardReview({
+  card,
+  onReview,
+}: {
+  card: FlashcardRow
+  onReview: (id: string, quality: number) => Promise<void>
+}) {
+  const [revealed, setRevealed] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+
+  async function answer(quality: number) {
+    if (submitting) return
+    setSubmitting(true)
+    try {
+      await onReview(card.id, quality)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div style={{ padding: '18px 20px', borderRadius: 12, background: 'var(--hover)', border: '1px solid var(--border)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: 'rgba(139,92,246,0.14)', color: '#8B5CF6' }}>
+          {card.tema || '(sem tema)'}
+        </span>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+          <i className="bi bi-arrow-repeat" style={{ marginRight: 4 }} />{card.total_revisoes} revisoes
+        </span>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+          ease {Number(card.facilidade).toFixed(2)}
+        </span>
+      </div>
+      <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.7, marginBottom: 12, whiteSpace: 'pre-wrap' }}>{card.pergunta}</p>
+
+      {!revealed ? (
+        <button
+          onClick={() => setRevealed(true)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, padding: '8px 14px', borderRadius: 8,
+            background: 'var(--card-bg)', border: '1px solid var(--border)',
+            color: 'var(--text-secondary)', cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+          }}
+        >
+          <i className="bi bi-eye" />Mostrar resposta
+        </button>
+      ) : (
+        <>
+          <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--card-bg)', borderLeft: '3px solid #8B5CF6', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#8B5CF6', marginBottom: 6 }}>Resposta</div>
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{card.resposta}</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+            {([
+              { q: 1, label: 'Errei', color: '#c0392b' },
+              { q: 3, label: 'Dificil', color: '#e67e22' },
+              { q: 4, label: 'Bom', color: '#2d8659' },
+              { q: 5, label: 'Facil', color: '#3B82F6' },
+            ] as const).map(opt => (
+              <button
+                key={opt.q}
+                disabled={submitting}
+                onClick={() => answer(opt.q)}
+                style={{
+                  fontSize: 12, padding: '10px 8px', borderRadius: 8,
+                  background: `${opt.color}14`, border: `1px solid ${opt.color}55`,
+                  color: opt.color, cursor: submitting ? 'wait' : 'pointer',
+                  fontFamily: "'DM Sans', sans-serif", fontWeight: 700,
+                }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

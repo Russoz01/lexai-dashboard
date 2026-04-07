@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
+import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 
 export default function NegociadorPage() {
   const [situacao, setSituacao] = useState('')
@@ -10,12 +11,27 @@ export default function NegociadorPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resultado, setResultado] = useState<any>(null)
   const [erro, setErro] = useState('')
+  const [currentDraftId, setCurrentDraftId] = useState<string | null>(null)
+  const [savedBadge, setSavedBadge]         = useState(false)
+  const [showDraftsModal, setShowDraftsModal] = useState(false)
+  const [draftsList, setDraftsList]           = useState<DraftRow[]>([])
+  const [loadingDrafts, setLoadingDrafts]     = useState(false)
 
   useDraft('lexai-draft-negociador', situacao, setSituacao)
 
+  useEffect(() => {
+    if (!showDraftsModal) return
+    let cancelled = false
+    setLoadingDrafts(true)
+    listDrafts('negociador')
+      .then(rows => { if (!cancelled) setDraftsList(rows) })
+      .finally(() => { if (!cancelled) setLoadingDrafts(false) })
+    return () => { cancelled = true }
+  }, [showDraftsModal])
+
   async function analisar() {
     if (!situacao.trim() || loading) return
-    setLoading(true); setErro(''); setResultado(null)
+    setLoading(true); setErro(''); setResultado(null); setSavedBadge(false)
     try {
       const res = await fetch('/api/negociar', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -25,9 +41,50 @@ export default function NegociadorPage() {
       if (!res.ok) throw new Error(data.error)
       setResultado(data.resultado)
       clearDraft('lexai-draft-negociador')
+
+      // Fire-and-forget: save draft without blocking UI
+      const titulo = (data.resultado?.estrategia?.tipo
+        ? `Negociacao: ${String(data.resultado.estrategia.tipo)}`
+        : 'Estrategia de negociacao')
+      saveDraft('negociador', titulo, data.resultado)
+        .then(row => {
+          if (row) {
+            setCurrentDraftId(row.id)
+            setSavedBadge(true)
+            setTimeout(() => setSavedBadge(false), 3500)
+          }
+        })
+        .catch(err => console.error('[negociador/saveDraft]', err))
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro na analise')
     } finally { setLoading(false) }
+  }
+
+  function loadDraft(d: DraftRow) {
+    try {
+      setResultado(d.conteudo)
+      setCurrentDraftId(d.id)
+      setShowDraftsModal(false)
+      setErro('')
+    } catch {
+      setErro('Nao foi possivel carregar o rascunho')
+    }
+  }
+
+  async function handleDeleteDraft(id: string) {
+    const ok = await deleteDraft(id)
+    if (ok) {
+      setDraftsList(list => list.filter(d => d.id !== id))
+      if (currentDraftId === id) setCurrentDraftId(null)
+    }
+  }
+
+  function fmtDate(iso: string) {
+    try {
+      const d = new Date(iso)
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+        ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    } catch { return iso }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,15 +92,37 @@ export default function NegociadorPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: '100%' }}>
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA
-          </span>
+      <div style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
+              Agente IA
+            </span>
+          </div>
+          <h1 className="page-title">Negociador</h1>
+          <p className="page-subtitle">Estrategia de negociacao e mediacao de conflitos juridicos</p>
         </div>
-        <h1 className="page-title">Negociador</h1>
-        <p className="page-subtitle">Estrategia de negociacao e mediacao de conflitos juridicos</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {savedBadge && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 12, fontWeight: 600, padding: '6px 12px',
+              borderRadius: 20, background: 'var(--success-light)', color: 'var(--success)',
+              border: '1px solid var(--success)',
+            }}>
+              <i className="bi bi-check-circle-fill" /> Salvo como rascunho
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => setShowDraftsModal(true)}
+            className="btn-ghost"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: '8px 14px' }}
+          >
+            <i className="bi bi-clock-history" /> Meus rascunhos
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} className="redator-main-grid">
@@ -167,6 +246,90 @@ export default function NegociadorPage() {
           )}
         </div>
       </div>
+      {/* Modal: Meus rascunhos */}
+      {showDraftsModal && (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowDraftsModal(false)}>
+          <div className="modal" style={{ maxWidth: 640 }}>
+            <div className="modal-header">
+              <span className="modal-title">Meus rascunhos</span>
+              <button className="modal-close" onClick={() => setShowDraftsModal(false)}><i className="bi bi-x" /></button>
+            </div>
+            <div className="modal-body">
+              {loadingDrafts ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 30, color: 'var(--text-muted)', gap: 10 }}>
+                  <span style={{ display: 'inline-block', width: 20, height: 20, border: '2px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  Carregando rascunhos...
+                </div>
+              ) : draftsList.length === 0 ? (
+                <div style={{ padding: '32px 14px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <i className="bi bi-inbox" style={{ fontSize: 40, opacity: 0.4, display: 'block', marginBottom: 10 }} />
+                  <div style={{ fontSize: 13 }}>Nenhum rascunho salvo ainda.</div>
+                  <div style={{ fontSize: 12, marginTop: 4 }}>Faca uma analise para salvar automaticamente.</div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 460, overflowY: 'auto' }}>
+                  {draftsList.map(d => (
+                    <div key={d.id} style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '12px 14px', borderRadius: 10,
+                      border: '1px solid var(--border)', background: 'var(--card-bg)',
+                      transition: 'all 0.15s',
+                    }}>
+                      <button
+                        type="button"
+                        onClick={() => loadDraft(d)}
+                        style={{
+                          flex: 1, textAlign: 'left', background: 'none', border: 'none',
+                          cursor: 'pointer', padding: 0, fontFamily: "'DM Sans', sans-serif",
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
+                            {d.titulo || 'Sem titulo'}
+                          </span>
+                          <span style={{
+                            fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 12,
+                            background: 'var(--accent-light)', color: 'var(--accent)',
+                          }}>v{d.versao}</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                          <i className="bi bi-clock" style={{ marginRight: 4 }} />
+                          {fmtDate(d.created_at)}
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteDraft(d.id)}
+                        title="Excluir rascunho"
+                        style={{
+                          width: 32, height: 32, borderRadius: 8,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: 'none', border: '1px solid var(--border)',
+                          color: 'var(--text-muted)', cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = 'var(--danger-light)'
+                          e.currentTarget.style.color = 'var(--danger)'
+                          e.currentTarget.style.borderColor = 'var(--danger)'
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = 'none'
+                          e.currentTarget.style.color = 'var(--text-muted)'
+                          e.currentTarget.style.borderColor = 'var(--border)'
+                        }}
+                      >
+                        <i className="bi bi-trash" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )

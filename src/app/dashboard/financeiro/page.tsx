@@ -184,6 +184,12 @@ function riscoColor(risco: 'Baixo' | 'Medio' | 'Alto') {
   return { bg: '#fdecea', color: '#c0392b' }
 }
 
+function defaultDateFrom() {
+  const d = new Date()
+  d.setDate(d.getDate() - 30)
+  return d.toISOString().slice(0, 10)
+}
+
 export default function FinanceiroPage() {
   const supabase = createClient()
   const [itens, setItens]       = useState<Lancamento[]>([])
@@ -193,11 +199,35 @@ export default function FinanceiroPage() {
   const [erro, setErro]         = useState('')
   const [form, setForm]         = useState(EMPTY)
 
+  // Belvo import modal state
+  const [importModal, setImportModal]       = useState(false)
+  const [belvoConfigured, setBelvoConfigured] = useState<boolean | null>(null)
+  const [importLinkId, setImportLinkId]     = useState('')
+  const [importDateFrom, setImportDateFrom] = useState(defaultDateFrom())
+  const [importing, setImporting]           = useState(false)
+  const [importMsg, setImportMsg]           = useState<{ tipo: 'ok' | 'err' | 'info'; texto: string } | null>(null)
+
   const carregar = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { data } = await supabase.from('financeiro').select('*').eq('usuario_id', user.id).order('data', { ascending: false })
-    setItens(data ?? []); setLoading(false)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
+      const { data, error } = await supabase
+        .from('financeiro')
+        .select('*')
+        .eq('usuario_id', user.id)
+        .order('data', { ascending: false })
+        .limit(500) // Pagination — server-side
+      if (error) {
+        setErro('Nao foi possivel carregar lancamentos. Tente recarregar a pagina.')
+        setLoading(false)
+        return
+      }
+      setItens(data ?? [])
+      setLoading(false)
+    } catch {
+      setErro('Erro ao conectar com o banco. Verifique sua conexao.')
+      setLoading(false)
+    }
   }, [supabase])
 
   useEffect(() => { carregar() }, [carregar])
@@ -209,19 +239,109 @@ export default function FinanceiroPage() {
   async function salvar(e: React.FormEvent) {
     e.preventDefault()
     setSalvando(true); setErro('')
+
+    // Validate descricao
+    if (!form.descricao.trim() || form.descricao.length > 200) {
+      setErro('Descricao obrigatoria (1-200 caracteres).')
+      setSalvando(false)
+      return
+    }
+
+    // Validate valor — was a real bug: NaN was inserted silently
+    const valorNum = parseFloat(form.valor)
+    if (isNaN(valorNum) || valorNum <= 0 || valorNum > 999999999) {
+      setErro('Informe um valor numerico valido maior que zero.')
+      setSalvando(false)
+      return
+    }
+
+    // Validate data
+    if (!form.data || isNaN(new Date(form.data).getTime())) {
+      setErro('Data invalida.')
+      setSalvando(false)
+      return
+    }
+
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setSalvando(false); return }
+    if (!user) {
+      setErro('Sessao expirada. Faca login novamente.')
+      setSalvando(false)
+      return
+    }
+
     const { error } = await supabase.from('financeiro').insert({
-      usuario_id: user.id, descricao: form.descricao,
-      valor: parseFloat(form.valor), tipo: form.tipo, categoria: form.categoria, data: form.data,
+      usuario_id: user.id,
+      descricao: form.descricao.trim(),
+      valor: valorNum,
+      tipo: form.tipo,
+      categoria: form.categoria,
+      data: form.data,
     })
-    if (error) { setErro(error.message); setSalvando(false); return }
-    setModal(false); setForm(EMPTY); await carregar(); setSalvando(false)
+
+    if (error) {
+      setErro(error.message || 'Nao foi possivel salvar o lancamento.')
+      setSalvando(false)
+      return
+    }
+
+    setModal(false)
+    setForm(EMPTY)
+    await carregar()
+    setSalvando(false)
   }
 
   async function deletar(id: string) {
     if (!confirm('Excluir este lançamento?')) return
     await supabase.from('financeiro').delete().eq('id', id); await carregar()
+  }
+
+  async function abrirImportModal() {
+    setImportModal(true)
+    setImportMsg(null)
+    if (belvoConfigured === null) {
+      try {
+        const res = await fetch('/api/financeiro/import', { method: 'GET' })
+        const data = await res.json().catch(() => ({ configured: false }))
+        setBelvoConfigured(!!data.configured)
+      } catch {
+        setBelvoConfigured(false)
+      }
+    }
+  }
+
+  async function importarBelvo(e: React.FormEvent) {
+    e.preventDefault()
+    if (!importLinkId.trim()) {
+      setImportMsg({ tipo: 'err', texto: 'Informe o Link ID do Belvo.' })
+      return
+    }
+    setImporting(true)
+    setImportMsg(null)
+    try {
+      const res = await fetch('/api/financeiro/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ linkId: importLinkId.trim(), dateFrom: importDateFrom || undefined }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.status === 503) {
+        setImportMsg({
+          tipo: 'info',
+          texto: data?.error || 'Belvo nao configurado. Contate o admin para ativar esta feature.',
+        })
+        setBelvoConfigured(false)
+      } else if (!res.ok) {
+        setImportMsg({ tipo: 'err', texto: data?.error || 'Falha ao importar transacoes.' })
+      } else {
+        const imported = Number(data?.imported ?? 0)
+        setImportMsg({ tipo: 'ok', texto: `${imported} transacoes importadas com sucesso.` })
+        await carregar()
+      }
+    } catch (err) {
+      setImportMsg({ tipo: 'err', texto: err instanceof Error ? err.message : 'Erro desconhecido' })
+    } finally {
+      setImporting(false)
+    }
   }
 
   // Simple CSS bar chart data
@@ -243,9 +363,14 @@ export default function FinanceiroPage() {
           <h1 className="page-title">Financeiro</h1>
           <p className="page-subtitle">Controle de receitas e despesas do escritório</p>
         </div>
-        <button className="btn-primary" onClick={() => setModal(true)}>
-          <i className="bi bi-plus-lg" /> Novo Lançamento
-        </button>
+        <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+          <button className="btn-ghost" onClick={abrirImportModal} type="button">
+            <i className="bi bi-bank" /> Importar do banco
+          </button>
+          <button className="btn-primary" onClick={() => setModal(true)}>
+            <i className="bi bi-plus-lg" /> Novo Lançamento
+          </button>
+        </div>
       </div>
 
       {/* Cards de resumo */}
@@ -563,6 +688,79 @@ export default function FinanceiroPage() {
                   <button type="button" className="btn-ghost" style={{ flex:1 }} onClick={() => setModal(false)}>Cancelar</button>
                   <button type="submit" disabled={salvando} className="btn-primary" style={{ flex:1, justifyContent:'center' }}>
                     {salvando ? 'Salvando...' : <><i className="bi bi-check2" /> Salvar</>}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Belvo import modal */}
+      {importModal && (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setImportModal(false)}>
+          <div className="modal">
+            <div className="modal-header">
+              <span className="modal-title">Importar do banco (Belvo)</span>
+              <button className="modal-close" onClick={() => setImportModal(false)}><i className="bi bi-x" /></button>
+            </div>
+            <form onSubmit={importarBelvo}>
+              <div className="modal-body">
+                {belvoConfigured === false && (
+                  <div style={{ padding:'12px 14px', borderRadius:8, background:'var(--accent-light)', color:'var(--text-secondary)', fontSize:13, lineHeight:1.5 }}>
+                    <i className="bi bi-info-circle" style={{ marginRight:6 }} />
+                    Esta feature requer configuracao do Belvo. Contate o admin para ativar.
+                    <div style={{ marginTop:6, fontSize:12, color:'var(--text-muted)' }}>
+                      <a href="https://belvo.com/docs" target="_blank" rel="noopener noreferrer" style={{ color:'var(--accent)' }}>
+                        Documentacao Belvo <i className="bi bi-box-arrow-up-right" style={{ fontSize:10 }} />
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {importMsg && (
+                  <div style={{
+                    padding:'10px 14px', borderRadius:8, fontSize:13,
+                    background: importMsg.tipo === 'ok' ? '#e8f5ee' : importMsg.tipo === 'info' ? 'var(--accent-light)' : 'var(--danger-light)',
+                    color: importMsg.tipo === 'ok' ? '#2d6a4f' : importMsg.tipo === 'info' ? 'var(--text-secondary)' : 'var(--danger)',
+                  }}>
+                    {importMsg.texto}
+                  </div>
+                )}
+                <div>
+                  <label className="form-label">Belvo Link ID *</label>
+                  <input
+                    type="text"
+                    value={importLinkId}
+                    onChange={e => setImportLinkId(e.target.value)}
+                    placeholder="ex: 12345678-abcd-..."
+                    className="form-input"
+                    disabled={importing || belvoConfigured === false}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Data inicial</label>
+                  <input
+                    type="date"
+                    value={importDateFrom}
+                    onChange={e => setImportDateFrom(e.target.value)}
+                    className="form-input"
+                    disabled={importing || belvoConfigured === false}
+                  />
+                  <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:4 }}>
+                    Padrao: ultimos 30 dias
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn-ghost" style={{ flex:1 }} onClick={() => setImportModal(false)}>
+                    Fechar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={importing || belvoConfigured === false}
+                    className="btn-primary"
+                    style={{ flex:1, justifyContent:'center' }}
+                  >
+                    {importing ? 'Importando...' : <><i className="bi bi-download" /> Importar</>}
                   </button>
                 </div>
               </div>
