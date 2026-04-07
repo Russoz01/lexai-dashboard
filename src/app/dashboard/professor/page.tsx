@@ -184,12 +184,12 @@ export default function ProfessorPage() {
         </div>
       )}
 
-      {/* Todas as Materias — academic subjects beyond law */}
+      {/* Ensino Medio / ENEM / Vestibular — academic subjects */}
       {!aula && !loading && (
         <div style={{ marginBottom: 36 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              <i className="bi bi-book-half" style={{ marginRight: 6 }} />Todas as Materias &mdash; Vestibular, ENEM, Concursos
+              <i className="bi bi-book-half" style={{ marginRight: 6 }} />Ensino Medio &mdash; ENEM, Vestibular, Concursos
             </div>
             <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 10, background: 'rgba(139,92,246,0.12)', color: '#8B5CF6', fontWeight: 700, letterSpacing: '0.3px' }}>
               QUALQUER MATERIA
@@ -209,6 +209,60 @@ export default function ProfessorPage() {
               { area: 'Ingles', temas: ['Verb Tenses', 'Phrasal Verbs', 'Reading Comprehension', 'Grammar Rules'], icon: 'bi-chat-dots', color: '#EF4444' },
               { area: 'Literatura', temas: ['Modernismo', 'Romantismo', 'Machado de Assis', 'Escolas Literarias'], icon: 'bi-journal-text', color: '#D97706' },
               { area: 'Redacao ENEM', temas: ['Estrutura Dissertativa', 'Proposta de Intervencao', 'Conectivos', 'Argumentacao'], icon: 'bi-pencil-square', color: '#14B8A6' },
+            ].map((cat, i) => (
+              <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
+                onClick={() => { setTema(cat.temas[0]); }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cat.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className={`bi ${cat.icon}`} style={{ color: cat.color, fontSize: 14 }} />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{cat.area}</span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {cat.temas.map((t, j) => (
+                    <button key={j} onClick={(e) => { e.stopPropagation(); setTema(t); }}
+                      style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Ensino Superior — university courses */}
+      {!aula && !loading && (
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <i className="bi bi-mortarboard" style={{ marginRight: 6 }} />Ensino Superior &mdash; Cursos Universitarios
+            </div>
+            <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 10, background: 'rgba(34,197,94,0.12)', color: '#22C55E', fontWeight: 700, letterSpacing: '0.3px' }}>
+              FACULDADE
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="study-grid">
+            {[
+              { area: 'Calculo', temas: ['Limites', 'Derivadas', 'Integrais', 'Equacoes Diferenciais'], icon: 'bi-graph-up', color: '#2563EB' },
+              { area: 'Algebra Linear', temas: ['Matrizes', 'Determinantes', 'Autovalores', 'Espacos Vetoriais'], icon: 'bi-grid-3x3', color: '#6366F1' },
+              { area: 'Estatistica', temas: ['Distribuicao Normal', 'Hipoteses', 'Regressao', 'Inferencia'], icon: 'bi-bar-chart', color: '#0EA5E9' },
+              { area: 'Programacao', temas: ['Algoritmos', 'POO', 'Estruturas de Dados', 'Complexidade'], icon: 'bi-code-slash', color: '#10B981' },
+              { area: 'Engenharia Civil', temas: ['Resistencia dos Materiais', 'Hidraulica', 'Concreto', 'Topografia'], icon: 'bi-building', color: '#F59E0B' },
+              { area: 'Engenharia Eletrica', temas: ['Circuitos', 'Eletromagnetismo', 'Sinais', 'Controle'], icon: 'bi-cpu', color: '#EAB308' },
+              { area: 'Medicina', temas: ['Anatomia', 'Fisiologia', 'Farmacologia', 'Patologia'], icon: 'bi-heart-pulse', color: '#EF4444' },
+              { area: 'Enfermagem', temas: ['Semiologia', 'SAE', 'Farmacologia Clinica', 'UTI'], icon: 'bi-bandaid', color: '#EC4899' },
+              { area: 'Psicologia', temas: ['Freud', 'Skinner', 'Gestalt', 'Cognicao'], icon: 'bi-emoji-smile', color: '#A855F7' },
+              { area: 'Economia', temas: ['Micro', 'Macro', 'Inflacao', 'Politica Monetaria'], icon: 'bi-currency-dollar', color: '#22C55E' },
+              { area: 'Administracao', temas: ['Marketing', 'RH', 'Estrategia', 'Logistica'], icon: 'bi-briefcase', color: '#0891B2' },
+              { area: 'Contabilidade', temas: ['DRE', 'Balanco', 'Custos', 'Auditoria'], icon: 'bi-calculator', color: '#14B8A6' },
+              { area: 'Arquitetura', temas: ['Bauhaus', 'Sustentabilidade', 'Urbanismo', 'CAD'], icon: 'bi-house', color: '#D97706' },
+              { area: 'Engenharia de Software', temas: ['UML', 'Scrum', 'Padroes Projeto', 'DevOps'], icon: 'bi-laptop', color: '#3B82F6' },
+              { area: 'Ciencia de Dados', temas: ['Python', 'Machine Learning', 'SQL', 'Visualizacao'], icon: 'bi-bar-chart-line', color: '#8B5CF6' },
+              { area: 'Marketing Digital', temas: ['SEO', 'Trafego Pago', 'Funil de Vendas', 'Analytics'], icon: 'bi-megaphone', color: '#F97316' },
             ].map((cat, i) => (
               <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
                 onClick={() => { setTema(cat.temas[0]); }}

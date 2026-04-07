@@ -1,13 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse }  from 'next/server'
 
-// Validate redirect path to prevent open redirect attacks
+// Validate redirect path to prevent open redirect attacks + directory traversal
 function sanitizeRedirect(path: string): string {
-  // Must start with / and not contain // or protocol
-  if (!path.startsWith('/') || path.startsWith('//') || path.includes('://')) {
-    return '/dashboard'
-  }
-  return path
+  // Must start with /
+  if (!path || typeof path !== 'string') return '/dashboard'
+  if (!path.startsWith('/') || path.startsWith('//') || path.includes('://')) return '/dashboard'
+  // Block directory traversal and encoded variants
+  if (path.includes('/../') || path.includes('/..\\') || path.includes('%2e%2e') || path.includes('%2E%2E')) return '/dashboard'
+  // Whitelist allowed top-level paths
+  const ALLOWED = ['/dashboard', '/login', '/']
+  const isAllowed = ALLOWED.some(p => path === p || path.startsWith(p + '/') || path.startsWith(p + '?'))
+  return isAllowed ? path : '/dashboard'
 }
 
 export async function GET(request: Request) {

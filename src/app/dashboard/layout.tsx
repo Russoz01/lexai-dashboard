@@ -19,17 +19,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [user, setUser] = useState<{ name: string; role: string } | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.replace('/login')
-        return
+    let isMounted = true
+    const checkAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser()
+        if (!isMounted) return
+        if (error || !data.user) {
+          router.replace('/login')
+          return
+        }
+        const meta = data.user.user_metadata
+        setUser({
+          name: meta?.nome || data.user.email?.split('@')[0] || 'Usuario',
+          role: meta?.role || 'Estudante · Direito',
+        })
+      } catch {
+        if (isMounted) router.replace('/login')
       }
-      const meta = data.user.user_metadata
-      setUser({
-        name: meta?.nome || data.user.email?.split('@')[0] || 'Usuario',
-        role: meta?.role || 'Estudante · Direito',
-      })
-    })
+    }
+    checkAuth()
+    return () => { isMounted = false }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

@@ -6,7 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
 /**
  * Stripe webhook handler.
@@ -17,11 +17,18 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
  * And set STRIPE_WEBHOOK_SECRET in your .env.
  */
 export async function POST(req: NextRequest) {
+  // Hard fail if webhook secret is not configured — never accept unverified events
+  if (!webhookSecret || webhookSecret.length === 0) {
+    // eslint-disable-next-line no-console
+    console.error('[stripe webhook] STRIPE_WEBHOOK_SECRET is not configured — rejecting all events')
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 503 })
+  }
+
   const body = await req.text()
   const signature = req.headers.get('stripe-signature')
 
-  if (!signature || !webhookSecret) {
-    return NextResponse.json({ error: 'Missing signature or webhook secret' }, { status: 400 })
+  if (!signature) {
+    return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 })
   }
 
   let event: Stripe.Event

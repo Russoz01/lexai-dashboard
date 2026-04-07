@@ -22,7 +22,28 @@ export function validateInput(text: string | undefined, minLength: number, field
 
 export function safeError(context: string, err: unknown) {
   const msg = err instanceof Error ? err.message : 'Erro interno'
+  // eslint-disable-next-line no-console
   console.error(`[API ${context}]`, msg)
-  // Never expose internal details to client
-  return NextResponse.json({ error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }, { status: 500 })
+
+  // Map common Anthropic SDK errors to actionable status codes
+  let statusCode = 500
+  let clientMsg = 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.'
+
+  if (typeof msg === 'string') {
+    if (msg.includes('401') || msg.toLowerCase().includes('invalid_api_key') || msg.toLowerCase().includes('authentication')) {
+      statusCode = 503
+      clientMsg = 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.'
+    } else if (msg.includes('429') || msg.toLowerCase().includes('rate_limit') || msg.toLowerCase().includes('quota')) {
+      statusCode = 429
+      clientMsg = 'Muitas requisicoes. Aguarde 60 segundos antes de tentar novamente.'
+    } else if (msg.toLowerCase().includes('timeout') || msg.toLowerCase().includes('etimedout')) {
+      statusCode = 504
+      clientMsg = 'O servico de IA demorou muito para responder. Tente um documento menor.'
+    } else if (msg.toLowerCase().includes('overloaded')) {
+      statusCode = 503
+      clientMsg = 'O servico de IA esta sobrecarregado. Tente novamente em 30 segundos.'
+    }
+  }
+
+  return NextResponse.json({ error: clientMsg }, { status: statusCode })
 }
