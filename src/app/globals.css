@@ -932,4 +932,16 @@ input[type="date"] { cursor: pointer; }
 
   /* Content grid — stack */
   .content-grid { grid-template-columns: 1fr !important; }
+
+  /* Rotina — show all 7 days in 2 cols on mobile */
+  .rotina-week-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .rotina-week-grid > *:nth-child(n+4) { display: flex; }
+
+  /* Design page — stack 3 columns */
+  [style*="grid-template-columns: 1fr 1fr auto"] { grid-template-columns: 1fr !important; }
+
+  /* Landing page responsive */
+  [style*="grid-template-columns: repeat(2, 1fr)"] { grid-template-columns: 1fr !important; }
+  [style*="grid-template-columns: repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
+  [style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: 1fr !important; }
 }

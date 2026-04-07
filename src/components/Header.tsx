@@ -47,7 +47,7 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
       </div>
 
       <div className="header-user">
-        <button className="notif-bell" title="Notificacoes">
+        <button className="notif-bell" title="Notificacoes" onClick={() => window.location.href='/dashboard/prazos'}>
           <i className="bi bi-bell" />
           <span className="notif-dot" />
         </button>

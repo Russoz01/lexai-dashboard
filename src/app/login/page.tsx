@@ -67,6 +67,7 @@ export default function LoginPage() {
   const [showSenha, setShowSenha] = useState(false)
   const [emailLoading, setEmailLoading] = useState(false)
   const [erro, setErro] = useState('')
+  const [isSignUp, setIsSignUp] = useState(false)
 
   async function signInGoogle() {
     setOauthLoading('google')
@@ -93,6 +94,21 @@ export default function LoginPage() {
     e.preventDefault()
     setEmailLoading(true)
     setErro('')
+
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({ email, password: senha })
+      if (error) {
+        setErro(error.message === 'User already registered' ? 'Este email ja esta cadastrado. Faca login.' : error.message)
+        setEmailLoading(false)
+        return
+      }
+      setErro('')
+      setIsSignUp(false)
+      alert('Conta criada! Verifique seu email para confirmar.')
+      setEmailLoading(false)
+      return
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
     if (error) {
       setErro('Email ou senha incorretos.')
@@ -311,20 +327,31 @@ export default function LoginPage() {
               </div>
 
               <button type="submit" className="lx-submit" disabled={anyLoading}>
-                {emailLoading ? <Spinner /> : 'Entrar'}
+                {emailLoading ? <Spinner /> : isSignUp ? 'Criar conta' : 'Entrar'}
               </button>
             </form>
 
+            {/* Toggle sign-up / login */}
+            <div style={{ textAlign: 'center', marginTop: 16, fontSize: 13 }}>
+              <span style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {isSignUp ? 'Ja tem conta?' : 'Nao tem conta?'}{' '}
+              </span>
+              <button type="button" onClick={() => { setIsSignUp(!isSignUp); setErro('') }}
+                style={{ background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontWeight: 600, fontSize: 13, fontFamily: "'DM Sans', sans-serif" }}>
+                {isSignUp ? 'Fazer login' : 'Criar conta gratis'}
+              </button>
+            </div>
+
             <div style={{
-              marginTop: 28, paddingTop: 20,
+              marginTop: 20, paddingTop: 16,
               borderTop: '1px solid rgba(255,255,255,0.06)',
               textAlign: 'center',
               fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6,
             }}>
               Ao continuar, você concorda com os{' '}
-              <a href="#" style={{ color: 'rgba(59,130,246,0.65)', textDecoration: 'none' }}>Termos de Uso</a>
+              <a href="/termos" style={{ color: 'rgba(59,130,246,0.65)', textDecoration: 'none' }}>Termos de Uso</a>
               {' '}e a{' '}
-              <a href="#" style={{ color: 'rgba(59,130,246,0.65)', textDecoration: 'none' }}>Política de Privacidade</a>
+              <a href="/privacidade" style={{ color: 'rgba(59,130,246,0.65)', textDecoration: 'none' }}>Politica de Privacidade</a>
             </div>
           </div>
         </div>

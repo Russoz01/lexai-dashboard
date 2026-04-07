@@ -289,8 +289,8 @@ export default function ConfiguracoesPage() {
               </div>
             </div>
             <div style={{ marginTop:14, display:'flex', gap:8 }}>
-              <button className="btn-ghost" style={{ flex:1 }}><i className="bi bi-arrow-up-circle" /> Fazer upgrade</button>
-              <button className="btn-ghost" style={{ flex:1 }}><i className="bi bi-receipt" /> Ver faturas</button>
+              <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.location.href='/dashboard/planos'}><i className="bi bi-arrow-up-circle" /> Gerenciar plano</button>
+              <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.open('https://billing.stripe.com', '_blank')}><i className="bi bi-receipt" /> Ver faturas</button>
             </div>
           </div>
         </div>
