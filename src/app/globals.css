@@ -72,7 +72,7 @@
 
   --bg:             transparent;
   --sidebar-bg:     #0A0A0A;
-  --sidebar-text:   rgba(255,255,255,0.50);
+  --sidebar-text:   rgba(200,185,165,0.65);
   --sidebar-active: #FFFFFF;
   --sidebar-active-bar: #3B82F6;
 
@@ -146,15 +146,15 @@ body {
 
 /* Vaulto-style dark overrides */
 [data-theme="dark"] .main-content { background: transparent; }
-[data-theme="dark"] .sidebar { background: #111111; border-right: 1px solid rgba(255,255,255,0.08); }
-[data-theme="dark"] .sidebar-brand { border-bottom: 1px solid rgba(255,255,255,0.06); }
-[data-theme="dark"] .sidebar-link.active { background: rgba(255,255,255,0.06); }
-[data-theme="dark"] .sidebar-link:hover:not(.active) { background: rgba(255,255,255,0.03); }
-[data-theme="dark"] .sidebar-plan-badge { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
-[data-theme="dark"] .top-header { background: rgba(10,10,10,0.90); border-bottom: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(24px) saturate(150%); }
+[data-theme="dark"] .sidebar { background: linear-gradient(180deg, #1a1714 0%, #15120f 100%); border-right: 1px solid rgba(180,160,130,0.08); }
+[data-theme="dark"] .sidebar-brand { border-bottom: 1px solid rgba(180,160,130,0.10); }
+[data-theme="dark"] .sidebar-link.active { background: rgba(180,160,130,0.10); }
+[data-theme="dark"] .sidebar-link:hover:not(.active) { background: rgba(180,160,130,0.06); }
+[data-theme="dark"] .sidebar-plan-badge { background: rgba(180,160,130,0.06); border: 1px solid rgba(180,160,130,0.12); }
+[data-theme="dark"] .top-header { background: rgba(12,11,10,0.92); border-bottom: 1px solid rgba(180,160,130,0.08); backdrop-filter: blur(24px) saturate(150%); }
 [data-theme="dark"] .section-card,
 [data-theme="dark"] .stat-card,
-[data-theme="dark"] .action-card { background: rgba(18,18,18,0.85); border: 1px solid rgba(255,255,255,0.06); }
+[data-theme="dark"] .action-card { background: rgba(18,16,14,0.85); border: 1px solid rgba(180,160,130,0.06); }
 [data-theme="dark"] .agent-item:hover { background: rgba(255,255,255,0.03); }
 [data-theme="dark"] canvas { opacity: 0.12; }
 
@@ -228,7 +228,7 @@ body {
   padding: 0 12px 8px;
 }
 [data-theme="dark"] .sidebar-section-title {
-  color: rgba(255,255,255,0.30);
+  color: rgba(180,160,130,0.45);
 }
 
 .sidebar-link {
