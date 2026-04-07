@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
+import { usePlan } from '@/hooks/usePlan'
 
 const PLANOS: Record<string, { nome: string; preco: string }> = {
-  starter: { nome: 'Starter', preco: 'R$ 59 / mes' },
-  pro: { nome: 'Pro', preco: 'R$ 119 / mes' },
+  free:       { nome: 'Free Trial', preco: 'Gratis 2 dias' },
+  starter:    { nome: 'Starter',    preco: 'R$ 59 / mes' },
+  pro:        { nome: 'Pro',        preco: 'R$ 119 / mes' },
   enterprise: { nome: 'Enterprise', preco: 'R$ 239 / mes' },
 }
 
@@ -65,15 +66,11 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
   const router   = useRouter()
   const supabase = createClient()
-  const [plano, setPlano] = useState('enterprise')
-
-  useEffect(() => {
-    const saved = localStorage.getItem('lexai-plano')
-    if (saved && PLANOS[saved]) setPlano(saved)
-  }, [])
+  const { plano, trial, loading } = usePlan()
 
   async function handleLogout() {
     await supabase.auth.signOut()
+    sessionStorage.removeItem('lexai-plan-cache')
     router.push('/login')
     router.refresh()
   }
@@ -131,9 +128,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       {/* Plan Badge */}
       <div className="sidebar-plan">
         <div className="sidebar-plan-badge">
-          <div className="plan-label">Plano ativo</div>
-          <div className="plan-name">{PLANOS[plano]?.nome || 'Enterprise'}</div>
-          <div className="plan-price">{PLANOS[plano]?.preco || 'R$ 239 / mes'}</div>
+          <div className="plan-label">{trial?.active ? 'Trial ativo' : 'Plano ativo'}</div>
+          <div className="plan-name">{loading ? '...' : (PLANOS[plano]?.nome || 'Free Trial')}</div>
+          <div className="plan-price">
+            {trial?.active
+              ? `${trial.days_left} dia${trial.days_left === 1 ? '' : 's'} restante${trial.days_left === 1 ? '' : 's'}`
+              : (PLANOS[plano]?.preco || '')}
+          </div>
         </div>
       </div>
     </aside>

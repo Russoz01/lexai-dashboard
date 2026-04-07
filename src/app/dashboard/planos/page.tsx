@@ -86,6 +86,15 @@ export default function PlanosPage() {
     else localStorage.setItem('lexai-plano', 'enterprise')
   }, [])
 
+  async function abrirPortal() {
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+      else alert('Nao foi possivel abrir o portal. Tente novamente.')
+    } catch { alert('Erro ao abrir portal de pagamento') }
+  }
+
   const precoAtual = PLANOS_BASE.find(p => p.id === planoAtual)?.precoMensal || 0
   const destaqueId = getDestaqueId(planoAtual)
 
@@ -304,6 +313,34 @@ export default function PlanosPage() {
             </div>
           )
         })}
+      </div>
+
+      {/* Gerenciar minha assinatura — Stripe portal */}
+      <div className="section-card animate-in" style={{
+        padding: '20px 28px', marginBottom: 20,
+        display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
+      }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: 12, flexShrink: 0,
+          background: 'var(--accent-light)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <i className="bi bi-credit-card" style={{ fontSize: 22, color: 'var(--accent)' }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 220 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+            Gerenciar pagamento e assinatura
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            Atualize cartao, baixe faturas, faca downgrade ou cancele a qualquer momento via Stripe.
+          </div>
+        </div>
+        <button onClick={abrirPortal} className="btn-primary" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8, flexShrink: 0,
+        }}>
+          <i className="bi bi-credit-card" />
+          Abrir portal Stripe
+        </button>
       </div>
 
       {/* Enterprise exclusive benefits (shown only when user is on Enterprise) */}

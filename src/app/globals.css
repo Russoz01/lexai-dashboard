@@ -72,7 +72,7 @@
 
   --bg:             transparent;
   --sidebar-bg:     #0A0A0A;
-  --sidebar-text:   rgba(200,185,165,0.65);
+  --sidebar-text:   rgba(230,220,200,0.88);
   --sidebar-active: #FFFFFF;
   --sidebar-active-bar: #3B82F6;
 
@@ -109,6 +109,34 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; transition: background-color 0.2s ease; }
+
+/* ── Accessibility — WCAG AA keyboard focus ─────────────────── */
+*:focus { outline: none; }
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+  transition: outline-offset 0.1s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
 
 /* Gradient orbs handled by ThemisBackground canvas */
 

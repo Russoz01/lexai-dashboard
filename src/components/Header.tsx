@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/context/ThemeContext'
 import { useState, useEffect } from 'react'
+import OnboardingModal from './OnboardingModal'
 
 interface HeaderProps {
   userName?: string
@@ -12,6 +13,7 @@ interface HeaderProps {
 export default function Header({ userName = 'Usuario', userRole = 'LexAI', onToggleSidebar }: HeaderProps) {
   const { theme, toggleTheme } = useTheme()
   const [time, setTime] = useState('')
+  const [showHelp, setShowHelp] = useState(false)
 
   useEffect(() => {
     function tick() {
@@ -20,6 +22,13 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
     tick()
     const id = setInterval(tick, 30000)
     return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    if (!localStorage.getItem('lexai-onboarded')) {
+      setShowHelp(true)
+      localStorage.setItem('lexai-onboarded', '1')
+    }
   }, [])
 
   const initials = userName
@@ -47,6 +56,10 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
       </div>
 
       <div className="header-user">
+        <button className="notif-bell" title="Ajuda e tour do LexAI" onClick={() => setShowHelp(true)}>
+          <i className="bi bi-question-circle" />
+        </button>
+
         <button className="notif-bell" title="Notificacoes" onClick={() => window.location.href='/dashboard/prazos'}>
           <i className="bi bi-bell" />
           <span className="notif-dot" />
@@ -70,6 +83,7 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
           {initials}
         </div>
       </div>
+      <OnboardingModal open={showHelp} onClose={() => setShowHelp(false)} />
     </header>
   )
 }

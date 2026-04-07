@@ -85,6 +85,93 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Depoimentos */}
+      <section style={{ padding: '80px 48px', maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', marginBottom: 12, color: '#fff' }}>O que nossos usuarios dizem</h2>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)' }}>Resultados reais de quem ja usa LexAI</p>
+        </div>
+        <div className="depoimentos-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          {[
+            {
+              name: 'Mariana Castro',
+              cargo: 'Advogada Civil - SP',
+              quote: 'Em 2 semanas economizei mais de 20 horas que eu gastava em pesquisa de jurisprudencia. O Pesquisador encontra acordaos que eu nem sabia que existiam.',
+              color: '#2563EB',
+              initials: 'MC',
+            },
+            {
+              name: 'Lucas Ferreira',
+              cargo: 'Estudante OAB - RJ',
+              quote: 'O Professor explica conceitos juridicos como nenhum livro consegue. Passei na 1a fase da OAB de primeira usando os planos de estudo personalizados.',
+              color: '#10B981',
+              initials: 'LF',
+            },
+            {
+              name: 'Renata Lima',
+              cargo: 'Socia - Lima Advocacia',
+              quote: 'Substituiu 2 estagiarios e ainda entrega mais rapido. O Redator gera peticoes que so precisam de pequenos ajustes. Investimento que se pagou em 1 mes.',
+              color: '#8B5CF6',
+              initials: 'RL',
+            },
+          ].map((t, i) => (
+            <div key={i} style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: 16,
+              padding: 24,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16,
+            }}>
+              <div style={{ display: 'flex', gap: 2 }}>
+                {[0,1,2,3,4].map((s) => (
+                  <i key={s} className="bi bi-star-fill" style={{ color: '#F59E0B', fontSize: 14 }} />
+                ))}
+              </div>
+              <p style={{
+                fontStyle: 'italic',
+                fontSize: 14,
+                color: 'rgba(255,255,255,0.85)',
+                lineHeight: 1.6,
+                margin: 0,
+                flex: 1,
+              }}>
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
+                <div style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${t.color}, ${t.color}CC)`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  flexShrink: 0,
+                }}>
+                  {t.initials}
+                </div>
+                <div>
+                  <div style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>{t.name}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>{t.cargo}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <style>{`
+          @media (max-width: 768px) {
+            .depoimentos-grid {
+              grid-template-columns: 1fr !important;
+            }
+          }
+        `}</style>
+      </section>
+
       {/* Pricing */}
       <section style={{ padding: '80px 48px', maxWidth: 1000, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>

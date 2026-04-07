@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import { useDraft, clearDraft } from '@/hooks/useDraft'
+import { generateDocx, downloadBlob } from '@/lib/word-export'
 
 const TEMPLATES = [
   { id: 'peticao',      label: 'Petição Inicial',  icon: 'bi-file-earmark-text',  desc: 'Petição inicial para distribuição de ação' },
@@ -28,6 +30,9 @@ export default function RedatorPage() {
   const [peca, setPeca]             = useState<PecaResponse | null>(null)
   const [erro, setErro]             = useState('')
   const [copied, setCopied]         = useState(false)
+  const [exportandoWord, setExportandoWord] = useState(false)
+
+  useDraft('lexai-draft-redator', instrucoes, setInstrucoes)
 
   async function gerar() {
     if (!template || !instrucoes.trim()) return
@@ -42,6 +47,7 @@ export default function RedatorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar documento')
       setPeca(data.peca)
+      clearDraft('lexai-draft-redator')
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro ao gerar peça')
     } finally {
@@ -54,6 +60,22 @@ export default function RedatorPage() {
     navigator.clipboard.writeText(peca.documento)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function handleExportarWord() {
+    if (!peca || exportandoWord) return
+    setExportandoWord(true)
+    try {
+      const paragraphs = peca.documento.split(/\n\n+/).filter(p => p.trim())
+      const sections = [{ paragraphs }]
+      const blob = await generateDocx(peca.titulo || 'Peca Juridica', sections)
+      const safeTitle = (peca.titulo || 'peca').replace(/[^\w\s-]/g, '').trim().slice(0, 60) || 'peca'
+      downloadBlob(blob, `${safeTitle}.docx`)
+    } catch (e: unknown) {
+      setErro(e instanceof Error ? e.message : 'Erro ao exportar Word')
+    } finally {
+      setExportandoWord(false)
+    }
   }
 
   return (
@@ -146,6 +168,13 @@ export default function RedatorPage() {
               <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5 }}
                 onClick={copiarDocumento}>
                 <i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'}`} /> {copied ? 'Copiado' : 'Copiar'}
+              </button>
+            )}
+            {peca && (
+              <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5, opacity: exportandoWord ? 0.7 : 1, cursor: exportandoWord ? 'default' : 'pointer' }}
+                disabled={exportandoWord}
+                onClick={handleExportarWord}>
+                <i className="bi bi-file-word" /> {exportandoWord ? 'Exportando...' : 'Exportar Word'}
               </button>
             )}
             {peca && (

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import { useDraft, clearDraft } from '@/hooks/useDraft'
 
 export default function ProfessorPage() {
   const [tema, setTema] = useState('')
@@ -12,6 +13,8 @@ export default function ProfessorPage() {
   const [aula, setAula] = useState<any>(null)
   const [erro, setErro] = useState('')
   const [nivel, setNivel] = useState<'basico' | 'intermediario' | 'avancado' | 'questoes' | 'plano'>('basico')
+
+  useDraft('lexai-draft-professor', tema, setTema)
 
   // Memory — save studied topics to localStorage
   const [studyHistory, setStudyHistory] = useState<string[]>([])
@@ -46,6 +49,7 @@ export default function ProfessorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setAula(data.aula)
+      clearDraft('lexai-draft-professor')
 
       // Save to study history
       const updated = [...studyHistory.filter(t => t !== tema), tema].slice(-20)

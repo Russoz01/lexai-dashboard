@@ -280,17 +280,25 @@ export default function DashboardPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: '6px 22px 14px' }}>
             {[
-              { agent: 'Resumidor', action: 'Documento analisado', time: '2 min atras', icon: 'bi-text-paragraph' },
-              { agent: 'Pesquisador', action: 'Jurisprudencia encontrada', time: '15 min atras', icon: 'bi-journal-bookmark' },
-              { agent: 'Professor', action: 'Aula sobre Direito Civil', time: '1h atras', icon: 'bi-mortarboard' },
-              { agent: 'Redator', action: 'Peticao gerada', time: '3h atras', icon: 'bi-pencil-square' },
-              { agent: 'Calculador', action: 'Prazo calculado', time: '5h atras', icon: 'bi-calculator' },
+              { agent: 'Resumidor', action: 'Documento analisado', time: '2 min atras', icon: 'bi-text-paragraph', href: '/dashboard/resumidor' },
+              { agent: 'Pesquisador', action: 'Jurisprudencia encontrada', time: '15 min atras', icon: 'bi-journal-bookmark', href: '/dashboard/pesquisador' },
+              { agent: 'Professor', action: 'Aula sobre Direito Civil', time: '1h atras', icon: 'bi-mortarboard', href: '/dashboard/professor' },
+              { agent: 'Redator', action: 'Peticao gerada', time: '3h atras', icon: 'bi-pencil-square', href: '/dashboard/redator' },
+              { agent: 'Calculador', action: 'Prazo calculado', time: '5h atras', icon: 'bi-calculator', href: '/dashboard/calculador' },
             ].map((item, idx, arr) => (
-              <div key={item.agent} style={{
+              <Link key={item.agent} href={item.href} style={{
                 display: 'flex', alignItems: 'center', gap: 14,
-                padding: '14px 0',
+                padding: '14px 8px',
+                marginInline: -8,
+                borderRadius: 8,
                 borderBottom: idx === arr.length - 1 ? 'none' : '1px solid var(--border)',
-              }}>
+                cursor: 'pointer',
+                textDecoration: 'none',
+                color: 'inherit',
+                transition: 'background 0.15s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 8,
                   background: 'var(--hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -302,7 +310,7 @@ export default function DashboardPage() {
                   <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>{item.action}</div>
                 </div>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>{item.time}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

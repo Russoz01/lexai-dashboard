@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { useDraft, clearDraft } from '@/hooks/useDraft'
+import { generateDocx, downloadBlob } from '@/lib/word-export'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Analise = any
@@ -135,6 +137,9 @@ export default function ResumidorPage() {
   const [salvando, setSalvando] = useState(false)
   const [salvo, setSalvo]     = useState(false)
   const [copied, setCopied]   = useState(false)
+  const [exportandoWord, setExportandoWord] = useState(false)
+
+  useDraft('lexai-draft-resumidor', texto, setTexto)
 
   async function handleAnalisar() {
     if (!texto.trim() || loading) return
@@ -190,7 +195,101 @@ export default function ResumidorPage() {
 
     setSalvo(true)
     setSalvando(false)
+    clearDraft('lexai-draft-resumidor')
     toast('success', 'Documento salvo no historico')
+  }
+
+  async function handleExportarWord() {
+    if (!analise || exportandoWord) return
+    setExportandoWord(true)
+    try {
+      const sections: Array<{ heading?: string; paragraphs: string[] }> = []
+
+      const tipoDoc = analise.classificacao?.tipo || analise.tipo_documento || 'Documento'
+      const docTitle = titulo || tipoDoc || 'Documento analisado'
+
+      // Objeto / resumo
+      const objetoText = analise.objeto || analise.resumo || analise.conclusao
+      if (objetoText) {
+        sections.push({
+          heading: 'Resumo Executivo',
+          paragraphs: String(objetoText).split(/\n\n+/),
+        })
+      }
+
+      // Pontos principais
+      const pontos = analise.pontos_principais || analise.pontos_chave || []
+      if (Array.isArray(pontos) && pontos.length > 0) {
+        sections.push({
+          heading: 'Pontos Principais',
+          paragraphs: pontos.map((p: unknown, i: number) =>
+            `${i + 1}. ${typeof p === 'string' ? p : String(p)}`
+          ),
+        })
+      }
+
+      // Riscos
+      const riscos = analise.riscos || []
+      if (Array.isArray(riscos) && riscos.length > 0) {
+        sections.push({
+          heading: 'Riscos e Clausulas Importantes',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          paragraphs: riscos.map((r: any, i: number) => {
+            if (typeof r === 'string') return `${i + 1}. ${r}`
+            const grav = r.gravidade ? `[${String(r.gravidade).toUpperCase()}] ` : ''
+            const desc = r.descricao || String(r)
+            const mit = r.mitigacao ? ` — Mitigacao: ${r.mitigacao}` : ''
+            return `${i + 1}. ${grav}${desc}${mit}`
+          }),
+        })
+      }
+
+      // Prazos
+      const prazos = analise.prazos_identificados || analise.prazos || []
+      if (Array.isArray(prazos) && prazos.length > 0) {
+        sections.push({
+          heading: 'Prazos Identificados',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          paragraphs: prazos.map((p: any, i: number) => {
+            if (typeof p === 'string') return `${i + 1}. ${p}`
+            const evento = p.prazo || p.evento || ''
+            const data = p.data ? ` (${p.data})` : ''
+            const base = p.base_legal || p.clausula ? ` — ${p.base_legal || p.clausula}` : ''
+            const conseq = p.consequencia ? ` | Consequencia: ${p.consequencia}` : ''
+            return `${i + 1}. ${evento}${data}${base}${conseq}`
+          }),
+        })
+      }
+
+      // Fundamentacao legal
+      const fundamentacao = analise.fundamentacao_legal || analise.fundamentacao || []
+      if (Array.isArray(fundamentacao) && fundamentacao.length > 0) {
+        sections.push({
+          heading: 'Fundamentacao Legal',
+          paragraphs: fundamentacao.map((f: unknown, i: number) =>
+            `${i + 1}. ${typeof f === 'string' ? f : String(f)}`
+          ),
+        })
+      }
+
+      // Conclusao
+      if (analise.conclusao && analise.conclusao !== objetoText) {
+        sections.push({
+          heading: 'Conclusao',
+          paragraphs: String(analise.conclusao).split(/\n\n+/),
+        })
+      }
+
+      const blob = await generateDocx(docTitle, sections)
+      const safeTitle = docTitle.replace(/[^\w\s-]/g, '').trim().slice(0, 60) || 'documento'
+      downloadBlob(blob, `${safeTitle}.docx`)
+      toast('success', 'Documento Word exportado')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao exportar Word'
+      toast('error', msg)
+    } finally {
+      setExportandoWord(false)
+    }
   }
 
   function handleCopiar() {
@@ -511,6 +610,25 @@ export default function ResumidorPage() {
                           }}
                         >
                           <i className="bi bi-file-pdf" /> Exportar PDF
+                        </button>
+                        <button
+                          onClick={handleExportarWord}
+                          disabled={exportandoWord}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '6px',
+                            padding: '7px 14px', borderRadius: '8px',
+                            background: 'none', border: '1px solid var(--border)',
+                            color: 'var(--text-secondary)',
+                            fontSize: '13px', fontWeight: 500,
+                            cursor: exportandoWord ? 'default' : 'pointer',
+                            fontFamily: "'DM Sans', sans-serif",
+                            opacity: exportandoWord ? 0.7 : 1,
+                          }}
+                        >
+                          {exportandoWord
+                            ? <><Spinner size={14} color="var(--text-muted)" /> Exportando...</>
+                            : <><i className="bi bi-file-word" /> Exportar Word</>
+                          }
                         </button>
                       </div>
                     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import { useDraft, clearDraft } from '@/hooks/useDraft'
 
 export default function NegociadorPage() {
   const [situacao, setSituacao] = useState('')
@@ -9,6 +10,8 @@ export default function NegociadorPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resultado, setResultado] = useState<any>(null)
   const [erro, setErro] = useState('')
+
+  useDraft('lexai-draft-negociador', situacao, setSituacao)
 
   async function analisar() {
     if (!situacao.trim() || loading) return
@@ -21,6 +24,7 @@ export default function NegociadorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setResultado(data.resultado)
+      clearDraft('lexai-draft-negociador')
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro na analise')
     } finally { setLoading(false) }
