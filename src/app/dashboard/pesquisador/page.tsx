@@ -102,7 +102,7 @@ export default function PesquisadorPage() {
           </button>
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, marginBottom: 20 }}>
           <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
           {['Responsabilidade civil do fornecedor', 'Dano moral in re ipsa', 'Prescricao intercorrente'].map((ex, i) => (
             <button key={i} type="button" onClick={() => setQuery(ex)}
