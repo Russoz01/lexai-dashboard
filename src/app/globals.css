@@ -440,7 +440,7 @@ body {
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px; margin-top: 24px;
+  gap: 24px; margin-top: 24px;
 }
 
 .stat-card {

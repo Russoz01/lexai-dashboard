@@ -228,7 +228,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Usage Analytics */}
-      <div className="animate-in delay-5" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+      <div className="animate-in delay-5" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28, marginBottom: 24 }}>
 
         {/* Agent Usage Chart */}
         <div className="section-card analytics-chart-card">

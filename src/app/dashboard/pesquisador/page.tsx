@@ -104,19 +104,6 @@ export default function PesquisadorPage() {
           </button>
         </div>
 
-        {/* Examples — agora bem espacado da search bar */}
-        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 28 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginRight: 4 }}>Exemplos rapidos</span>
-          {['Responsabilidade civil do fornecedor', 'Dano moral in re ipsa', 'Prescricao intercorrente'].map((ex, i) => (
-            <button key={i} type="button" onClick={() => setQuery(ex)}
-              style={{ fontSize: 12, padding: '6px 12px', borderRadius: 8, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)' }}>
-              {ex}
-            </button>
-          ))}
-        </div>
-
         {/* Filtros */}
         <div style={{ marginBottom: 32 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>

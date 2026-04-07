@@ -55,14 +55,51 @@ export default function NegociadorPage() {
           <textarea value={situacao} onChange={e => setSituacao(e.target.value)}
             placeholder={"Descreva a situacao de conflito com detalhes:\n\n- Partes envolvidas\n- Objeto da disputa\n- Valor em discussao\n- Historico de tentativas de acordo\n- Posicao do seu cliente"}
             className="form-input" style={{ resize: 'vertical', minHeight: 280, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6 }} />
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
-            {['Acordo trabalhista por horas extras', 'Mediacao contrato de aluguel', 'Negociacao divida bancaria'].map((ex, i) => (
-              <button key={i} type="button" onClick={() => setSituacao(ex)}
-                style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                {ex}
-              </button>
-            ))}
+
+          {/* Cenarios pre-prontos */}
+          <div style={{ marginTop: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+              Cenarios comuns &mdash; clique para usar como base
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+              {[
+                { titulo: 'Trabalhista &mdash; horas extras', exemplo: 'Cliente trabalhou 3 anos como vendedor sem registro de horas extras. Reclama 18h semanais nao pagas. Empresa oferece R$ 8 mil. Calculo correto: ~R$ 35 mil. Buscamos acordo justo.' },
+                { titulo: 'Aluguel &mdash; rescisao contratual', exemplo: 'Inquilino quer rescindir contrato 6 meses antes. Fiador resiste a multa. Locador exige 3 alugueis. Buscamos mediacao para reduzir multa proporcionalmente.' },
+                { titulo: 'Divida bancaria &mdash; renegociacao', exemplo: 'Cliente devedor de R$ 45 mil em cartao com juros abusivos. Banco oferece parcelar em 24x sem desconto. Buscamos revisao de juros e parcelamento em 36x com descontos.' },
+                { titulo: 'Civil &mdash; danos morais', exemplo: 'Cliente teve nome negativado indevidamente por servico nao contratado. Empresa nega responsabilidade. Buscamos acordo extrajudicial: indenizacao + retirada do nome.' },
+                { titulo: 'Empresarial &mdash; quebra de contrato', exemplo: 'Fornecedor descumpriu prazo de entrega causando perda de R$ 200 mil. Multa contratual prevista de 10%. Buscamos acordo com pagamento parcelado da multa + ressarcimento dos danos.' },
+                { titulo: 'Familia &mdash; pensao alimenticia', exemplo: 'Pai busca reduzir pensao apos perda de emprego. Mae quer manter valor atual. Filho de 8 anos. Renda atual do pai caiu 60%. Buscamos acordo proporcional a renda.' },
+              ].map((ex, i) => (
+                <button key={i} type="button" onClick={() => setSituacao(ex.exemplo)}
+                  style={{
+                    textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+                    background: 'var(--hover)', border: '1px solid var(--border)',
+                    color: 'var(--text-secondary)', cursor: 'pointer',
+                    fontFamily: "'DM Sans', sans-serif", fontSize: 12, lineHeight: 1.4,
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'translateY(0)' }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }} dangerouslySetInnerHTML={{ __html: ex.titulo }} />
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Clique para aplicar este modelo</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Dicas para uma negociacao eficaz */}
+          <div style={{ marginTop: 16, padding: '14px 16px', borderRadius: 10, background: 'var(--accent-light)', border: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <i className="bi bi-lightbulb-fill" />Dicas para uma negociacao eficaz
+            </div>
+            <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+              <li><strong>Conheca seu BATNA</strong> &mdash; melhor alternativa caso a negociacao falhe</li>
+              <li><strong>Identifique a ZOPA</strong> &mdash; a zona onde os interesses das partes se sobrepoem</li>
+              <li><strong>Separe pessoas de problemas</strong> &mdash; foque em interesses, nao em posicoes</li>
+              <li><strong>Use criterios objetivos</strong> &mdash; valores de mercado, jurisprudencia, leis</li>
+              <li><strong>Documente tudo</strong> &mdash; registre as concessoes feitas e propostas trocadas</li>
+              <li><strong>Tenha um plano B</strong> &mdash; medidas judiciais como ultimo recurso</li>
+            </ul>
           </div>
           {erro && (
             <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
