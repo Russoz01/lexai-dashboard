@@ -1,26 +1,55 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function ProfessorPage() {
   const [tema, setTema] = useState('')
+  const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [instituicao, setInstituicao] = useState('')
   const [loading, setLoading] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [aula, setAula] = useState<any>(null)
   const [erro, setErro] = useState('')
-  const [nivel, setNivel] = useState<'basico' | 'intermediario' | 'avancado' | 'questoes'>('basico')
+  const [nivel, setNivel] = useState<'basico' | 'intermediario' | 'avancado' | 'questoes' | 'plano'>('basico')
+
+  // Memory — save studied topics to localStorage
+  const [studyHistory, setStudyHistory] = useState<string[]>([])
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('lexai-study-history')
+      if (saved) setStudyHistory(JSON.parse(saved))
+    } catch { /* ignore */ }
+  }, [])
 
   async function ensinar() {
     if (!tema.trim() || loading) return
     setLoading(true); setErro(''); setAula(null)
+
+    // Build request with extra context
+    const body: Record<string, string> = { tema }
+    if (youtubeUrl.trim()) {
+      body.videoContent = `YouTube URL: ${youtubeUrl} — Analise o conteudo deste video sobre o tema "${tema}". Extraia os pontos principais para estudo.`
+    }
+    if (instituicao.trim()) {
+      body.instituicao = instituicao
+    }
+    if (studyHistory.length > 0) {
+      body.historico = studyHistory.slice(-10).join(', ')
+    }
+
     try {
       const res = await fetch('/api/ensinar', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tema }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setAula(data.aula)
+
+      // Save to study history
+      const updated = [...studyHistory.filter(t => t !== tema), tema].slice(-20)
+      setStudyHistory(updated)
+      localStorage.setItem('lexai-study-history', JSON.stringify(updated))
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro')
     } finally { setLoading(false) }
@@ -31,6 +60,7 @@ export default function ProfessorPage() {
     { key: 'intermediario' as const, label: 'Intermediario', icon: 'bi-journal-text', color: '#4f46e5' },
     { key: 'avancado' as const, label: 'Avancado', icon: 'bi-mortarboard', color: '#c0392b' },
     { key: 'questoes' as const, label: 'Questoes', icon: 'bi-patch-question', color: '#e67e22' },
+    { key: 'plano' as const, label: 'Plano de Estudo', icon: 'bi-calendar-check', color: '#3B82F6' },
   ]
 
   return (
@@ -43,11 +73,11 @@ export default function ProfessorPage() {
           </span>
         </div>
         <h1 className="page-title">Professor</h1>
-        <p className="page-subtitle">Ensino juridico em tres niveis com questoes estilo OAB/concursos</p>
+        <p className="page-subtitle">Ensino juridico nivel Harvard com video analysis, padroes de prova e plano de estudo</p>
       </div>
 
       {/* Search bar */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <i className="bi bi-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }} />
           <input type="text" value={tema} onChange={e => setTema(e.target.value)}
@@ -59,6 +89,42 @@ export default function ProfessorPage() {
           {loading ? 'Preparando aula...' : <><i className="bi bi-mortarboard" /> Ensinar</>}
         </button>
       </div>
+
+      {/* Extra inputs — YouTube + Institution */}
+      {!aula && !loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+          <div style={{ position: 'relative' }}>
+            <i className="bi bi-youtube" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }} />
+            <input type="text" value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)}
+              placeholder="Link do YouTube (opcional) — resumo do video"
+              className="form-input" style={{ paddingLeft: 40, fontSize: 13 }} />
+          </div>
+          <div style={{ position: 'relative' }}>
+            <i className="bi bi-mortarboard" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }} />
+            <input type="text" value={instituicao} onChange={e => setInstituicao(e.target.value)}
+              placeholder="Faculdade/Concurso (ex: OAB, TJSP, USP)"
+              className="form-input" style={{ paddingLeft: 40, fontSize: 13 }} />
+          </div>
+        </div>
+      )}
+
+      {/* Study history memory */}
+      {!aula && !loading && studyHistory.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <i className="bi bi-clock-history" style={{ fontSize: 12, color: 'var(--text-muted)' }} />
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Temas estudados recentemente</span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {studyHistory.slice(-8).reverse().map((t, i) => (
+              <button key={i} onClick={() => setTema(t)}
+                style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Study categories */}
       {!aula && !loading && (
@@ -164,6 +230,34 @@ export default function ProfessorPage() {
                 {(aula.questoes as any[]).map((q, i) => (
                   <QuestaoCard key={i} questao={q} index={i} />
                 ))}
+              </div>
+            )}
+
+            {nivel === 'plano' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                {aula.plano_estudo && (
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3B82F6', marginBottom: 8 }}>Plano de Estudo Sugerido</div>
+                    <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{String(aula.plano_estudo)}</p>
+                  </div>
+                )}
+                {aula.analise_video && (
+                  <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--accent-light)', borderLeft: '3px solid var(--accent)' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)', marginBottom: 8 }}>Resumo do Video</div>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{String(aula.analise_video)}</p>
+                  </div>
+                )}
+                {aula.padrao_provas && (
+                  <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)', borderLeft: '3px solid #F59E0B' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#F59E0B', marginBottom: 8 }}>Padrao de Provas</div>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{String(aula.padrao_provas)}</p>
+                  </div>
+                )}
+                {!aula.plano_estudo && !aula.analise_video && !aula.padrao_provas && (
+                  <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
+                    <p style={{ fontSize: 13 }}>Informe uma faculdade ou link de video para ver o plano de estudo personalizado</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
