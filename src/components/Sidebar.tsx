@@ -86,7 +86,15 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       {/* Brand */}
       <div className="sidebar-brand">
         <LexLogo />
-        <span>LexAI</span>
+        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+          <span>LexAI</span>
+          <span style={{
+            fontSize: 9, fontWeight: 600, letterSpacing: '0.6px', textTransform: 'uppercase',
+            color: 'var(--text-muted)', marginTop: 3, opacity: 0.8,
+          }}>
+            by Zyntra
+          </span>
+        </div>
       </div>
 
       {/* Navigation */}
@@ -136,6 +144,16 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               ? `${trial.days_left} dia${trial.days_left === 1 ? '' : 's'} restante${trial.days_left === 1 ? '' : 's'}`
               : (PLANOS[plano]?.preco || '')}
           </div>
+        </div>
+        {/* Zyntra footer mark */}
+        <div style={{
+          marginTop: 12, paddingTop: 12,
+          borderTop: '1px solid var(--border)',
+          fontSize: 10, color: 'var(--text-muted)',
+          textAlign: 'center', letterSpacing: '0.4px',
+        }}>
+          <i className="bi bi-stars" style={{ marginRight: 5, color: 'var(--accent)' }} />
+          Uma marca <strong style={{ color: 'var(--text-secondary)' }}>Zyntra</strong>
         </div>
       </div>
     </aside>

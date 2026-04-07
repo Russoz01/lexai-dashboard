@@ -358,6 +358,10 @@ export default function LoginPage() {
             <div className="lx-brand">
               <LexLogoMark size={68} />
               <h1 id="lx-form-title" className="lx-brand-name">LexAI</h1>
+              <div className="lx-brand-vendor">
+                <i className="bi bi-stars" aria-hidden="true" />
+                <span>uma marca <strong>Zyntra</strong></span>
+              </div>
               <p className="lx-brand-tag">Inteligencia juridica que pensa com voce</p>
             </div>
 
@@ -630,10 +634,26 @@ const pageCss = `
     letter-spacing: -0.5px;
     margin-top: 16px;
   }
+  .lx-brand-vendor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.18);
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.3px;
+  }
+  .lx-brand-vendor i { color: ${accent}; font-size: 11px; }
+  .lx-brand-vendor strong { color: ${ink}; font-weight: 700; }
   .lx-brand-tag {
     font-size: 13px;
     color: ${inkFaint};
-    margin-top: 6px;
+    margin-top: 10px;
     max-width: 280px;
     line-height: 1.5;
   }

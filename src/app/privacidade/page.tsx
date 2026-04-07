@@ -312,7 +312,7 @@ export default function PrivacidadePage() {
       {/* Footer */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px 48px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.30)' }}>2026 LexAI. Powered by LexAI</div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.30)' }}>© 2026 LexAI · uma marca <strong style={{ color: 'rgba(255,255,255,0.55)' }}>Zyntra</strong></div>
           <div style={{ display: 'flex', gap: 16, fontSize: 13, flexWrap: 'wrap' }}>
             <Link href="/" style={{ color: 'rgba(255,255,255,0.50)', textDecoration: 'none' }}>Inicio</Link>
             <Link href="/empresas" style={{ color: 'rgba(255,255,255,0.50)', textDecoration: 'none' }}>Para Empresas</Link>

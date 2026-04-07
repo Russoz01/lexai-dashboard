@@ -164,7 +164,7 @@ export default function DashboardPage() {
                 {stats.documentos}
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#10B981', marginTop: 2 }}>
-                Powered by LexAI
+                LexAI · by Zyntra
               </div>
             </div>
             <div style={{ width: '100%', height: 1, background: 'rgba(0,0,0,0.06)' }} />
@@ -222,7 +222,7 @@ export default function DashboardPage() {
           </div>
           <div className="stat-card-value">10</div>
           <div className="stat-card-footer">
-            <span className="highlight">Powered by LexAI</span>
+            <span className="highlight">LexAI · by Zyntra</span>
           </div>
         </Link>
       </div>

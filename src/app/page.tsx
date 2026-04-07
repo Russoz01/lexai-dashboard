@@ -455,7 +455,7 @@ export default function LandingPage() {
               fontSize: 12, color: 'rgba(255,255,255,0.40)',
             }}
           >
-            <div>© 2026 LexAI. Powered by LexAI.</div>
+            <div>© 2026 LexAI · uma marca <strong style={{ color: ink }}>Zyntra</strong></div>
             <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
               <span>luizfernandoleonardoleonardo@gmail.com</span>
               <span>(34) 99302-6456</span>

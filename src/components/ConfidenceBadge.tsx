@@ -40,14 +40,19 @@ export function VerifiedBadge() {
 export function PoweredByLexAI() {
   return (
     <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6,
+      display: 'inline-flex', alignItems: 'center', gap: 8,
       fontSize: 10, fontWeight: 600, color: 'var(--text-muted)',
       letterSpacing: 0.3, textTransform: 'uppercase',
-      padding: '4px 10px', borderRadius: 12,
+      padding: '5px 12px', borderRadius: 12,
       background: 'var(--hover)', border: '1px solid var(--border)',
     }}>
       <i className="bi bi-lightning-charge-fill" style={{ color: 'var(--accent)', fontSize: 11 }} />
-      Powered by LexAI
+      LexAI
+      <span style={{
+        display: 'inline-block', width: 1, height: 10,
+        background: 'var(--border)', margin: '0 1px',
+      }} />
+      <span style={{ color: 'var(--text-secondary)' }}>by Zyntra</span>
     </span>
   )
 }
