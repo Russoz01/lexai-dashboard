@@ -987,6 +987,7 @@ input[type="date"] { cursor: pointer; }
 
   /* Financeiro — summary cards */
   .fin-summary-grid { grid-template-columns: 1fr !important; }
+  .fin-invest-grid { grid-template-columns: 1fr !important; }
 
   /* Rotina — weekly grid collapses to 3 days visible */
   .rotina-week-grid { grid-template-columns: repeat(3, 1fr) !important; }

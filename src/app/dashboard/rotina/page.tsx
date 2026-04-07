@@ -13,6 +13,10 @@ interface Compromisso {
   id: string; titulo: string; horario: string; local: string; disciplina: string; dia: number; cor: string
 }
 
+interface PlanoFuturo {
+  id: string; data: string; titulo: string; descricao: string; cor: string
+}
+
 const MOCK: Compromisso[] = [
   { id:'1', titulo:'Direito Civil — Contratos',     horario:'08:00–10:00', local:'Sala 205',        disciplina:'Civil',      dia:1, cor:'#2d6a4f' },
   { id:'2', titulo:'Processo Civil',                horario:'10:00–12:00', local:'Sala 108',        disciplina:'Processo',   dia:1, cor:'#4f46e5' },
@@ -22,7 +26,27 @@ const MOCK: Compromisso[] = [
   { id:'6', titulo:'Seminário de Jurisprudência',   horario:'09:00–11:00', local:'Sala de reuniões',disciplina:'Pesquisa',   dia:5, cor:'#7c3aed' },
 ]
 
+function formatDataISO(d: Date) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${dia}`
+}
+
+function gerarMockPlanos(): PlanoFuturo[] {
+  const hoje = new Date()
+  const d1 = new Date(hoje); d1.setDate(hoje.getDate() + 3)
+  const d2 = new Date(hoje); d2.setDate(hoje.getDate() + 7)
+  const d3 = new Date(hoje); d3.setDate(hoje.getDate() + 14)
+  return [
+    { id:'p1', data: formatDataISO(d1), titulo:'Prova de Direito Civil', descricao:'Estudar contratos e obrigações', cor:'#2d6a4f' },
+    { id:'p2', data: formatDataISO(d2), titulo:'Entrega do TCC',         descricao:'Revisão final do capítulo 3',     cor:'#4f46e5' },
+    { id:'p3', data: formatDataISO(d3), titulo:'Audiência trabalhista',  descricao:'Fórum Central — sala 12',         cor:'#e67e22' },
+  ]
+}
+
 const EMPTY_COMP = { titulo:'', horario:'', local:'', disciplina:'', dia:1, cor:CORES_DISCIPLINA[0] }
+const EMPTY_PLANO = { titulo:'', descricao:'', cor:CORES_DISCIPLINA[0] }
 
 export default function RotinaPage() {
   const [compromissos, setCompromissos] = useState<Compromisso[]>(MOCK)
@@ -30,17 +54,31 @@ export default function RotinaPage() {
   const [form, setForm]     = useState(EMPTY_COMP)
   const [hoje]              = useState(new Date())
 
+  // Planejamento mensal
+  const [planosFuturos, setPlanosFuturos] = useState<PlanoFuturo[]>(gerarMockPlanos())
+  const [mesVisivel, setMesVisivel]       = useState(new Date(hoje.getFullYear(), hoje.getMonth(), 1))
+  const [dataSelecionada, setDataSelecionada] = useState<string | null>(null)
+  const [planoForm, setPlanoForm]         = useState(EMPTY_PLANO)
+
   // Persist to localStorage
   useEffect(() => {
     const saved = localStorage.getItem('lexai-rotina')
     if (saved) {
       try { setCompromissos(JSON.parse(saved)) } catch { /* use mock */ }
     }
+    const savedPlanos = localStorage.getItem('lexai-planos-futuros')
+    if (savedPlanos) {
+      try { setPlanosFuturos(JSON.parse(savedPlanos)) } catch { /* use mock */ }
+    }
   }, [])
 
   useEffect(() => {
     localStorage.setItem('lexai-rotina', JSON.stringify(compromissos))
   }, [compromissos])
+
+  useEffect(() => {
+    localStorage.setItem('lexai-planos-futuros', JSON.stringify(planosFuturos))
+  }, [planosFuturos])
 
   const inicioSemana = new Date(hoje)
   inicioSemana.setDate(hoje.getDate() - hoje.getDay())
@@ -64,6 +102,58 @@ export default function RotinaPage() {
   }
 
   const compHoje = compromissos.filter(c => c.dia === diaHoje).sort((a,b) => a.horario.localeCompare(b.horario))
+
+  // Grade do calendário mensal (42 células = 6 semanas)
+  const primeiroDiaMes = new Date(mesVisivel.getFullYear(), mesVisivel.getMonth(), 1)
+  const diaSemanaInicio = primeiroDiaMes.getDay()
+  const diasGrade = Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(primeiroDiaMes)
+    d.setDate(1 - diaSemanaInicio + i)
+    return d
+  })
+  const hojeISO = formatDataISO(hoje)
+  const mesAtualNum = mesVisivel.getMonth()
+
+  function irMesAnterior() {
+    setMesVisivel(new Date(mesVisivel.getFullYear(), mesVisivel.getMonth() - 1, 1))
+    setDataSelecionada(null)
+  }
+  function irMesSeguinte() {
+    setMesVisivel(new Date(mesVisivel.getFullYear(), mesVisivel.getMonth() + 1, 1))
+    setDataSelecionada(null)
+  }
+  function irHoje() {
+    setMesVisivel(new Date(hoje.getFullYear(), hoje.getMonth(), 1))
+    setDataSelecionada(null)
+  }
+
+  function clicarData(d: Date) {
+    const iso = formatDataISO(d)
+    // só permite datas a partir de hoje
+    if (iso < hojeISO) return
+    setDataSelecionada(iso === dataSelecionada ? null : iso)
+    setPlanoForm(EMPTY_PLANO)
+  }
+
+  function salvarPlano() {
+    if (!dataSelecionada || !planoForm.titulo) return
+    setPlanosFuturos(prev => [...prev, {
+      id: Date.now().toString(),
+      data: dataSelecionada,
+      titulo: planoForm.titulo,
+      descricao: planoForm.descricao,
+      cor: planoForm.cor,
+    }])
+    setPlanoForm(EMPTY_PLANO)
+  }
+
+  function removerPlano(id: string) {
+    setPlanosFuturos(prev => prev.filter(p => p.id !== id))
+  }
+
+  const planosDataSelecionada = dataSelecionada
+    ? planosFuturos.filter(p => p.data === dataSelecionada)
+    : []
 
   return (
     <div className="page-content" style={{ maxWidth: '100%' }}>
@@ -166,6 +256,221 @@ export default function RotinaPage() {
                 </button>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Planejamento Mensal */}
+      <div className="section-card" style={{ padding:'18px 20px', marginTop:32 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
+          <i className="bi bi-calendar3" style={{ color:'var(--accent)', fontSize:16 }} />
+          <span style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)' }}>
+            Planejamento Mensal
+          </span>
+        </div>
+
+        {/* Header com navegação */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16, gap:8 }}>
+          <button onClick={irMesAnterior} style={{
+            background:'none', border:'1px solid var(--border)', cursor:'pointer',
+            color:'var(--text-secondary)', width:32, height:32, borderRadius:8,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}
+            onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background='var(--hover)'}
+            onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background='transparent'}
+            aria-label="Mês anterior">
+            <i className="bi bi-chevron-left" />
+          </button>
+
+          <div style={{ display:'flex', alignItems:'center', gap:12, flex:1, justifyContent:'center' }}>
+            <span style={{ fontSize:15, fontWeight:700, color:'var(--text-primary)' }}>
+              {MESES[mesVisivel.getMonth()]} {mesVisivel.getFullYear()}
+            </span>
+            <button onClick={irHoje} style={{
+              fontSize:11, padding:'4px 10px', borderRadius:6,
+              border:'1px solid var(--border)', background:'transparent',
+              color:'var(--text-secondary)', cursor:'pointer', fontWeight:600,
+            }}
+              onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background='var(--hover)'}
+              onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background='transparent'}>
+              Hoje
+            </button>
+          </div>
+
+          <button onClick={irMesSeguinte} style={{
+            background:'none', border:'1px solid var(--border)', cursor:'pointer',
+            color:'var(--text-secondary)', width:32, height:32, borderRadius:8,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}
+            onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background='var(--hover)'}
+            onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background='transparent'}
+            aria-label="Próximo mês">
+            <i className="bi bi-chevron-right" />
+          </button>
+        </div>
+
+        {/* Cabeçalho dos dias da semana */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:4, marginBottom:6 }}>
+          {DIAS.map(d => (
+            <div key={d} style={{
+              textAlign:'center', fontSize:10, fontWeight:700, color:'var(--text-muted)',
+              textTransform:'uppercase', padding:'6px 0',
+            }}>{d}</div>
+          ))}
+        </div>
+
+        {/* Grade do calendário */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:4 }}>
+          {diasGrade.map((d, i) => {
+            const iso = formatDataISO(d)
+            const ehMesAtual = d.getMonth() === mesAtualNum
+            const ehHoje = iso === hojeISO
+            const ehPassado = iso < hojeISO
+            const ehSelecionada = iso === dataSelecionada
+            const planosDoDia = planosFuturos.filter(p => p.data === iso)
+            return (
+              <button
+                key={i}
+                onClick={() => clicarData(d)}
+                disabled={ehPassado}
+                style={{
+                  aspectRatio:'1 / 1',
+                  minHeight:44,
+                  border: ehSelecionada
+                    ? '2px solid var(--accent)'
+                    : '1px solid var(--border)',
+                  borderRadius:8,
+                  background: ehHoje
+                    ? 'var(--accent)'
+                    : ehSelecionada
+                      ? 'var(--hover)'
+                      : 'transparent',
+                  color: ehHoje
+                    ? '#fff'
+                    : ehMesAtual
+                      ? 'var(--text-primary)'
+                      : 'var(--text-muted)',
+                  opacity: ehPassado && !ehHoje ? 0.35 : ehMesAtual ? 1 : 0.5,
+                  cursor: ehPassado ? 'not-allowed' : 'pointer',
+                  display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+                  fontSize:13, fontWeight: ehHoje ? 700 : 500,
+                  position:'relative', padding:4,
+                  transition:'background 0.15s',
+                }}
+                onMouseEnter={e => {
+                  if (!ehPassado && !ehHoje && !ehSelecionada) {
+                    (e.currentTarget as HTMLButtonElement).style.background = 'var(--hover)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!ehPassado && !ehHoje && !ehSelecionada) {
+                    (e.currentTarget as HTMLButtonElement).style.background = 'transparent'
+                  }
+                }}
+              >
+                <span>{d.getDate()}</span>
+                {planosDoDia.length > 0 && (
+                  <div style={{ display:'flex', gap:2, marginTop:2, position:'absolute', bottom:4 }}>
+                    {planosDoDia.slice(0, 3).map(p => (
+                      <span key={p.id} style={{
+                        width:5, height:5, borderRadius:'50%', background:p.cor,
+                      }} />
+                    ))}
+                  </div>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Expansão inline: detalhe / adicionar plano para data selecionada */}
+        {dataSelecionada && (
+          <div style={{
+            marginTop:16, padding:'14px 16px', borderRadius:10,
+            background:'var(--hover)', border:'1px solid var(--border)',
+          }}>
+            <div style={{ fontSize:13, fontWeight:700, color:'var(--text-primary)', marginBottom:12 }}>
+              <i className="bi bi-calendar-event" style={{ marginRight:6, color:'var(--accent)' }} />
+              {(() => {
+                const [y, m, d] = dataSelecionada.split('-').map(Number)
+                const dt = new Date(y, m - 1, d)
+                return `${DIAS[dt.getDay()]}, ${dt.getDate()} de ${MESES[dt.getMonth()]} ${dt.getFullYear()}`
+              })()}
+            </div>
+
+            {/* Planos existentes da data */}
+            {planosDataSelecionada.length > 0 && (
+              <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:12 }}>
+                {planosDataSelecionada.map(p => (
+                  <div key={p.id} style={{
+                    display:'flex', alignItems:'center', gap:10,
+                    padding:'10px 12px', borderRadius:8,
+                    background:'var(--bg, transparent)',
+                    border:'1px solid var(--border)',
+                    borderLeft:`3px solid ${p.cor}`,
+                  }}>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontWeight:600, fontSize:13, color:'var(--text-primary)', marginBottom:2 }}>{p.titulo}</div>
+                      {p.descricao && (
+                        <div style={{ fontSize:12, color:'var(--text-muted)' }}>{p.descricao}</div>
+                      )}
+                    </div>
+                    <button onClick={() => removerPlano(p.id)} style={{
+                      background:'none', border:'none', cursor:'pointer',
+                      color:'var(--text-muted)', fontSize:13, padding:'4px 6px', borderRadius:6,
+                    }}
+                      onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color='var(--danger)'}
+                      onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color='var(--text-muted)'}
+                      aria-label="Remover plano">
+                      <i className="bi bi-x-lg" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Form inline para novo plano */}
+            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:'var(--text-muted)', textTransform:'uppercase' }}>
+                Novo plano
+              </div>
+              <input
+                type="text"
+                value={planoForm.titulo}
+                onChange={e => setPlanoForm(f => ({ ...f, titulo:e.target.value }))}
+                placeholder="Título do plano"
+                className="form-input"
+              />
+              <input
+                type="text"
+                value={planoForm.descricao}
+                onChange={e => setPlanoForm(f => ({ ...f, descricao:e.target.value }))}
+                placeholder="Descrição (opcional)"
+                className="form-input"
+              />
+              <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
+                <span style={{ fontSize:11, color:'var(--text-muted)', fontWeight:600, marginRight:4 }}>Cor:</span>
+                {CORES_DISCIPLINA.map(cor => (
+                  <button key={cor} type="button" onClick={() => setPlanoForm(f => ({ ...f, cor }))} style={{
+                    width:22, height:22, borderRadius:'50%', background:cor, border:'none', cursor:'pointer',
+                    outline: planoForm.cor === cor ? `2px solid ${cor}` : '2px solid transparent',
+                    outlineOffset:2,
+                  }} aria-label={`Cor ${cor}`} />
+                ))}
+              </div>
+              <div style={{ display:'flex', gap:8, marginTop:4 }}>
+                <button type="button" className="btn-ghost" style={{ flex:1 }}
+                  onClick={() => { setDataSelecionada(null); setPlanoForm(EMPTY_PLANO) }}>
+                  Fechar
+                </button>
+                <button type="button" className="btn-primary"
+                  disabled={!planoForm.titulo}
+                  onClick={salvarPlano}
+                  style={{ flex:1, justifyContent:'center' }}>
+                  <i className="bi bi-plus-lg" /> Adicionar plano
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

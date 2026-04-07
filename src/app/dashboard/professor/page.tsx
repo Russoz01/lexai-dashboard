@@ -74,7 +74,7 @@ export default function ProfessorPage() {
           </span>
         </div>
         <h1 className="page-title">Professor</h1>
-        <p className="page-subtitle">Ensino juridico nivel Harvard com video analysis, padroes de prova e plano de estudo</p>
+        <p className="page-subtitle">Aprenda qualquer materia &mdash; Direito, ENEM, Vestibular, Concursos. Ensino nivel Harvard com video analysis, padroes de prova e plano de estudo</p>
       </div>
 
       {/* Search bar */}
@@ -141,11 +141,11 @@ export default function ProfessorPage() {
 
       {/* Study categories — now 8 areas */}
       {!aula && !loading && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
-            Areas de Estudo &mdash; Clique em qualquer materia
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
+            Areas de Estudo Juridico &mdash; Clique em qualquer materia
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }} className="study-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="study-grid">
             {[
               { area: 'Direito Civil', temas: ['Responsabilidade Civil', 'Contratos', 'Prescricao', 'Posse e Propriedade'], icon: 'bi-file-earmark-text', color: '#2563EB' },
               { area: 'Direito Penal', temas: ['Legitima Defesa', 'Crimes contra o patrimonio', 'Principio da Legalidade', 'Dosimetria da Pena'], icon: 'bi-shield-exclamation', color: '#EF4444' },
@@ -180,10 +180,60 @@ export default function ProfessorPage() {
         </div>
       )}
 
+      {/* Todas as Materias — academic subjects beyond law */}
+      {!aula && !loading && (
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <i className="bi bi-book-half" style={{ marginRight: 6 }} />Todas as Materias &mdash; Vestibular, ENEM, Concursos
+            </div>
+            <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 10, background: 'rgba(139,92,246,0.12)', color: '#8B5CF6', fontWeight: 700, letterSpacing: '0.3px' }}>
+              QUALQUER MATERIA
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="study-grid">
+            {[
+              { area: 'Matematica', temas: ['Funcoes', 'Trigonometria', 'Geometria', 'Probabilidade'], icon: 'bi-calculator', color: '#2563EB' },
+              { area: 'Portugues', temas: ['Sintaxe', 'Interpretacao de Texto', 'Figuras de Linguagem', 'Crase'], icon: 'bi-translate', color: '#10B981' },
+              { area: 'Fisica', temas: ['Cinematica', 'Leis de Newton', 'Termodinamica', 'Eletromagnetismo'], icon: 'bi-lightning-charge', color: '#F59E0B' },
+              { area: 'Quimica', temas: ['Tabela Periodica', 'Ligacoes Quimicas', 'Quimica Organica', 'Estequiometria'], icon: 'bi-moisture', color: '#06B6D4' },
+              { area: 'Biologia', temas: ['Genetica', 'Ecologia', 'Evolucao', 'Citologia'], icon: 'bi-tree', color: '#22C55E' },
+              { area: 'Historia', temas: ['Brasil Colonia', 'Revolucao Francesa', 'Era Vargas', 'Guerra Fria'], icon: 'bi-hourglass-split', color: '#8B5CF6' },
+              { area: 'Geografia', temas: ['Globalizacao', 'Geopolitica', 'Climatologia', 'Demografia'], icon: 'bi-globe-americas', color: '#0EA5E9' },
+              { area: 'Filosofia', temas: ['Socrates', 'Kant', 'Existencialismo', 'Etica'], icon: 'bi-lightbulb', color: '#EC4899' },
+              { area: 'Sociologia', temas: ['Durkheim', 'Marx', 'Weber', 'Movimentos Sociais'], icon: 'bi-people', color: '#6366F1' },
+              { area: 'Ingles', temas: ['Verb Tenses', 'Phrasal Verbs', 'Reading Comprehension', 'Grammar Rules'], icon: 'bi-chat-dots', color: '#EF4444' },
+              { area: 'Literatura', temas: ['Modernismo', 'Romantismo', 'Machado de Assis', 'Escolas Literarias'], icon: 'bi-journal-text', color: '#D97706' },
+              { area: 'Redacao ENEM', temas: ['Estrutura Dissertativa', 'Proposta de Intervencao', 'Conectivos', 'Argumentacao'], icon: 'bi-pencil-square', color: '#14B8A6' },
+            ].map((cat, i) => (
+              <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
+                onClick={() => { setTema(cat.temas[0]); }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cat.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className={`bi ${cat.icon}`} style={{ color: cat.color, fontSize: 14 }} />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{cat.area}</span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {cat.temas.map((t, j) => (
+                    <button key={j} onClick={(e) => { e.stopPropagation(); setTema(t); }}
+                      style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Public Resources — external free legal resources */}
       {!aula && !loading && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               <i className="bi bi-globe2" style={{ marginRight: 6 }} />Biblioteca Publica &mdash; Recursos Gratuitos Confiaveis
             </div>
@@ -191,16 +241,20 @@ export default function ProfessorPage() {
               100% GRATUITO
             </span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }} className="study-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="study-grid">
             {[
-              { nome: 'Portal do STF', desc: 'Supremo Tribunal Federal — acordaos e sumulas', url: 'https://portal.stf.jus.br/', icon: 'bi-bank', color: '#c9a84c' },
-              { nome: 'Portal do STJ', desc: 'Superior Tribunal de Justica — jurisprudencia', url: 'https://www.stj.jus.br/', icon: 'bi-bank2', color: '#2563EB' },
+              { nome: 'Portal do STF', desc: 'Supremo Tribunal Federal &mdash; acordaos e sumulas', url: 'https://portal.stf.jus.br/', icon: 'bi-bank', color: '#c9a84c' },
+              { nome: 'Portal do STJ', desc: 'Superior Tribunal de Justica &mdash; jurisprudencia', url: 'https://www.stj.jus.br/', icon: 'bi-bank2', color: '#2563EB' },
               { nome: 'Planalto — Leis', desc: 'Codigos, leis federais e decretos', url: 'https://www.planalto.gov.br/ccivil_03/', icon: 'bi-book', color: '#10B981' },
               { nome: 'CNJ', desc: 'Conselho Nacional de Justica', url: 'https://www.cnj.jus.br/', icon: 'bi-diagram-3', color: '#8B5CF6' },
               { nome: 'JusBrasil', desc: 'Maior acervo juridico da internet', url: 'https://www.jusbrasil.com.br/', icon: 'bi-search', color: '#EC4899' },
               { nome: 'Senado — Biblioteca', desc: 'Biblioteca digital do Senado Federal', url: 'https://www2.senado.leg.br/bdsf/', icon: 'bi-journal-richtext', color: '#F59E0B' },
-              { nome: 'Domínio Publico', desc: 'Livros, teses e monografias gratuitas', url: 'http://www.dominiopublico.gov.br/', icon: 'bi-collection', color: '#06B6D4' },
-              { nome: 'Gran Cursos YouTube', desc: 'Aulas gratuitas de Direito no YouTube', url: 'https://www.youtube.com/@grancursos', icon: 'bi-youtube', color: '#EF4444' },
+              { nome: 'Dominio Publico', desc: 'Livros, teses e monografias gratuitas', url: 'http://www.dominiopublico.gov.br/', icon: 'bi-collection', color: '#06B6D4' },
+              { nome: 'Khan Academy BR', desc: 'Matematica, ciencias e fisica gratis', url: 'https://pt.khanacademy.org/', icon: 'bi-mortarboard', color: '#14B8A6' },
+              { nome: 'Brasil Escola', desc: 'Resumos de todas as materias ENEM', url: 'https://brasilescola.uol.com.br/', icon: 'bi-backpack', color: '#6366F1' },
+              { nome: 'Me Salva!', desc: 'Aulas ENEM e vestibular no YouTube', url: 'https://www.youtube.com/@MeSalvaENEM', icon: 'bi-youtube', color: '#EF4444' },
+              { nome: 'Duolingo', desc: 'Aprenda idiomas gratuitamente', url: 'https://www.duolingo.com/', icon: 'bi-translate', color: '#22C55E' },
+              { nome: 'Gran Cursos YouTube', desc: 'Aulas gratuitas de Direito no YouTube', url: 'https://www.youtube.com/@grancursos', icon: 'bi-play-btn', color: '#F97316' },
             ].map((rec, i) => (
               <a key={i} href={rec.url} target="_blank" rel="noopener noreferrer"
                 className="section-card"

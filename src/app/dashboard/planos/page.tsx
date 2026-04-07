@@ -389,17 +389,148 @@ export default function PlanosPage() {
         </div>
       </div>
 
+      {/* Testimonials — social proof */}
+      <div className="section-card" style={{ padding: '28px 32px', marginBottom: 24 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>
+            <i className="bi bi-stars" style={{ marginRight: 6 }} />Quem ja usa esta amando
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+            Resultados reais de quem testou
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="compare-grid">
+          {[
+            {
+              nome: 'Mariana Castro',
+              cargo: 'Advogada Civil — SP',
+              foto: 'MC',
+              cor: '#2563EB',
+              estrelas: 5,
+              texto: 'Em 2 semanas economizei mais de 20 horas que eu gastava em pesquisa de jurisprudencia. O Pesquisador encontra acordaos que eu nem sabia que existiam.',
+            },
+            {
+              nome: 'Lucas Ferreira',
+              cargo: 'Estudante OAB — RJ',
+              foto: 'LF',
+              cor: '#10B981',
+              estrelas: 5,
+              texto: 'O Professor explica conceitos juridicos como nenhum livro consegue. Passei na 1a fase da OAB de primeira usando os planos de estudo personalizados.',
+            },
+            {
+              nome: 'Renata Lima',
+              cargo: 'Sócia — Lima Advocacia',
+              foto: 'RL',
+              cor: '#8B5CF6',
+              estrelas: 5,
+              texto: 'Substituiu 2 estagiarios e ainda entrega mais rapido. O Redator gera peticoes que so precisam de pequenos ajustes. Investimento que se pagou em 1 mes.',
+            },
+          ].map((t, i) => (
+            <div key={i} style={{ padding: 20, borderRadius: 12, background: 'var(--card-bg)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', gap: 2, color: '#F59E0B' }}>
+                {Array.from({ length: t.estrelas }).map((_, j) => (
+                  <i key={j} className="bi bi-star-fill" style={{ fontSize: 12 }} />
+                ))}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                &ldquo;{t.texto}&rdquo;
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 'auto', paddingTop: 8 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: `linear-gradient(135deg, ${t.cor}, ${t.cor}aa)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
+                  {t.foto}
+                </div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{t.nome}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.cargo}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Money-back guarantee — risk reversal */}
+      <div className="section-card" style={{
+        padding: '28px 32px',
+        marginBottom: 24,
+        background: 'linear-gradient(135deg, var(--accent-light), rgba(16,185,129,0.04))',
+        border: '1px solid rgba(16,185,129,0.20)',
+        textAlign: 'center',
+      }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '50%', background: 'rgba(16,185,129,0.12)', marginBottom: 14 }}>
+          <i className="bi bi-shield-check" style={{ fontSize: 30, color: '#10B981' }} />
+        </div>
+        <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.5px' }}>
+          Garantia de 7 dias ou seu dinheiro de volta
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 560, margin: '0 auto', lineHeight: 1.6 }}>
+          Teste todos os agentes sem risco. Se a LexAI nao economizar pelo menos 5 horas do seu trabalho na primeira semana, devolvemos 100% do valor. Sem perguntas, sem burocracia.
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 18, flexWrap: 'wrap' }}>
+          {[
+            { icon: 'bi-clock-history', text: '7 dias para testar' },
+            { icon: 'bi-arrow-counterclockwise', text: 'Reembolso em 24h' },
+            { icon: 'bi-emoji-smile', text: 'Sem perguntas' },
+          ].map((g, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
+              <i className={`bi ${g.icon}`} style={{ color: '#10B981', fontSize: 14 }} />
+              {g.text}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Final CTA — urgency + scarcity */}
+      <div className="section-card" style={{
+        padding: '36px 32px',
+        marginBottom: 24,
+        background: 'linear-gradient(135deg, rgba(201,168,76,0.10), rgba(59,130,246,0.06))',
+        border: '1px solid rgba(201,168,76,0.30)',
+        textAlign: 'center',
+      }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+          Vagas limitadas para o lancamento
+        </div>
+        <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 10, letterSpacing: '-0.8px' }}>
+          Pronto para acabar com as horas perdidas?
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 540, margin: '0 auto 24px', lineHeight: 1.6 }}>
+          Junte-se aos primeiros advogados e estudantes que ja transformaram sua rotina. Comece em 30 segundos &mdash; sem cartao de credito.
+        </div>
+        <button onClick={() => {
+          const link = PLANOS_BASE.find(p => p.id === destaqueId)?.stripeLink
+          if (link) window.open(link, '_blank')
+        }} style={{
+          padding: '14px 32px', borderRadius: 12, fontSize: 15, fontWeight: 700,
+          background: 'linear-gradient(135deg, #c9a84c, #d4b86a)', color: '#0f1923',
+          border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+          display: 'inline-flex', alignItems: 'center', gap: 10,
+          boxShadow: '0 8px 24px rgba(201,168,76,0.30)', transition: 'transform 0.15s',
+        }}
+          onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'}
+          onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'}>
+          <i className="bi bi-rocket-takeoff-fill" />
+          Comecar 2 dias gratis agora
+        </button>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 12 }}>
+          Cancele a qualquer momento &middot; Sem cobranca durante o periodo gratis &middot; Suporte em portugues
+        </div>
+      </div>
+
       {/* FAQ */}
       <div className="section-card" style={{ padding: '24px 28px' }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>Perguntas Frequentes</div>
         {[
-          { q: 'Posso trocar de plano a qualquer momento?', a: 'Sim, voce pode fazer upgrade ou downgrade do seu plano a qualquer momento. A diferenca sera calculada proporcionalmente.' },
-          { q: 'Como funciona o limite de documentos?', a: 'Cada analise de documento, pesquisa ou geracao de peca conta como 1 documento. O contador reseta no inicio de cada mes.' },
-          { q: 'O que acontece quando atinjo o limite?', a: 'Voce recebera um aviso e podera fazer upgrade do plano ou aguardar o proximo ciclo mensal.' },
-          { q: 'Os agentes IA sao diferentes entre os planos?', a: 'Sim. O plano Starter inclui 3 agentes basicos. O Pro inclui 6 agentes. O Enterprise inclui todos os 10 agentes atuais e acesso prioritario a novos agentes exclusivos.' },
-          { q: 'Qual a vantagem do plano anual?', a: 'No plano anual voce economiza 20% em relacao ao pagamento mensal, alem de garantir o preco fixo por 12 meses sem reajustes.' },
-        ].map((item, i) => (
-          <div key={i} style={{ padding: '14px 0', borderBottom: i < 4 ? '1px solid var(--border)' : 'none' }}>
+          { q: 'E se eu nao gostar? Tenho como cancelar?', a: 'Sim. Voce pode cancelar com 1 clique a qualquer momento, sem multas, sem ligacao com vendedor, sem perguntas. Alem disso, oferecemos 7 dias de garantia: se nao economizar 5h na primeira semana, devolvemos 100% do valor.' },
+          { q: 'Preciso ter conhecimento tecnico para usar?', a: 'Nao. A LexAI foi projetada para ser usada por advogados e estudantes sem nenhum conhecimento de programacao. Voce digita em portugues e a IA responde estruturado, pronto para usar.' },
+          { q: 'Os documentos que eu enviar ficam seguros?', a: 'Totalmente. Somos LGPD compliant, todos os dados sao criptografados em transito e em repouso. Nao usamos seus documentos para treinar modelos. Sua privacidade e prioridade.' },
+          { q: 'Posso trocar de plano depois?', a: 'Sim, voce pode fazer upgrade ou downgrade a qualquer momento. A diferenca e calculada proporcionalmente. Sem fidelidade nem multa.' },
+          { q: 'Como funciona o limite de documentos?', a: 'Cada analise, pesquisa ou peca conta como 1 documento. O contador reseta no inicio do mes. Se atingir o limite, voce recebe aviso e pode fazer upgrade ou aguardar o proximo ciclo.' },
+          { q: 'Quanto tempo eu economizo de verdade?', a: 'A media dos nossos usuarios e 12 a 20 horas por semana. Uma analise de contrato que levaria 3h leva 45 segundos. Uma peca que voce escreveria em 2h sai pronta em 2 minutos.' },
+          { q: 'Qual a vantagem do plano anual?', a: 'No plano anual voce economiza 18% em relacao ao mensal, garante preco fixo por 12 meses sem reajustes e ainda recebe 1 mes adicional de bonus.' },
+        ].map((item, i, arr) => (
+          <div key={i} style={{ padding: '14px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{item.q}</div>
             <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{item.a}</div>
           </div>

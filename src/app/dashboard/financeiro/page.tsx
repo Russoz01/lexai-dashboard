@@ -18,6 +18,172 @@ const EMPTY = { descricao: '', valor: '', tipo: 'receita', categoria: 'honorario
 function fmt(v: number) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }
 function fmtData(d: string) { const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}` }
 
+interface InvestmentSuggestion {
+  nome: string
+  descricao: string
+  rendimento: string
+  risco: 'Baixo' | 'Medio' | 'Alto'
+  tempo: string
+}
+
+function getInvestmentSuggestions(saldo: number): InvestmentSuggestion[] {
+  if (saldo < 500) {
+    return [
+      {
+        nome: 'Reserva de Emergencia — Tesouro Selic',
+        descricao: 'Comece construindo sua reserva de emergencia com liquidez diaria. Ideal para quem esta iniciando.',
+        rendimento: '~10,5% a.a.',
+        risco: 'Baixo',
+        tempo: 'Liquidez diaria',
+      },
+      {
+        nome: 'Poupanca Digital',
+        descricao: 'Alternativa simples e acessivel enquanto voce junta mais capital para investir.',
+        rendimento: '~6,5% a.a.',
+        risco: 'Baixo',
+        tempo: 'Liquidez diaria',
+      },
+      {
+        nome: 'Conta Remunerada (Nubank, Inter)',
+        descricao: 'Rendimento automatico ate mesmo com pouco dinheiro, sem taxas.',
+        rendimento: '~100% CDI',
+        risco: 'Baixo',
+        tempo: 'Liquidez diaria',
+      },
+      {
+        nome: 'Educacao Financeira',
+        descricao: 'Antes de investir mais, invista em conhecimento: livros e cursos gratuitos sobre financas.',
+        rendimento: 'Incalculavel',
+        risco: 'Baixo',
+        tempo: 'Contínuo',
+      },
+    ]
+  }
+  if (saldo <= 5000) {
+    return [
+      {
+        nome: 'CDB 110% CDI (Banco Inter)',
+        descricao: 'Rende mais que a poupanca e possui garantia do FGC ate R$ 250 mil. Ideal para iniciantes.',
+        rendimento: '~11,5% a.a.',
+        risco: 'Baixo',
+        tempo: '6 a 12 meses',
+      },
+      {
+        nome: 'Tesouro Selic',
+        descricao: 'Titulo publico federal com liquidez diaria. O investimento mais seguro do Brasil.',
+        rendimento: '~10,5% a.a.',
+        risco: 'Baixo',
+        tempo: 'Liquidez diaria',
+      },
+      {
+        nome: 'LCI/LCA',
+        descricao: 'Isentas de Imposto de Renda, com garantia do FGC. Excelente para medio prazo.',
+        rendimento: '~95% CDI liquido',
+        risco: 'Baixo',
+        tempo: '1 a 2 anos',
+      },
+      {
+        nome: 'Fundos DI',
+        descricao: 'Diversificacao automatica com taxa de administracao baixa. Boa porta de entrada.',
+        rendimento: '~95% CDI',
+        risco: 'Baixo',
+        tempo: '6+ meses',
+      },
+    ]
+  }
+  if (saldo <= 20000) {
+    return [
+      {
+        nome: 'Tesouro IPCA+ 2029',
+        descricao: 'Protege seu dinheiro da inflacao com rentabilidade real garantida ate o vencimento.',
+        rendimento: 'IPCA + 6,0% a.a.',
+        risco: 'Baixo',
+        tempo: '4 a 5 anos',
+      },
+      {
+        nome: 'CDB Prefixado 13% a.a.',
+        descricao: 'Trava uma taxa alta antes de possiveis cortes da Selic. Com garantia do FGC.',
+        rendimento: '~13,0% a.a.',
+        risco: 'Baixo',
+        tempo: '2 a 3 anos',
+      },
+      {
+        nome: 'Fundos Imobiliarios (HGLG11)',
+        descricao: 'Renda mensal isenta de IR via dividendos. Diversificacao em imoveis corporativos.',
+        rendimento: '~9% a.a. + valorizacao',
+        risco: 'Medio',
+        tempo: '2+ anos',
+      },
+      {
+        nome: 'ETF BOVA11',
+        descricao: 'Exposicao diversificada ao Ibovespa com baixo custo. Ideal para comecar em acoes.',
+        rendimento: 'Variavel (~12% a.a. hist.)',
+        risco: 'Medio',
+        tempo: '5+ anos',
+      },
+    ]
+  }
+  return [
+    {
+      nome: 'Carteira Diversificada Equilibrada',
+      descricao: '50% Tesouro IPCA+ para protecao, 30% ETF IVVB11 para exposicao global e 20% FIIs (HGLG11, KNRI11) para renda passiva.',
+      rendimento: '~11% a.a. estimado',
+      risco: 'Medio',
+      tempo: '5+ anos',
+    },
+    {
+      nome: 'ETF IVVB11 (S&P 500)',
+      descricao: 'Exposicao dolarizada as 500 maiores empresas americanas. Protecao cambial e diversificacao internacional.',
+      rendimento: '~10% a.a. hist.',
+      risco: 'Medio',
+      tempo: '5+ anos',
+    },
+    {
+      nome: 'FIIs de Tijolo (KNRI11, HGLG11)',
+      descricao: 'Portfolio de imoveis corporativos premium com distribuicao mensal de dividendos isentos de IR.',
+      rendimento: '~8-9% a.a. + valorizacao',
+      risco: 'Medio',
+      tempo: '3+ anos',
+    },
+    {
+      nome: 'Previdencia Privada PGBL',
+      descricao: 'Beneficio fiscal de ate 12% da renda bruta anual. Ideal para quem faz declaracao completa do IR.',
+      rendimento: '~10% a.a.',
+      risco: 'Baixo',
+      tempo: '10+ anos',
+    },
+  ]
+}
+
+function getCheaperAlternative(descricao: string, valor: number): { alt: string; economia: number } | null {
+  const d = descricao.toLowerCase()
+  if ((d.includes('café') || d.includes('cafe')) && valor > 30) {
+    return { alt: 'Cafe solavel Melitta 200g', economia: valor * 0.6 }
+  }
+  if ((d.includes('almoco') || d.includes('almoço') || d.includes('jantar') || d.includes('comida')) && valor > 40) {
+    return { alt: 'Marmita caseira (preparada em casa)', economia: valor * 0.5 }
+  }
+  if ((d.includes('uber') || d.includes('taxi') || d.includes('táxi') || d.includes('99')) && valor > 20) {
+    return { alt: 'Transporte publico ou bike', economia: valor * 0.7 }
+  }
+  if (d.includes('livro') && valor > 50) {
+    return { alt: 'Biblioteca publica ou e-book', economia: valor * 0.8 }
+  }
+  if ((d.includes('internet') || d.includes('celular')) && valor > 80) {
+    return { alt: 'Plano pre-pago com mais dados', economia: valor * 0.3 }
+  }
+  if (valor > 100) {
+    return { alt: 'Buscar desconto por app ou cashback', economia: valor * 0.15 }
+  }
+  return null
+}
+
+function riscoColor(risco: 'Baixo' | 'Medio' | 'Alto') {
+  if (risco === 'Baixo') return { bg: '#e8f5ee', color: '#2d6a4f' }
+  if (risco === 'Medio') return { bg: '#fff3cd', color: '#856404' }
+  return { bg: '#fdecea', color: '#c0392b' }
+}
+
 export default function FinanceiroPage() {
   const supabase = createClient()
   const [itens, setItens]       = useState<Lancamento[]>([])
@@ -131,6 +297,148 @@ export default function FinanceiroPage() {
           </div>
         </div>
       )}
+
+      {/* Sugestoes de Investimento */}
+      <div className="section-card" style={{ marginBottom:24, padding:'20px 24px' }}>
+        <div style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', marginBottom:4, textTransform:'uppercase', letterSpacing:'0.06em' }}>Sugestoes de Investimento</div>
+        <div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:16 }}>
+          Baseadas no seu saldo atual de <strong style={{ color:'var(--text-primary)' }}>{fmt(saldo)}</strong>
+        </div>
+        <div className="fin-invest-grid" style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:12 }}>
+          {getInvestmentSuggestions(saldo).map((inv, idx) => {
+            const risco = riscoColor(inv.risco)
+            return (
+              <div key={idx} style={{
+                padding:'14px 16px',
+                borderRadius:10,
+                border:'1px solid var(--border)',
+                background:'var(--accent-light)',
+                display:'flex',
+                flexDirection:'column',
+                gap:8,
+              }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:10 }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)', lineHeight:1.3 }}>{inv.nome}</div>
+                  <span style={{
+                    fontSize:10,
+                    fontWeight:700,
+                    padding:'3px 9px',
+                    borderRadius:20,
+                    background:risco.bg,
+                    color:risco.color,
+                    textTransform:'uppercase',
+                    letterSpacing:'0.04em',
+                    whiteSpace:'nowrap',
+                    flexShrink:0,
+                  }}>
+                    {inv.risco}
+                  </span>
+                </div>
+                <div style={{ fontSize:12, color:'var(--text-secondary)', lineHeight:1.45 }}>{inv.descricao}</div>
+                <div style={{ display:'flex', gap:14, marginTop:2, fontSize:11, color:'var(--text-muted)' }}>
+                  <span style={{ display:'flex', alignItems:'center', gap:4 }}>
+                    <i className="bi bi-graph-up" /> <strong style={{ color:'#2d6a4f' }}>{inv.rendimento}</strong>
+                  </span>
+                  <span style={{ display:'flex', alignItems:'center', gap:4 }}>
+                    <i className="bi bi-clock" /> {inv.tempo}
+                  </span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        <div style={{ fontSize:10, color:'var(--text-muted)', marginTop:14, fontStyle:'italic', lineHeight:1.4 }}>
+          <i className="bi bi-info-circle" style={{ marginRight:5 }} />
+          Aviso: sugestoes educacionais, nao aconselhamento financeiro. Consulte um profissional certificado antes de investir.
+        </div>
+      </div>
+
+      {/* Alternativas Mais Baratas */}
+      {(() => {
+        const despesasList = itens.filter(i => i.tipo === 'despesa').slice(0, 5)
+        const alternativas = despesasList
+          .map(item => ({ item, alt: getCheaperAlternative(item.descricao, Number(item.valor)) }))
+          .filter((x): x is { item: Lancamento; alt: { alt: string; economia: number } } => x.alt !== null)
+        const totalEconomia = alternativas.reduce((s, a) => s + a.alt.economia, 0)
+
+        return (
+          <div className="section-card" style={{ marginBottom:24, padding:'20px 24px' }}>
+            <div style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', marginBottom:4, textTransform:'uppercase', letterSpacing:'0.06em' }}>Alternativas Mais Baratas</div>
+            <div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:16 }}>
+              Sugestoes inteligentes para reduzir suas despesas recentes
+            </div>
+
+            {despesasList.length === 0 ? (
+              <div style={{ textAlign:'center', padding:'20px 0', color:'var(--text-muted)', fontSize:13 }}>
+                <i className="bi bi-lightbulb" style={{ fontSize:22, display:'block', marginBottom:8, opacity:0.5 }} />
+                Nenhuma despesa registrada ainda. Adicione lancamentos para ver sugestoes.
+              </div>
+            ) : alternativas.length === 0 ? (
+              <div style={{ textAlign:'center', padding:'20px 0', color:'var(--text-muted)', fontSize:13 }}>
+                <i className="bi bi-check-circle" style={{ fontSize:22, display:'block', marginBottom:8, opacity:0.5 }} />
+                Suas despesas recentes ja parecem otimizadas. Continue assim!
+              </div>
+            ) : (
+              <>
+                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                  {alternativas.map(({ item, alt }) => (
+                    <div key={item.id} style={{
+                      padding:'12px 14px',
+                      borderRadius:10,
+                      border:'1px solid var(--border)',
+                      background:'var(--accent-light)',
+                      display:'flex',
+                      flexWrap:'wrap',
+                      alignItems:'center',
+                      gap:12,
+                    }}>
+                      <div style={{ flex:'1 1 200px', minWidth:0 }}>
+                        <div style={{ fontSize:12, color:'var(--text-muted)', textDecoration:'line-through', marginBottom:3, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                          {item.descricao} — {fmt(Number(item.valor))}
+                        </div>
+                        <div style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)', display:'flex', alignItems:'center', gap:6 }}>
+                          <i className="bi bi-arrow-right-circle" style={{ color:'#2d6a4f' }} />
+                          {alt.alt}
+                        </div>
+                      </div>
+                      <div style={{
+                        padding:'6px 12px',
+                        borderRadius:8,
+                        background:'#e8f5ee',
+                        color:'#2d6a4f',
+                        fontSize:12,
+                        fontWeight:700,
+                        whiteSpace:'nowrap',
+                        fontVariantNumeric:'tabular-nums',
+                      }}>
+                        Economia: {fmt(alt.economia)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{
+                  marginTop:14,
+                  padding:'12px 16px',
+                  borderRadius:10,
+                  background:'#e8f5ee',
+                  border:'1px solid #2d6a4f20',
+                  display:'flex',
+                  justifyContent:'space-between',
+                  alignItems:'center',
+                  flexWrap:'wrap',
+                  gap:8,
+                }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:'#2d6a4f', display:'flex', alignItems:'center', gap:6 }}>
+                    <i className="bi bi-piggy-bank" />
+                    Economia potencial mensal
+                  </span>
+                  <strong style={{ fontSize:16, color:'#2d6a4f', fontVariantNumeric:'tabular-nums' }}>{fmt(totalEconomia)}</strong>
+                </div>
+              </>
+            )}
+          </div>
+        )
+      })()}
 
       {/* Lista */}
       {loading ? (
