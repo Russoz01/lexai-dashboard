@@ -109,39 +109,57 @@ export default function ProfessorPage() {
         </div>
       )}
 
-      {/* Study history memory */}
+      {/* Study memory dashboard */}
       {!aula && !loading && studyHistory.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-            <i className="bi bi-clock-history" style={{ fontSize: 12, color: 'var(--text-muted)' }} />
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Temas estudados recentemente</span>
+        <div className="section-card" style={{ padding: '16px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingRight: 16, borderRight: '1px solid var(--border)' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="bi bi-journal-bookmark-fill" style={{ fontSize: 18, color: 'var(--accent)' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{studyHistory.length}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>temas estudados</div>
+            </div>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {studyHistory.slice(-8).reverse().map((t, i) => (
-              <button key={i} onClick={() => setTema(t)}
-                style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                {t}
-              </button>
-            ))}
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Retomar estudos recentes</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {studyHistory.slice(-6).reverse().map((t, i) => (
+                <button key={i} onClick={() => setTema(t)}
+                  style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                  <i className="bi bi-arrow-clockwise" style={{ marginRight: 4, fontSize: 10 }} />{t}
+                </button>
+              ))}
+            </div>
           </div>
+          <button onClick={() => { if (confirm('Limpar todo o historico de estudo?')) { setStudyHistory([]); localStorage.removeItem('lexai-study-history') } }}
+            style={{ fontSize: 11, padding: '6px 10px', borderRadius: 6, background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+            <i className="bi bi-trash" style={{ marginRight: 4 }} />Limpar
+          </button>
         </div>
       )}
 
-      {/* Study categories */}
+      {/* Study categories — now 8 areas */}
       {!aula && !loading && (
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
-            Areas de Estudo
+            Areas de Estudo &mdash; Clique em qualquer materia
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }} className="study-grid">
             {[
               { area: 'Direito Civil', temas: ['Responsabilidade Civil', 'Contratos', 'Prescricao', 'Posse e Propriedade'], icon: 'bi-file-earmark-text', color: '#2563EB' },
               { area: 'Direito Penal', temas: ['Legitima Defesa', 'Crimes contra o patrimonio', 'Principio da Legalidade', 'Dosimetria da Pena'], icon: 'bi-shield-exclamation', color: '#EF4444' },
-              { area: 'Direito Constitucional', temas: ['Direitos Fundamentais', 'Controle de Constitucionalidade', 'Remedio Constitucional', 'Separacao de Poderes'], icon: 'bi-building', color: '#8B5CF6' },
+              { area: 'Direito Constitucional', temas: ['Direitos Fundamentais', 'Controle de Constitucionalidade', 'Remedios Constitucionais', 'Separacao de Poderes'], icon: 'bi-building', color: '#8B5CF6' },
               { area: 'Direito do Trabalho', temas: ['Rescisao Indireta', 'Horas Extras', 'Acidente de Trabalho', 'FGTS'], icon: 'bi-briefcase', color: '#F59E0B' },
+              { area: 'Direito Tributario', temas: ['Principio da Legalidade Tributaria', 'IPTU', 'ICMS', 'Imunidade Tributaria'], icon: 'bi-cash-coin', color: '#10B981' },
+              { area: 'Direito Administrativo', temas: ['Atos Administrativos', 'Licitacoes', 'Improbidade', 'Servidores Publicos'], icon: 'bi-bank', color: '#06B6D4' },
+              { area: 'Direito Empresarial', temas: ['Recuperacao Judicial', 'Sociedade Limitada', 'Titulos de Credito', 'Falencia'], icon: 'bi-buildings', color: '#EC4899' },
+              { area: 'Direito Processual', temas: ['Tutela Provisoria', 'Recursos CPC', 'Coisa Julgada', 'Intervencao de Terceiros'], icon: 'bi-journal-check', color: '#6366F1' },
             ].map((cat, i) => (
-              <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer' }}
-                onClick={() => { setTema(cat.temas[0]); }}>
+              <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
+                onClick={() => { setTema(cat.temas[0]); }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                   <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cat.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <i className={`bi ${cat.icon}`} style={{ color: cat.color, fontSize: 14 }} />
@@ -157,6 +175,51 @@ export default function ProfessorPage() {
                   ))}
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Public Resources — external free legal resources */}
+      {!aula && !loading && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <i className="bi bi-globe2" style={{ marginRight: 6 }} />Biblioteca Publica &mdash; Recursos Gratuitos Confiaveis
+            </div>
+            <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 10, background: 'var(--accent-light)', color: 'var(--accent)', fontWeight: 700, letterSpacing: '0.3px' }}>
+              100% GRATUITO
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }} className="study-grid">
+            {[
+              { nome: 'Portal do STF', desc: 'Supremo Tribunal Federal — acordaos e sumulas', url: 'https://portal.stf.jus.br/', icon: 'bi-bank', color: '#c9a84c' },
+              { nome: 'Portal do STJ', desc: 'Superior Tribunal de Justica — jurisprudencia', url: 'https://www.stj.jus.br/', icon: 'bi-bank2', color: '#2563EB' },
+              { nome: 'Planalto — Leis', desc: 'Codigos, leis federais e decretos', url: 'https://www.planalto.gov.br/ccivil_03/', icon: 'bi-book', color: '#10B981' },
+              { nome: 'CNJ', desc: 'Conselho Nacional de Justica', url: 'https://www.cnj.jus.br/', icon: 'bi-diagram-3', color: '#8B5CF6' },
+              { nome: 'JusBrasil', desc: 'Maior acervo juridico da internet', url: 'https://www.jusbrasil.com.br/', icon: 'bi-search', color: '#EC4899' },
+              { nome: 'Senado — Biblioteca', desc: 'Biblioteca digital do Senado Federal', url: 'https://www2.senado.leg.br/bdsf/', icon: 'bi-journal-richtext', color: '#F59E0B' },
+              { nome: 'Domínio Publico', desc: 'Livros, teses e monografias gratuitas', url: 'http://www.dominiopublico.gov.br/', icon: 'bi-collection', color: '#06B6D4' },
+              { nome: 'Gran Cursos YouTube', desc: 'Aulas gratuitas de Direito no YouTube', url: 'https://www.youtube.com/@grancursos', icon: 'bi-youtube', color: '#EF4444' },
+            ].map((rec, i) => (
+              <a key={i} href={rec.url} target="_blank" rel="noopener noreferrer"
+                className="section-card"
+                style={{ padding: '14px 16px', textDecoration: 'none', color: 'inherit', display: 'block', transition: 'all 0.15s ease', position: 'relative' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = rec.color }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = '' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${rec.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <i className={`bi ${rec.icon}`} style={{ color: rec.color, fontSize: 14 }} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {rec.nome}
+                      <i className="bi bi-box-arrow-up-right" style={{ fontSize: 10, color: 'var(--text-muted)' }} />
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4 }}>{rec.desc}</div>
+              </a>
             ))}
           </div>
         </div>

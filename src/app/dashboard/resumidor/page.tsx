@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import { toast } from '@/components/Toast'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Analise = any
@@ -152,8 +153,11 @@ export default function ResumidorPage() {
       if (!res.ok) throw new Error(data.error || 'Erro desconhecido')
       setAnalise(data.analise)
       if (!titulo) setTitulo(data.analise.classificacao?.tipo || data.analise.tipo_documento || 'Documento analisado')
+      toast('success', 'Documento analisado com sucesso')
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro ao processar documento')
+      const msg = e instanceof Error ? e.message : 'Erro ao processar documento'
+      setErro(msg)
+      toast('error', msg)
     } finally {
       setLoading(false)
     }
@@ -186,6 +190,7 @@ export default function ResumidorPage() {
 
     setSalvo(true)
     setSalvando(false)
+    toast('success', 'Documento salvo no historico')
   }
 
   function handleCopiar() {
@@ -201,6 +206,7 @@ export default function ResumidorPage() {
     navigator.clipboard.writeText(texto)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+    toast('info', 'Analise copiada para a area de transferencia')
   }
 
   function mapTipo(tipo: string): string {
@@ -286,7 +292,13 @@ export default function ResumidorPage() {
                 <textarea
                   value={texto}
                   onChange={e => setTexto(e.target.value)}
-                  placeholder="Cole aqui o texto do contrato, petição, acórdão, lei, parecer ou qualquer documento jurídico..."
+                  onKeyDown={e => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                      e.preventDefault()
+                      handleAnalisar()
+                    }
+                  }}
+                  placeholder="Cole aqui o texto do contrato, petição, acórdão, lei, parecer ou qualquer documento jurídico... (Ctrl+Enter para analisar)"
                   className="form-input"
                   style={{
                     minHeight: '320px',

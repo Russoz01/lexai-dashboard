@@ -4,42 +4,48 @@ import { useState, useEffect } from 'react'
 
 const PLANOS_BASE = [
   {
-    id: 'starter', nome: 'Starter', precoMensal: 59, precoAnual: 48,
+    id: 'starter', nome: 'Starter', tagline: 'Para estudantes e iniciantes',
+    precoMensal: 59, precoAnual: 48,
     stripeLink: 'https://buy.stripe.com/test_dRm4gy6gG1Nb2T14ZA2oE01',
+    economiaReal: 'Economize 12h por semana em pesquisas',
     features: [
-      { label: 'Agentes disponiveis', valor: '3 (Resumidor, Pesquisador, Professor)', disponivel: true },
-      { label: 'Documentos/mes', valor: '50', disponivel: true },
-      { label: 'Suporte', valor: 'FAQ apenas', disponivel: true },
-      { label: 'API propria', valor: '', disponivel: false },
-      { label: 'Exportacao PDF', valor: '', disponivel: false },
-      { label: 'Historico', valor: '30 dias', disponivel: true },
-      { label: 'Modelos customizados', valor: '', disponivel: false },
+      { label: '3 agentes essenciais (Resumidor, Pesquisador, Professor)', disponivel: true },
+      { label: '50 analises de documentos por mes', disponivel: true },
+      { label: 'Historico de 30 dias', disponivel: true },
+      { label: 'Suporte via FAQ', disponivel: true },
+      { label: 'Exportacao em PDF', disponivel: false },
+      { label: 'API propria para integracao', disponivel: false },
+      { label: 'Modelos customizados', disponivel: false },
     ],
   },
   {
-    id: 'pro', nome: 'Pro', precoMensal: 119, precoAnual: 98,
+    id: 'pro', nome: 'Pro', tagline: 'Para advogados autonomos',
+    precoMensal: 119, precoAnual: 98,
     stripeLink: 'https://buy.stripe.com/test_9B69ASawWajH5192Rs2oE02',
+    economiaReal: 'Economia de R$ 3.200/mes em horas de trabalho',
     features: [
-      { label: 'Agentes disponiveis', valor: '6 (todos os basicos)', disponivel: true },
-      { label: 'Documentos/mes', valor: '200', disponivel: true },
-      { label: 'Suporte', valor: 'Email (48h)', disponivel: true },
-      { label: 'API propria', valor: '', disponivel: false },
-      { label: 'Exportacao PDF', valor: '', disponivel: true },
-      { label: 'Historico', valor: '90 dias', disponivel: true },
-      { label: 'Modelos customizados', valor: '', disponivel: false },
+      { label: '6 agentes especializados para pratica diaria', disponivel: true },
+      { label: '200 analises de documentos por mes', disponivel: true },
+      { label: 'Historico estendido de 90 dias', disponivel: true },
+      { label: 'Suporte por email em ate 48h', disponivel: true },
+      { label: 'Exportacao em PDF profissional', disponivel: true },
+      { label: 'API propria para integracao', disponivel: false },
+      { label: 'Modelos customizados', disponivel: false },
     ],
   },
   {
-    id: 'enterprise', nome: 'Enterprise', precoMensal: 239, precoAnual: 196,
+    id: 'enterprise', nome: 'Enterprise', tagline: 'Para escritorios e bancas',
+    precoMensal: 239, precoAnual: 196,
     stripeLink: 'https://buy.stripe.com/test_cNicN434u0J7fFN1No2oE03',
+    economiaReal: 'ROI de 8x sobre o investimento mensal',
     features: [
-      { label: 'Agentes disponiveis', valor: '10 (todos + exclusivos)', disponivel: true },
-      { label: 'Documentos/mes', valor: 'Ilimitado', disponivel: true },
-      { label: 'Suporte', valor: 'Prioritario (24h) + WhatsApp', disponivel: true },
-      { label: 'API propria', valor: '', disponivel: true },
-      { label: 'Exportacao PDF', valor: '', disponivel: true },
-      { label: 'Historico', valor: 'Ilimitado', disponivel: true },
-      { label: 'Modelos customizados', valor: '', disponivel: true },
+      { label: 'Todos os 10 agentes + exclusivos', disponivel: true },
+      { label: 'Analises ilimitadas', disponivel: true },
+      { label: 'Historico ilimitado e backup em nuvem', disponivel: true },
+      { label: 'Suporte prioritario via WhatsApp 24h', disponivel: true },
+      { label: 'Exportacao em PDF profissional', disponivel: true },
+      { label: 'API propria para integracao', disponivel: true },
+      { label: 'Modelos customizados da sua banca', disponivel: true },
     ],
   },
 ]
@@ -66,8 +72,8 @@ function getBadgeLabel(planoId: string, planoAtual: string): string | null {
 
 function getCtaLabel(planoId: string, planoAtual: string, precoPlano: number, precoAtual: number): string {
   if (planoId === planoAtual) return '\u2713  Voce esta aqui'
-  if (precoPlano > precoAtual) return 'Comecar agora'
-  return 'Reduzir plano'
+  if (precoPlano > precoAtual) return 'Iniciar 2 dias gratis'
+  return 'Mudar para este plano'
 }
 
 export default function PlanosPage() {
@@ -85,25 +91,44 @@ export default function PlanosPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 1100 }}>
-      {/* Header */}
-      <div style={{ marginBottom: 12, textAlign: 'center' }}>
-        <h1 className="page-title" style={{ fontSize: 32 }}>Planos LexAI</h1>
-        <p className="page-subtitle" style={{ maxWidth: 500, margin: '8px auto 0' }}>
-          Escolha o plano ideal para sua pratica juridica. Upgrade ou downgrade a qualquer momento.
+      {/* Header — marketing-focused */}
+      <div style={{ marginBottom: 16, textAlign: 'center' }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontSize: 11, fontWeight: 700, color: 'var(--accent)',
+          letterSpacing: '1px', textTransform: 'uppercase',
+          padding: '5px 12px', borderRadius: 20,
+          background: 'var(--accent-light)', border: '1px solid var(--border)', marginBottom: 16,
+        }}>
+          <i className="bi bi-lightning-charge-fill" />Oferta de lancamento &mdash; 2 dias gratis sem cartao
+        </span>
+        <h1 className="page-title" style={{ fontSize: 36, marginBottom: 8 }}>
+          Trabalhe <span style={{ color: 'var(--accent)' }}>10x mais rapido</span> no Direito
+        </h1>
+        <p className="page-subtitle" style={{ maxWidth: 580, margin: '8px auto 0', fontSize: 15 }}>
+          Pare de gastar horas com pesquisas manuais. Comece hoje, cancele quando quiser, sem multas nem burocracia.
         </p>
       </div>
 
-      {/* Social proof bar */}
+      {/* Trust bar — multiple signals */}
       <div style={{
-        textAlign: 'center', margin: '0 auto 24px', padding: '10px 20px',
-        background: 'var(--accent-light)',
-        borderRadius: 10, border: '1px solid var(--border)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-      }}>
-        <i className="bi bi-shield-check" style={{ color: 'var(--accent)', fontSize: 15 }} />
-        <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
-          Mais de <strong style={{ color: 'var(--accent)' }}>200 documentos</strong> revisados e analisados
-        </span>
+        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10,
+        margin: '0 auto 24px', maxWidth: 760,
+      }} className="trust-grid">
+        {[
+          { icon: 'bi-shield-lock-fill', label: 'LGPD compliant', sub: 'Dados criptografados' },
+          { icon: 'bi-credit-card-2-back-fill', label: 'Pagamento Stripe', sub: '100% seguro' },
+          { icon: 'bi-arrow-counterclockwise', label: 'Cancele quando quiser', sub: 'Sem multas' },
+          { icon: 'bi-headset', label: 'Suporte em PT-BR', sub: 'Resposta rapida' },
+        ].map((t, i) => (
+          <div key={i} className="section-card" style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <i className={`bi ${t.icon}`} style={{ color: 'var(--accent)', fontSize: 18, flexShrink: 0 }} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{t.label}</div>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{t.sub}</div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Billing cycle toggle */}
@@ -196,15 +221,16 @@ export default function PlanosPage() {
               )}
 
               <div style={{ padding: badgeLabel ? '52px 24px 28px' : '28px 24px' }}>
-                {/* Name */}
-                <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, letterSpacing: '-0.3px' }}>{plano.nome}</div>
+                {/* Name + tagline */}
+                <div style={{ textAlign: 'center', marginBottom: 20 }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4, letterSpacing: '-0.3px' }}>{plano.nome}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>{plano.tagline}</div>
 
                   {/* Price */}
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
                     <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>R$</span>
                     <span style={{
-                      fontSize: 40, fontWeight: 800, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums',
+                      fontSize: 44, fontWeight: 800, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums',
                       color: isDestaque ? 'var(--accent)' : 'var(--text-primary)',
                     }}>
                       {preco}
@@ -214,24 +240,34 @@ export default function PlanosPage() {
                   {ciclo === 'anual' && (
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
                       <span style={{ textDecoration: 'line-through', marginRight: 6 }}>R$ {plano.precoMensal}</span>
-                      <span style={{ color: 'var(--success)', fontWeight: 600 }}>-18%</span>
+                      <span style={{ color: 'var(--success)', fontWeight: 600 }}>-18% no anual</span>
                     </div>
                   )}
+                  {/* Economia real — value driver */}
+                  <div style={{
+                    marginTop: 12, padding: '8px 12px', borderRadius: 8,
+                    background: 'var(--accent-light)', border: '1px solid var(--border)',
+                    fontSize: 11, fontWeight: 600, color: 'var(--accent)',
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                  }}>
+                    <i className="bi bi-graph-up-arrow" />{plano.economiaReal}
+                  </div>
                 </div>
 
                 {/* Features */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
                   {plano.features.map((f, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13 }}>
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13 }}>
                       <span style={{
                         width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 11,
                         background: f.disponivel ? 'var(--success-light)' : 'var(--hover)',
                         color: f.disponivel ? 'var(--success)' : 'var(--text-muted)',
+                        marginTop: 1,
                       }}>
                         <i className={`bi ${f.disponivel ? 'bi-check' : 'bi-x'}`} />
                       </span>
-                      <span style={{ color: f.disponivel ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: f.disponivel ? 500 : 400 }}>
-                        {f.label}{f.valor ? `: ${f.valor}` : ''}
+                      <span style={{ color: f.disponivel ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: f.disponivel ? 500 : 400, lineHeight: 1.4 }}>
+                        {f.label}
                       </span>
                     </div>
                   ))}
@@ -301,7 +337,57 @@ export default function PlanosPage() {
       )}
 
       {/* Spacer when not enterprise */}
-      {planoAtual !== 'enterprise' && <div style={{ marginBottom: 40 }} />}
+      {planoAtual !== 'enterprise' && <div style={{ marginBottom: 24 }} />}
+
+      {/* Before/After comparison — classic marketing tactic */}
+      <div className="section-card" style={{ padding: '28px 32px', marginBottom: 24 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>
+            A diferenca na pratica
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+            Advogado sem LexAI <span style={{ color: 'var(--text-muted)', margin: '0 8px' }}>vs</span> Advogado com LexAI
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="compare-grid">
+          <div style={{ padding: 20, borderRadius: 12, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.15)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, color: '#EF4444', fontWeight: 700, fontSize: 13 }}>
+              <i className="bi bi-x-circle-fill" /> SEM LEXAI
+            </div>
+            {[
+              '3 horas lendo um contrato de 40 paginas',
+              'Pesquisa manual em 5 sites diferentes',
+              'Peticao escrita do zero toda semana',
+              'Calculos de prazos em planilha',
+              'Risco de perder jurisprudencia relevante',
+              'Custo alto de estagiarios para tarefas repetitivas',
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'var(--text-secondary)', marginBottom: 8, lineHeight: 1.5 }}>
+                <i className="bi bi-dash-circle" style={{ color: '#EF4444', marginTop: 3, flexShrink: 0, fontSize: 11 }} />
+                {item}
+              </div>
+            ))}
+          </div>
+          <div style={{ padding: 20, borderRadius: 12, background: 'var(--accent-light)', border: '1px solid rgba(201,168,76,0.25)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, color: 'var(--accent)', fontWeight: 700, fontSize: 13 }}>
+              <i className="bi bi-check-circle-fill" /> COM LEXAI
+            </div>
+            {[
+              'Analise completa em 45 segundos com riscos identificados',
+              'Pesquisa em STF, STJ e tribunais em um clique',
+              '6 templates prontos (peticao, recurso, contestacao...)',
+              'Prazos calculados automaticamente com base no CPC',
+              'IA nao esquece nenhuma sumula relevante',
+              'Sua equipe focada em estrategia, nao em repeticao',
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'var(--text-primary)', marginBottom: 8, lineHeight: 1.5, fontWeight: 500 }}>
+                <i className="bi bi-check-circle-fill" style={{ color: 'var(--accent)', marginTop: 3, flexShrink: 0, fontSize: 11 }} />
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* FAQ */}
       <div className="section-card" style={{ padding: '24px 28px' }}>

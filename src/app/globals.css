@@ -901,6 +901,27 @@ input[type="date"] { cursor: pointer; }
 }
 .verified-badge i { font-size: 11px; }
 
+/* Professor study grid — responsive */
+@media (max-width: 1024px) {
+  .study-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 600px) {
+  .study-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Planos trust grid — responsive */
+@media (max-width: 768px) {
+  .trust-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .compare-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Analytics grid — responsive stack on mobile */
+@media (max-width: 768px) {
+  .animate-in.delay-5[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* Urgent deadline highlight */
 .urgent-deadline {
   background: linear-gradient(90deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));

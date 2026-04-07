@@ -8,6 +8,7 @@ import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 import ThemisBackground from '@/components/ThemisBackground'
 import TopoBackground from '@/components/TopoBackground'
+import { ToastContainer } from '@/components/Toast'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -57,6 +58,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </div>
       </div>
+
+      {/* Global toast notifications */}
+      <ToastContainer />
 
       <style>{`
         @keyframes fadeInPage {

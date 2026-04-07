@@ -238,7 +238,7 @@ export default function DashboardPage() {
               <div className="section-subtitle">Interacoes desta semana</div>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '4px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '20px 22px 22px' }}>
             {[
               { name: 'Resumidor', count: 47 },
               { name: 'Pesquisador', count: 38 },
@@ -248,7 +248,7 @@ export default function DashboardPage() {
               { name: 'Calculador', count: 19 },
               { name: 'Legislacao', count: 15 },
             ].map((agent, i) => (
-              <div key={agent.name} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div key={agent.name} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', width: 90, flexShrink: 0, textAlign: 'right' }}>
                   {agent.name}
                 </span>
@@ -278,18 +278,18 @@ export default function DashboardPage() {
               <div className="section-subtitle">Ultimas interacoes</div>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: '6px 22px 14px' }}>
             {[
               { agent: 'Resumidor', action: 'Documento analisado', time: '2 min atras', icon: 'bi-text-paragraph' },
               { agent: 'Pesquisador', action: 'Jurisprudencia encontrada', time: '15 min atras', icon: 'bi-journal-bookmark' },
               { agent: 'Professor', action: 'Aula sobre Direito Civil', time: '1h atras', icon: 'bi-mortarboard' },
               { agent: 'Redator', action: 'Peticao gerada', time: '3h atras', icon: 'bi-pencil-square' },
               { agent: 'Calculador', action: 'Prazo calculado', time: '5h atras', icon: 'bi-calculator' },
-            ].map((item) => (
+            ].map((item, idx, arr) => (
               <div key={item.agent} style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '12px 0',
-                borderBottom: '1px solid var(--border)',
+                display: 'flex', alignItems: 'center', gap: 14,
+                padding: '14px 0',
+                borderBottom: idx === arr.length - 1 ? 'none' : '1px solid var(--border)',
               }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 8,
