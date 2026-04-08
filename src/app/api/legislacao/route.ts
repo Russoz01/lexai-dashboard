@@ -1,103 +1,18 @@
-import Anthropic from '@anthropic-ai/sdk'
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { checkAndIncrementQuota } from '@/lib/quotas'
-import { events } from '@/lib/analytics'
+import { createAgentRoute } from '@/lib/api/create-agent-route'
+import { SYSTEM_PROMPT } from '@/prompts/legislacao'
+import { LegislacaoInputSchema, LegislacaoOutputSchema } from '@/types/agents'
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
-
-const SYSTEM_PROMPT = `You are a senior legal researcher specializing in Brazilian legislation. You explain articles of law, codes, regulations, and normative instructions with clarity and depth.
-
-EXPERTISE:
-- Federal Constitution (CF/1988)
-- Civil Code (CC/2002), Criminal Code (CP/1940)
-- CPC/2015, CPP, CLT, CDC
-- Administrative law, Tax law, Environmental law
-- Regulatory agencies (ANVISA, ANATEL, CVM, etc.)
-- Recent legislative changes and pending bills
-
-RULES:
-- Explain each article clearly with practical examples
-- Distinguish between literal interpretation and jurisprudential interpretation
-- Note any recent changes or pending modifications
-- Cross-reference related articles
-- ALL OUTPUT IN BRAZILIAN PORTUGUESE
-- Return ONLY valid JSON
-
-HUMANIZATION RULES (apply to ALL responses):
-- Write as a knowledgeable colleague, not a robot. Use natural, warm language.
-- When something is ambiguous or you're not 100% certain, be transparent: "Este ponto merece atencao especial porque..." or "Recomendo verificar diretamente no tribunal porque..."
-- Proactively suggest next steps: "Apos analisar este documento, sugiro que voce..."
-- If you identify potential issues the user didn't ask about, flag them: "Notei algo que pode ser relevante..."
-- Use professional but accessible Portuguese — avoid unnecessary jargon without explanation.
-- When citing legislation, briefly explain WHY that law matters for the user's specific case.
-
-Return this JSON:
-{
-  "dispositivo": "Full citation of the legal provision",
-  "texto_legal": "Exact text of the article/provision",
-  "explicacao": "Clear explanation in accessible language",
-  "exemplos_praticos": ["Practical examples of application"],
-  "jurisprudencia": ["Relevant court interpretations"],
-  "artigos_relacionados": ["Cross-referenced articles"],
-  "alteracoes_recentes": "Recent changes or pending modifications",
-  "observacoes": ["Important notes"],
-  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
-}`
-
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
-    if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
-
-    // Server-side quota enforcement (server-trusted, never localStorage)
-    const quota = await checkAndIncrementQuota(supabase, user.id, 'legislacao')
-    if (!quota.ok && quota.response) {
-      return quota.response
-    }
-
-    const { consulta } = await req.json()
-    if (!consulta || consulta.trim().length < 5) return NextResponse.json({ error: 'Informe o dispositivo legal.' }, { status: 400 })
-    if (consulta.length > 50000) {
-      return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
-    }
-
-    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
-    const message = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4096,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-      ],
-      messages: [{ role: 'user', content: `Legal provision to explain:\n\n${consulta}` }],
-    })
-
-    const responseText = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
-    let resultado
-    try {
-      resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
-    } catch {
-      resultado = { explicacao: responseText, erro_parse: true }
-    }
-
-    await supabase.from('historico').insert({
-      usuario_id: user.id, agente: 'legislacao',
-      mensagem_usuario: `Legislacao: ${consulta.slice(0, 100)}`,
-      resposta_agente: resultado.dispositivo || 'Consulta realizada',
-    })
-
-    events.agentUsed(user.id, 'legislacao', 'unknown').catch(() => {})
-
-    return NextResponse.json({ resultado })
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /legislacao]', msg)
-    return NextResponse.json({ error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }, { status: 500 })
-  }
-}
+export const POST = createAgentRoute({
+  agente: 'legislacao',
+  model: 'haiku',
+  maxTokens: 4096,
+  systemPrompt: SYSTEM_PROMPT,
+  inputSchema: LegislacaoInputSchema,
+  outputSchema: LegislacaoOutputSchema,
+  responseKey: 'resultado',
+  buildUserMessage: ({ consulta }) => `Legal provision to explain:\n\n${consulta}`,
+  buildHistorico: ({ consulta }, resultado) => ({
+    mensagem_usuario: `Legislacao: ${consulta.slice(0, 100)}`,
+    resposta_agente: resultado.dispositivo ?? 'Consulta realizada',
+  }),
+})

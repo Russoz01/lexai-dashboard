@@ -1,111 +1,18 @@
-import Anthropic from '@anthropic-ai/sdk'
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { checkAndIncrementQuota } from '@/lib/quotas'
-import { events } from '@/lib/analytics'
+import { createAgentRoute } from '@/lib/api/create-agent-route'
+import { SYSTEM_PROMPT } from '@/prompts/negociador'
+import { NegociadorInputSchema, NegociadorOutputSchema } from '@/types/agents'
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
-
-const SYSTEM_PROMPT = `You are a master negotiation strategist with expertise in dispute resolution under Brazilian law. Your approach combines the Harvard Negotiation Project methodology (Fisher & Ury) with deep knowledge of Brazilian mediation (Law 13.140/2015), arbitration (Law 9.307/1996), and conciliation frameworks.
-
-ANALYSIS FRAMEWORK:
-- BATNA analysis (Best Alternative to a Negotiated Agreement) for each party.
-- ZOPA identification (Zone of Possible Agreement).
-- Interest-based negotiation over positional bargaining.
-- Cost-benefit analysis: settlement vs. litigation (time, cost, uncertainty, precedent risk).
-
-RULES:
-- Always protect the client's minimum acceptable position.
-- Never suggest illegal or unethical tactics.
-- Consider tax implications of settlement structures.
-- ALL OUTPUT IN BRAZILIAN PORTUGUESE.
-- Return ONLY valid JSON, no markdown fences.
-
-HUMANIZATION RULES (apply to ALL responses):
-- Write as a knowledgeable colleague, not a robot. Use natural, warm language.
-- When something is ambiguous or you're not 100% certain, be transparent: "Este ponto merece atencao especial porque..." or "Recomendo verificar diretamente no tribunal porque..."
-- Proactively suggest next steps: "Apos analisar este documento, sugiro que voce..."
-- If you identify potential issues the user didn't ask about, flag them: "Notei algo que pode ser relevante..."
-- Use professional but accessible Portuguese — avoid unnecessary jargon without explanation.
-- When citing legislation, briefly explain WHY that law matters for the user's specific case.
-
-Return this JSON:
-{
-  "mapa_conflito": {
-    "parte_a": { "posicao": "Declared position", "interesses": "Real interests", "batna": "Best alternative", "resistencia": "Resistance point", "poder": "Alto | Medio | Baixo" },
-    "parte_b": { "posicao": "...", "interesses": "...", "batna": "...", "resistencia": "...", "poder": "Alto | Medio | Baixo" }
-  },
-  "zopa": "Zone of possible agreement analysis. If no ZOPA exists, explain why and what could create one.",
-  "cenarios": [
-    { "cenario": "Scenario name", "probabilidade": "X%", "resultado": "R$ X", "custo": "R$ X", "tempo": "X meses/anos", "risco": "Baixo | Medio | Alto" }
-  ],
-  "estrategia": {
-    "tipo": "Colaborativa | Competitiva | Integrativa",
-    "abordagem": "Detailed step-by-step approach",
-    "mensagens_chave": "Key messages and framing",
-    "concessoes": "Concessions to offer and in what order",
-    "linhas_vermelhas": "Non-negotiables"
-  },
-  "proposta_acordo": "Draft settlement proposal text with object, financial terms, obligations, penalties, confidentiality, and dispute resolution clauses.",
-  "riscos_mitigacao": [
-    { "risco": "What could go wrong", "mitigacao": "How to prevent it" }
-  ],
-  "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
-}`
-
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
-    if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
-
-    // Server-side quota enforcement (server-trusted, never localStorage)
-    const quota = await checkAndIncrementQuota(supabase, user.id, 'negociador')
-    if (!quota.ok && quota.response) {
-      return quota.response
-    }
-
-    const { situacao } = await req.json()
-    if (!situacao || situacao.trim().length < 30) return NextResponse.json({ error: 'Descreva a situacao com mais detalhes (min. 30 caracteres).' }, { status: 400 })
-    if (situacao.length > 50000) {
-      return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
-    }
-
-    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-      ],
-      messages: [{ role: 'user', content: `Situation to analyze:\n\n${situacao}` }],
-    })
-
-    const responseText = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
-    let resultado
-    try {
-      resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
-    } catch {
-      resultado = { estrategia: { abordagem: responseText }, erro_parse: true }
-    }
-
-    await supabase.from('historico').insert({
-      usuario_id: user.id, agente: 'negociador',
-      mensagem_usuario: `Negociacao: ${situacao.slice(0, 100)}`,
-      resposta_agente: resultado.estrategia?.tipo || 'Analise realizada',
-    })
-
-    events.agentUsed(user.id, 'negociador', 'unknown').catch(() => {})
-
-    return NextResponse.json({ resultado })
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /negociar]', msg)
-    return NextResponse.json({ error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }, { status: 500 })
-  }
-}
+export const POST = createAgentRoute({
+  agente: 'negociador',
+  model: 'sonnet',
+  maxTokens: 8192,
+  systemPrompt: SYSTEM_PROMPT,
+  inputSchema: NegociadorInputSchema,
+  outputSchema: NegociadorOutputSchema,
+  responseKey: 'resultado',
+  buildUserMessage: ({ situacao }) => `Situation to analyze:\n\n${situacao}`,
+  buildHistorico: ({ situacao }, resultado) => ({
+    mensagem_usuario: `Negociacao: ${situacao.slice(0, 100)}`,
+    resposta_agente: resultado.estrategia?.tipo ?? 'Analise realizada',
+  }),
+})
