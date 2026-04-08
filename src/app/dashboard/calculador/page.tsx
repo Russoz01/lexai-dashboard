@@ -54,6 +54,18 @@ export default function CalculadorPage() {
   // ── Historico local de calculos rapidos ─────────────────────────────
   const [historico, setHistorico] = useState<HistoricoItem[]>([])
 
+  // ── Taxas atuais do Banco Central (SELIC, CDI, IPCA 12m) ────────────
+  type TaxaBC = { data: string; valor: number; anual?: number }
+  const [taxas, setTaxas] = useState<{ selic: TaxaBC | null; cdi: TaxaBC | null; ipca: number | null } | null>(null)
+
+  useEffect(() => {
+    (async () => {
+      const { getTaxaSELIC, getTaxaCDI, getIPCA12m } = await import('@/lib/brasil-api')
+      const [selic, cdi, ipca] = await Promise.all([getTaxaSELIC(), getTaxaCDI(), getIPCA12m()])
+      setTaxas({ selic, cdi, ipca })
+    })().catch(() => {})
+  }, [])
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(HISTORICO_KEY)
@@ -175,6 +187,36 @@ export default function CalculadorPage() {
         <h1 className="page-title">Calculador Juridico</h1>
         <p className="page-subtitle">Calcule prazos processuais, correcao monetaria, juros e custas</p>
       </div>
+
+      {/* ════ Taxas atuais do Banco Central ════ */}
+      {taxas && (
+        <div className="section-card" style={{ padding: '14px 18px', marginBottom: 16, display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <i className="bi bi-bank" style={{ marginRight: 6 }} />Taxas atuais (BCB)
+          </div>
+          {taxas.selic && (
+            <div>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>SELIC</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)' }}>{taxas.selic.anual}% a.a.</div>
+            </div>
+          )}
+          {taxas.cdi && (
+            <div>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>CDI</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--success)' }}>{taxas.cdi.anual}% a.a.</div>
+            </div>
+          )}
+          {taxas.ipca !== null && (
+            <div>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>IPCA 12m</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warning)' }}>{taxas.ipca}%</div>
+            </div>
+          )}
+          <div style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+            Fonte: Banco Central do Brasil
+          </div>
+        </div>
+      )}
 
       {/* ════ Calculo rapido de prazo (client-side) ════ */}
       <div className="section-card" style={{ padding: '16px 18px', marginBottom: 20 }}>

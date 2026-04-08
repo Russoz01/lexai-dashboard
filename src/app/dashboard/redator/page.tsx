@@ -6,6 +6,9 @@ import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { generateDocx, downloadBlob } from '@/lib/word-export'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 import { SkeletonResult } from '@/components/Skeleton'
+import { toast } from '@/components/Toast'
+
+const LEGAL_TEMPLATES_WITH_CNPJ = new Set(['peticao', 'contestacao', 'contrato', 'notificacao', 'recurso', 'parecer'])
 
 const TEMPLATES = [
   { id: 'peticao',      label: 'Petição Inicial',  icon: 'bi-file-earmark-text',  desc: 'Petição inicial para distribuição de ação' },
@@ -38,6 +41,11 @@ export default function RedatorPage() {
   const [showDraftsModal, setShowDraftsModal] = useState(false)
   const [draftsList, setDraftsList]           = useState<DraftRow[]>([])
   const [loadingDrafts, setLoadingDrafts]     = useState(false)
+
+  // CNPJ lookup state
+  const [cnpjLookup, setCnpjLookup]   = useState('')
+  const [cnpjLoading, setCnpjLoading] = useState(false)
+  const [cnpjError, setCnpjError]     = useState('')
 
   useDraft('lexai-draft-redator', instrucoes, setInstrucoes)
 
@@ -133,6 +141,33 @@ export default function RedatorPage() {
     }
   }
 
+  async function handleCnpjLookup() {
+    if (!cnpjLookup.trim()) return
+    setCnpjLoading(true); setCnpjError('')
+    try {
+      const { lookupCNPJ, isValidCnpj, formatCnpj } = await import('@/lib/brasil-api')
+      if (!isValidCnpj(cnpjLookup)) {
+        setCnpjError('CNPJ invalido')
+        setCnpjLoading(false)
+        return
+      }
+      const data = await lookupCNPJ(cnpjLookup)
+      if (!data) {
+        setCnpjError('CNPJ nao encontrado')
+        setCnpjLoading(false)
+        return
+      }
+      const qualificacao = `${data.razao_social}${data.nome_fantasia ? ` (${data.nome_fantasia})` : ''}, CNPJ ${formatCnpj(data.cnpj)}, com sede em ${data.logradouro}, ${data.numero}${data.complemento ? `, ${data.complemento}` : ''}, ${data.bairro}, ${data.municipio}/${data.uf}, CEP ${data.cep}`
+      setInstrucoes(prev => prev ? `${prev}\n\n${qualificacao}` : qualificacao)
+      setCnpjLookup('')
+      toast('success', `${data.razao_social} adicionado as instrucoes`)
+    } catch {
+      setCnpjError('Erro ao consultar CNPJ. Tente novamente.')
+    } finally {
+      setCnpjLoading(false)
+    }
+  }
+
   return (
     <div className="page-content" style={{ maxWidth: '100%' }}>
       {/* Header */}
@@ -213,6 +248,37 @@ export default function RedatorPage() {
           {/* Instruções */}
           <div className="section-card" style={{ padding: '18px 20px', flex: 1 }}>
             <label className="form-label">Instruções e Fatos</label>
+
+            {/* CNPJ lookup helper — visivel apenas para templates juridicos */}
+            {LEGAL_TEMPLATES_WITH_CNPJ.has(template) && (
+              <div style={{ marginBottom: 12, padding: '10px 12px', background: 'var(--accent-light)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                  <i className="bi bi-search" style={{ marginRight: 5 }} />Consultar CNPJ na Receita Federal
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    type="text"
+                    value={cnpjLookup}
+                    onChange={e => setCnpjLookup(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleCnpjLookup() } }}
+                    placeholder="00.000.000/0000-00"
+                    className="form-input"
+                    style={{ flex: 1, fontSize: 13 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCnpjLookup}
+                    disabled={cnpjLoading}
+                    className="btn-ghost"
+                    style={{ whiteSpace: 'nowrap', fontSize: 13 }}
+                  >
+                    {cnpjLoading ? 'Buscando...' : <><i className="bi bi-arrow-right" /> Buscar</>}
+                  </button>
+                </div>
+                {cnpjError && <div style={{ fontSize: 12, color: 'var(--danger)', marginTop: 6 }}>{cnpjError}</div>}
+              </div>
+            )}
+
             <textarea
               value={instrucoes}
               onChange={e => setInstrucoes(e.target.value)}

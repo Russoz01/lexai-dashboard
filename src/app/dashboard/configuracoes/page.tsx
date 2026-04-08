@@ -85,6 +85,37 @@ export default function ConfiguracoesPage() {
   const [mensagem, setMensagem] = useState('')
   const [contatoEnviado, setContatoEnviado] = useState(false)
 
+  // CEP lookup (consulta gratuita via BrasilAPI/ViaCEP)
+  type CepResult = { logradouro: string; bairro: string; cidade: string; uf: string; cep: string }
+  const [cepInput, setCepInput]     = useState('')
+  const [cepLoading, setCepLoading] = useState(false)
+  const [cepResult, setCepResult]   = useState<CepResult | null>(null)
+  const [cepError, setCepError]     = useState('')
+
+  async function handleCepLookup() {
+    if (!cepInput.trim()) return
+    setCepLoading(true); setCepError(''); setCepResult(null)
+    try {
+      const { lookupCEP, formatCep } = await import('@/lib/brasil-api')
+      const data = await lookupCEP(cepInput)
+      if (!data) {
+        setCepError('CEP nao encontrado')
+        return
+      }
+      setCepResult({
+        logradouro: data.logradouro || '(sem logradouro)',
+        bairro: data.bairro || '(sem bairro)',
+        cidade: data.cidade,
+        uf: data.uf,
+        cep: formatCep(data.cep),
+      })
+    } catch {
+      setCepError('Erro ao consultar CEP. Tente novamente.')
+    } finally {
+      setCepLoading(false)
+    }
+  }
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) return
@@ -241,6 +272,34 @@ export default function ConfiguracoesPage() {
                 </button>
               </div>
             </form>
+          </div>
+
+          {/* ── Consulta de CEP (BrasilAPI/ViaCEP) ── */}
+          <div className="section-card" style={{ padding: '18px 22px' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+              <i className="bi bi-geo-alt" style={{ marginRight: 6 }} />Consulta de CEP
+            </div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: cepResult ? 12 : 0 }}>
+              <input
+                type="text"
+                value={cepInput}
+                onChange={e => setCepInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleCepLookup() } }}
+                placeholder="00000-000"
+                className="form-input"
+                style={{ flex: 1, maxWidth: 200 }}
+              />
+              <button type="button" onClick={handleCepLookup} disabled={cepLoading} className="btn-ghost">
+                {cepLoading ? 'Buscando...' : 'Buscar'}
+              </button>
+            </div>
+            {cepResult && (
+              <div style={{ padding: '10px 12px', background: 'var(--hover)', borderRadius: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
+                <strong>{cepResult.logradouro}</strong><br />
+                {cepResult.bairro} — {cepResult.cidade}/{cepResult.uf} — CEP {cepResult.cep}
+              </div>
+            )}
+            {cepError && <div style={{ fontSize: 12, color: 'var(--danger)', marginTop: 6 }}>{cepError}</div>}
           </div>
         </div>
       )}
