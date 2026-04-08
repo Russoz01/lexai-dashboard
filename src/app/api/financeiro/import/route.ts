@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { isBelvoConfigured, listTransactions } from '@/lib/belvo'
+import { resolveUsuarioIdServer } from '@/lib/api-utils'
 
 /**
  * GET /api/financeiro/import
@@ -64,6 +65,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ imported: 0, skipped: 0 })
     }
 
+    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    if (!usuarioId) {
+      return NextResponse.json(
+        { error: 'Nao foi possivel identificar o usuario.' },
+        { status: 500 },
+      )
+    }
+
     // Map Belvo categories to the financeiro categoria enum (best-effort)
     const categoriaMap: Record<string, string> = {
       income: 'honorarios',
@@ -78,7 +87,7 @@ export async function POST(req: NextRequest) {
     }
 
     const rows = transactions.map((tx) => ({
-      usuario_id: user.id,
+      usuario_id: usuarioId,
       descricao: (tx.description || 'Importado Belvo').slice(0, 200),
       valor: Number.isFinite(tx.amount) && tx.amount > 0 ? tx.amount : 0,
       tipo: tx.type === 'INFLOW' ? 'receita' : 'despesa',

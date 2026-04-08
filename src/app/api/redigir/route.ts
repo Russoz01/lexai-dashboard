@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
+import { resolveUsuarioIdServer } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -106,11 +107,14 @@ export async function POST(req: NextRequest) {
       peca = { titulo: TEMPLATES[template], documento: responseText, referencias_legais: [], observacoes: ['Resposta nao estruturada'], tipo: template }
     }
 
-    await supabase.from('historico').insert({
-      usuario_id: user.id, agente: 'redator',
-      mensagem_usuario: `Redigir: ${TEMPLATES[template]}`,
-      resposta_agente: peca.titulo || TEMPLATES[template],
-    })
+    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    if (usuarioId) {
+      await supabase.from('historico').insert({
+        usuario_id: usuarioId, agente: 'redator',
+        mensagem_usuario: `Redigir: ${TEMPLATES[template]}`,
+        resposta_agente: peca.titulo || TEMPLATES[template],
+      })
+    }
 
     events.agentUsed(user.id, 'redator', 'unknown').catch(() => {})
 

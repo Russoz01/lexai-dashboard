@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase'
+import { resolveUsuarioId } from '@/lib/usuario'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
@@ -349,11 +350,15 @@ export default function ResumidorPage() {
     if (!analise || salvando || salvo) return
     setSalvando(true)
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setSalvando(false); return }
+    const usuarioId = await resolveUsuarioId()
+    if (!usuarioId) {
+      setSalvando(false)
+      toast('error', 'Nao foi possivel identificar o usuario')
+      return
+    }
 
     await supabase.from('documentos').insert({
-      usuario_id: user.id,
+      usuario_id: usuarioId,
       titulo: titulo || 'Documento sem título',
       tipo: mapTipo(analise.classificacao?.tipo || analise.tipo_documento || ''),
       conteudo: texto,
@@ -364,7 +369,7 @@ export default function ResumidorPage() {
     })
 
     await supabase.from('historico').insert({
-      usuario_id: user.id,
+      usuario_id: usuarioId,
       agente: 'resumidor',
       mensagem_usuario: `Analisar: ${titulo || 'documento'}`,
       resposta_agente: analise.objeto || analise.resumo || '',

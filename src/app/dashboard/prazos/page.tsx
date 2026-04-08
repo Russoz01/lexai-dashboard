@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
+import { resolveUsuarioId } from '@/lib/usuario'
 
 interface Prazo {
   id: string; titulo: string; descricao: string | null; data_limite: string
@@ -42,9 +43,9 @@ export default function PrazosPage() {
 
   const carregar = useCallback(async () => {
     setErro('')
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setLoading(false); return }
-    const { data, error } = await supabase.from('prazos').select('*').eq('usuario_id', user.id).order('data_limite')
+    const usuarioId = await resolveUsuarioId()
+    if (!usuarioId) { setLoading(false); return }
+    const { data, error } = await supabase.from('prazos').select('*').eq('usuario_id', usuarioId).order('data_limite')
     if (error) { setErro('Nao foi possivel carregar prazos. Tente novamente.'); setLoading(false); return }
     setPrazos(data ?? []); setLoading(false)
   }, [supabase])
@@ -55,9 +56,9 @@ export default function PrazosPage() {
     e.preventDefault()
     if (!form.titulo || !form.data_limite) return
     setSalvando(true); setErro('')
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setSalvando(false); return }
-    const { error } = await supabase.from('prazos').insert({ usuario_id: user.id, ...form })
+    const usuarioId = await resolveUsuarioId()
+    if (!usuarioId) { setErro('Nao foi possivel identificar o usuario.'); setSalvando(false); return }
+    const { error } = await supabase.from('prazos').insert({ usuario_id: usuarioId, ...form })
     if (error) { setErro(error.message); setSalvando(false); return }
     setModal(false); setForm(EMPTY_FORM); await carregar(); setSalvando(false)
   }

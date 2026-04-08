@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
+import { resolveUsuarioIdServer } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -111,12 +112,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Save to historico (was missing — only agent without it)
-    await supabase.from('historico').insert({
-      usuario_id: user.id,
-      agente: 'resumidor',
-      mensagem_usuario: `Analise: ${texto.slice(0, 100)}`,
-      resposta_agente: typeof analise.objeto === 'string' ? analise.objeto.slice(0, 200) : 'Documento analisado',
-    })
+    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    if (usuarioId) {
+      await supabase.from('historico').insert({
+        usuario_id: usuarioId,
+        agente: 'resumidor',
+        mensagem_usuario: `Analise: ${texto.slice(0, 100)}`,
+        resposta_agente: typeof analise.objeto === 'string' ? analise.objeto.slice(0, 200) : 'Documento analisado',
+      })
+    }
 
     events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})
 

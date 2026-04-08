@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
+import { resolveUsuarioIdServer } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -90,11 +91,14 @@ export async function POST(req: NextRequest) {
       resultado = { resultado: responseText, erro_parse: true }
     }
 
-    await supabase.from('historico').insert({
-      usuario_id: user.id, agente: 'calculador',
-      mensagem_usuario: `Calculo: ${consulta.slice(0, 100)}`,
-      resposta_agente: resultado.tipo_calculo || 'Calculo realizado',
-    })
+    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    if (usuarioId) {
+      await supabase.from('historico').insert({
+        usuario_id: usuarioId, agente: 'calculador',
+        mensagem_usuario: `Calculo: ${consulta.slice(0, 100)}`,
+        resposta_agente: resultado.tipo_calculo || 'Calculo realizado',
+      })
+    }
 
     events.agentUsed(user.id, 'calculador', 'unknown').catch(() => {})
 

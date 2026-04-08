@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
+import { resolveUsuarioId } from '@/lib/usuario'
 import { useTheme } from '@/context/ThemeContext'
 
 type Tab = 'perfil' | 'preferencias' | 'integracoes' | 'contato'
@@ -135,10 +136,10 @@ export default function ConfiguracoesPage() {
     e.preventDefault()
     if (!assunto || !mensagem) return
     setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
+    const usuarioId = await resolveUsuarioId()
+    if (usuarioId) {
       await supabase.from('historico').insert({
-        usuario_id: user.id, agente: 'orquestrador',
+        usuario_id: usuarioId, agente: 'orquestrador',
         mensagem_usuario: `[CONTATO] ${assunto}: ${mensagem}`,
         resposta_agente: 'Mensagem recebida. Nossa equipe entrará em contato em até 24h.',
       })

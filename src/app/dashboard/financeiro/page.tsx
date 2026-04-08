@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
+import { resolveUsuarioId } from '@/lib/usuario'
 
 interface Lancamento {
   id: string; descricao: string; valor: number; tipo: string; categoria: string; data: string
@@ -209,12 +210,12 @@ export default function FinanceiroPage() {
 
   const carregar = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { setLoading(false); return }
+      const usuarioId = await resolveUsuarioId()
+      if (!usuarioId) { setLoading(false); return }
       const { data, error } = await supabase
         .from('financeiro')
         .select('*')
-        .eq('usuario_id', user.id)
+        .eq('usuario_id', usuarioId)
         .order('data', { ascending: false })
         .limit(500) // Pagination — server-side
       if (error) {
@@ -262,15 +263,15 @@ export default function FinanceiroPage() {
       return
     }
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    const usuarioId = await resolveUsuarioId()
+    if (!usuarioId) {
       setErro('Sessao expirada. Faca login novamente.')
       setSalvando(false)
       return
     }
 
     const { error } = await supabase.from('financeiro').insert({
-      usuario_id: user.id,
+      usuario_id: usuarioId,
       descricao: form.descricao.trim(),
       valor: valorNum,
       tipo: form.tipo,

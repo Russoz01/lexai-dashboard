@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
+import { resolveUsuarioIdServer } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -184,11 +185,14 @@ export async function POST(req: NextRequest) {
       aula = { basico: { definicao: responseText }, erro_parse: true }
     }
 
-    await supabase.from('historico').insert({
-      usuario_id: user.id, agente: 'professor',
-      mensagem_usuario: `Ensinar: ${tema}${instituicao ? ` (${instituicao})` : ''}`,
-      resposta_agente: `Aula sobre ${tema}`,
-    })
+    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    if (usuarioId) {
+      await supabase.from('historico').insert({
+        usuario_id: usuarioId, agente: 'professor',
+        mensagem_usuario: `Ensinar: ${tema}${instituicao ? ` (${instituicao})` : ''}`,
+        resposta_agente: `Aula sobre ${tema}`,
+      })
+    }
 
     events.agentUsed(user.id, 'professor', 'unknown').catch(() => {})
 

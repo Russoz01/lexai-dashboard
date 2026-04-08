@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
+import { resolveUsuarioId } from '@/lib/usuario'
 import Link from 'next/link'
 
 interface Stats {
@@ -17,13 +18,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      const usuarioId = await resolveUsuarioId()
+      if (!usuarioId) return
 
       const [docs, prazos, financeiro] = await Promise.all([
-        supabase.from('documentos').select('id', { count: 'exact' }).eq('usuario_id', user.id),
-        supabase.from('prazos').select('titulo,data_limite,status').eq('usuario_id', user.id).order('data_limite'),
-        supabase.from('financeiro').select('valor,tipo').eq('usuario_id', user.id),
+        supabase.from('documentos').select('id', { count: 'exact' }).eq('usuario_id', usuarioId),
+        supabase.from('prazos').select('titulo,data_limite,status').eq('usuario_id', usuarioId).order('data_limite'),
+        supabase.from('financeiro').select('valor,tipo').eq('usuario_id', usuarioId),
       ])
 
       const hoje = new Date()

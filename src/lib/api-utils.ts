@@ -1,7 +1,63 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 const MAX_INPUT_LENGTH = 50000 // 50k chars max
+
+/**
+ * Resolves public.usuarios.id from an auth.users.id.
+ * Every FK in the schema points to usuarios.id — never insert auth.users.id
+ * directly. Falls back to email lookup + lazy creation if trigger missed.
+ */
+export async function resolveUsuarioIdServer(
+  supabase: SupabaseClient,
+  authUserId: string,
+  email?: string | null,
+  nome?: string | null,
+): Promise<string | null> {
+  // Primary lookup
+  const { data } = await supabase
+    .from('usuarios')
+    .select('id')
+    .eq('auth_user_id', authUserId)
+    .maybeSingle()
+  if (data?.id) return data.id
+
+  // Fallback: email lookup (legacy rows)
+  if (email) {
+    const { data: byEmail } = await supabase
+      .from('usuarios')
+      .select('id, auth_user_id')
+      .eq('email', email)
+      .maybeSingle()
+    if (byEmail?.id) {
+      if (!byEmail.auth_user_id) {
+        await supabase.from('usuarios').update({ auth_user_id: authUserId }).eq('id', byEmail.id)
+      }
+      return byEmail.id
+    }
+  }
+
+  // Last resort: create the row (trigger should have done this)
+  const { data: created, error } = await supabase
+    .from('usuarios')
+    .insert({
+      auth_user_id: authUserId,
+      email: email || '',
+      nome: nome || (email ? email.split('@')[0] : 'Usuario'),
+      plano: 'free',
+      subscription_status: 'trialing',
+    })
+    .select('id')
+    .single()
+
+  if (error || !created?.id) {
+    // eslint-disable-next-line no-console
+    console.error('[resolveUsuarioIdServer] Failed to create usuarios row:', error?.message)
+    return null
+  }
+  return created.id
+}
 
 export async function validateAuth() {
   const supabase = await createClient()

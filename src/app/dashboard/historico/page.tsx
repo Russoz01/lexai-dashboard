@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
+import { resolveUsuarioId } from '@/lib/usuario'
 
 interface HistoricoItem {
   id: string
@@ -35,8 +36,8 @@ export default function HistoricoPage() {
 
   const carregar = useCallback(async () => {
     setErro('')
-    const { data: { user }, error: userErr } = await supabase.auth.getUser()
-    if (userErr || !user) {
+    const usuarioId = await resolveUsuarioId()
+    if (!usuarioId) {
       setErro('Sessao expirada. Faca login novamente.')
       setLoading(false)
       return
@@ -45,7 +46,7 @@ export default function HistoricoPage() {
     const { data, error: dataErr } = await supabase
       .from('historico')
       .select('*')
-      .eq('usuario_id', user.id)
+      .eq('usuario_id', usuarioId)
       .order('created_at', { ascending: false })
       .limit(100)
 
