@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run qa",
+  "outputDirectory": ".",
   "headers": [
     {
       "source": "/(.*)",
