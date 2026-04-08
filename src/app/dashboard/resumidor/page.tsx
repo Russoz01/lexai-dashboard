@@ -143,6 +143,7 @@ export default function ResumidorPage() {
   const [copied, setCopied]   = useState(false)
   const [exportandoWord, setExportandoWord] = useState(false)
   const [compartilhando, setCompartilhando] = useState(false)
+  const [importingPrazos, setImportingPrazos] = useState(false)
 
   // ── PDF upload state ─────────────────────────────────────────────────
   const fileInputRef  = useRef<HTMLInputElement | null>(null)
@@ -1030,6 +1031,46 @@ export default function ResumidorPage() {
                   accent={{ bg: 'var(--danger-light)', text: 'var(--danger)', dot: 'var(--danger)' }}
                   defaultOpen
                 />
+
+                {/* Importar prazos para o calendario */}
+                {analise?.prazos && Array.isArray(analise.prazos) && analise.prazos.length > 0 && (
+                  <button
+                    onClick={async () => {
+                      setImportingPrazos(true)
+                      try {
+                        const { importarPrazos } = await import('@/lib/prazo-importer')
+                        const result = await importarPrazos(analise.prazos, titulo || 'Documento analisado')
+                        if (result.importados > 0) {
+                          toast('success', `${result.importados} prazo${result.importados > 1 ? 's' : ''} adicionado${result.importados > 1 ? 's' : ''} aos seus prazos!`)
+                        }
+                        if (result.ignorados > 0) {
+                          toast('info', `${result.ignorados} ignorado(s): ${result.motivos[0] || 'sem data absoluta'}`)
+                        }
+                        if (result.importados === 0 && result.ignorados === 0) {
+                          toast('info', 'Nenhum prazo para importar')
+                        }
+                      } catch (e) {
+                        console.error('[prazo-importer]', e)
+                        toast('error', 'Nao foi possivel importar os prazos')
+                      } finally {
+                        setImportingPrazos(false)
+                      }
+                    }}
+                    disabled={importingPrazos}
+                    style={{
+                      width: '100%', padding: '12px 16px', marginTop: 12,
+                      borderRadius: 10, border: '1px solid var(--accent)',
+                      background: 'var(--accent-light)', color: 'var(--accent)',
+                      fontSize: 14, fontWeight: 600, cursor: importingPrazos ? 'not-allowed' : 'pointer',
+                      opacity: importingPrazos ? 0.7 : 1,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    <i className={`bi ${importingPrazos ? 'bi-hourglass-split' : 'bi-calendar-plus'}`} />
+                    {importingPrazos ? 'Adicionando...' : `Adicionar ${analise.prazos.length} prazo(s) ao meu calendario`}
+                  </button>
+                )}
 
                 {/* Fundamentação Legal */}
                 {(analise.fundamentacao_legal || analise.fundamentacao || [])?.length > 0 && (

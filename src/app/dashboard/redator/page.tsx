@@ -19,6 +19,193 @@ const TEMPLATES = [
   { id: 'notificacao',  label: 'Notificação',       icon: 'bi-envelope-paper',     desc: 'Notificação extrajudicial' },
 ]
 
+interface WizardField {
+  key: string
+  label: string
+  placeholder: string
+  type: 'text' | 'textarea' | 'select' | 'date' | 'money'
+  required?: boolean
+  options?: string[]
+  hint?: string
+}
+
+interface WizardSection {
+  titulo: string
+  icone: string
+  fields: WizardField[]
+}
+
+const WIZARD_FIELDS: Record<string, WizardSection[]> = {
+  peticao: [
+    {
+      titulo: 'Partes', icone: 'bi-people-fill',
+      fields: [
+        { key: 'autor_nome', label: 'Nome do autor', placeholder: 'Ex: Joao Silva', type: 'text', required: true },
+        { key: 'autor_qualificacao', label: 'Qualificacao do autor', placeholder: 'Ex: brasileiro, casado, engenheiro, CPF 123.456.789-00, residente...', type: 'textarea', required: true },
+        { key: 'reu_nome', label: 'Nome do reu', placeholder: 'Ex: Empresa XYZ Ltda', type: 'text', required: true },
+        { key: 'reu_qualificacao', label: 'Qualificacao do reu', placeholder: 'Ex: CNPJ 00.000.000/0000-00, sede em...', type: 'textarea', required: true, hint: 'Voce pode usar o widget de consulta CNPJ acima para preencher automaticamente' },
+      ],
+    },
+    {
+      titulo: 'Fatos', icone: 'bi-card-text',
+      fields: [
+        { key: 'fatos', label: 'Narrativa dos fatos', placeholder: 'Descreva em ordem cronologica o que aconteceu, com datas, valores, documentos...', type: 'textarea', required: true },
+      ],
+    },
+    {
+      titulo: 'Direito', icone: 'bi-book',
+      fields: [
+        { key: 'area', label: 'Area do Direito', placeholder: '', type: 'select', options: ['Civil', 'Consumidor', 'Trabalhista', 'Tributario', 'Administrativo', 'Empresarial', 'Outro'], required: true },
+        { key: 'valor_causa', label: 'Valor da causa', placeholder: '10.000,00', type: 'money', required: true },
+      ],
+    },
+    {
+      titulo: 'Pedidos', icone: 'bi-list-check',
+      fields: [
+        { key: 'pedidos', label: 'Pedidos (um por linha)', placeholder: '1. Condenacao ao pagamento de R$...\n2. Danos morais...\n3. Honorarios advocaticios...', type: 'textarea', required: true },
+      ],
+    },
+  ],
+
+  contestacao: [
+    {
+      titulo: 'Processo', icone: 'bi-folder',
+      fields: [
+        { key: 'numero_processo', label: 'Numero do processo', placeholder: '0000000-00.0000.0.00.0000', type: 'text', required: true },
+        { key: 'vara', label: 'Vara/Comarca', placeholder: 'Ex: 3a Vara Civel de Uberlandia/MG', type: 'text', required: true },
+      ],
+    },
+    {
+      titulo: 'Reu (seu cliente)', icone: 'bi-person-badge',
+      fields: [
+        { key: 'reu_nome', label: 'Nome', placeholder: '', type: 'text', required: true },
+        { key: 'reu_qualificacao', label: 'Qualificacao', placeholder: '', type: 'textarea', required: true },
+      ],
+    },
+    {
+      titulo: 'Tese de defesa', icone: 'bi-shield-check',
+      fields: [
+        { key: 'preliminares', label: 'Preliminares (opcional)', placeholder: 'Ex: ilegitimidade passiva, prescricao, incompetencia...', type: 'textarea' },
+        { key: 'merito', label: 'Razoes de merito', placeholder: 'Por que o pedido do autor deve ser rejeitado?', type: 'textarea', required: true },
+        { key: 'provas', label: 'Provas que pretende produzir', placeholder: 'Ex: depoimento pessoal, testemunhas, pericia...', type: 'textarea' },
+      ],
+    },
+  ],
+
+  recurso: [
+    {
+      titulo: 'Decisao recorrida', icone: 'bi-file-earmark',
+      fields: [
+        { key: 'tipo_recurso', label: 'Tipo de recurso', placeholder: '', type: 'select', options: ['Apelacao', 'Agravo de Instrumento', 'Recurso Especial', 'Recurso Extraordinario', 'Embargos de Declaracao'], required: true },
+        { key: 'numero_processo', label: 'Numero do processo', placeholder: '0000000-00.0000.0.00.0000', type: 'text', required: true },
+        { key: 'data_decisao', label: 'Data da decisao', placeholder: '', type: 'date', required: true },
+        { key: 'resumo_decisao', label: 'Resumo da decisao recorrida', placeholder: 'O que foi decidido?', type: 'textarea', required: true },
+      ],
+    },
+    {
+      titulo: 'Razoes do recurso', icone: 'bi-pencil-square',
+      fields: [
+        { key: 'erros_decisao', label: 'Onde a decisao errou?', placeholder: 'Aponte os pontos especificos em que a sentenca/acordao se equivocou', type: 'textarea', required: true },
+        { key: 'pedidos_recurso', label: 'O que pede no recurso?', placeholder: 'Reformar? Anular? Qual o provimento desejado?', type: 'textarea', required: true },
+      ],
+    },
+  ],
+
+  contrato: [
+    {
+      titulo: 'Tipo de contrato', icone: 'bi-file-earmark-ruled',
+      fields: [
+        { key: 'tipo_contrato', label: 'Tipo', placeholder: '', type: 'select', options: ['Prestacao de servicos', 'Compra e venda', 'Locacao', 'Representacao comercial', 'Confidencialidade (NDA)', 'Outro'], required: true },
+      ],
+    },
+    {
+      titulo: 'Partes', icone: 'bi-people',
+      fields: [
+        { key: 'contratante', label: 'Contratante (quem contrata)', placeholder: 'Nome completo + qualificacao + CPF/CNPJ + endereco', type: 'textarea', required: true },
+        { key: 'contratado', label: 'Contratado (quem executa)', placeholder: 'Nome completo + qualificacao + CPF/CNPJ + endereco', type: 'textarea', required: true },
+      ],
+    },
+    {
+      titulo: 'Objeto e condicoes', icone: 'bi-box',
+      fields: [
+        { key: 'objeto', label: 'Objeto do contrato', placeholder: 'O que sera prestado/vendido/alugado?', type: 'textarea', required: true },
+        { key: 'valor', label: 'Valor', placeholder: '10.000,00', type: 'money', required: true },
+        { key: 'forma_pagamento', label: 'Forma e prazo de pagamento', placeholder: 'Ex: a vista via Pix, parcelado em 12x no cartao...', type: 'textarea', required: true },
+        { key: 'prazo_vigencia', label: 'Prazo de vigencia', placeholder: 'Ex: 12 meses, ate 31/12/2026, indeterminado...', type: 'text', required: true },
+      ],
+    },
+    {
+      titulo: 'Condicoes especiais', icone: 'bi-gear',
+      fields: [
+        { key: 'multa_rescisoria', label: 'Multa rescisoria (%)', placeholder: 'Ex: 10% do valor restante', type: 'text' },
+        { key: 'foro', label: 'Foro eleito', placeholder: 'Ex: Uberlandia/MG', type: 'text', required: true },
+        { key: 'observacoes', label: 'Observacoes adicionais', placeholder: 'Clausulas extras que voce quer incluir', type: 'textarea' },
+      ],
+    },
+  ],
+
+  notificacao: [
+    {
+      titulo: 'Partes', icone: 'bi-people',
+      fields: [
+        { key: 'notificante', label: 'Notificante (quem envia)', placeholder: 'Nome + qualificacao + CPF/CNPJ', type: 'textarea', required: true },
+        { key: 'notificado', label: 'Notificado (quem recebe)', placeholder: 'Nome + qualificacao + endereco completo', type: 'textarea', required: true },
+      ],
+    },
+    {
+      titulo: 'Notificacao', icone: 'bi-envelope-exclamation',
+      fields: [
+        { key: 'motivo', label: 'Motivo da notificacao', placeholder: 'Ex: cobranca de divida, exigencia de cumprimento de contrato, denuncia de locacao...', type: 'textarea', required: true },
+        { key: 'exigencia', label: 'O que exige do notificado?', placeholder: 'Ex: pagamento do valor X em 10 dias, entrega de documento...', type: 'textarea', required: true },
+        { key: 'prazo', label: 'Prazo concedido', placeholder: 'Ex: 10 dias a partir do recebimento', type: 'text', required: true },
+        { key: 'consequencia', label: 'Consequencia do descumprimento', placeholder: 'Ex: acao judicial com pedido de multa, rescisao contratual...', type: 'textarea', required: true },
+      ],
+    },
+  ],
+
+  parecer: [
+    {
+      titulo: 'Consulta', icone: 'bi-question-circle',
+      fields: [
+        { key: 'consulente', label: 'Consulente', placeholder: 'Quem pediu o parecer', type: 'text', required: true },
+        { key: 'questao', label: 'Questao juridica', placeholder: 'Qual e a duvida juridica a ser respondida?', type: 'textarea', required: true },
+      ],
+    },
+    {
+      titulo: 'Contexto fatico', icone: 'bi-clipboard-data',
+      fields: [
+        { key: 'fatos', label: 'Fatos relevantes', placeholder: 'Descreva o contexto factual', type: 'textarea', required: true },
+        { key: 'documentos', label: 'Documentos analisados', placeholder: 'Contratos, decisoes, pareceres anteriores...', type: 'textarea' },
+      ],
+    },
+  ],
+}
+
+function wizardValuesToInstrucoes(template: string, values: Record<string, string>): string {
+  const sections = WIZARD_FIELDS[template] || []
+  const parts: string[] = []
+
+  for (const section of sections) {
+    parts.push(`== ${section.titulo.toUpperCase()} ==`)
+    for (const field of section.fields) {
+      const val = values[field.key]?.trim()
+      if (val) {
+        parts.push(`${field.label}: ${val}`)
+      }
+    }
+    parts.push('')
+  }
+
+  return parts.join('\n').trim()
+}
+
+function formatMoneyBR(value: string): string {
+  const digits = value.replace(/\D/g, '')
+  if (!digits) return ''
+  const num = parseInt(digits, 10)
+  return (num / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 interface PecaResponse {
   titulo: string
   documento: string
@@ -47,6 +234,19 @@ export default function RedatorPage() {
   const [cnpjLoading, setCnpjLoading] = useState(false)
   const [cnpjError, setCnpjError]     = useState('')
 
+  // Wizard mode state
+  const [modo, setModo] = useState<'livre' | 'guiado'>('livre')
+  const [currentStep, setCurrentStep] = useState(0)
+  const [wizardValues, setWizardValues] = useState<Record<string, string>>({})
+
+  const wizardSections = WIZARD_FIELDS[template] || []
+
+  // Reset wizard when template or mode changes
+  useEffect(() => {
+    setCurrentStep(0)
+    setWizardValues({})
+  }, [template, modo])
+
   useDraft('lexai-draft-redator', instrucoes, setInstrucoes)
 
   useEffect(() => {
@@ -59,15 +259,16 @@ export default function RedatorPage() {
     return () => { cancelled = true }
   }, [showDraftsModal])
 
-  async function gerar() {
-    if (!template || !instrucoes.trim()) return
+  async function gerar(instrucoesOverride?: string) {
+    const payloadInstrucoes = (instrucoesOverride ?? instrucoes).trim()
+    if (!template || !payloadInstrucoes) return
     setGerando(true); setPeca(null); setErro(''); setSavedBadge(false)
 
     try {
       const res = await fetch('/api/redigir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ template, instrucoes }),
+        body: JSON.stringify({ template, instrucoes: payloadInstrucoes }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar documento')
@@ -89,6 +290,29 @@ export default function RedatorPage() {
     } finally {
       setGerando(false)
     }
+  }
+
+  function wizardRequiredMissing(): string[] {
+    const missing: string[] = []
+    for (const section of wizardSections) {
+      for (const field of section.fields) {
+        if (field.required && !wizardValues[field.key]?.trim()) {
+          missing.push(field.label)
+        }
+      }
+    }
+    return missing
+  }
+
+  async function gerarComWizard() {
+    if (!template) return
+    const missing = wizardRequiredMissing()
+    if (missing.length > 0) {
+      setErro(`Preencha os campos obrigatorios: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '...' : ''}`)
+      return
+    }
+    const built = wizardValuesToInstrucoes(template, wizardValues)
+    await gerar(built)
   }
 
   function loadDraft(d: DraftRow) {
@@ -213,8 +437,42 @@ export default function RedatorPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           {/* Seletor de template */}
           <div className="section-card" style={{ padding: '18px 20px' }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-              Tipo de Peça
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Tipo de Peça
+              </div>
+              <div style={{ display: 'inline-flex', gap: 0, padding: 3, background: 'var(--hover)', borderRadius: 12 }}>
+                <button
+                  type="button"
+                  onClick={() => setModo('livre')}
+                  style={{
+                    padding: '7px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                    fontSize: 12, fontWeight: 600,
+                    background: modo === 'livre' ? 'var(--card-bg)' : 'transparent',
+                    color: modo === 'livre' ? 'var(--text-primary)' : 'var(--text-muted)',
+                    boxShadow: modo === 'livre' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+                    fontFamily: "'DM Sans', sans-serif",
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <i className="bi bi-pencil" style={{ marginRight: 6 }} />Modo livre
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModo('guiado')}
+                  style={{
+                    padding: '7px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                    fontSize: 12, fontWeight: 600,
+                    background: modo === 'guiado' ? 'var(--card-bg)' : 'transparent',
+                    color: modo === 'guiado' ? 'var(--text-primary)' : 'var(--text-muted)',
+                    boxShadow: modo === 'guiado' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+                    fontFamily: "'DM Sans', sans-serif",
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <i className="bi bi-stars" style={{ marginRight: 6 }} />Modo guiado
+                </button>
+              </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {TEMPLATES.map(t => {
@@ -245,7 +503,8 @@ export default function RedatorPage() {
             </div>
           </div>
 
-          {/* Instruções */}
+          {/* Instruções — Modo livre */}
+          {modo === 'livre' && (
           <div className="section-card" style={{ padding: '18px 20px', flex: 1 }}>
             <label className="form-label">Instruções e Fatos</label>
 
@@ -298,7 +557,7 @@ export default function RedatorPage() {
             )}
 
             <button
-              onClick={gerar}
+              onClick={() => gerar()}
               disabled={!template || !instrucoes.trim() || gerando}
               className="btn-primary"
               style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}
@@ -309,6 +568,199 @@ export default function RedatorPage() {
               }
             </button>
           </div>
+          )}
+
+          {/* Modo guiado — Wizard */}
+          {modo === 'guiado' && (
+          <div className="section-card" style={{ padding: '18px 20px', flex: 1 }}>
+            {!template ? (
+              <div style={{ padding: '36px 14px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                <i className="bi bi-stars" style={{ fontSize: 32, opacity: 0.35, display: 'block', marginBottom: 10 }} />
+                <div style={{ fontSize: 13 }}>Selecione um tipo de peca acima para comecar.</div>
+                <div style={{ fontSize: 12, marginTop: 4 }}>O modo guiado vai te ajudar a preencher os campos passo a passo.</div>
+              </div>
+            ) : wizardSections.length === 0 ? (
+              <div style={{ padding: '24px 14px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
+                Este template nao tem campos guiados. Use o modo livre.
+              </div>
+            ) : (
+              <>
+                {/* Progress bar */}
+                <div style={{ marginBottom: 18 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                    Passo {currentStep + 1} de {wizardSections.length}: {wizardSections[currentStep].titulo}
+                  </div>
+                  <div style={{ height: 4, background: 'var(--hover)', borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{ width: `${((currentStep + 1) / wizardSections.length) * 100}%`, height: '100%', background: 'var(--accent)', borderRadius: 2, transition: 'width 0.3s' }} />
+                  </div>
+                </div>
+
+                {/* CNPJ lookup helper (visivel em todas as etapas que possam precisar) */}
+                {LEGAL_TEMPLATES_WITH_CNPJ.has(template) && (
+                  <div style={{ marginBottom: 14, padding: '10px 12px', background: 'var(--accent-light)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                      <i className="bi bi-search" style={{ marginRight: 5 }} />Consultar CNPJ na Receita Federal
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input
+                        type="text"
+                        value={cnpjLookup}
+                        onChange={e => setCnpjLookup(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleCnpjLookup() } }}
+                        placeholder="00.000.000/0000-00"
+                        className="form-input"
+                        style={{ flex: 1, fontSize: 13 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCnpjLookup}
+                        disabled={cnpjLoading}
+                        className="btn-ghost"
+                        style={{ whiteSpace: 'nowrap', fontSize: 13 }}
+                      >
+                        {cnpjLoading ? 'Buscando...' : <><i className="bi bi-arrow-right" /> Buscar</>}
+                      </button>
+                    </div>
+                    {cnpjError && <div style={{ fontSize: 12, color: 'var(--danger)', marginTop: 6 }}>{cnpjError}</div>}
+                  </div>
+                )}
+
+                {/* Current section fields */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                  <i className={`bi ${wizardSections[currentStep].icone}`} style={{ fontSize: 20, color: 'var(--accent)' }} />
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                    {wizardSections[currentStep].titulo}
+                  </h3>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {wizardSections[currentStep].fields.map(field => {
+                    const val = wizardValues[field.key] || ''
+                    const setVal = (v: string) => setWizardValues(prev => ({ ...prev, [field.key]: v }))
+                    return (
+                      <div key={field.key}>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+                          {field.label}{field.required && <span style={{ color: 'var(--danger)', marginLeft: 3 }}>*</span>}
+                        </label>
+                        {field.type === 'text' && (
+                          <input
+                            type="text"
+                            value={val}
+                            onChange={e => setVal(e.target.value)}
+                            placeholder={field.placeholder}
+                            className="form-input"
+                            style={{ fontSize: 13 }}
+                          />
+                        )}
+                        {field.type === 'textarea' && (
+                          <textarea
+                            value={val}
+                            onChange={e => setVal(e.target.value)}
+                            placeholder={field.placeholder}
+                            rows={4}
+                            className="form-input"
+                            style={{ resize: 'vertical', minHeight: 90, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.55 }}
+                          />
+                        )}
+                        {field.type === 'select' && (
+                          <select
+                            value={val}
+                            onChange={e => setVal(e.target.value)}
+                            className="form-input"
+                            style={{ fontSize: 13 }}
+                          >
+                            <option value="">Selecione...</option>
+                            {field.options?.map(opt => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        )}
+                        {field.type === 'date' && (
+                          <input
+                            type="date"
+                            value={val}
+                            onChange={e => setVal(e.target.value)}
+                            className="form-input"
+                            style={{ fontSize: 13 }}
+                          />
+                        )}
+                        {field.type === 'money' && (
+                          <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }}>
+                            <span style={{
+                              display: 'inline-flex', alignItems: 'center', padding: '0 12px',
+                              background: 'var(--hover)', border: '1px solid var(--border)',
+                              borderRight: 'none', borderTopLeftRadius: 8, borderBottomLeftRadius: 8,
+                              fontSize: 13, fontWeight: 600, color: 'var(--text-muted)',
+                            }}>R$</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={val}
+                              onChange={e => setVal(e.target.value)}
+                              onBlur={e => setVal(formatMoneyBR(e.target.value))}
+                              placeholder={field.placeholder || '0,00'}
+                              className="form-input"
+                              style={{ fontSize: 13, flex: 1, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                            />
+                          </div>
+                        )}
+                        {field.hint && (
+                          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 5, fontStyle: 'italic' }}>
+                            <i className="bi bi-info-circle" style={{ marginRight: 4 }} />{field.hint}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Erro */}
+                {erro && (
+                  <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <i className="bi bi-exclamation-triangle-fill" /> {erro}
+                  </div>
+                )}
+
+                {/* Nav buttons */}
+                <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'space-between' }}>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(s => Math.max(0, s - 1))}
+                    disabled={currentStep === 0}
+                    className="btn-ghost"
+                    style={{ fontSize: 13, opacity: currentStep === 0 ? 0.5 : 1 }}
+                  >
+                    <i className="bi bi-arrow-left" /> Anterior
+                  </button>
+
+                  {currentStep < wizardSections.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep(s => s + 1)}
+                      className="btn-primary"
+                      style={{ fontSize: 13 }}
+                    >
+                      Proximo <i className="bi bi-arrow-right" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={gerarComWizard}
+                      disabled={gerando}
+                      className="btn-primary"
+                      style={{ fontSize: 13 }}
+                    >
+                      {gerando
+                        ? <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}><circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" /></svg> Gerando...</>
+                        : <><i className="bi bi-magic" /> Gerar peca</>
+                      }
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+          )}
         </div>
 
         {/* Painel direito — Preview */}
@@ -391,7 +843,7 @@ export default function RedatorPage() {
 
               {/* Nova peça */}
               <button
-                onClick={() => { setPeca(null); setInstrucoes(''); setTemplate('') }}
+                onClick={() => { setPeca(null); setInstrucoes(''); setTemplate(''); setWizardValues({}); setCurrentStep(0) }}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   gap: 8, width: '100%', padding: 11,

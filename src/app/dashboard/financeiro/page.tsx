@@ -1,11 +1,21 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 
 interface Lancamento {
-  id: string; descricao: string; valor: number; tipo: string; categoria: string; data: string
+  id: string
+  descricao: string
+  valor: number
+  tipo: string
+  categoria: string
+  data: string
+  recorrente?: boolean
+  recorrencia_freq?: string | null
+  recorrencia_parent?: string | null
+  recorrencia_fim?: string | null
 }
 
 const CAT_ICON: Record<string, string> = {
@@ -14,7 +24,69 @@ const CAT_ICON: Record<string, string> = {
   imposto: 'bi-bank', outro: 'bi-three-dots',
 }
 
-const EMPTY = { descricao: '', valor: '', tipo: 'receita', categoria: 'honorarios', data: new Date().toISOString().split('T')[0] }
+const EMPTY = {
+  descricao: '',
+  valor: '',
+  tipo: 'receita',
+  categoria: 'honorarios',
+  data: new Date().toISOString().split('T')[0],
+  recorrente: false,
+  recorrencia_freq: 'mensal',
+  recorrencia_fim: '',
+}
+
+// Helper: compute next occurrence date from a frequency and starting date
+function proximaData(data: string, freq: string): string {
+  const d = new Date(data + 'T00:00:00')
+  switch (freq) {
+    case 'semanal': d.setDate(d.getDate() + 7); break
+    case 'quinzenal': d.setDate(d.getDate() + 14); break
+    case 'mensal': d.setMonth(d.getMonth() + 1); break
+    case 'bimestral': d.setMonth(d.getMonth() + 2); break
+    case 'trimestral': d.setMonth(d.getMonth() + 3); break
+    case 'anual': d.setFullYear(d.getFullYear() + 1); break
+  }
+  return d.toISOString().split('T')[0]
+}
+
+// Generate missing recurring child entries up to today (returns number created)
+async function gerarRecorrenciasPendentes(
+  supabase: SupabaseClient,
+  usuarioId: string,
+  itens: Lancamento[],
+): Promise<number> {
+  const hoje = new Date().toISOString().split('T')[0]
+  const recorrentes = itens.filter(i => i.recorrente && i.recorrencia_freq)
+  let criados = 0
+
+  for (const parent of recorrentes) {
+    const existingChildren = itens
+      .filter(i => i.recorrencia_parent === parent.id)
+      .sort((a, b) => b.data.localeCompare(a.data))
+    const lastDate = existingChildren[0]?.data || parent.data
+    let nextDate = proximaData(lastDate, parent.recorrencia_freq!)
+
+    while (nextDate <= hoje) {
+      if (parent.recorrencia_fim && nextDate > parent.recorrencia_fim) break
+
+      const { error } = await supabase.from('financeiro').insert({
+        usuario_id: usuarioId,
+        descricao: parent.descricao,
+        valor: parent.valor,
+        tipo: parent.tipo,
+        categoria: parent.categoria,
+        data: nextDate,
+        recorrente: false,
+        recorrencia_parent: parent.id,
+      })
+      if (error) break
+      criados++
+      nextDate = proximaData(nextDate, parent.recorrencia_freq!)
+    }
+  }
+
+  return criados
+}
 
 function fmt(v: number) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }
 function fmtData(d: string) { const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}` }
@@ -208,7 +280,7 @@ export default function FinanceiroPage() {
   const [importing, setImporting]           = useState(false)
   const [importMsg, setImportMsg]           = useState<{ tipo: 'ok' | 'err' | 'info'; texto: string } | null>(null)
 
-  const carregar = useCallback(async () => {
+  const carregar = useCallback(async (skipRecurringGen = false) => {
     try {
       const usuarioId = await resolveUsuarioId()
       if (!usuarioId) { setLoading(false); return }
@@ -223,7 +295,19 @@ export default function FinanceiroPage() {
         setLoading(false)
         return
       }
-      setItens(data ?? [])
+      const rows = (data ?? []) as Lancamento[]
+
+      // Auto-generate pending recurring entries (only on initial load, to avoid loops)
+      if (!skipRecurringGen) {
+        const criados = await gerarRecorrenciasPendentes(supabase, usuarioId, rows)
+        if (criados > 0) {
+          // Re-fetch to pick up the newly created children; skip gen to avoid infinite loop
+          await carregar(true)
+          return
+        }
+      }
+
+      setItens(rows)
       setLoading(false)
     } catch {
       setErro('Erro ao conectar com o banco. Verifique sua conexao.')
@@ -277,6 +361,9 @@ export default function FinanceiroPage() {
       tipo: form.tipo,
       categoria: form.categoria,
       data: form.data,
+      recorrente: form.recorrente,
+      recorrencia_freq: form.recorrente ? form.recorrencia_freq : null,
+      recorrencia_fim: form.recorrente && form.recorrencia_fim ? form.recorrencia_fim : null,
     })
 
     if (error) {
@@ -718,10 +805,27 @@ export default function FinanceiroPage() {
                 >
                   <td style={{ padding:'11px 14px', color:'var(--text-secondary)', fontVariantNumeric:'tabular-nums' }}>{fmtData(item.data)}</td>
                   <td style={{ padding:'11px 14px', color:'var(--text-primary)', fontWeight:500 }}>
-                    <span style={{ display:'flex', alignItems:'center', gap:7 }}>
+                    <span style={{ display:'flex', alignItems:'center', gap:7, flexWrap:'wrap' }}>
                       <i className={`bi ${CAT_ICON[item.categoria] ?? 'bi-three-dots'}`} style={{ fontSize:13, color:'var(--text-muted)' }} />
                       {item.descricao}
                       {isBigExpense && <i className="bi bi-exclamation-triangle-fill" title="Despesa alta (> R$ 500)" style={{ fontSize: 11, color: '#e67e22', marginLeft: 4 }} />}
+                      {item.recorrente && (
+                        <span title={`Recorrente ${item.recorrencia_freq ?? ''}`} style={{
+                          fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10,
+                          background: 'var(--accent-light)', color: 'var(--accent)', marginLeft: 8,
+                        }}>
+                          <i className="bi bi-arrow-repeat" style={{ marginRight: 3 }} />Recorrente
+                        </span>
+                      )}
+                      {item.recorrencia_parent && !item.recorrente && (
+                        <span title="Gerado automaticamente a partir de um lancamento recorrente" style={{
+                          fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
+                          background: 'var(--hover)', color: 'var(--text-muted)', marginLeft: 6,
+                          textTransform: 'uppercase', letterSpacing: '0.04em',
+                        }}>
+                          auto
+                        </span>
+                      )}
                     </span>
                   </td>
                   <td style={{ padding:'11px 14px' }}>
@@ -805,6 +909,38 @@ export default function FinanceiroPage() {
                       <option value="outro">Outro</option>
                     </select>
                   </div>
+                </div>
+                <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)', marginTop: 4 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary)' }}>
+                    <input
+                      type="checkbox"
+                      checked={form.recorrente}
+                      onChange={e => setForm(f => ({ ...f, recorrente: e.target.checked }))}
+                      style={{ width: 18, height: 18, accentColor: 'var(--accent)' }}
+                    />
+                    <i className="bi bi-arrow-repeat" style={{ color: 'var(--accent)' }} />
+                    <span><strong>Lancamento recorrente</strong> — se repete automaticamente</span>
+                  </label>
+
+                  {form.recorrente && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 14, paddingLeft: 28 }}>
+                      <div>
+                        <label className="form-label">Frequencia</label>
+                        <select value={form.recorrencia_freq} onChange={e => setForm(f => ({ ...f, recorrencia_freq: e.target.value }))} className="form-input">
+                          <option value="semanal">Semanal</option>
+                          <option value="quinzenal">Quinzenal</option>
+                          <option value="mensal">Mensal</option>
+                          <option value="bimestral">Bimestral</option>
+                          <option value="trimestral">Trimestral</option>
+                          <option value="anual">Anual</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="form-label">Termina em (opcional)</label>
+                        <input type="date" value={form.recorrencia_fim} onChange={e => setForm(f => ({ ...f, recorrencia_fim: e.target.value }))} className="form-input" />
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn-ghost" style={{ flex:1 }} onClick={() => setModal(false)}>Cancelar</button>
