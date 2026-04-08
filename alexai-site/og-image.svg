@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Alex AI — Open Graph preview card 1200x630
+       Editorial dark composition: cream-on-ink with olive/gold accents.
+       Matches the site's design system (style.css tokens). -->
+
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#1A1D17"/>
+      <stop offset="40%" stop-color="#22251D"/>
+      <stop offset="100%" stop-color="#2F3328"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="0.25">
+      <stop offset="0%"  stop-color="#F5F2EC"/>
+      <stop offset="60%" stop-color="#E8D4AA"/>
+      <stop offset="100%" stop-color="#7A8D68"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.2" r="0.5">
+      <stop offset="0%"  stop-color="#7A8D68" stop-opacity="0.28"/>
+      <stop offset="60%" stop-color="#7A8D68" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#7A8D68" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Subtle top border -->
+  <rect x="0" y="0" width="1200" height="1" fill="#D9BE8A" opacity="0.28"/>
+
+  <!-- Top-left brand bar -->
+  <g transform="translate(80, 80)">
+    <line x1="0" y1="12" x2="44" y2="12" stroke="#D9BE8A" stroke-width="1"/>
+    <text x="58" y="18"
+          font-family="'Inter', -apple-system, Segoe UI, sans-serif"
+          font-size="14"
+          font-weight="500"
+          letter-spacing="4"
+          fill="#D9BE8A">
+      VANIX CORP
+    </text>
+  </g>
+
+  <!-- Top-right meta -->
+  <g transform="translate(1120, 80)">
+    <text x="0" y="18"
+          font-family="'Inter', -apple-system, Segoe UI, sans-serif"
+          font-size="13"
+          font-weight="400"
+          letter-spacing="2"
+          text-anchor="end"
+          fill="#F5F2EC" opacity="0.6">
+      PT · BR
+    </text>
+  </g>
+
+  <!-- Main title -->
+  <g transform="translate(80, 300)">
+    <text x="0" y="0"
+          font-family="'Cormorant Garamond', Georgia, serif"
+          font-size="140"
+          font-weight="400"
+          fill="url(#titleGrad)">
+      Alex AI
+    </text>
+    <text x="0" y="50"
+          font-family="'Cormorant Garamond', Georgia, serif"
+          font-size="140"
+          font-weight="300"
+          font-style="italic"
+          fill="#F5F2EC" opacity="0.92">
+      <tspan x="0" dy="0">.</tspan>
+    </text>
+  </g>
+
+  <!-- Subtitle / tagline -->
+  <g transform="translate(80, 380)">
+    <text x="0" y="0"
+          font-family="'Inter', -apple-system, Segoe UI, sans-serif"
+          font-size="32"
+          font-weight="300"
+          letter-spacing="0.5"
+          fill="#F5F2EC" opacity="0.86">
+      Inteligência conversacional autônoma
+    </text>
+    <text x="0" y="42"
+          font-family="'Inter', -apple-system, Segoe UI, sans-serif"
+          font-size="20"
+          font-weight="300"
+          letter-spacing="0.3"
+          fill="#F5F2EC" opacity="0.55">
+      Atende. Qualifica. Recupera receita. 24/7.
+    </text>
+  </g>
+
+  <!-- Bottom accent divider -->
+  <line x1="80" y1="520" x2="240" y2="520" stroke="#5B6B4E" stroke-width="1.5"/>
+
+  <!-- Bottom-left footer -->
+  <g transform="translate(80, 560)">
+    <text x="0" y="0"
+          font-family="'Inter', -apple-system, Segoe UI, sans-serif"
+          font-size="15"
+          font-weight="500"
+          letter-spacing="1.5"
+          fill="#F5F2EC">
+      alexai.com.br
+    </text>
+  </g>
+
+  <!-- Bottom-right KPIs -->
+  <g transform="translate(1120, 540)">
+    <text x="0" y="0"
+          font-family="'Inter', -apple-system, Segoe UI, sans-serif"
+          font-size="12"
+          font-weight="400"
+          letter-spacing="2"
+          text-anchor="end"
+          fill="#D9BE8A" opacity="0.85">
+      CONVERSAS · QUALIFICAÇÃO · RECUPERAÇÃO
+    </text>
+    <text x="0" y="24"
+          font-family="'Inter', -apple-system, Segoe UI, sans-serif"
+          font-size="11"
+          font-weight="400"
+          letter-spacing="2"
+          text-anchor="end"
+          fill="#F5F2EC" opacity="0.45">
+      WHATSAPP · INSTAGRAM · EMAIL
+    </text>
+  </g>
+
+  <!-- Decorative right-side vertical rule -->
+  <line x1="1060" y1="140" x2="1060" y2="460" stroke="#D9BE8A" stroke-width="0.5" opacity="0.35"/>
+  <circle cx="1060" cy="300" r="4" fill="#D9BE8A" opacity="0.9"/>
+</svg>
