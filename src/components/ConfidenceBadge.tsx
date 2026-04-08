@@ -52,7 +52,7 @@ export function PoweredByLexAI() {
         display: 'inline-block', width: 1, height: 10,
         background: 'var(--border)', margin: '0 1px',
       }} />
-      <span style={{ color: 'var(--text-secondary)' }}>by Zyntra</span>
+      <span style={{ color: 'var(--text-secondary)' }}>by Vanix Corp</span>
     </span>
   )
 }

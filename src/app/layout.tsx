@@ -20,17 +20,17 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://lexai.com.br'),
-  title: 'LexAI — Inteligencia Juridica · uma marca Zyntra',
-  description: 'LexAI, uma marca Zyntra. Plataforma de inteligencia artificial para advogados e estudantes de Direito. 10 agentes IA especializados: analise de documentos, pesquisa jurisprudencial, redacao de pecas, negociacao, calculos juridicos e mais.',
-  keywords: 'lexai, zyntra, assistente juridico, inteligencia artificial, direito, advogado, oab, jurisprudencia, pecas processuais, ia juridica',
-  authors: [{ name: 'Zyntra' }],
+  title: 'LexAI — Inteligencia Juridica · uma marca Vanix Corp',
+  description: 'LexAI, uma marca Vanix Corp. Plataforma de inteligencia artificial para advogados e estudantes de Direito. 10 agentes IA especializados: analise de documentos, pesquisa jurisprudencial, redacao de pecas, negociacao, calculos juridicos e mais.',
+  keywords: 'lexai, vanix corp, assistente juridico, inteligencia artificial, direito, advogado, oab, jurisprudencia, pecas processuais, ia juridica',
+  authors: [{ name: 'Vanix Corp' }],
   openGraph: {
     title: 'LexAI — Assistente Juridico Inteligente',
     description: '10 agentes de IA para profissionais do Direito. Analise documentos, pesquise jurisprudencia e gere pecas processuais.',
     type: 'website',
     locale: 'pt_BR',
     url: 'https://lexai.com.br',
-    siteName: 'LexAI · Zyntra',
+    siteName: 'LexAI · Vanix Corp',
     images: [
       {
         url: '/og-image.png',

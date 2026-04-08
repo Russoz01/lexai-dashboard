@@ -164,7 +164,7 @@ export default function DashboardPage() {
                 {stats.documentos}
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#10B981', marginTop: 2 }}>
-                LexAI · by Zyntra
+                LexAI · by Vanix Corp
               </div>
             </div>
             <div style={{ width: '100%', height: 1, background: 'rgba(0,0,0,0.06)' }} />
@@ -234,7 +234,7 @@ export default function DashboardPage() {
             <i className="bi bi-dash" /> —
           </div>
           <div className="stat-card-footer">
-            <span className="highlight">LexAI · by Zyntra</span>
+            <span className="highlight">LexAI · by Vanix Corp</span>
           </div>
         </Link>
       </div>

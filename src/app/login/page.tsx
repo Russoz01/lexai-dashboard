@@ -360,7 +360,7 @@ export default function LoginPage() {
               <h1 id="lx-form-title" className="lx-brand-name">LexAI</h1>
               <div className="lx-brand-vendor">
                 <i className="bi bi-stars" aria-hidden="true" />
-                <span>uma marca <strong>Zyntra</strong></span>
+                <span>uma marca <strong>Vanix Corp</strong></span>
               </div>
               <p className="lx-brand-tag">Inteligencia juridica que pensa com voce</p>
             </div>

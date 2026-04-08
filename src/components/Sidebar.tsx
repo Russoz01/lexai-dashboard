@@ -92,7 +92,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             fontSize: 9, fontWeight: 600, letterSpacing: '0.6px', textTransform: 'uppercase',
             color: 'var(--text-muted)', marginTop: 3, opacity: 0.8,
           }}>
-            by Zyntra
+            by Vanix Corp
           </span>
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               : (PLANOS[plano]?.preco || '')}
           </div>
         </div>
-        {/* Zyntra footer mark */}
+        {/* Vanix Corp footer mark */}
         <div style={{
           marginTop: 12, paddingTop: 12,
           borderTop: '1px solid var(--border)',
@@ -158,7 +158,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           textAlign: 'center', letterSpacing: '0.4px',
         }}>
           <i className="bi bi-stars" style={{ marginRight: 5, color: 'var(--accent)' }} />
-          Uma marca <strong style={{ color: 'var(--text-secondary)' }}>Zyntra</strong>
+          Uma marca <strong style={{ color: 'var(--text-secondary)' }}>Vanix Corp</strong>
         </div>
       </div>
 
