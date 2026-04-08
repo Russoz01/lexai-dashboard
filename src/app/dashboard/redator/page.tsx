@@ -5,6 +5,7 @@ import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { generateDocx, downloadBlob } from '@/lib/word-export'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
+import { SkeletonResult } from '@/components/Skeleton'
 
 const TEMPLATES = [
   { id: 'peticao',      label: 'Petição Inicial',  icon: 'bi-file-earmark-text',  desc: 'Petição inicial para distribuição de ação' },
@@ -181,18 +182,31 @@ export default function RedatorPage() {
               Tipo de Peça
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              {TEMPLATES.map(t => (
-                <button key={t.id} onClick={() => setTemplate(t.id)} style={{
-                  padding: '10px 12px', borderRadius: 8, textAlign: 'left', cursor: 'pointer',
-                  border: template === t.id ? '2px solid var(--accent)' : '1px solid var(--border)',
-                  background: template === t.id ? 'var(--accent-light)' : 'var(--card-bg)',
-                  transition: 'all 0.15s',
-                }}>
-                  <i className={`bi ${t.icon}`} style={{ fontSize: 16, color: template === t.id ? 'var(--accent)' : 'var(--text-muted)', display: 'block', marginBottom: 6 }} />
-                  <div style={{ fontSize: 12, fontWeight: 600, color: template === t.id ? 'var(--accent)' : 'var(--text-primary)', marginBottom: 2 }}>{t.label}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.3 }}>{t.desc}</div>
-                </button>
-              ))}
+              {TEMPLATES.map(t => {
+                const isActive = template === t.id
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setTemplate(t.id)}
+                    className={`template-card${isActive ? ' is-active' : ''}`}
+                  >
+                    {isActive && (
+                      <i className="bi bi-check-circle-fill template-card-check" />
+                    )}
+                    <i
+                      className={`bi ${t.icon} template-card-icon`}
+                      style={{ color: isActive ? 'var(--accent)' : 'var(--text-muted)' }}
+                    />
+                    <div
+                      className="template-card-label"
+                      style={{ color: isActive ? 'var(--accent)' : 'var(--text-primary)' }}
+                    >
+                      {t.label}
+                    </div>
+                    <div className="template-card-desc">{t.desc}</div>
+                  </button>
+                )
+              })}
             </div>
           </div>
 
@@ -262,14 +276,12 @@ export default function RedatorPage() {
           </div>
 
           {gerando ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)' }}>
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}>
-                <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" />
-              </svg>
-              <div style={{ fontWeight: 600 }}>Gerando documento com IA...</div>
-              <div style={{ fontSize: 13, textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
-                Elaborando peça com fundamentação legal
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Gerando peça...</div>
+                <div style={{ fontSize: 13, marginTop: 4 }}>Elaborando com fundamentação legal</div>
               </div>
+              <SkeletonResult />
             </div>
           ) : peca ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -431,6 +443,65 @@ export default function RedatorPage() {
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
           .redator-main-grid { grid-template-columns: 1fr !important; }
+        }
+        .template-card {
+          position: relative;
+          padding: 12px 14px;
+          border-radius: 10px;
+          text-align: left;
+          cursor: pointer;
+          border: 1px solid var(--border);
+          background: var(--card-bg);
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                      box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                      border-color 0.2s ease,
+                      background 0.2s ease;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .template-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 22px rgba(15, 23, 42, 0.09),
+                      0 2px 6px rgba(15, 23, 42, 0.04);
+          border-color: var(--accent);
+        }
+        .template-card.is-active {
+          transform: scale(1.02);
+          border: 2.5px solid var(--accent);
+          background: var(--accent-light);
+          padding: 10px 12px;
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.14);
+        }
+        .template-card.is-active:hover {
+          transform: scale(1.02) translateY(-1px);
+        }
+        .template-card-check {
+          position: absolute;
+          top: 8px;
+          right: 10px;
+          font-size: 15px;
+          color: var(--accent);
+          line-height: 1;
+        }
+        .template-card-icon {
+          font-size: 16px;
+          display: block;
+          margin-bottom: 6px;
+          line-height: 1;
+        }
+        .template-card-label {
+          font-size: 12px;
+          font-weight: 600;
+          margin-bottom: 2px;
+        }
+        .template-card-desc {
+          font-size: 11px;
+          color: var(--text-muted);
+          line-height: 1.35;
+        }
+        @media (max-width: 640px) {
+          .template-card { padding: 10px 12px; }
+          .template-card.is-active { padding: 8px 10px; }
+          .template-card-check { font-size: 13px; top: 6px; right: 8px; }
         }
       `}</style>
     </div>

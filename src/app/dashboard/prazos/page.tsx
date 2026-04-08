@@ -41,9 +41,11 @@ export default function PrazosPage() {
   const [form, setForm]           = useState(EMPTY_FORM)
 
   const carregar = useCallback(async () => {
+    setErro('')
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { data } = await supabase.from('prazos').select('*').eq('usuario_id', user.id).order('data_limite')
+    if (!user) { setLoading(false); return }
+    const { data, error } = await supabase.from('prazos').select('*').eq('usuario_id', user.id).order('data_limite')
+    if (error) { setErro('Nao foi possivel carregar prazos. Tente novamente.'); setLoading(false); return }
     setPrazos(data ?? []); setLoading(false)
   }, [supabase])
 
@@ -111,6 +113,13 @@ export default function PrazosPage() {
           </button>
         ))}
       </div>
+
+      {/* Inline error */}
+      {erro && !modal && (
+        <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+        </div>
+      )}
 
       {/* Lista */}
       {loading ? (

@@ -375,22 +375,134 @@ export default function FinanceiroPage() {
 
       {/* Cards de resumo */}
       <div className="fin-summary-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
-        {[
-          { label:'Receitas', valor:receitas, icon:'bi-graph-up-arrow', color:'#2d6a4f', bg:'#e8f5ee' },
-          { label:'Despesas', valor:despesas, icon:'bi-graph-down-arrow', color:'#c0392b', bg:'#fdecea' },
-          { label:'Saldo',    valor:saldo,    icon:'bi-wallet2', color: saldo >= 0 ? '#2d6a4f' : '#c0392b', bg: saldo >= 0 ? '#e8f5ee' : '#fdecea' },
-        ].map(c => (
-          <div key={c.label} className="section-card" style={{ padding:'18px 20px' }}>
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-              <span style={{ fontSize:13, color:'var(--text-secondary)', fontWeight:500 }}>{c.label}</span>
-              <span style={{ width:32, height:32, borderRadius:8, background:c.bg, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <i className={`bi ${c.icon}`} style={{ color:c.color, fontSize:15 }} />
-              </span>
-            </div>
-            <div style={{ fontSize:22, fontWeight:700, color:c.color, fontVariantNumeric:'tabular-nums' }}>{fmt(c.valor)}</div>
-          </div>
-        ))}
+        {(() => {
+          // Compute prev-month vs current-month delta for each bucket
+          const now = new Date()
+          const curMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+          const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+          const prevMonthKey = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}`
+          const curR = itens.filter(i => i.tipo === 'receita' && i.data.startsWith(curMonthKey)).reduce((s, i) => s + Number(i.valor), 0)
+          const prevR = itens.filter(i => i.tipo === 'receita' && i.data.startsWith(prevMonthKey)).reduce((s, i) => s + Number(i.valor), 0)
+          const curD = itens.filter(i => i.tipo === 'despesa' && i.data.startsWith(curMonthKey)).reduce((s, i) => s + Number(i.valor), 0)
+          const prevD = itens.filter(i => i.tipo === 'despesa' && i.data.startsWith(prevMonthKey)).reduce((s, i) => s + Number(i.valor), 0)
+          const curSaldo = curR - curD
+          const prevSaldo = prevR - prevD
+          const delta = (cur: number, prev: number): number | null => {
+            if (prev === 0) return null
+            return ((cur - prev) / Math.abs(prev)) * 100
+          }
+          const cards = [
+            { label: 'Receitas', valor: receitas, icon: 'bi-graph-up-arrow', color: '#2d6a4f', bg: '#e8f5ee', delta: delta(curR, prevR), positiveIsGood: true },
+            { label: 'Despesas', valor: despesas, icon: 'bi-graph-down-arrow', color: '#c0392b', bg: '#fdecea', delta: delta(curD, prevD), positiveIsGood: false },
+            { label: 'Saldo', valor: saldo, icon: 'bi-wallet2', color: saldo >= 0 ? '#2d6a4f' : '#c0392b', bg: saldo >= 0 ? '#e8f5ee' : '#fdecea', delta: delta(curSaldo, prevSaldo), positiveIsGood: true },
+          ]
+          return cards.map(c => {
+            const d = c.delta
+            let deltaLabel = ''
+            let deltaColor = 'var(--text-muted)'
+            let deltaBg = 'var(--hover)'
+            let deltaIcon = 'bi-dash'
+            if (d !== null) {
+              const rounded = Math.round(d)
+              const isUp = rounded > 0
+              const isDown = rounded < 0
+              deltaLabel = `${rounded > 0 ? '+' : ''}${rounded}%`
+              deltaIcon = isUp ? 'bi-arrow-up-right' : isDown ? 'bi-arrow-down-right' : 'bi-dash'
+              const isGood = (isUp && c.positiveIsGood) || (isDown && !c.positiveIsGood)
+              const isBad = (isDown && c.positiveIsGood) || (isUp && !c.positiveIsGood)
+              if (isGood) { deltaColor = '#2d6a4f'; deltaBg = '#e8f5ee' }
+              else if (isBad) { deltaColor = '#c0392b'; deltaBg = '#fdecea' }
+            }
+            return (
+              <div key={c.label} className="section-card" style={{ padding: '18px 20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{c.label}</span>
+                  <span style={{ width: 32, height: 32, borderRadius: 8, background: c.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className={`bi ${c.icon}`} style={{ color: c.color, fontSize: 15 }} />
+                  </span>
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: c.color, fontVariantNumeric: 'tabular-nums' }}>{fmt(c.valor)}</div>
+                {d !== null && (
+                  <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 12, background: deltaBg, color: deltaColor }}>
+                      <i className={`bi ${deltaIcon}`} style={{ fontSize: 10 }} />
+                      {deltaLabel}
+                    </span>
+                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>vs mes anterior</span>
+                  </div>
+                )}
+              </div>
+            )
+          })
+        })()}
       </div>
+
+      {/* Mini pie chart por categoria (CSS conic-gradient) */}
+      {itens.length > 0 && (() => {
+        // Aggregate despesas por categoria
+        const byCat: Record<string, number> = {}
+        itens.filter(i => i.tipo === 'despesa').forEach(i => {
+          const k = i.categoria || 'outro'
+          byCat[k] = (byCat[k] ?? 0) + Number(i.valor)
+        })
+        const entries = Object.entries(byCat).sort((a, b) => b[1] - a[1])
+        const totalCat = entries.reduce((s, [, v]) => s + v, 0)
+        if (totalCat === 0 || entries.length === 0) return null
+        const CAT_COLORS: Record<string, string> = {
+          honorarios: '#2d6a4f', mensalidade: '#4f46e5', livro: '#e67e22',
+          material: '#0284c7', aluguel: '#c0392b', salario: '#22C55E',
+          imposto: '#8B5CF6', outro: '#64748b',
+        }
+        let acc = 0
+        const slices: string[] = []
+        const legend: { cat: string; pct: number; color: string; value: number }[] = []
+        entries.forEach(([cat, value]) => {
+          const pct = (value / totalCat) * 100
+          const from = acc
+          const to = acc + pct
+          const color = CAT_COLORS[cat] ?? '#64748b'
+          slices.push(`${color} ${from}% ${to}%`)
+          legend.push({ cat, pct, color, value })
+          acc = to
+        })
+        const conic = `conic-gradient(${slices.join(', ')})`
+        return (
+          <div className="section-card" style={{ marginBottom: 24, padding: '20px 24px' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <i className="bi bi-pie-chart-fill" style={{ marginRight: 8 }} />
+              Despesas por Categoria
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                <div style={{
+                  width: 140, height: 140, borderRadius: '50%',
+                  background: conic,
+                  boxShadow: 'inset 0 0 0 1px var(--border)',
+                  transition: 'transform 0.3s ease',
+                }} aria-hidden="true" />
+                <div style={{
+                  position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                  width: 84, height: 84, borderRadius: '50%', background: 'var(--card-bg)',
+                  boxShadow: 'inset 0 0 0 1px var(--border)',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Total</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalCat)}</span>
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: 200, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 8 }}>
+                {legend.map(l => (
+                  <div key={l.cat} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: 3, background: l.color, flexShrink: 0 }} />
+                    <span style={{ flex: 1, color: 'var(--text-secondary)', textTransform: 'capitalize', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.cat}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{l.pct.toFixed(0)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Gráfico de barras CSS */}
       {mesesArr.length > 0 && (
@@ -433,7 +545,7 @@ export default function FinanceiroPage() {
           {getInvestmentSuggestions(saldo).map((inv, idx) => {
             const risco = riscoColor(inv.risco)
             return (
-              <div key={idx} style={{
+              <div key={idx} className="fin-invest-card" style={{
                 padding:'14px 16px',
                 borderRadius:10,
                 border:'1px solid var(--border)',
@@ -441,6 +553,8 @@ export default function FinanceiroPage() {
                 display:'flex',
                 flexDirection:'column',
                 gap:8,
+                transition: 'transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease',
+                cursor: 'default',
               }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:10 }}>
                   <div style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)', lineHeight:1.3 }}>{inv.nome}</div>
@@ -591,8 +705,13 @@ export default function FinanceiroPage() {
               </tr>
             </thead>
             <tbody>
-              {itens.map(item => (
-                <tr key={item.id} style={{ borderBottom:'1px solid var(--border)' }}
+              {itens.map(item => {
+                const isBigExpense = item.tipo === 'despesa' && Number(item.valor) > 500
+                return (
+                <tr key={item.id} style={{
+                  borderBottom:'1px solid var(--border)',
+                  ...(isBigExpense ? { boxShadow: 'inset 3px 0 0 0 #e67e22' } : {}),
+                }}
                   onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background='var(--hover)'}
                   onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background=''}
                 >
@@ -601,6 +720,7 @@ export default function FinanceiroPage() {
                     <span style={{ display:'flex', alignItems:'center', gap:7 }}>
                       <i className={`bi ${CAT_ICON[item.categoria] ?? 'bi-three-dots'}`} style={{ fontSize:13, color:'var(--text-muted)' }} />
                       {item.descricao}
+                      {isBigExpense && <i className="bi bi-exclamation-triangle-fill" title="Despesa alta (> R$ 500)" style={{ fontSize: 11, color: '#e67e22', marginLeft: 4 }} />}
                     </span>
                   </td>
                   <td style={{ padding:'11px 14px' }}>
@@ -627,7 +747,8 @@ export default function FinanceiroPage() {
                     </button>
                   </td>
                 </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
           </div>
@@ -768,6 +889,14 @@ export default function FinanceiroPage() {
           </div>
         </div>
       )}
+
+      <style>{`
+        .fin-invest-card:hover {
+          transform: translateY(-2px);
+          border-color: var(--accent) !important;
+          box-shadow: 0 6px 20px -12px rgba(0,0,0,0.28);
+        }
+      `}</style>
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import ConfidenceBadge, { PoweredByLexAI, VerifiedBadge } from '@/components/ConfidenceBadge'
+import { SkeletonResult } from '@/components/Skeleton'
 
 const TRIBUNAIS = ['Todos','STF','STJ','TST','TSE','TRF 1ª','TRF 2ª','TRF 3ª','TRF 4ª','TRF 5ª','TJSP','TJRJ','TJMG']
 const AREAS     = ['Todas','Civil','Penal','Trabalhista','Tributário','Constitucional','Administrativo','Ambiental','Consumidor']
@@ -144,14 +145,12 @@ export default function PesquisadorPage() {
 
       {/* Resultados */}
       {buscando ? (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-          <div style={{ marginBottom: 16 }}>
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}>
-              <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" />
-            </svg>
+        <div style={{ padding: '20px 0' }}>
+          <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: 20 }}>
+            <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-primary)' }}>Pesquisando com IA...</div>
+            <div style={{ fontSize: 13 }}>Analisando jurisprudência relevante</div>
           </div>
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>Pesquisando com IA...</div>
-          <div style={{ fontSize: 13 }}>Analisando jurisprudência relevante</div>
+          <SkeletonResult />
         </div>
       ) : buscou && resultados.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
@@ -162,8 +161,9 @@ export default function PesquisadorPage() {
       ) : resultados.length > 0 || (pesquisa?.jurisprudencia_real?.length ?? 0) > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
-            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              {resultados.length} resultado(s) encontrado(s)
+            <div className="results-counter-pill">
+              <i className="bi bi-collection" />
+              Mostrando <strong>{resultados.length}</strong> de <strong>{resultados.length + (pesquisa?.jurisprudencia_real?.length ?? 0)}</strong> resultados
             </div>
             {pesquisa && <ConfidenceBadge confianca={pesquisa?.confianca} />}
           </div>
@@ -213,17 +213,34 @@ export default function PesquisadorPage() {
           )}
 
           {resultados.map((r, idx) => (
-            <div key={idx} className="section-card" style={{ padding: '16px 20px' }}>
+            <div
+              key={idx}
+              className="section-card result-card"
+              style={{
+                padding: '16px 20px',
+                borderLeft: r.relevancia === 'alta' ? '3px solid var(--success)' : undefined,
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 4 }}>{r.titulo}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: '#eef2ff', color: '#4f46e5' }}>{r.tribunal}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: 'var(--accent-light)', color: 'var(--accent)' }}>{r.tribunal}</span>
                     <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: 'var(--hover)', color: 'var(--text-secondary)' }}>{r.area}</span>
                     <span style={{
                       fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
-                      background: r.relevancia === 'alta' ? '#e8f5ee' : r.relevancia === 'media' ? '#fef5e7' : '#f1f5f9',
-                      color: r.relevancia === 'alta' ? '#2d6a4f' : r.relevancia === 'media' ? '#e67e22' : '#64748b',
+                      background: r.relevancia === 'alta'
+                        ? 'var(--success-light)'
+                        : r.relevancia === 'media'
+                          ? 'var(--warning-light)'
+                          : 'var(--hover)',
+                      color: r.relevancia === 'alta'
+                        ? 'var(--success)'
+                        : r.relevancia === 'media'
+                          ? 'var(--warning)'
+                          : 'var(--text-muted)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.03em',
                     }}>
                       {r.relevancia}
                     </span>
@@ -319,14 +336,84 @@ export default function PesquisadorPage() {
           </div>
         </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-          <i className="bi bi-journal-bookmark" style={{ fontSize: 40, display: 'block', marginBottom: 12, opacity: 0.3 }} />
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>Pesquise jurisprudência com IA</div>
-          <div style={{ fontSize: 13 }}>Digite termos na busca e aplique filtros para encontrar decisões</div>
+        <div className="pesquisador-empty">
+          <div className="pesquisador-empty-icon">
+            <i className="bi bi-journal-bookmark" />
+          </div>
+          <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Pesquise jurisprudência com IA</div>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Digite termos na busca e aplique filtros para encontrar decisões</div>
         </div>
       )}
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style jsx>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .results-counter-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 5px 12px;
+          border-radius: 20px;
+          background: var(--accent-light);
+          color: var(--accent);
+          border: 1px solid var(--accent-light);
+          letter-spacing: 0.01em;
+        }
+        .results-counter-pill :global(strong) {
+          font-weight: 800;
+          color: var(--text-primary);
+        }
+        .results-counter-pill :global(i) {
+          font-size: 13px;
+        }
+        :global(.result-card) {
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+        }
+        :global(.result-card:hover) {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
+        }
+        .pesquisador-empty {
+          text-align: center;
+          padding: 60px 0;
+          color: var(--text-muted);
+        }
+        .pesquisador-empty-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 72px;
+          height: 72px;
+          border-radius: 50%;
+          background: var(--accent-light);
+          color: var(--accent);
+          font-size: 32px;
+          margin-bottom: 16px;
+          animation: empty-pulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes empty-pulse {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.18);
+          }
+          50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 12px rgba(37, 99, 235, 0);
+          }
+        }
+        @media (max-width: 640px) {
+          .results-counter-pill {
+            font-size: 11px;
+            padding: 4px 10px;
+          }
+          .pesquisador-empty-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 26px;
+          }
+        }
+      `}</style>
     </div>
   )
 }

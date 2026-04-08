@@ -10,6 +10,13 @@ const MAX_CONTEUDO_BYTES = 1024 * 1024
 const MAX_TITULO_LENGTH = 200
 const MIN_TITULO_LENGTH = 1
 
+// Only allow known document tipo values to prevent arbitrary tag injection
+// downstream (e.g. the public /share viewer, analytics).
+const VALID_TIPOS = new Set([
+  'analise', 'resumo', 'pesquisa', 'peca', 'negociacao',
+  'calculo', 'legislacao', 'aula', 'planilha',
+])
+
 /**
  * POST /api/share/create
  * Creates a public shareable link for a document analysis.
@@ -23,6 +30,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
     }
 
+    // Sliding-window rate limit (20 req/min per user — share creation is
+    // expensive and could be abused for public hosting).
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:share_create`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     let body: { titulo?: string; conteudo?: unknown; tipo?: string; days?: number }
     try {
       body = await req.json()
@@ -32,7 +45,8 @@ export async function POST(req: NextRequest) {
 
     const titulo = typeof body.titulo === 'string' ? body.titulo.trim() : ''
     const conteudo = body.conteudo
-    const tipo = typeof body.tipo === 'string' ? body.tipo : 'analise'
+    const rawTipo = typeof body.tipo === 'string' ? body.tipo : 'analise'
+    const tipo = VALID_TIPOS.has(rawTipo) ? rawTipo : 'analise'
     const days = typeof body.days === 'number' && body.days > 0 && body.days <= 365
       ? Math.floor(body.days)
       : 7

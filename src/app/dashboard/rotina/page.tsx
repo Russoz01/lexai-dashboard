@@ -483,7 +483,7 @@ export default function RotinaPage() {
       </div>
 
       {/* Grade semanal */}
-      <div className="rotina-week-grid" style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:8, marginBottom:28 }}>
+      <div className="rotina-week-grid" style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:8, marginBottom: compromissos.length === 0 ? 12 : 28 }}>
         {dias.map((d, i) => {
           const isHoje = i === diaHoje
           const comps  = compromissos.filter(c => c.dia === i)
@@ -492,7 +492,7 @@ export default function RotinaPage() {
               {/* Dia header */}
               <div style={{ textAlign:'center', paddingBottom:8, borderBottom:'1px solid var(--border)' }}>
                 <div style={{ fontSize:11, color:'var(--text-muted)', fontWeight:600, textTransform:'uppercase', marginBottom:4 }}>{DIAS[i]}</div>
-                <div style={{
+                <div className={isHoje ? 'rotina-today-pulse' : ''} style={{
                   width:30, height:30, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
                   margin:'0 auto', fontSize:14, fontWeight:700,
                   background: isHoje ? 'var(--accent)' : 'transparent',
@@ -504,11 +504,12 @@ export default function RotinaPage() {
               {/* Compromissos do dia */}
               <div style={{ display:'flex', flexDirection:'column', gap:4, minHeight:60 }}>
                 {comps.map(c => (
-                  <div key={c.id} style={{
+                  <div key={c.id} className="rotina-comp-card" style={{
                     padding:'6px 8px', borderRadius:6, fontSize:11, lineHeight:1.3,
                     borderLeft:`3px solid ${c.cor}`,
                     background: `${c.cor}18`,
-                    cursor:'default',
+                    cursor:'pointer',
+                    transition: 'transform 0.18s ease, box-shadow 0.18s ease',
                   }}
                     title={`${c.horario} — ${c.local}`}>
                     <div style={{ fontWeight:600, color:'var(--text-primary)', marginBottom:2 }}>{c.titulo}</div>
@@ -520,6 +521,41 @@ export default function RotinaPage() {
           )
         })}
       </div>
+
+      {/* Empty state grid semanal */}
+      {!sincronizando && compromissos.length === 0 && (
+        <div style={{
+          marginBottom: 28,
+          padding: '32px 24px',
+          borderRadius: 12,
+          border: '2px dashed var(--border)',
+          background: 'var(--hover)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          gap: 12,
+        }}>
+          <div style={{
+            width: 58, height: 58, borderRadius: '50%',
+            background: 'var(--accent-light)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <i className="bi bi-calendar-plus" style={{ fontSize: 26, color: 'var(--accent)' }} />
+          </div>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+              Seu primeiro compromisso
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', maxWidth: 360, lineHeight: 1.5 }}>
+              Organize sua agenda semanal em segundos. Aulas, estagios, audiencias &mdash; tudo num so lugar.
+            </div>
+          </div>
+          <button className="btn-primary" onClick={() => setModal(true)} style={{ marginTop: 4 }}>
+            <i className="bi bi-plus-lg" /> Adicionar agora
+          </button>
+        </div>
+      )}
 
       {/* Agenda de hoje */}
       <div className="section-card" style={{ padding:'18px 20px' }}>
@@ -633,6 +669,7 @@ export default function RotinaPage() {
                 key={i}
                 onClick={() => clicarData(d)}
                 disabled={ehPassado}
+                className={ehHoje ? 'rotina-today-pulse-bg' : ''}
                 style={{
                   aspectRatio:'1 / 1',
                   minHeight:44,
@@ -682,6 +719,50 @@ export default function RotinaPage() {
             )
           })}
         </div>
+
+        {/* Empty state do calendario mensal */}
+        {!sincronizando && planosFuturos.filter(p => p.data >= hojeISO).length === 0 && !dataSelecionada && (
+          <div style={{
+            marginTop: 18,
+            padding: '24px 20px',
+            borderRadius: 12,
+            border: '2px dashed var(--border)',
+            background: 'var(--hover)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            gap: 10,
+          }}>
+            <div style={{
+              width: 50, height: 50, borderRadius: '50%',
+              background: 'var(--accent-light)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <i className="bi bi-calendar-heart" style={{ fontSize: 22, color: 'var(--accent)' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+                Seu primeiro compromisso
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', maxWidth: 340, lineHeight: 1.5 }}>
+                Planeje audiencias, provas e reunioes futuras. Clique em qualquer dia para comecar.
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => {
+                // Pick today (or first valid day) as initial selection
+                const d = new Date(hoje)
+                clicarData(d)
+              }}
+              style={{ marginTop: 4 }}
+            >
+              <i className="bi bi-plus-lg" /> Adicionar agora
+            </button>
+          </div>
+        )}
 
         {/* Expansão inline: detalhe / adicionar plano para data selecionada */}
         {dataSelecionada && (
@@ -837,6 +918,24 @@ export default function RotinaPage() {
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes rotinaSpin { to { transform: rotate(360deg); } }
+        @keyframes rotinaPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(45,134,89,0.55); }
+          50% { box-shadow: 0 0 0 6px rgba(45,134,89,0); }
+        }
+        .rotina-today-pulse {
+          animation: rotinaPulse 2.2s ease-in-out infinite;
+        }
+        .rotina-today-pulse-bg {
+          animation: rotinaPulse 2.2s ease-in-out infinite;
+        }
+        .rotina-comp-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 14px -10px rgba(0,0,0,0.35);
+        }
+      `}</style>
     </div>
   )
 }

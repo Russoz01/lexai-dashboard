@@ -7,6 +7,21 @@ import { buscarJurisprudenciaReal, isJusBrasilConfigured } from '@/lib/jusbrasil
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
+// Whitelist of accepted filter values — anything outside this list is coerced
+// to the safe default so user input can never be injected into the prompt.
+const VALID_TRIBUNAIS = [
+  'Todos', 'STF', 'STJ', 'TST', 'TSE',
+  'TRF 1ª', 'TRF 2ª', 'TRF 3ª', 'TRF 4ª', 'TRF 5ª',
+  'TJSP', 'TJRJ', 'TJMG',
+]
+const VALID_AREAS = [
+  'Todas', 'Civil', 'Penal', 'Trabalhista', 'Tributário',
+  'Constitucional', 'Administrativo', 'Ambiental', 'Consumidor',
+]
+const VALID_PERIODOS = [
+  'Qualquer período', 'Último mês', 'Último trimestre', 'Último ano', 'Últimos 5 anos',
+]
+
 const SYSTEM_PROMPT = `You are a senior legal researcher at the level of a clerk to a Supreme Court Justice of Brazil (STF). You have comprehensive knowledge of Brazilian legal doctrine, jurisprudence, and legislation.
 
 RESEARCH STANDARDS:
@@ -55,13 +70,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
     }
 
+    // Sliding-window rate limit (20 req/min per user per agent)
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:pesquisador`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     // Server-side quota enforcement (server-trusted, never localStorage)
     const quota = await checkAndIncrementQuota(supabase, user.id, 'pesquisador')
     if (!quota.ok && quota.response) {
       return quota.response
     }
 
-    const { query, tribunal, area, periodo } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    const query = typeof body?.query === 'string' ? body.query : ''
+    const tribunal = typeof body?.tribunal === 'string' ? body.tribunal : 'Todos'
+    const area = typeof body?.area === 'string' ? body.area : 'Todas'
+    const periodo = typeof body?.periodo === 'string' ? body.periodo : 'Qualquer período'
+
     if (!query || query.trim().length < 3) {
       return NextResponse.json({ error: 'Consulta muito curta.' }, { status: 400 })
     }
@@ -69,11 +94,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
     }
 
+    // Enforce filter whitelist — anything outside the whitelist falls back to
+    // the safe default, preventing prompt injection through the filter fields.
+    const safeTribunal = VALID_TRIBUNAIS.includes(tribunal) ? tribunal : 'Todos'
+    const safeArea = VALID_AREAS.includes(area) ? area : 'Todas'
+    const safePeriodo = VALID_PERIODOS.includes(periodo) ? periodo : 'Qualquer período'
+
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const filtros = [
-      tribunal && tribunal !== 'Todos' ? `Tribunal: ${tribunal}` : null,
-      area && area !== 'Todas' ? `Area: ${area}` : null,
-      periodo && periodo !== 'Qualquer periodo' ? `Period: ${periodo}` : null,
+      safeTribunal !== 'Todos' ? `Tribunal: ${safeTribunal}` : null,
+      safeArea !== 'Todas' ? `Area: ${safeArea}` : null,
+      safePeriodo !== 'Qualquer período' ? `Period: ${safePeriodo}` : null,
     ].filter(Boolean).join('\n')
 
     const message = await client.messages.create({
@@ -100,7 +131,7 @@ export async function POST(req: NextRequest) {
 
     // Enrich with real JusBrasil results when configured — degrades to AI results otherwise
     if (isJusBrasilConfigured()) {
-      const realResults = await buscarJurisprudenciaReal(query, tribunal).catch(() => [])
+      const realResults = await buscarJurisprudenciaReal(query, safeTribunal).catch(() => [])
       if (realResults.length > 0) {
         pesquisa.jurisprudencia_real = realResults
         pesquisa.fonte = 'jusbrasil_api'

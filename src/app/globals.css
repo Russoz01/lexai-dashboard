@@ -1048,3 +1048,22 @@ input[type="date"] { cursor: pointer; }
   [style*="grid-template-columns: repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
   [style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: 1fr !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SKELETON LOADER (lexai-skeleton)
+   ══════════════════════════════════════════════════════════════ */
+.lexai-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--hover) 0%,
+    var(--border) 50%,
+    var(--hover) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

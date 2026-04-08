@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import {
   addDiasUteisForenses,
@@ -8,6 +8,19 @@ import {
 } from '@/lib/feriados-br'
 
 type RapidoModo = 'adicionar' | 'diferenca'
+
+interface HistoricoItem {
+  id: string
+  modo: RapidoModo
+  inicio: string
+  fim: string
+  dias: string
+  label: string
+  ts: number
+}
+
+const HISTORICO_KEY = 'lexai-calc-historico'
+const HISTORICO_MAX = 5
 
 function formatBR(d: Date): string {
   const day = String(d.getDate()).padStart(2, '0')
@@ -38,6 +51,54 @@ export default function CalculadorPage() {
   const [rapidoFim, setRapidoFim] = useState('')
   const [rapidoDias, setRapidoDias] = useState('')
 
+  // ── Historico local de calculos rapidos ─────────────────────────────
+  const [historico, setHistorico] = useState<HistoricoItem[]>([])
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(HISTORICO_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw) as HistoricoItem[]
+        if (Array.isArray(parsed)) setHistorico(parsed.slice(0, HISTORICO_MAX))
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
+  function salvarHistorico(item: Omit<HistoricoItem, 'id' | 'ts'>) {
+    const novo: HistoricoItem = {
+      ...item,
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      ts: Date.now(),
+    }
+    setHistorico(prev => {
+      // Evitar duplicata com os mesmos parametros
+      const filtered = prev.filter(
+        p => !(p.modo === novo.modo && p.inicio === novo.inicio && p.fim === novo.fim && p.dias === novo.dias)
+      )
+      const proximo = [novo, ...filtered].slice(0, HISTORICO_MAX)
+      try {
+        localStorage.setItem(HISTORICO_KEY, JSON.stringify(proximo))
+      } catch {
+        /* ignore */
+      }
+      return proximo
+    })
+  }
+
+  function aplicarHistorico(item: HistoricoItem) {
+    setRapidoModo(item.modo)
+    setRapidoInicio(item.inicio)
+    setRapidoFim(item.fim)
+    setRapidoDias(item.dias)
+  }
+
+  function limparHistorico() {
+    setHistorico([])
+    try { localStorage.removeItem(HISTORICO_KEY) } catch { /* ignore */ }
+  }
+
   const rapidoResultado = useMemo(() => {
     const inicio = parseInputDate(rapidoInicio)
     if (!inicio) return null
@@ -63,6 +124,28 @@ export default function CalculadorPage() {
       return { tipo: 'diferenca' as const, inicio, fim, breakdown, diasUteis }
     }
   }, [rapidoModo, rapidoInicio, rapidoFim, rapidoDias])
+
+  // Salva historico quando resultado valido eh gerado (debounced)
+  useEffect(() => {
+    if (!rapidoResultado || rapidoResultado.tipo === 'erro') return
+    const t = setTimeout(() => {
+      let label = ''
+      if (rapidoResultado.tipo === 'adicionar') {
+        label = `+${rapidoResultado.dias} dias uteis de ${formatBR(rapidoResultado.inicio).split(' ')[0]}`
+      } else {
+        label = `${formatBR(rapidoResultado.inicio).split(' ')[0]} ate ${formatBR(rapidoResultado.fim).split(' ')[0]}`
+      }
+      salvarHistorico({
+        modo: rapidoModo,
+        inicio: rapidoInicio,
+        fim: rapidoFim,
+        dias: rapidoDias,
+        label,
+      })
+    }, 800)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rapidoResultado])
 
   async function calcular() {
     if (!consulta.trim() || loading) return
@@ -225,19 +308,24 @@ export default function CalculadorPage() {
               display: 'flex', flexWrap: 'wrap', gap: 6,
               paddingTop: 8, borderTop: '1px dashed rgba(45,106,79,0.25)',
             }}>
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 12, background: 'var(--card-bg)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
+              <span className="breakdown-chip chip-corridos">
+                <i className="bi bi-calendar" />
                 {rapidoResultado.breakdown.diasCorridos} corridos
               </span>
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 12, background: 'var(--success-light)', color: 'var(--success)' }}>
+              <span className="breakdown-chip chip-uteis">
+                <i className="bi bi-check-circle" />
                 {rapidoResultado.breakdown.diasUteis} uteis
               </span>
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 12, background: 'var(--warning-light)', color: 'var(--warning)' }}>
+              <span className="breakdown-chip chip-feriados">
+                <i className="bi bi-flag" />
                 {rapidoResultado.breakdown.feriados} feriados
               </span>
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 12, background: 'var(--hover)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+              <span className="breakdown-chip chip-fds">
+                <i className="bi bi-calendar-week" />
                 {rapidoResultado.breakdown.finaisDeSemana} fim de semana
               </span>
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 12, background: 'var(--danger-light)', color: 'var(--danger)' }}>
+              <span className="breakdown-chip chip-recesso">
+                <i className="bi bi-pause-circle" />
                 {rapidoResultado.breakdown.diasRecesso} recesso
               </span>
             </div>
@@ -253,11 +341,166 @@ export default function CalculadorPage() {
         <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5 }}>
           Considera feriados nacionais 2025-2027 e recesso forense (20/12 a 20/01 — art. 220 CPC). Calculo 100% local.
         </div>
+
+        {/* Historico local dos ultimos calculos */}
+        {historico.length > 0 && (
+          <div className="calc-historico">
+            <div className="calc-historico-header">
+              <div className="calc-historico-title">
+                <i className="bi bi-clock-history" />
+                Ultimos calculos
+              </div>
+              <button
+                type="button"
+                className="calc-historico-clear"
+                onClick={limparHistorico}
+                aria-label="Limpar historico"
+              >
+                Limpar
+              </button>
+            </div>
+            <div className="calc-historico-row">
+              {historico.map(h => (
+                <button
+                  key={h.id}
+                  type="button"
+                  className="calc-historico-chip"
+                  onClick={() => aplicarHistorico(h)}
+                  title={h.label}
+                >
+                  <i className={`bi ${h.modo === 'adicionar' ? 'bi-plus-circle' : 'bi-arrows-expand'}`} />
+                  <span>{h.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <style>{`
         @media (max-width: 640px) {
           .rapido-grid { grid-template-columns: 1fr !important; }
+        }
+        .breakdown-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 4px 10px;
+          border-radius: 14px;
+          letter-spacing: 0.01em;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .breakdown-chip i {
+          font-size: 12px;
+          line-height: 1;
+        }
+        .chip-corridos {
+          background: var(--accent-light);
+          color: var(--accent);
+        }
+        .chip-uteis {
+          background: var(--success-light);
+          color: var(--success);
+        }
+        .chip-feriados {
+          background: var(--danger-light);
+          color: var(--danger);
+        }
+        .chip-fds {
+          background: var(--hover);
+          color: var(--text-muted);
+          border: 1px solid var(--border);
+        }
+        .chip-recesso {
+          background: var(--warning-light);
+          color: var(--warning);
+        }
+        .calc-historico {
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px dashed var(--border);
+        }
+        .calc-historico-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+        }
+        .calc-historico-title {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--text-muted);
+        }
+        .calc-historico-title i {
+          font-size: 12px;
+          color: var(--accent);
+        }
+        .calc-historico-clear {
+          background: none;
+          border: none;
+          font-size: 10px;
+          font-weight: 600;
+          color: var(--text-muted);
+          cursor: pointer;
+          padding: 2px 6px;
+          border-radius: 6px;
+          font-family: 'DM Sans', sans-serif;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          transition: color 0.15s ease, background 0.15s ease;
+        }
+        .calc-historico-clear:hover {
+          color: var(--danger);
+          background: var(--danger-light);
+        }
+        .calc-historico-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        .calc-historico-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 5px 10px;
+          border-radius: 14px;
+          background: var(--hover);
+          border: 1px solid var(--border);
+          color: var(--text-secondary);
+          cursor: pointer;
+          font-family: 'DM Sans', sans-serif;
+          max-width: 100%;
+          transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .calc-historico-chip i {
+          font-size: 12px;
+          color: var(--accent);
+          flex-shrink: 0;
+        }
+        .calc-historico-chip span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 180px;
+        }
+        .calc-historico-chip:hover {
+          background: var(--accent-light);
+          border-color: var(--accent);
+          color: var(--accent);
+          transform: translateY(-1px);
+        }
+        @media (max-width: 640px) {
+          .calc-historico-chip span { max-width: 130px; }
+          .breakdown-chip { font-size: 10px; padding: 3px 8px; }
         }
       `}</style>
 

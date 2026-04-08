@@ -49,6 +49,14 @@ export async function POST(req: NextRequest) {
     if (!linkId) {
       return NextResponse.json({ error: 'linkId obrigatorio.' }, { status: 400 })
     }
+    // Belvo linkIds are UUIDs — enforce a sensible upper bound and format
+    if (linkId.length > 100 || !/^[a-zA-Z0-9_-]+$/.test(linkId)) {
+      return NextResponse.json({ error: 'linkId invalido.' }, { status: 400 })
+    }
+    // dateFrom must look like YYYY-MM-DD when provided
+    if (dateFrom && (dateFrom.length > 10 || !/^\d{4}-\d{2}-\d{2}$/.test(dateFrom))) {
+      return NextResponse.json({ error: 'dateFrom invalido. Use formato YYYY-MM-DD.' }, { status: 400 })
+    }
 
     const transactions = await listTransactions(linkId, dateFrom)
 

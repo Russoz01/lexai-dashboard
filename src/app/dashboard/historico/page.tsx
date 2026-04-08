@@ -28,20 +28,32 @@ export default function HistoricoPage() {
   const supabase = createClient()
   const [historico, setHistorico] = useState<HistoricoItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState('')
   const [expandido, setExpandido] = useState<string | null>(null)
   const [filtro, setFiltro] = useState('')
   const [filtroAgente, setFiltroAgente] = useState<string>('todos')
 
   const carregar = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    setErro('')
+    const { data: { user }, error: userErr } = await supabase.auth.getUser()
+    if (userErr || !user) {
+      setErro('Sessao expirada. Faca login novamente.')
+      setLoading(false)
+      return
+    }
 
-    const { data } = await supabase
+    const { data, error: dataErr } = await supabase
       .from('historico')
       .select('*')
       .eq('usuario_id', user.id)
       .order('created_at', { ascending: false })
       .limit(100)
+
+    if (dataErr) {
+      setErro('Nao foi possivel carregar o historico. Tente novamente.')
+      setLoading(false)
+      return
+    }
 
     setHistorico(data ?? [])
     setLoading(false)
@@ -123,7 +135,11 @@ export default function HistoricoPage() {
         </div>
       )}
 
-      {loading ? (
+      {erro ? (
+        <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+        </div>
+      ) : loading ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ animation: 'hist-spin 0.8s linear infinite', marginBottom: 8 }}>
             <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" />

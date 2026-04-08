@@ -8,6 +8,7 @@ import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { generateDocx, downloadBlob } from '@/lib/word-export'
 import { extractPdfWithMeta } from '@/lib/pdf-parser'
 import { anonymize, deAnonymize, type AnonymizeResult } from '@/lib/anonymizer'
+import { SkeletonResult } from '@/components/Skeleton'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Analise = any
@@ -820,34 +821,11 @@ export default function ResumidorPage() {
 
             {/* Loading state */}
             {loading && (
-              <div className="section-card" style={{
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center',
-                padding: '56px 24px', minHeight: '320px',
-              }}>
-                <div style={{ marginBottom: '20px' }}>
-                  <Spinner size={36} color="var(--accent)" />
-                </div>
-                <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
+              <div className="section-card" style={{ padding: '24px' }}>
+                <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px', textAlign: 'center' }}>
                   Analisando documento...
                 </p>
-                <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '6px' }}>
-                  Isso pode levar alguns segundos
-                </p>
-
-                {/* Progress hints */}
-                <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', maxWidth: '260px' }}>
-                  {['Lendo estrutura do documento', 'Identificando cláusulas', 'Mapeando riscos', 'Gerando resumo'].map((step, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                      <span style={{
-                        width: '6px', height: '6px', borderRadius: '50%',
-                        background: 'var(--accent)', opacity: 0.4 + i * 0.15,
-                        flexShrink: 0,
-                      }} />
-                      {step}
-                    </div>
-                  ))}
-                </div>
+                <SkeletonResult />
               </div>
             )}
 

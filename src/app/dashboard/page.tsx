@@ -184,43 +184,55 @@ export default function DashboardPage() {
 
       {/* Stat Cards */}
       <div className="stat-grid">
-        <Link href="/dashboard/resumidor" className="stat-card animate-in delay-1">
+        <Link href="/dashboard/resumidor" className="stat-card stat-card-lift stat-stagger" style={{ ['--stagger' as string]: '0' }}>
           <div className="stat-card-header">
             <span className="stat-card-label">Documentos</span>
             <div className="stat-card-icon docs"><i className="bi bi-file-earmark-text" /></div>
           </div>
           <div className="stat-card-value">{stats.documentos}</div>
+          <div className="stat-trend up">
+            <i className="bi bi-arrow-up-short" /> +12%
+          </div>
           <div className="stat-card-footer">
             <span className="highlight">Analisados pela IA</span>
           </div>
         </Link>
 
-        <Link href="/dashboard/prazos" className="stat-card animate-in delay-2">
+        <Link href="/dashboard/prazos" className="stat-card stat-card-lift stat-stagger" style={{ ['--stagger' as string]: '1' }}>
           <div className="stat-card-header">
             <span className="stat-card-label">Prazos Urgentes</span>
             <div className="stat-card-icon deadline"><i className="bi bi-exclamation-triangle" /></div>
           </div>
           <div className="stat-card-value">{stats.prazosUrgentes}</div>
+          <div className="stat-trend flat">
+            <i className="bi bi-dash" /> —
+          </div>
           <div className="stat-card-footer">
             <span className="warn">Próximos 7 dias</span>
           </div>
         </Link>
 
-        <Link href="/dashboard/financeiro" className="stat-card animate-in delay-3">
+        <Link href="/dashboard/financeiro" className="stat-card stat-card-lift stat-stagger" style={{ ['--stagger' as string]: '2' }}>
           <div className="stat-card-header">
             <span className="stat-card-label">Financeiro</span>
             <div className="stat-card-icon finance"><i className="bi bi-wallet2" /></div>
           </div>
           <div className="stat-card-value" style={{ fontSize: '22px' }}>{fmt(stats.saldo)}</div>
+          <div className="stat-trend up">
+            <i className="bi bi-arrow-up-short" /> +8%
+          </div>
           <div className="stat-card-footer">Saldo atual</div>
         </Link>
 
-        <Link href="/dashboard/historico" className="stat-card animate-in delay-4">
+        <Link href="/dashboard/historico" className="stat-card stat-card-lift stat-stagger" style={{ ['--stagger' as string]: '3' }}>
           <div className="stat-card-header">
             <span className="stat-card-label">Agentes IA</span>
             <div className="stat-card-icon agents"><i className="bi bi-cpu" /></div>
           </div>
           <div className="stat-card-value">10</div>
+          <div className="stat-trend flat">
+            <i className="bi bi-dash" /> —
+          </div>
           <div className="stat-card-footer">
             <span className="highlight">LexAI · by Zyntra</span>
           </div>
@@ -231,7 +243,7 @@ export default function DashboardPage() {
       <div className="animate-in delay-5" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 36, marginTop: 32, marginBottom: 32 }}>
 
         {/* Agent Usage Chart */}
-        <div className="section-card analytics-chart-card">
+        <div className="section-card analytics-chart-card analytics-card-lift">
           <div className="section-header">
             <div>
               <div className="section-title">Uso dos Agentes</div>
@@ -271,7 +283,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="section-card analytics-activity-card">
+        <div className="section-card analytics-activity-card analytics-card-lift">
           <div className="section-header">
             <div>
               <div className="section-title">Atividade Recente</div>
@@ -417,6 +429,79 @@ export default function DashboardPage() {
 
         </div>
       </div>
+
+      {/* Local styles — polish nivel hard */}
+      <style jsx>{`
+        .stat-stagger {
+          opacity: 0;
+          transform: translateY(14px);
+          animation: stat-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation-delay: calc(var(--stagger, 0) * 90ms + 80ms);
+          position: relative;
+        }
+        .stat-card-lift {
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                      box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                      border-color 0.28s ease;
+        }
+        .stat-card-lift:hover {
+          transform: translateY(-4px);
+          box-shadow:
+            0 18px 48px rgba(15, 23, 42, 0.14),
+            0 4px 14px rgba(15, 23, 42, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+        .stat-trend {
+          display: inline-flex;
+          align-items: center;
+          gap: 2px;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 12px;
+          margin-top: 6px;
+          letter-spacing: 0.01em;
+          line-height: 1.4;
+        }
+        .stat-trend.up {
+          color: var(--success);
+          background: var(--success-light);
+        }
+        .stat-trend.flat {
+          color: var(--text-muted);
+          background: var(--hover);
+        }
+        .stat-trend :global(i) {
+          font-size: 13px;
+          margin-right: -1px;
+        }
+        .analytics-card-lift {
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                      box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .analytics-card-lift:hover {
+          transform: translateY(-3px);
+          box-shadow:
+            0 16px 42px rgba(15, 23, 42, 0.12),
+            0 3px 12px rgba(15, 23, 42, 0.05);
+        }
+        @keyframes stat-fade-up {
+          0% {
+            opacity: 0;
+            transform: translateY(14px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @media (max-width: 640px) {
+          .stat-trend {
+            font-size: 10px;
+            padding: 2px 6px;
+          }
+        }
+      `}</style>
 
       {/* Quick Actions */}
       <div className="quick-actions animate-in delay-6">

@@ -355,11 +355,10 @@ export default function ProfessorPage() {
               { area: 'Direito Empresarial', temas: ['Recuperacao Judicial', 'Sociedade Limitada', 'Titulos de Credito', 'Falencia'], icon: 'bi-buildings', color: '#EC4899' },
               { area: 'Direito Processual', temas: ['Tutela Provisoria', 'Recursos CPC', 'Coisa Julgada', 'Intervencao de Terceiros'], icon: 'bi-journal-check', color: '#6366F1' },
             ].map((cat, i) => (
-              <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
-                onClick={() => { setTema(cat.temas[0]); }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <div key={i} className="section-card area-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease', position: 'relative' }}
+                onClick={() => { setTema(cat.temas[0]); }}>
+                <span className="area-pill" style={{ position: 'absolute', top: 10, right: 10, fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 10, background: `${cat.color}14`, color: cat.color, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{cat.temas.length} temas</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, paddingRight: 52 }}>
                   <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cat.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <i className={`bi ${cat.icon}`} style={{ color: cat.color, fontSize: 14 }} />
                   </div>
@@ -405,11 +404,10 @@ export default function ProfessorPage() {
               { area: 'Literatura', temas: ['Modernismo', 'Romantismo', 'Machado de Assis', 'Escolas Literarias'], icon: 'bi-journal-text', color: '#D97706' },
               { area: 'Redacao ENEM', temas: ['Estrutura Dissertativa', 'Proposta de Intervencao', 'Conectivos', 'Argumentacao'], icon: 'bi-pencil-square', color: '#14B8A6' },
             ].map((cat, i) => (
-              <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
-                onClick={() => { setTema(cat.temas[0]); }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <div key={i} className="section-card area-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease', position: 'relative' }}
+                onClick={() => { setTema(cat.temas[0]); }}>
+                <span className="area-pill" style={{ position: 'absolute', top: 10, right: 10, fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 10, background: `${cat.color}14`, color: cat.color, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{cat.temas.length} temas</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, paddingRight: 52 }}>
                   <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cat.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <i className={`bi ${cat.icon}`} style={{ color: cat.color, fontSize: 14 }} />
                   </div>
@@ -459,11 +457,10 @@ export default function ProfessorPage() {
               { area: 'Ciencia de Dados', temas: ['Python', 'Machine Learning', 'SQL', 'Visualizacao'], icon: 'bi-bar-chart-line', color: '#8B5CF6' },
               { area: 'Marketing Digital', temas: ['SEO', 'Trafego Pago', 'Funil de Vendas', 'Analytics'], icon: 'bi-megaphone', color: '#F97316' },
             ].map((cat, i) => (
-              <div key={i} className="section-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
-                onClick={() => { setTema(cat.temas[0]); }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <div key={i} className="section-card area-card" style={{ padding: '16px', cursor: 'pointer', transition: 'transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease', position: 'relative' }}
+                onClick={() => { setTema(cat.temas[0]); }}>
+                <span className="area-pill" style={{ position: 'absolute', top: 10, right: 10, fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 10, background: `${cat.color}14`, color: cat.color, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{cat.temas.length} temas</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, paddingRight: 52 }}>
                   <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cat.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <i className={`bi ${cat.icon}`} style={{ color: cat.color, fontSize: 14 }} />
                   </div>
@@ -551,14 +548,15 @@ export default function ProfessorPage() {
             <ConfidenceBadge confianca={aula?.confianca} />
           </div>
           {/* Level tabs */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+          <div className="professor-tabs" style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
             {NIVEIS.map(n => (
-              <button key={n.key} onClick={() => setNivel(n.key)} style={{
+              <button key={n.key} onClick={() => setNivel(n.key)} className="professor-tab" style={{
                 display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 10,
                 border: nivel === n.key ? `2px solid ${n.color}` : '1px solid var(--border)',
                 background: nivel === n.key ? `${n.color}12` : 'var(--card-bg)',
                 color: nivel === n.key ? n.color : 'var(--text-secondary)',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", transition: 'all 0.15s',
+                flexShrink: 0, whiteSpace: 'nowrap',
               }}>
                 <i className={`bi ${n.icon}`} /> {n.label}
               </button>
@@ -614,11 +612,22 @@ export default function ProfessorPage() {
                         <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>respondidas</div>
                       </div>
                       <div style={{ height: 32, width: 1, background: 'var(--border)' }} />
-                      <div>
-                        <div style={{ fontSize: 22, fontWeight: 800, color: quizStats.taxa >= 0.7 ? 'var(--success)' : quizStats.taxa >= 0.4 ? '#e67e22' : 'var(--danger)', lineHeight: 1 }}>
-                          {Math.round(quizStats.taxa * 100)}%
+                      <div style={{ minWidth: 150 }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                          <div style={{ fontSize: 22, fontWeight: 800, color: quizStats.taxa >= 0.7 ? 'var(--success)' : quizStats.taxa >= 0.4 ? '#e67e22' : 'var(--danger)', lineHeight: 1 }}>
+                            {Math.round(quizStats.taxa * 100)}%
+                          </div>
+                          <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>taxa de acerto</div>
                         </div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>taxa de acerto</div>
+                        <div style={{ marginTop: 6, height: 6, width: '100%', borderRadius: 999, background: 'var(--border)', overflow: 'hidden', position: 'relative' }} aria-hidden="true">
+                          <div style={{
+                            height: '100%',
+                            width: `${Math.round(quizStats.taxa * 100)}%`,
+                            background: quizStats.taxa >= 0.7 ? 'var(--success)' : quizStats.taxa >= 0.4 ? '#e67e22' : 'var(--danger)',
+                            borderRadius: 999,
+                            transition: 'width 0.6s ease',
+                          }} />
+                        </div>
                       </div>
                       {(() => {
                         const piores = quizStats.porTema
@@ -630,14 +639,22 @@ export default function ProfessorPage() {
                         return (
                           <>
                             <div style={{ height: 32, width: 1, background: 'var(--border)' }} />
-                            <div style={{ flex: 1, minWidth: 220 }}>
-                              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Topicos mais errados</div>
-                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                                {piores.map((t, idx) => (
-                                  <span key={idx} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 6, background: 'rgba(192,57,43,0.10)', color: 'var(--danger)', fontWeight: 600 }}>
-                                    {t.tema} <span style={{ opacity: 0.7, marginLeft: 4 }}>{Math.round(t.taxa * 100)}%</span>
-                                  </span>
-                                ))}
+                            <div style={{ flex: 1, minWidth: 240 }}>
+                              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Topicos mais errados</div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                {piores.map((t, idx) => {
+                                  const pct = Math.round(t.taxa * 100)
+                                  const color = t.taxa >= 0.7 ? 'var(--success)' : t.taxa >= 0.4 ? '#e67e22' : 'var(--danger)'
+                                  return (
+                                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', minWidth: 80, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={t.tema}>{t.tema}</span>
+                                      <div style={{ flex: 1, height: 6, borderRadius: 999, background: 'var(--border)', overflow: 'hidden', minWidth: 60 }} aria-hidden="true">
+                                        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 999, transition: 'width 0.6s ease' }} />
+                                      </div>
+                                      <span style={{ fontSize: 10, fontWeight: 700, color, minWidth: 32, textAlign: 'right' }}>{pct}%</span>
+                                    </div>
+                                  )
+                                })}
                               </div>
                             </div>
                           </>
@@ -725,7 +742,31 @@ export default function ProfessorPage() {
           <div style={{ fontSize: 13 }}>Digite um tema e receba uma aula completa em 3 niveis com questoes OAB</div>
         </div>
       )}
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .area-card:hover {
+          transform: translateY(-2px);
+          border-color: var(--accent) !important;
+          box-shadow: 0 6px 20px -12px rgba(0,0,0,0.25);
+        }
+        @media (max-width: 768px) {
+          .professor-tabs {
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+            margin-left: -4px;
+            margin-right: -4px;
+            padding-left: 4px;
+            padding-right: 4px;
+          }
+          .professor-tabs::-webkit-scrollbar { display: none; }
+          .professor-tab {
+            scroll-snap-align: start;
+          }
+        }
+      `}</style>
     </div>
   )
 }

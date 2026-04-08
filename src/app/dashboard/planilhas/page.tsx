@@ -2,7 +2,6 @@
 
 import { useMemo, useRef, useState } from 'react'
 import * as Papa from 'papaparse'
-import * as XLSX from 'xlsx'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
@@ -105,7 +104,8 @@ async function parseFile(file: File): Promise<string> {
       return raw
     }
   }
-  // .xlsx / .xls / others — try SheetJS
+  // .xlsx / .xls / others — try SheetJS (dynamic import keeps it out of main bundle)
+  const XLSX = await import('xlsx')
   const buffer = await file.arrayBuffer()
   const wb = XLSX.read(buffer, { type: 'array' })
   const firstSheetName = wb.SheetNames[0]
@@ -115,13 +115,13 @@ async function parseFile(file: File): Promise<string> {
 }
 
 // ── Severity styling ─────────────────────────────────────────────────────────
-function severityStyle(sev: string): { bg: string; color: string; border: string; label: string } {
+function severityStyle(sev: string): { bg: string; color: string; border: string; label: string; icon: string } {
   const s = (sev || '').toLowerCase()
-  if (s === 'critico') return { bg: 'rgba(220,38,38,0.1)', color: '#dc2626', border: 'rgba(220,38,38,0.3)', label: 'CRITICO' }
-  if (s === 'alto')    return { bg: 'rgba(234,88,12,0.1)', color: '#ea580c', border: 'rgba(234,88,12,0.3)', label: 'ALTO' }
-  if (s === 'medio')   return { bg: 'rgba(202,138,4,0.1)', color: '#ca8a04', border: 'rgba(202,138,4,0.3)', label: 'MEDIO' }
-  if (s === 'baixo')   return { bg: 'rgba(45,106,79,0.1)', color: '#2d6a4f', border: 'rgba(45,106,79,0.3)', label: 'BAIXO' }
-  return { bg: 'var(--hover)', color: 'var(--text-muted)', border: 'var(--border)', label: (sev || 'INFO').toUpperCase() }
+  if (s === 'critico') return { bg: 'rgba(220,38,38,0.1)', color: '#dc2626', border: 'rgba(220,38,38,0.3)', label: 'CRITICO', icon: 'bi-exclamation-octagon-fill' }
+  if (s === 'alto')    return { bg: 'rgba(234,88,12,0.1)', color: '#ea580c', border: 'rgba(234,88,12,0.3)', label: 'ALTO', icon: 'bi-exclamation-triangle-fill' }
+  if (s === 'medio')   return { bg: 'rgba(202,138,4,0.1)', color: '#ca8a04', border: 'rgba(202,138,4,0.3)', label: 'MEDIO', icon: 'bi-info-circle-fill' }
+  if (s === 'baixo')   return { bg: 'rgba(100,116,139,0.1)', color: '#64748b', border: 'rgba(100,116,139,0.3)', label: 'BAIXO', icon: 'bi-circle-fill' }
+  return { bg: 'var(--hover)', color: 'var(--text-muted)', border: 'var(--border)', label: (sev || 'INFO').toUpperCase(), icon: 'bi-dash-circle' }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -648,10 +648,12 @@ export default function PlanilhasPage() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                               <span style={{
                                 fontSize: 10, fontWeight: 700,
-                                padding: '2px 8px', borderRadius: 10,
+                                padding: '3px 9px', borderRadius: 10,
                                 background: sev.bg, color: sev.color,
                                 letterSpacing: '0.04em',
+                                display: 'inline-flex', alignItems: 'center', gap: 5,
                               }}>
+                                <i className={`bi ${sev.icon}`} style={{ fontSize: 11 }} />
                                 {sev.label}
                               </span>
                               {p.tipo && (
@@ -746,10 +748,11 @@ export default function PlanilhasPage() {
                     </div>
                     <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {analise.formulas_sugeridas.map((f, i) => (
-                        <div key={i} style={{
+                        <div key={i} className="planilhas-formula-card" style={{
                           padding: '12px 14px', borderRadius: 10,
                           background: 'var(--input-bg)', border: '1px solid var(--border)',
                           display: 'flex', flexDirection: 'column', gap: 8,
+                          transition: 'transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease',
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <span style={{
@@ -957,9 +960,9 @@ export default function PlanilhasPage() {
                                 background: 'var(--input-bg)',
                               }}>
                                 {/* ─ Original side ─ */}
-                                <div style={{ overflow: 'auto' }}>
-                                  <table style={{
-                                    borderCollapse: 'collapse', width: '100%',
+                                <div className="planilhas-diff-scroll" style={{ overflow: 'auto' }}>
+                                  <table className="planilhas-diff-table" style={{
+                                    borderCollapse: 'separate', borderSpacing: 0, width: '100%',
                                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
                                     fontSize: 11,
                                   }}>
@@ -974,21 +977,24 @@ export default function PlanilhasPage() {
                                               const cell = row[j] ?? ''
                                               const other = otherRow[j] ?? ''
                                               const diff = !isExtra && cell !== other && (cell !== '' || other !== '')
+                                              const isFirst = j === 0
+                                              const bgBase = isExtra
+                                                ? 'var(--danger-light)'
+                                                : diff
+                                                  ? 'var(--danger-light)'
+                                                  : 'var(--input-bg)'
                                               return (
-                                                <td key={j} style={{
+                                                <td key={j} className={isFirst ? 'planilhas-sticky-col' : ''} style={{
                                                   padding: '4px 6px',
                                                   border: '1px solid var(--border)',
-                                                  background: isExtra
-                                                    ? 'var(--danger-light)'
-                                                    : diff
-                                                      ? 'var(--danger-light)'
-                                                      : 'transparent',
+                                                  background: bgBase,
                                                   color: diff || isExtra ? 'var(--danger)' : 'var(--text-muted)',
                                                   textDecoration: diff ? 'line-through' : 'none',
                                                   whiteSpace: 'nowrap',
                                                   maxWidth: 180,
                                                   overflow: 'hidden',
                                                   textOverflow: 'ellipsis',
+                                                  ...(isFirst ? { position: 'sticky', left: 0, zIndex: 2, fontWeight: 600, boxShadow: '2px 0 0 0 var(--border)' } : {}),
                                                 }} title={cell}>
                                                   {cell || <span style={{ opacity: 0.4 }}>—</span>}
                                                 </td>
@@ -1002,9 +1008,9 @@ export default function PlanilhasPage() {
                                 </div>
 
                                 {/* ─ Improved side ─ */}
-                                <div style={{ overflow: 'auto' }}>
-                                  <table style={{
-                                    borderCollapse: 'collapse', width: '100%',
+                                <div className="planilhas-diff-scroll" style={{ overflow: 'auto' }}>
+                                  <table className="planilhas-diff-table" style={{
+                                    borderCollapse: 'separate', borderSpacing: 0, width: '100%',
                                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
                                     fontSize: 11,
                                   }}>
@@ -1019,21 +1025,24 @@ export default function PlanilhasPage() {
                                               const cell = row[j] ?? ''
                                               const other = otherRow[j] ?? ''
                                               const diff = !isExtra && cell !== other && (cell !== '' || other !== '')
+                                              const isFirst = j === 0
+                                              const bgBase = isExtra
+                                                ? 'var(--success-light)'
+                                                : diff
+                                                  ? 'var(--success-light)'
+                                                  : 'var(--input-bg)'
                                               return (
-                                                <td key={j} style={{
+                                                <td key={j} className={isFirst ? 'planilhas-sticky-col' : ''} style={{
                                                   padding: '4px 6px',
                                                   border: '1px solid var(--border)',
-                                                  background: isExtra
-                                                    ? 'var(--success-light)'
-                                                    : diff
-                                                      ? 'var(--success-light)'
-                                                      : 'transparent',
+                                                  background: bgBase,
                                                   color: diff || isExtra ? 'var(--success)' : 'var(--text-muted)',
                                                   fontWeight: diff || isExtra ? 600 : 400,
                                                   whiteSpace: 'nowrap',
                                                   maxWidth: 180,
                                                   overflow: 'hidden',
                                                   textOverflow: 'ellipsis',
+                                                  ...(isFirst ? { position: 'sticky', left: 0, zIndex: 2, fontWeight: 700, boxShadow: '2px 0 0 0 var(--border)' } : {}),
                                                 }} title={cell}>
                                                   {cell || <span style={{ opacity: 0.4 }}>—</span>}
                                                 </td>
@@ -1081,6 +1090,14 @@ export default function PlanilhasPage() {
           .planilhas-grid {
             grid-template-columns: 1fr !important;
           }
+        }
+        .planilhas-formula-card:hover {
+          transform: translateY(-2px);
+          border-color: var(--accent) !important;
+          box-shadow: 0 6px 20px -12px rgba(0,0,0,0.25);
+        }
+        .planilhas-sticky-col {
+          background-clip: padding-box;
         }
       `}</style>
     </>

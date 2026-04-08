@@ -80,6 +80,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
     }
 
+    // Sliding-window rate limit (20 req/min per user per agent)
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:planilhas`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     // Server-side quota enforcement (server-trusted, never localStorage)
     const quota = await checkAndIncrementQuota(supabase, user.id, 'planilhas')
     if (!quota.ok && quota.response) {

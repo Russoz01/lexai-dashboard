@@ -112,24 +112,45 @@ export async function POST(req: NextRequest) {
     if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
     if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
 
+    // Sliding-window rate limit (20 req/min per user per agent)
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:professor`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     // Server-side quota enforcement (server-trusted, never localStorage)
     const quota = await checkAndIncrementQuota(supabase, user.id, 'professor')
     if (!quota.ok && quota.response) {
       return quota.response
     }
 
-    const { tema, videoContent, instituicao, historico, material, materialNome } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    const tema = typeof body?.tema === 'string' ? body.tema : ''
+    const videoContent = typeof body?.videoContent === 'string' ? body.videoContent : ''
+    const instituicao = typeof body?.instituicao === 'string' ? body.instituicao : ''
+    const historico = typeof body?.historico === 'string' ? body.historico : ''
+    const material = typeof body?.material === 'string' ? body.material : ''
+    const materialNome = typeof body?.materialNome === 'string' ? body.materialNome.slice(0, 200) : ''
+
     if (!tema || tema.trim().length < 3) return NextResponse.json({ error: 'Informe o tema.' }, { status: 400 })
     if (tema.length > 50000) return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
-    if (material && typeof material === 'string' && material.length > 60000) {
+    if (material.length > 60000) {
       return NextResponse.json({ error: 'Material de estudo excede 60.000 caracteres. Tente um arquivo menor.' }, { status: 400 })
+    }
+    if (videoContent.length > 60000) {
+      return NextResponse.json({ error: 'Conteudo de video excede 60.000 caracteres.' }, { status: 400 })
+    }
+    if (instituicao.length > 500) {
+      return NextResponse.json({ error: 'Nome da instituicao muito longo.' }, { status: 400 })
+    }
+    if (historico.length > 10000) {
+      return NextResponse.json({ error: 'Historico muito longo.' }, { status: 400 })
     }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
 
     // Build context-aware message
     let userMessage = `Topic to teach:\n\n${tema}`
-    if (material && typeof material === 'string' && material.trim().length > 0) {
+    if (material.trim().length > 0) {
       userMessage += `\n\nSTUDY MATERIAL${materialNome ? ` (from "${materialNome}")` : ''} — extract content, summarize key concepts, identify main topics, and build the lesson based on this source material:\n\n${material}`
     }
     if (videoContent) {

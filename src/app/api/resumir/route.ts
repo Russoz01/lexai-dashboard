@@ -67,13 +67,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
     }
 
+    // Sliding-window rate limit (20 req/min per user per agent)
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:resumidor`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     // Server-side quota enforcement (server-trusted, never localStorage)
     const quota = await checkAndIncrementQuota(supabase, user.id, 'resumidor')
     if (!quota.ok && quota.response) {
       return quota.response
     }
 
-    const { texto } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    const texto = typeof body?.texto === 'string' ? body.texto : ''
     if (!texto || texto.trim().length < 50) {
       return NextResponse.json({ error: 'Texto muito curto. Forneca pelo menos 50 caracteres.' }, { status: 400 })
     }

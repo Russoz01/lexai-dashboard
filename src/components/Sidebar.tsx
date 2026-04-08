@@ -136,8 +136,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
       {/* Plan Badge */}
       <div className="sidebar-plan">
-        <div className="sidebar-plan-badge">
-          <div className="plan-label">{trial?.active ? 'Trial ativo' : 'Plano ativo'}</div>
+        <div
+          className={`sidebar-plan-badge${trial?.active ? ' trial-glow' : ''}${trial?.active && trial.days_left <= 1 ? ' trial-urgent' : ''}`}
+        >
+          <div className="plan-label">
+            <span className={`plan-dot${trial?.active && trial.days_left <= 1 ? ' urgent' : ''}`} />
+            {trial?.active ? 'Trial ativo' : 'Plano ativo'}
+          </div>
           <div className="plan-name">{loading ? '...' : (PLANOS[plano]?.nome || 'Free Trial')}</div>
           <div className="plan-price">
             {trial?.active
@@ -156,6 +161,72 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           Uma marca <strong style={{ color: 'var(--text-secondary)' }}>Zyntra</strong>
         </div>
       </div>
+
+      <style jsx>{`
+        .plan-label {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+        }
+        .plan-dot {
+          display: inline-block;
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--accent);
+          flex-shrink: 0;
+          animation: pulse-plan 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          box-shadow: 0 0 0 0 var(--accent);
+        }
+        .plan-dot.urgent {
+          background: var(--warning);
+          box-shadow: 0 0 0 0 var(--warning);
+          animation: pulse-plan-urgent 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        :global(.sidebar-plan-badge.trial-glow) {
+          animation: badge-glow 3.2s ease-in-out infinite;
+        }
+        :global(.sidebar-plan-badge.trial-urgent) {
+          animation: badge-glow-urgent 1.6s ease-in-out infinite;
+          border-color: var(--warning) !important;
+        }
+        @keyframes pulse-plan {
+          0%, 100% {
+            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45);
+          }
+          50% {
+            box-shadow: 0 0 0 6px rgba(37, 99, 235, 0);
+          }
+        }
+        @keyframes pulse-plan-urgent {
+          0%, 100% {
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6);
+            transform: scale(1);
+          }
+          50% {
+            box-shadow: 0 0 0 7px rgba(245, 158, 11, 0);
+            transform: scale(1.15);
+          }
+        }
+        @keyframes badge-glow {
+          0%, 100% {
+            border-color: rgba(37, 99, 235, 0.15);
+          }
+          50% {
+            border-color: rgba(37, 99, 235, 0.45);
+          }
+        }
+        @keyframes badge-glow-urgent {
+          0%, 100% {
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+          }
+          50% {
+            border-color: rgba(245, 158, 11, 0.9);
+            box-shadow: 0 0 14px 0 rgba(245, 158, 11, 0.25);
+          }
+        }
+      `}</style>
     </aside>
   )
 }

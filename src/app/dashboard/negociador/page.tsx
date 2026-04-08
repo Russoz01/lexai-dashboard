@@ -142,25 +142,32 @@ export default function NegociadorPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
               {[
-                { titulo: 'Trabalhista &mdash; horas extras', exemplo: 'Cliente trabalhou 3 anos como vendedor sem registro de horas extras. Reclama 18h semanais nao pagas. Empresa oferece R$ 8 mil. Calculo correto: ~R$ 35 mil. Buscamos acordo justo.' },
-                { titulo: 'Aluguel &mdash; rescisao contratual', exemplo: 'Inquilino quer rescindir contrato 6 meses antes. Fiador resiste a multa. Locador exige 3 alugueis. Buscamos mediacao para reduzir multa proporcionalmente.' },
-                { titulo: 'Divida bancaria &mdash; renegociacao', exemplo: 'Cliente devedor de R$ 45 mil em cartao com juros abusivos. Banco oferece parcelar em 24x sem desconto. Buscamos revisao de juros e parcelamento em 36x com descontos.' },
-                { titulo: 'Civil &mdash; danos morais', exemplo: 'Cliente teve nome negativado indevidamente por servico nao contratado. Empresa nega responsabilidade. Buscamos acordo extrajudicial: indenizacao + retirada do nome.' },
-                { titulo: 'Empresarial &mdash; quebra de contrato', exemplo: 'Fornecedor descumpriu prazo de entrega causando perda de R$ 200 mil. Multa contratual prevista de 10%. Buscamos acordo com pagamento parcelado da multa + ressarcimento dos danos.' },
-                { titulo: 'Familia &mdash; pensao alimenticia', exemplo: 'Pai busca reduzir pensao apos perda de emprego. Mae quer manter valor atual. Filho de 8 anos. Renda atual do pai caiu 60%. Buscamos acordo proporcional a renda.' },
+                { titulo: 'Trabalhista &mdash; horas extras', icon: 'bi-briefcase-fill', color: '#F59E0B', exemplo: 'Cliente trabalhou 3 anos como vendedor sem registro de horas extras. Reclama 18h semanais nao pagas. Empresa oferece R$ 8 mil. Calculo correto: ~R$ 35 mil. Buscamos acordo justo.' },
+                { titulo: 'Aluguel &mdash; rescisao contratual', icon: 'bi-house-door-fill', color: '#06B6D4', exemplo: 'Inquilino quer rescindir contrato 6 meses antes. Fiador resiste a multa. Locador exige 3 alugueis. Buscamos mediacao para reduzir multa proporcionalmente.' },
+                { titulo: 'Divida bancaria &mdash; renegociacao', icon: 'bi-bank2', color: '#22C55E', exemplo: 'Cliente devedor de R$ 45 mil em cartao com juros abusivos. Banco oferece parcelar em 24x sem desconto. Buscamos revisao de juros e parcelamento em 36x com descontos.' },
+                { titulo: 'Civil &mdash; danos morais', icon: 'bi-file-text-fill', color: '#2563EB', exemplo: 'Cliente teve nome negativado indevidamente por servico nao contratado. Empresa nega responsabilidade. Buscamos acordo extrajudicial: indenizacao + retirada do nome.' },
+                { titulo: 'Empresarial &mdash; quebra de contrato', icon: 'bi-buildings-fill', color: '#EC4899', exemplo: 'Fornecedor descumpriu prazo de entrega causando perda de R$ 200 mil. Multa contratual prevista de 10%. Buscamos acordo com pagamento parcelado da multa + ressarcimento dos danos.' },
+                { titulo: 'Familia &mdash; pensao alimenticia', icon: 'bi-people-fill', color: '#8B5CF6', exemplo: 'Pai busca reduzir pensao apos perda de emprego. Mae quer manter valor atual. Filho de 8 anos. Renda atual do pai caiu 60%. Buscamos acordo proporcional a renda.' },
               ].map((ex, i) => (
                 <button key={i} type="button" onClick={() => setSituacao(ex.exemplo)}
+                  className="negociador-scenario"
                   style={{
                     textAlign: 'left', padding: '10px 12px', borderRadius: 8,
                     background: 'var(--hover)', border: '1px solid var(--border)',
                     color: 'var(--text-secondary)', cursor: 'pointer',
                     fontFamily: "'DM Sans', sans-serif", fontSize: 12, lineHeight: 1.4,
-                    transition: 'all 0.15s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'translateY(0)' }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }} dangerouslySetInnerHTML={{ __html: ex.titulo }} />
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Clique para aplicar este modelo</div>
+                    transition: 'transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease',
+                    display: 'flex', alignItems: 'flex-start', gap: 10,
+                    // CSS var used by hover rule
+                    ['--scenario-accent' as string]: ex.color,
+                  }}>
+                  <span style={{ width: 28, height: 28, flexShrink: 0, borderRadius: 8, background: `${ex.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
+                    <i className={`bi ${ex.icon}`} style={{ color: ex.color, fontSize: 13 }} />
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }} dangerouslySetInnerHTML={{ __html: ex.titulo }} />
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Clique para aplicar este modelo</div>
+                  </div>
                 </button>
               ))}
             </div>
@@ -219,14 +226,39 @@ export default function NegociadorPage() {
               {Array.isArray(r.cenarios) && r.cenarios.length > 0 && (
                 <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)' }}>
                   <strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Cenarios</strong>
-                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {(r.cenarios as any[]).map((c, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 8, background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: c.risco === 'Alto' ? 'var(--danger-light)' : c.risco === 'Medio' ? 'var(--warning-light)' : 'var(--success-light)', color: c.risco === 'Alto' ? 'var(--danger)' : c.risco === 'Medio' ? 'var(--warning)' : 'var(--success)' }}>{c.risco}</span>
-                        <span style={{ flex: 1, fontWeight: 500 }}>{c.cenario}</span>
-                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{c.probabilidade}</span>
-                      </div>
-                    ))}
+                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {(r.cenarios as any[]).map((c, i) => {
+                      // Parse probabilidade — could be "60%", "60", "Alta", etc.
+                      const raw = String(c.probabilidade ?? '')
+                      const match = raw.match(/(\d{1,3})/)
+                      let pct = match ? Math.min(100, Math.max(0, parseInt(match[1], 10))) : 0
+                      if (!match) {
+                        const low = raw.toLowerCase()
+                        if (low.includes('alt')) pct = 80
+                        else if (low.includes('med')) pct = 50
+                        else if (low.includes('bai')) pct = 20
+                      }
+                      const riscoCor = c.risco === 'Alto' ? 'var(--danger)' : c.risco === 'Medio' ? 'var(--warning)' : 'var(--success)'
+                      const riscoBg = c.risco === 'Alto' ? 'var(--danger-light)' : c.risco === 'Medio' ? 'var(--warning-light)' : 'var(--success-light)'
+                      return (
+                        <div key={i} style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                            <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: riscoBg, color: riscoCor }}>{c.risco}</span>
+                            <span style={{ flex: 1, fontWeight: 500 }}>{c.cenario}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: riscoCor }}>{raw || `${pct}%`}</span>
+                          </div>
+                          <div style={{ height: 6, width: '100%', borderRadius: 999, background: 'var(--border)', overflow: 'hidden' }} aria-hidden="true">
+                            <div style={{
+                              height: '100%',
+                              width: `${pct}%`,
+                              background: riscoCor,
+                              borderRadius: 999,
+                              transition: 'width 0.6s ease',
+                            }} />
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               )}
@@ -330,7 +362,14 @@ export default function NegociadorPage() {
         </div>
       )}
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .negociador-scenario:hover {
+          transform: translateY(-1px);
+          border-color: var(--scenario-accent, var(--accent)) !important;
+          box-shadow: 0 4px 14px -10px rgba(0,0,0,0.3);
+        }
+      `}</style>
     </div>
   )
 }
