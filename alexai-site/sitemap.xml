@@ -9,4 +9,16 @@
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://alexai.com.br/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://alexai.com.br/"/>
   </url>
+  <url>
+    <loc>https://alexai.com.br/privacidade.html</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://alexai.com.br/termos.html</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>

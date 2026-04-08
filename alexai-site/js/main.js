@@ -1301,15 +1301,17 @@
      a <script> no index.html, ou futuramente via endpoint). Os
      elementos com data-slots="..." recebem a copy certa, sem que
      a gente invente um numero que nao tem fonte.
+
+     Sem config: o texto default do HTML ja diz "Poucas vagas",
+     e o bloco com numero (.urgency-count) e' escondido pra nao
+     mostrar placeholder "--".
      ============================================================ */
   function initScarcitySlots() {
     var cfg = window.ALEX_AI_SLOTS_LEFT;
-    if (!cfg || typeof cfg !== 'object') return;
-
     var nodes = document.querySelectorAll('[data-slots]');
     if (!nodes.length) return;
 
-    function fmtLine(n, bucket) {
+    function fmtLine(n) {
       if (n == null || n === false) return null;
       if (n <= 0) return 'Janela atual fechada';
       if (n === 1) return 'Ultima vaga disponivel';
@@ -1319,16 +1321,28 @@
 
     nodes.forEach(function (el) {
       var bucket = el.getAttribute('data-slots');
-      var value  = cfg[bucket];
-      var line   = fmtLine(value, bucket);
-      if (line == null) return;
+      var value  = cfg && typeof cfg === 'object' ? cfg[bucket] : undefined;
 
       var target = el.querySelector('[data-slots-line]');
-      if (target) target.textContent = line;
+      var numEl  = el.querySelector('[data-slots-num]');
 
-      var numEl = el.querySelector('[data-slots-num]');
-      if (numEl && typeof value === 'number') {
-        numEl.textContent = value < 10 ? '0' + value : String(value);
+      if (typeof value === 'number') {
+        var line = fmtLine(value);
+        if (target && line) target.textContent = line;
+        if (numEl) {
+          numEl.textContent = value < 10 ? '0' + value : String(value);
+          /* reveal any parent count wrapper */
+          var wrapper = numEl.closest('.urgency-count');
+          if (wrapper) wrapper.style.display = '';
+        }
+      } else {
+        /* No value for this bucket: keep the default HTML copy,
+           but hide numeric placeholder so we never render "--". */
+        if (numEl) {
+          var wrapper2 = numEl.closest('.urgency-count');
+          if (wrapper2) wrapper2.style.display = 'none';
+          else numEl.style.display = 'none';
+        }
       }
     });
   }
