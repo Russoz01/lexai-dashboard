@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse }  from 'next/server'
 import { sendEmail, welcomeEmailHtml } from '@/lib/email'
 import { events } from '@/lib/analytics'
+import { logError } from '@/lib/logger'
 
 // Validate redirect path to prevent open redirect attacks + directory traversal
 function sanitizeRedirect(path: string): string {
@@ -39,10 +40,14 @@ export async function GET(request: Request) {
               to: user.email,
               subject: 'Bem-vindo a LexAI — seu trial de 2 dias esta ativo',
               html: welcomeEmailHtml(nome),
-            }).catch(() => { /* never block auth on email failure */ })
-            events.signup(user.id, user.email).catch(() => { /* silent */ })
+            }).catch((err) => logError(err, { where: 'auth.callback.sendEmail' }))
+            events.signup(user.id, user.email).catch((err) =>
+              logError(err, { where: 'auth.callback.signupEvent' }),
+            )
           }
-        } catch { /* silent */ }
+        } catch (err) {
+          logError(err, { where: 'auth.callback.firstSignIn' })
+        }
       }
 
       const forwardedHost = request.headers.get('x-forwarded-host')
@@ -56,7 +61,7 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}${next}`)
       }
     } else {
-      console.error('[auth/callback] Exchange error:', error.message)
+      logError(error, { where: 'auth.callback.exchangeCode' })
     }
   }
 

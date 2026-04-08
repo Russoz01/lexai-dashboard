@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAuth } from '@/lib/api-utils'
 import { events } from '@/lib/analytics'
+import { logError } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -26,7 +27,8 @@ export async function POST(req: NextRequest) {
     let body: { titulo?: string; conteudo?: unknown; tipo?: string; days?: number }
     try {
       body = await req.json()
-    } catch {
+    } catch (err) {
+      logError(err, { where: 'share.create.parseBody' })
       return NextResponse.json({ error: 'JSON invalido.' }, { status: 400 })
     }
 
@@ -54,7 +56,8 @@ export async function POST(req: NextRequest) {
     let conteudoJsonString: string
     try {
       conteudoJsonString = JSON.stringify(conteudo)
-    } catch {
+    } catch (err) {
+      logError(err, { where: 'share.create.stringify' })
       return NextResponse.json({ error: 'Conteudo nao serializavel.' }, { status: 400 })
     }
     const conteudoBytes = Buffer.byteLength(conteudoJsonString, 'utf8')
@@ -99,8 +102,7 @@ export async function POST(req: NextRequest) {
       })
 
     if (insertErr) {
-      // eslint-disable-next-line no-console
-      console.error('[api/share/create] insert error:', insertErr.message)
+      logError(insertErr, { where: 'share.create.insert' })
       return NextResponse.json(
         { error: 'Falha ao criar link de compartilhamento.' },
         { status: 500 }
@@ -108,17 +110,17 @@ export async function POST(req: NextRequest) {
     }
 
     // Fire-and-forget analytics event
-    events.shareCreated(user.id, tipo).catch(() => { /* silent */ })
+    events.shareCreated(user.id, tipo).catch((err) =>
+      logError(err, { where: 'share.create.analytics' }),
+    )
 
     return NextResponse.json({
       token,
       url: `https://lexai.com.br/share/${token}`,
       expires_at: expiresAt,
     })
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Erro interno'
-    // eslint-disable-next-line no-console
-    console.error('[api/share/create] error:', message)
+  } catch (err) {
+    logError(err, { where: 'share.create' })
     return NextResponse.json(
       { error: 'Erro ao processar solicitacao.' },
       { status: 500 }

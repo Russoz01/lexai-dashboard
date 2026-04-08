@@ -2,6 +2,7 @@
  * Lightweight analytics wrapper. No-op if POSTHOG_KEY is not configured.
  * Use track() server-side or via fetch from client.
  */
+import { logError } from './logger'
 
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'
@@ -30,8 +31,9 @@ export async function track({ event, distinctId, properties }: TrackParams): Pro
         timestamp: new Date().toISOString(),
       }),
     })
-  } catch {
-    // Never throw from analytics — silent fail
+  } catch (err) {
+    // Never throw from analytics, but do log so PostHog outages are visible.
+    logError(err, { where: 'analytics.track', event })
   }
 }
 
