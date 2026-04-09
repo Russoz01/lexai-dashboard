@@ -284,6 +284,22 @@ body.cursor-hover #c-ring { opacity: 0; }
   color: rgba(255,255,255,.55);
 }
 
+/* ── Skip link (keyboard / screen-reader navigation) ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  background: var(--ink);
+  color: var(--light);
+  padding: 8px 16px;
+  font-size: .875rem;
+  z-index: 9999;
+  border-radius: 0 0 4px 4px;
+  text-decoration: none;
+  transition: top .15s var(--ease, ease);
+}
+.skip-link:focus { top: 0; outline: 2px solid var(--brand-gold, #D9BE8A); outline-offset: 2px; }
+
 /* ── Navigation ── */
 #nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 500;
@@ -2744,6 +2760,99 @@ body.cursor-hover #c-ring { opacity: 0; }
 .comp-footer span {
   font-size: .72rem; font-style: italic; color: var(--muted);
   letter-spacing: .02em;
+}
+
+/* ── Meta Business AI comparison block ── */
+.meta-compare {
+  margin-top: 56px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 8px);
+  background: color-mix(in srgb, var(--olive) 4%, transparent);
+}
+.meta-compare__eyebrow {
+  font-family: var(--f-sans, 'Inter', sans-serif);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--olive, #7A8D68);
+  margin-bottom: 24px;
+}
+.meta-compare__grid {
+  display: grid;
+  gap: 0;
+}
+.meta-compare__head,
+.meta-compare__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.meta-compare__head {
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+}
+.meta-compare__head > div {
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.meta-compare__head--alex {
+  color: var(--olive, #7A8D68) !important;
+}
+.meta-compare__row:last-child { border-bottom: none; }
+.meta-compare__feat {
+  font-size: .88rem;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.meta-compare__meta {
+  font-size: .84rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.meta-compare__alex {
+  font-size: .84rem;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.meta-compare__note {
+  margin-top: 24px;
+  font-size: .9rem;
+  font-style: italic;
+  color: var(--ink-2);
+  text-align: center;
+}
+/* Light mode overrides */
+[data-theme="light"] .meta-compare { background: color-mix(in srgb, var(--olive) 5%, white); }
+/* Mobile: feat full-width, meta+alex side by side */
+@media (max-width: 640px) {
+  .meta-compare { padding: 20px 16px; }
+  .meta-compare__head,
+  .meta-compare__row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 14px 0;
+  }
+  .meta-compare__head { display: none; }
+  .meta-compare__feat {
+    font-size: .8rem;
+    color: var(--muted);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: .68rem;
+  }
+  .meta-compare__meta::before { content: "Meta: "; font-weight: 500; color: var(--muted); }
+  .meta-compare__alex::before { content: "Alex AI: "; font-weight: 600; color: var(--olive, #7A8D68); }
 }
 
 /* ── Scroll Reveal (excludes 3D-tilt cards — they use --rv-y variable) ── */

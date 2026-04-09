@@ -87,12 +87,13 @@ async function main() {
   console.log('Alex AI QA smoke test');
   console.log('Mode: ' + (baseUrl ? 'online (' + baseUrl + ')' : 'offline (local files)'));
 
-  let html, css, mainJs, vercelJson, sitemap, privacidade, termos, cspReport;
+  let html, css, mainJs, scarcityJs, vercelJson, sitemap, privacidade, termos, cspReport;
 
   try {
     html        = await loadFile('index.html');
     css         = await loadFile('css/style.css');
     mainJs      = await loadFile('js/main.js');
+    scarcityJs  = await loadFile('js/modules/scarcity.js').catch(() => mainJs);
     vercelJson  = await loadFile('vercel.json');
     sitemap     = await loadFile('sitemap.xml');
     privacidade = await loadFile('privacidade.html');
@@ -115,9 +116,9 @@ async function main() {
     'verify .hero-title copy');
 
   section('2. Footer legal (Tier 1.4)');
-  check('footer shows CNPJ line (em registro)',
-    /CNPJ:\s*em registro/i.test(html),
-    'verify .footer-legal extension');
+  check('footer has CNPJ line',
+    /CNPJ:[^<]*em processo de abertura/i.test(html),
+    'verify .footer-legal CNPJ text');
   check('footer shows DPO email contact',
     /contato@alexai\.com\.br/.test(html),
     'verify mailto DPO');
@@ -166,12 +167,12 @@ async function main() {
   check('data-slots attributes wired (urgency/essencial/pro)',
     /data-slots="urgency"/.test(html) && /data-slots="essencial"/.test(html) && /data-slots="pro"/.test(html),
     'missing data-slots hooks');
-  check('main.js has initScarcitySlots',
-    /function initScarcitySlots/.test(mainJs),
-    'scarcity initializer missing');
+  check('scarcity module has initScarcitySlots',
+    /function initScarcitySlots/.test(scarcityJs),
+    'scarcity initializer missing from js/modules/scarcity.js');
   check('scarcity init hides urgency-count when no value',
-    /closest\(['"]\.urgency-count['"]\)/.test(mainJs),
-    'urgency-count hide logic missing');
+    /closest\(['"]\.urgency-count['"]\)/.test(scarcityJs),
+    'urgency-count hide logic missing from js/modules/scarcity.js');
 
   section('6. FAQ progressive disclosure (Tier 1.9)');
   check('FAQ has at least 2 <details class="faq-answer__expand">',
@@ -344,6 +345,31 @@ async function main() {
   check('favicon link present (SVG)',
     /rel="icon"[^>]*type="image\/svg\+xml"[^>]*href="\/favicon\.svg"/.test(html),
     'favicon missing from <head>');
+  // 14.c — Credibility pass 2026-04-09 (comparativo bars, demo, ROI, CNPJ)
+  check('no "0.4 segundos" fabricated bar value in comp chart',
+    !/comp-bar--ai[^>]*>[\s\S]{0,200}0\.4 segundos/.test(html),
+    'fabricated bar value returned in comparativo');
+  check('no "respondeu em 0.4s" in demo chat',
+    !/respondeu em 0\.4s/.test(html),
+    'demo chat timestamp not updated');
+  check('no "Recupera 38%" fabricated pro-plan feature',
+    !/Recupera 38% da receita/.test(html),
+    'fabricated 38% pro-plan claim returned');
+  check('no ROI disclaimer with hardcoded "45%"',
+    !/recuperacao de 45%/.test(html),
+    'fabricated ROI disclaimer returned');
+  check('meta-compare differentiation block present',
+    /class="meta-compare/.test(html),
+    'Meta Business AI comparison block missing');
+  check('skip-link present for keyboard a11y',
+    /class="skip-link"/.test(html),
+    'skip link missing — keyboard a11y regression');
+  check('FAQ buttons have aria-controls',
+    /faq-question[^>]*aria-controls="faq-answer-1"/.test(html),
+    'FAQ aria-controls missing');
+  check('CNPJ updated to "em processo de abertura"',
+    /em processo de abertura/.test(html),
+    'CNPJ text not updated');
 
   /* ---------- summary ---------- */
   console.log('\n' + '-'.repeat(60));

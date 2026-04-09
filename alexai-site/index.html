@@ -200,6 +200,7 @@
   </script>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Ir ao conte&uacute;do principal</a>
 
 <!-- Skip link (a11y) -->
 <a class="skip-link" href="#main-content">Pular para o conteudo principal</a>
@@ -665,7 +666,7 @@
             <div class="comp-bar-label">Com Alex AI</div>
             <div class="comp-bar-track">
               <div class="comp-bar comp-bar--ai" data-width="96" style="width:0%">
-                <span class="comp-bar-val">0.4 segundos</span>
+                <span class="comp-bar-val">&lt; 1s (meta)</span>
               </div>
             </div>
           </div>
@@ -686,7 +687,7 @@
             <div class="comp-bar-label">Com Alex AI</div>
             <div class="comp-bar-track">
               <div class="comp-bar comp-bar--ai" data-width="67" style="width:0%">
-                <span class="comp-bar-val">67%</span>
+                <span class="comp-bar-val">meta do piloto</span>
               </div>
             </div>
           </div>
@@ -728,7 +729,7 @@
             <div class="comp-bar-label">Com Alex AI</div>
             <div class="comp-bar-track">
               <div class="comp-bar comp-bar--ai" data-width="20" style="width:0%">
-                <span class="comp-bar-val">R$ 0,28</span>
+                <span class="comp-bar-val">via automa&ccedil;&atilde;o</span>
               </div>
             </div>
           </div>
@@ -749,7 +750,7 @@
             <div class="comp-bar-label">Com Alex AI</div>
             <div class="comp-bar-track">
               <div class="comp-bar comp-bar--ai" data-width="38" style="width:0%">
-                <span class="comp-bar-val">38%</span>
+                <span class="comp-bar-val">meta do piloto</span>
               </div>
             </div>
           </div>
@@ -766,6 +767,44 @@
     </div>
     <div class="comp-footer rv rv-d3">
       <span>Valores de referencia do piloto. Benchmark humano: media setorial de SAC brasileiro (Zendesk CX Trends 2024, ABRAREC 2023).</span>
+    </div>
+
+    <!-- Meta Business AI differentiation block -->
+    <div class="meta-compare rv rv-d4">
+      <div class="meta-compare__eyebrow">Alex AI vs. WhatsApp Business AI (Meta, gr&aacute;tis)</div>
+      <div class="meta-compare__grid" role="table" aria-label="Comparativo Alex AI versus Meta Business AI">
+        <div class="meta-compare__head" role="row">
+          <div role="columnheader">Recurso</div>
+          <div role="columnheader">Meta (gr&aacute;tis)</div>
+          <div class="meta-compare__head--alex" role="columnheader">Alex AI</div>
+        </div>
+        <div class="meta-compare__row" role="row">
+          <div class="meta-compare__feat" role="cell">Fine-tuning no seu cat&aacute;logo</div>
+          <div class="meta-compare__meta" role="cell">Informa&ccedil;&otilde;es b&aacute;sicas do perfil</div>
+          <div class="meta-compare__alex" role="cell">Treinamento completo com voz, regras e hist&oacute;rico</div>
+        </div>
+        <div class="meta-compare__row" role="row">
+          <div class="meta-compare__feat" role="cell">Mem&oacute;ria por cliente</div>
+          <div class="meta-compare__meta" role="cell">N&atilde;o mant&eacute;m hist&oacute;rico entre conversas</div>
+          <div class="meta-compare__alex" role="cell">Mem&oacute;ria epis&oacute;dica persistente por cliente</div>
+        </div>
+        <div class="meta-compare__row" role="row">
+          <div class="meta-compare__feat" role="cell">Integra&ccedil;&atilde;o CRM / ERP</div>
+          <div class="meta-compare__meta" role="cell">N&atilde;o dispon&iacute;vel</div>
+          <div class="meta-compare__alex" role="cell">REST API + webhooks bidirecionais</div>
+        </div>
+        <div class="meta-compare__row" role="row">
+          <div class="meta-compare__feat" role="cell">Negocia&ccedil;&atilde;o ativa e follow-up</div>
+          <div class="meta-compare__meta" role="cell">Respostas pr&eacute;-configuradas</div>
+          <div class="meta-compare__alex" role="cell">Conduz negocia&ccedil;&atilde;o, envia follow-up contextual</div>
+        </div>
+        <div class="meta-compare__row" role="row">
+          <div class="meta-compare__feat" role="cell">Dashboard executivo</div>
+          <div class="meta-compare__meta" role="cell">M&eacute;tricas b&aacute;sicas do app</div>
+          <div class="meta-compare__alex" role="cell">KPIs em tempo real, relat&oacute;rio semanal automatizado</div>
+        </div>
+      </div>
+      <p class="meta-compare__note">A Meta resolve &ldquo;responder mais r&aacute;pido&rdquo;. A Alex AI resolve &ldquo;fechar mais vendas&rdquo;.</p>
     </div>
 
     <!-- Direction CTA -->
@@ -808,7 +847,7 @@
           <div class="msg msg-out msg-anim">Vou de Pix. Me envia os dados.</div>
           <div class="msg-typing" id="msg-typing"><span></span><span></span><span></span></div>
         </div>
-        <div class="phone-footer">respondeu em 0.4s -- disponivel 24h</div>
+        <div class="phone-footer">respondeu em segundos -- disponivel 24h</div>
       </div>
     </div>
   </div>
@@ -1306,14 +1345,14 @@
           <div class="roi-payback-note">Investimento se paga em menos de um ciclo comercial</div>
         </div>
 
-        <a href="https://wa.me/5534993026456?text=Quero%20ver%20a%20Alex%20AI%20operando%20no%20meu%20negocio" target="_blank" rel="noopener noreferrer" class="roi-cta magnetic">
-          Quero ver isso operando no meu negocio <span class="btn-arrow">&rarr;</span>
+        <a href="https://wa.me/5534993026456?text=Quero%20ver%20a%20Alex%20AI%20operando%20no%20meu%20negocio" target="_blank" rel="noopener noreferrer" class="roi-cta roi-cta-dynamic magnetic">
+          <span class="roi-cta-text">Quero ver isso operando no meu negocio</span> <span class="btn-arrow">&rarr;</span>
         </a>
       </div>
     </div>
 
     <div class="roi-disclaimer rv">
-      Calculo baseado em benchmark de operacoes similares. Valores conservadores: considera recuperacao de 45% do volume fora de expediente e elevacao de conversao em 1.6x. Resultado real pode ser superior.
+      Calculo baseado em premissas conservadoras de mercado. Resultado real depende do seu volume e segmento &mdash; use como estimativa de ordem de grandeza.
     </div>
 
     <!-- Direction CTA -->
@@ -1436,7 +1475,7 @@
         <hr class="plan-divider">
         <ul class="plan-features">
           <li class="pf-on"><strong>Tudo do Essencial</strong>, mais:</li>
-          <li class="pf-on"><strong>Recupera 38% da receita abandonada</strong> com follow-up automatico</li>
+          <li class="pf-on">Follow-up automatico de receita abandonada <strong>(meta do piloto)</strong></li>
           <li class="pf-on">Dashboard executivo com KPIs em tempo real (SLA, conversao, CAC)</li>
           <li class="pf-on">CRM com pipeline visual e scoring dinamico por cluster</li>
           <li class="pf-on">Campanhas segmentadas por comportamento e intencao</li>
@@ -1702,8 +1741,8 @@
     </div>
     <div class="faq-list">
       <div class="faq-item rv">
-        <button class="faq-question"><span>O que e Alex AI e por que e diferente de um chatbot?</span><span class="faq-icon">+</span></button>
-        <div class="faq-answer">
+        <button class="faq-question" aria-controls="faq-answer-1"><span>O que e Alex AI e por que e diferente de um chatbot?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" id="faq-answer-1">
           <p><strong>Resposta curta:</strong> um chatbot comum responde so o que foi programado. A Alex AI entende a conversa, lembra do cliente e sabe negociar. Em vez de botoes e fluxogramas, ela conversa como uma pessoa treinada pela sua empresa &mdash; 24 horas por dia, sem travar em pergunta fora do roteiro.</p>
           <details class="faq-answer__expand">
             <summary>Ver a explicacao tecnica</summary>
@@ -1712,8 +1751,8 @@
         </div>
       </div>
       <div class="faq-item rv rv-d1">
-        <button class="faq-question"><span>Como a IA aprende sobre a minha empresa?</span><span class="faq-icon">+</span></button>
-        <div class="faq-answer">
+        <button class="faq-question" aria-controls="faq-answer-2"><span>Como a IA aprende sobre a minha empresa?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" id="faq-answer-2">
           <p><strong>Resposta curta:</strong> voce manda os materiais que ja tem (catalogo, respostas frequentes, politica de trocas, historico de conversa) e a gente treina a Alex AI com a voz e as regras da sua operacao. De 7 a 10 dias uteis, ela ja esta respondendo cliente. E se uma resposta precisar mudar, voce avisa e a gente ajusta.</p>
           <details class="faq-answer__expand">
             <summary>Ver como funciona por baixo</summary>
@@ -1722,28 +1761,28 @@
         </div>
       </div>
       <div class="faq-item rv rv-d2">
-        <button class="faq-question"><span>O sistema integra com CRM, ERP e plataformas de e-commerce?</span><span class="faq-icon">+</span></button>
-        <div class="faq-answer"><p>Sim. Alex AI possui camada de integracao via <strong>API REST e webhooks bidirecionais</strong> compativel com os principais sistemas: Shopify, WooCommerce, VTEX, Hotmart, HubSpot, Salesforce, RD Station, Bling, Omie, Pipedrive e sistemas com API aberta. Para e-commerce, a integracao permite consulta de estoque em tempo real, deteccao de carrinho abandonado por evento, e disparo de sequencias de recuperacao com dados contextuais do pedido. Integracoes customizadas com sistemas legados ou proprietarios sao contempladas no plano Enterprise.</p></div>
+        <button class="faq-question" aria-controls="faq-answer-3"><span>O sistema integra com CRM, ERP e plataformas de e-commerce?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" id="faq-answer-3"><p>Sim. Alex AI possui camada de integracao via <strong>API REST e webhooks bidirecionais</strong> compativel com os principais sistemas: Shopify, WooCommerce, VTEX, Hotmart, HubSpot, Salesforce, RD Station, Bling, Omie, Pipedrive e sistemas com API aberta. Para e-commerce, a integracao permite consulta de estoque em tempo real, deteccao de carrinho abandonado por evento, e disparo de sequencias de recuperacao com dados contextuais do pedido. Integracoes customizadas com sistemas legados ou proprietarios sao contempladas no plano Enterprise.</p></div>
       </div>
       <div class="faq-item rv">
-        <button class="faq-question"><span>Quais sao as garantias de privacidade e seguranca dos dados?</span><span class="faq-icon">+</span></button>
-        <div class="faq-answer"><p>Alex AI opera em conformidade integral com a <strong>LGPD</strong> e adota padroes internacionais de seguranca. Dados sao armazenados com <strong>criptografia AES-256 em repouso</strong> e TLS 1.3 em transito. Acesso controlado por autenticacao multifator (MFA) com logs de auditoria completos. Os dados da sua operacao nao sao utilizados para treinar modelos genericos -- o fine-tuning e exclusivo e computacionalmente isolado por conta. Fornecemos Acordo de Processamento de Dados (DPA) compativel com LGPD como parte integral do contrato.</p></div>
+        <button class="faq-question" aria-controls="faq-answer-4"><span>Quais sao as garantias de privacidade e seguranca dos dados?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" id="faq-answer-4"><p>Alex AI opera em conformidade integral com a <strong>LGPD</strong> e adota padroes internacionais de seguranca. Dados sao armazenados com <strong>criptografia AES-256 em repouso</strong> e TLS 1.3 em transito. Acesso controlado por autenticacao multifator (MFA) com logs de auditoria completos. Os dados da sua operacao nao sao utilizados para treinar modelos genericos -- o fine-tuning e exclusivo e computacionalmente isolado por conta. Fornecemos Acordo de Processamento de Dados (DPA) compativel com LGPD como parte integral do contrato.</p></div>
       </div>
       <div class="faq-item rv rv-d1">
-        <button class="faq-question"><span>Em quanto tempo o investimento se paga?</span><span class="faq-icon">+</span></button>
-        <div class="faq-answer"><p>O ROI e mensurado sobre quatro vetores: <strong>(1) receita recuperada</strong> por abandono -- media de 30% dos carrinhos detectados; <strong>(2) reducao de custo operacional</strong> -- economia de 60% a 70% no custo por atendimento; <strong>(3) aumento de taxa de conversao</strong> -- resposta em menos de 60 segundos aumenta conversao em ate 391% (Harvard Business Review); <strong>(4) retencao e LTV</strong> -- follow-up sistematico reduz churn. Para operacoes com 80+ leads/mes e ticket medio acima de R$ 250, o payback tipico ocorre entre 60 e 120 dias.</p></div>
+        <button class="faq-question" aria-controls="faq-answer-5"><span>Em quanto tempo o investimento se paga?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" id="faq-answer-5"><p>O ROI e mensurado sobre quatro vetores: <strong>(1) receita recuperada</strong> por abandono -- media de 30% dos carrinhos detectados; <strong>(2) reducao de custo operacional</strong> -- economia de 60% a 70% no custo por atendimento; <strong>(3) aumento de taxa de conversao</strong> -- resposta em menos de 60 segundos aumenta conversao em ate 391% (Harvard Business Review); <strong>(4) retencao e LTV</strong> -- follow-up sistematico reduz churn. Para operacoes com 80+ leads/mes e ticket medio acima de R$ 250, o payback tipico ocorre entre 60 e 120 dias.</p></div>
       </div>
       <div class="faq-item rv rv-d2">
-        <button class="faq-question"><span>O que acontece quando a IA nao sabe responder?</span><span class="faq-icon">+</span></button>
-        <div class="faq-answer"><p>O sistema possui mecanismo de <strong>deteccao de incerteza calibrada (confidence thresholding)</strong>: quando a confianca fica abaixo do limiar configurado, o protocolo de escalonamento humano e acionado automaticamente. O cliente recebe uma transicao natural, e o atendente humano recebe o historico completo com contexto, sentimento detectado e score de urgencia. Voce define os limiares por categoria, os topicos que sempre requerem atencao humana e os horarios de disponibilidade.</p></div>
+        <button class="faq-question" aria-controls="faq-answer-6"><span>O que acontece quando a IA nao sabe responder?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" id="faq-answer-6"><p>O sistema possui mecanismo de <strong>deteccao de incerteza calibrada (confidence thresholding)</strong>: quando a confianca fica abaixo do limiar configurado, o protocolo de escalonamento humano e acionado automaticamente. O cliente recebe uma transicao natural, e o atendente humano recebe o historico completo com contexto, sentimento detectado e score de urgencia. Voce define os limiares por categoria, os topicos que sempre requerem atencao humana e os horarios de disponibilidade.</p></div>
       </div>
       <div class="faq-item rv">
-        <button class="faq-question"><span>Como funciona a evolucao continua do sistema?</span><span class="faq-icon">+</span></button>
-        <div class="faq-answer"><p>A manutencao e <strong>evolutiva e preditiva</strong>, nao apenas corretiva. Mensalmente analisamos conversas com menor taxa de resolucao, identificamos padroes de falha e realizamos retreinamento direcionado. No plano Pro, a reuniao mensal inclui analise de KPIs, revisao de automacoes e alinhamento estrategico. Suporte tecnico opera via WhatsApp com SLA de 2h (Pro) e 8h (Essencial). Atualizacoes do modelo sao aplicadas quando representam melhoria mensuravel nos benchmarks internos.</p></div>
+        <button class="faq-question" aria-controls="faq-answer-7"><span>Como funciona a evolucao continua do sistema?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" id="faq-answer-7"><p>A manutencao e <strong>evolutiva e preditiva</strong>, nao apenas corretiva. Mensalmente analisamos conversas com menor taxa de resolucao, identificamos padroes de falha e realizamos retreinamento direcionado. No plano Pro, a reuniao mensal inclui analise de KPIs, revisao de automacoes e alinhamento estrategico. Suporte tecnico opera via WhatsApp com SLA de 2h (Pro) e 8h (Essencial). Atualizacoes do modelo sao aplicadas quando representam melhoria mensuravel nos benchmarks internos.</p></div>
       </div>
       <div class="faq-item rv rv-d1">
-        <button class="faq-question"><span>Funciona apenas para WhatsApp ou atende outros canais?</span><span class="faq-icon">+</span></button>
-        <div class="faq-answer"><p>O canal primario e WhatsApp via <strong>API oficial do WhatsApp Business</strong>. No plano Pro, a integracao se estende a Instagram Direct, e-mail e widget de chat. O plano Enterprise contempla Telegram, SMS e canais customizados. A identidade do cliente e unificada por <strong>entity resolution</strong> -- se o mesmo usuario contata via WhatsApp e depois via Instagram, o contexto e preservado integralmente e a conversa continua do ponto onde parou.</p></div>
+        <button class="faq-question" aria-controls="faq-answer-8"><span>Funciona apenas para WhatsApp ou atende outros canais?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" id="faq-answer-8"><p>O canal primario e WhatsApp via <strong>API oficial do WhatsApp Business</strong>. No plano Pro, a integracao se estende a Instagram Direct, e-mail e widget de chat. O plano Enterprise contempla Telegram, SMS e canais customizados. A identidade do cliente e unificada por <strong>entity resolution</strong> -- se o mesmo usuario contata via WhatsApp e depois via Instagram, o contexto e preservado integralmente e a conversa continua do ponto onde parou.</p></div>
       </div>
     </div>
 
@@ -1938,7 +1977,7 @@
         </div>
         <!-- TODO(leonardo): quando o CNPJ estiver emitido, substituir o bloco abaixo pelo numero real. -->
         <div class="footer-legal-line">
-          <span>CNPJ: em registro</span>
+          <span>CNPJ: em processo de abertura (MEI) &mdash; contrato dispon&iacute;vel mediante solicita&ccedil;&atilde;o</span>
           <span class="dot">&middot;</span>
           <span>Razao social: Vanix Corp (Leonardo Santos -- empresa em abertura)</span>
         </div>
@@ -1963,78 +2002,16 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=20260408b" defer></script>
-<!-- quiz.js is lazy-loaded only when #avaliacao is near the viewport.
-     Savings: ~37% of initial JS payload (748 of 2044 total lines).
-     Fallback: if IntersectionObserver is unsupported, loads on window.load. -->
-<script>
-  (function () {
-    var loaded = false;
-    function loadQuiz() {
-      if (loaded) return;
-      loaded = true;
-      var s = document.createElement('script');
-      s.src = 'js/quiz.js';
-      s.async = true;
-      document.body.appendChild(s);
-    }
-    var target = document.getElementById('avaliacao');
-    if (!target) { window.addEventListener('load', loadQuiz); return; }
-    if (!('IntersectionObserver' in window)) {
-      window.addEventListener('load', loadQuiz);
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      for (var i = 0; i < entries.length; i++) {
-        if (entries[i].isIntersecting) {
-          loadQuiz();
-          io.disconnect();
-          break;
-        }
-      }
-    }, { rootMargin: '400px 0px' });
-    io.observe(target);
-    // Also load on first user interaction (covers fast scroll past threshold)
-    ['pointerdown', 'keydown'].forEach(function (ev) {
-      window.addEventListener(ev, loadQuiz, { once: true, passive: true });
-    });
-  })();
-</script>
+<script type="module" src="js/main.js?v=20260409c"></script>
+<script defer src="js/quiz-loader.js"></script>
 
 <!-- Vercel Analytics (page views, Core Web Vitals). Loads after main content. -->
-<script>
-  window.va = window.va || function () {
-    (window.vaq = window.vaq || []).push(arguments);
-  };
-</script>
+<script defer src="js/va-bootstrap.js"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 
 <!-- Sentry (frontend error monitoring).
      Loader is gated: only runs if ALEX_AI_SENTRY_DSN is injected at build time.
      Keeps the script out of previews that don't need it. -->
-<script>
-  (function () {
-    var dsn = window.ALEX_AI_SENTRY_DSN;
-    if (!dsn) return;
-    var s = document.createElement('script');
-    s.src = 'https://js.sentry-cdn.com/' + (window.ALEX_AI_SENTRY_KEY || 'disabled') + '.min.js';
-    s.crossOrigin = 'anonymous';
-    s.async = true;
-    s.onload = function () {
-      if (window.Sentry && typeof window.Sentry.onLoad === 'function') {
-        window.Sentry.onLoad(function () {
-          window.Sentry.init({
-            dsn: dsn,
-            environment: window.ALEX_AI_ENV || 'production',
-            tracesSampleRate: 0.1,
-            replaysSessionSampleRate: 0,
-            replaysOnErrorSampleRate: 1.0
-          });
-        });
-      }
-    };
-    document.head.appendChild(s);
-  })();
-</script>
+<script defer src="js/sentry-loader.js"></script>
 </body>
 </html>
