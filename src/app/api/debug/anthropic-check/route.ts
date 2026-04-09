@@ -4,6 +4,9 @@ import { NextResponse } from 'next/server'
 // Temporary diagnostic endpoint to verify ANTHROPIC_API_KEY in prod.
 // Returns masked metadata only — never the full key.
 // REMOVE AFTER DEBUGGING.
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   const key = process.env.ANTHROPIC_API_KEY
   if (!key) {
