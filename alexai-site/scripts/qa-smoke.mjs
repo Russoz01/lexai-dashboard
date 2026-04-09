@@ -87,12 +87,13 @@ async function main() {
   console.log('Alex AI QA smoke test');
   console.log('Mode: ' + (baseUrl ? 'online (' + baseUrl + ')' : 'offline (local files)'));
 
-  let html, css, mainJs, vercelJson, sitemap, privacidade, termos, cspReport;
+  let html, css, mainJs, scarcityJs, vercelJson, sitemap, privacidade, termos, cspReport;
 
   try {
     html        = await loadFile('index.html');
     css         = await loadFile('css/style.css');
     mainJs      = await loadFile('js/main.js');
+    scarcityJs  = await loadFile('js/modules/scarcity.js').catch(() => mainJs);
     vercelJson  = await loadFile('vercel.json');
     sitemap     = await loadFile('sitemap.xml');
     privacidade = await loadFile('privacidade.html');
@@ -166,12 +167,12 @@ async function main() {
   check('data-slots attributes wired (urgency/essencial/pro)',
     /data-slots="urgency"/.test(html) && /data-slots="essencial"/.test(html) && /data-slots="pro"/.test(html),
     'missing data-slots hooks');
-  check('main.js has initScarcitySlots',
-    /function initScarcitySlots/.test(mainJs),
-    'scarcity initializer missing');
+  check('scarcity module has initScarcitySlots',
+    /function initScarcitySlots/.test(scarcityJs),
+    'scarcity initializer missing from js/modules/scarcity.js');
   check('scarcity init hides urgency-count when no value',
-    /closest\(['"]\.urgency-count['"]\)/.test(mainJs),
-    'urgency-count hide logic missing');
+    /closest\(['"]\.urgency-count['"]\)/.test(scarcityJs),
+    'urgency-count hide logic missing from js/modules/scarcity.js');
 
   section('6. FAQ progressive disclosure (Tier 1.9)');
   check('FAQ has at least 2 <details class="faq-answer__expand">',
