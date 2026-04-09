@@ -21,19 +21,21 @@ const shell = {
 }
 
 const agentes = [
-  { n: '01', name: 'Resumidor',   desc: 'Analise completa de documentos juridicos com riscos e fundamentacao mapeados.' },
-  { n: '02', name: 'Redator',     desc: 'Peticoes, recursos, contestacoes e pareceres estruturados em minutos.' },
-  { n: '03', name: 'Pesquisador', desc: 'Jurisprudencia do STF, STJ e tribunais estaduais consultada com contexto.' },
-  { n: '04', name: 'Negociador',  desc: 'BATNA, ZOPA e cenarios de acordo desenhados para sua estrategia.' },
-  { n: '05', name: 'Professor',   desc: 'Aulas em tres niveis e questoes no estilo OAB, concursos e magistratura.' },
-  { n: '06', name: 'Calculador',  desc: 'Prazos processuais, correcao monetaria, juros e custas com precisao.' },
-  { n: '07', name: 'Legislacao',  desc: 'Artigos de lei explicados com jurisprudencia aplicada ao caso concreto.' },
-  { n: '08', name: 'Rotina',      desc: 'Agenda de audiencias, prazos, estagios e compromissos organizados.' },
+  { n: '01', name: 'Resumidor',   desc: 'Cole qualquer documento — contrato, acordao, peticao — e receba uma analise estruturada com riscos, clausulas criticas e prazos em segundos.' },
+  { n: '02', name: 'Redator',     desc: 'Peticoes iniciais, recursos, contestacoes e notificacoes extrajudiciais com fundamentacao doutrinaria e jurisprudencial completa.' },
+  { n: '03', name: 'Pesquisador', desc: 'Busca inteligente em jurisprudencia do STF, STJ, TRFs e TJs estaduais. Cada resultado com ementa, tribunal e data de julgamento.' },
+  { n: '04', name: 'Negociador',  desc: 'Mapeamento de BATNA, ZOPA e tres cenarios de acordo. Estrategia de negociacao com fundamentacao e pontos de pressao.' },
+  { n: '05', name: 'Professor',   desc: 'Aulas em tres niveis de profundidade — basico, intermediario e avancado. Questoes no estilo OAB, concursos e magistratura.' },
+  { n: '06', name: 'Calculador',  desc: 'Prazos processuais com feriados, correcao monetaria (INPC, IGPM, IPCA), juros de mora e custas judiciais por estado.' },
+  { n: '07', name: 'Legislacao',  desc: 'Qualquer artigo de lei explicado em linguagem acessivel, com doutrina majoritaria e jurisprudencia aplicada ao caso concreto.' },
+  { n: '08', name: 'Rotina',      desc: 'Gestao de audiencias, prazos processuais, compromissos e fluxos de trabalho do escritorio organizados por prioridade.' },
+  { n: '09', name: 'Simulado',    desc: 'Questoes no estilo OAB, CESPE e FGV geradas por IA. Gabarito comentado com artigos de lei e dicas para a prova.' },
+  { n: '10', name: 'Consultor',   desc: 'Pareceres juridicos estruturados com fundamentacao legal, doutrina, argumentos pro e contra e recomendacoes praticas.' },
 ]
 
 const provas = [
-  { n: 'I',   metric: '10',    label: 'Agentes especializados' },
-  { n: 'II',  metric: '7',     label: 'Areas do Direito cobertas' },
+  { n: 'I',   metric: '12',    label: 'Agentes especializados' },
+  { n: 'II',  metric: '9',     label: 'Areas do Direito cobertas' },
   { n: 'III', metric: '36',    label: 'Materias academicas' },
   { n: 'IV',  metric: '2 dias', label: 'Trial gratuito sem cartao' },
 ]
@@ -63,21 +65,21 @@ const planos = [
   {
     name: 'Starter',
     price: '59',
-    headline: '3 agentes · 50 documentos / mes',
-    features: ['Resumidor, Pesquisador, Professor', 'Historico de 30 dias', 'Suporte por email'],
+    headline: '5 agentes · 50 documentos / mes',
+    features: ['Resumidor, Pesquisador, Professor, Legislacao, Calculador', 'Historico de 30 dias', 'Suporte por email'],
   },
   {
     name: 'Pro',
     price: '119',
-    headline: '6 agentes · 200 documentos / mes',
+    headline: '10 agentes · 200 documentos / mes',
     popular: true,
-    features: ['Todos os basicos do Starter', 'Exportacao em PDF', 'Suporte prioritario em 48h', 'Historico de 90 dias'],
+    features: ['Todos os agentes incluindo Simulado e Consultor', 'Exportacao em PDF', 'Suporte prioritario em 48h', 'Historico de 90 dias'],
   },
   {
     name: 'Enterprise',
     price: '239',
-    headline: '10 agentes · volume ilimitado',
-    features: ['Todos os agentes', 'API privada + SLA', 'WhatsApp 24h', 'Historico ilimitado', 'Modelos customizados'],
+    headline: '12 agentes · volume ilimitado',
+    features: ['Todos os agentes + Chat orquestrador + Planilhas', 'API privada + SLA', 'WhatsApp 24h', 'Historico ilimitado', 'Modelos customizados'],
   },
 ]
 
@@ -227,7 +229,7 @@ export default function LandingPage() {
               </span>
             </h1>
             <p className="ax-hero-lede ax-line" style={{ '--d': '420ms' } as React.CSSProperties}>
-              Dez agentes treinados no ordenamento juridico brasileiro. Cada um afinado como
+              Doze agentes treinados no ordenamento juridico brasileiro. Cada um afinado como
               uma ferramenta de precisao — documentos, jurisprudencia, calculos, pecas
               processuais. Ninguem se perde entre abas.
             </p>
@@ -247,7 +249,7 @@ export default function LandingPage() {
                 <span className="ax-serial">MMXXVI</span>
               </div>
               <div className="ax-hero-card-body">
-                <div className="ax-hero-card-metric">10</div>
+                <div className="ax-hero-card-metric">12</div>
                 <div className="ax-hero-card-metric-label">agentes</div>
                 <Rule />
                 <p className="ax-hero-card-quote">
@@ -298,7 +300,7 @@ export default function LandingPage() {
         <div className="ax-section-head" data-reveal>
           <SerialLabel>Capitulo I</SerialLabel>
           <h2 className="ax-section-title">
-            Dez agentes. <em className="ax-italic">Um unico gabinete.</em>
+            Doze agentes. <em className="ax-italic">Um unico gabinete.</em>
           </h2>
           <p className="ax-section-sub">
             Nao e um assistente generico. Cada agente foi afinado para uma funcao especifica do

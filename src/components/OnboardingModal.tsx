@@ -2,13 +2,13 @@
 import { useState, useEffect } from 'react'
 
 const STEPS = [
-  { icon: 'bi-stars', title: 'Bem-vindo ao LexAI', desc: '10 agentes de IA prontos para acelerar seu trabalho juridico em 10x. Vamos te mostrar o essencial.' },
-  { icon: 'bi-text-paragraph', title: 'Resumidor', desc: 'Cole qualquer documento juridico (contrato, peticao, acordao) e receba uma analise estruturada em 45 segundos com riscos identificados.' },
-  { icon: 'bi-journal-bookmark', title: 'Pesquisador', desc: 'Pesquise jurisprudencia em STF, STJ e tribunais. Filtre por tribunal, area e periodo. Cada resultado vem com selo de verificacao.' },
-  { icon: 'bi-pencil-square', title: 'Redator', desc: '6 templates prontos: peticao, recurso, contestacao, parecer, contrato, notificacao. Voce informa os fatos, o LexAI gera a peca completa com fundamentacao.' },
-  { icon: 'bi-mortarboard', title: 'Professor', desc: 'Aprenda QUALQUER tema (juridico ou academico) em 3 niveis: basico, intermediario, avancado. Inclui questoes OAB e plano de estudo personalizado.' },
-  { icon: 'bi-keyboard', title: 'Atalho de teclado', desc: 'Pressione Cmd+K (Mac) ou Ctrl+K (Windows) em qualquer pagina para abrir a busca rapida e navegar para qualquer agente em 1 segundo.' },
-  { icon: 'bi-rocket-takeoff', title: 'Pronto para comecar?', desc: 'Voce tem 2 dias gratis para explorar tudo. Sem cartao de credito, sem compromisso. Comece pelo Resumidor — e o agente mais usado.' },
+  { icon: 'bi-stars', title: 'Bem-vindo ao LexAI', desc: '12 agentes de IA afinados para a advocacia e o estudo do Direito. Vamos te mostrar o essencial em 60 segundos.' },
+  { icon: 'bi-text-paragraph', title: 'Resumidor', desc: 'Cole qualquer documento juridico — contrato, peticao, acordao — e receba uma analise estruturada com riscos, clausulas criticas e prazos.' },
+  { icon: 'bi-journal-bookmark', title: 'Pesquisador', desc: 'Jurisprudencia do STF, STJ, TRFs e TJs estaduais. Cada resultado com ementa, tribunal e data de julgamento verificados.' },
+  { icon: 'bi-pencil-square', title: 'Redator', desc: 'Peticoes iniciais, recursos, contestacoes e notificacoes com fundamentacao doutrinaria e jurisprudencial completa.' },
+  { icon: 'bi-mortarboard', title: 'Professor', desc: 'Aulas em 3 niveis de profundidade — basico, intermediario, avancado — com questoes no estilo OAB, concursos e magistratura.' },
+  { icon: 'bi-patch-check', title: 'Simulado & Consultor', desc: 'Gere simulados no estilo OAB/CESPE com gabarito comentado, ou solicite pareceres juridicos com argumentos pro e contra.' },
+  { icon: 'bi-rocket-takeoff', title: 'Pronto para comecar?', desc: 'Dois dias gratis para explorar tudo. Sem cartao de credito. Comece pelo Chat — o orquestrador roteia para o agente certo.' },
 ]
 
 export default function OnboardingModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -31,7 +31,7 @@ export default function OnboardingModal({ open, onClose }: { open: boolean; onCl
     <div onClick={onClose} style={{
       position: 'fixed', inset: 0, zIndex: 9998,
       background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 'max(80px, 14vh)', paddingInline: 24, paddingBottom: 24,
       animation: 'fadeIn 0.2s ease',
     }}>
       <div onClick={e => e.stopPropagation()} style={{

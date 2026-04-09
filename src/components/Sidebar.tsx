@@ -36,6 +36,8 @@ const nav: { title: string; items: NavItem[] }[] = [
       { href: '/dashboard/rotina',      icon: 'bi-calendar-week',     label: 'Rotina'      },
       { href: '/dashboard/calculador', icon: 'bi-calculator',        label: 'Calculador'  },
       { href: '/dashboard/legislacao', icon: 'bi-book',              label: 'Legislacao'  },
+      { href: '/dashboard/simulado',  icon: 'bi-patch-check',       label: 'Simulado'   },
+      { href: '/dashboard/consultor', icon: 'bi-briefcase',         label: 'Consultor'  },
       { href: '/dashboard/planilhas',  icon: 'bi-file-earmark-spreadsheet', label: 'Planilhas' },
     ],
   },

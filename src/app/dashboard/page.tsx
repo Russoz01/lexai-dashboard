@@ -43,10 +43,12 @@ const AGENT_META: Record<string, { label: string; href: string; icon: string }> 
   legislacao:   { label: 'Legislacao',  href: '/dashboard/legislacao',  icon: 'bi-book' },
   rotina:       { label: 'Rotina',      href: '/dashboard/rotina',      icon: 'bi-calendar-week' },
   planilhas:    { label: 'Planilhas',   href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet' },
+  simulado:     { label: 'Simulado',    href: '/dashboard/simulado',    icon: 'bi-patch-check' },
+  consultor:    { label: 'Consultor',   href: '/dashboard/consultor',   icon: 'bi-briefcase' },
   chat:         { label: 'Chat',        href: '/dashboard/chat',        icon: 'bi-chat-square-dots' },
 }
 
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
 
 function pad2(n: number) { return n.toString().padStart(2, '0') }
 
@@ -149,16 +151,6 @@ export default function DashboardPage() {
   })
   const todayCapitalized = todayStr.charAt(0).toUpperCase() + todayStr.slice(1)
 
-  /* Onboarding — primeira visita */
-  const [showOnboarding, setShowOnboarding] = useState(false)
-  useEffect(() => {
-    if (!localStorage.getItem('lexai-onboarded')) setShowOnboarding(true)
-  }, [])
-  function dismissOnboarding() {
-    localStorage.setItem('lexai-onboarded', 'true')
-    setShowOnboarding(false)
-  }
-
   const maxAgentCount = useMemo(
     () => agentCounts.reduce((m, a) => Math.max(m, a.count), 0) || 1,
     [agentCounts]
@@ -166,42 +158,6 @@ export default function DashboardPage() {
 
   return (
     <div className="page-content dash-atelier">
-
-      {/* Onboarding modal */}
-      {showOnboarding && (
-        <div className="modal-overlay" onClick={dismissOnboarding}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
-            <div style={{ padding: '36px 32px', textAlign: 'center' }}>
-              <div className="dash-serial" style={{ justifyContent: 'center', marginBottom: 18 }}>
-                <span className="dash-serial-dot" />
-                <span>N° 001 · GABINETE · MMXXVI</span>
-              </div>
-              <h2 className="dash-atelier-h2" style={{ fontSize: 26, marginBottom: 10 }}>
-                Bem-vindo ao <em>gabinete</em>
-              </h2>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: 26, maxWidth: 380, marginInline: 'auto' }}>
-                Dez agentes afinados para a advocacia brasileira. Comece por um documento, uma tese ou uma duvida — o chat roteia para o especialista certo.
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left', marginBottom: 26 }}>
-                {[
-                  { icon: 'bi-chat-square-dots', text: 'Chat: envie texto ou arquivo, o orquestrador escolhe o agente certo' },
-                  { icon: 'bi-file-earmark-text', text: 'Resumidor: analise completa com riscos, clausulas e prazos' },
-                  { icon: 'bi-journal-bookmark', text: 'Pesquisador: jurisprudencia do STF, STJ e tribunais estaduais' },
-                  { icon: 'bi-mortarboard', text: 'Professor: aulas em 3 niveis + questoes no estilo OAB' },
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, background: 'var(--hover)', border: '1px solid var(--stone-line)' }}>
-                    <i className={`bi ${item.icon}`} style={{ fontSize: 16, color: 'var(--accent)', flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{item.text}</span>
-                  </div>
-                ))}
-              </div>
-              <button onClick={dismissOnboarding} className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '14px 20px' }}>
-                Entrar no gabinete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ═════ HEADER EDITORIAL ═════ */}
       <header className="dash-header">
@@ -371,7 +327,7 @@ export default function DashboardPage() {
           <div className="dash-card-head">
             <div>
               <div className="dash-card-cap">CAPITULO III · ATELIER</div>
-              <h2 className="dash-card-title">Dez <em>agentes</em></h2>
+              <h2 className="dash-card-title">Doze <em>agentes</em></h2>
               <p className="dash-card-sub">Clique para abrir o atelier do especialista</p>
             </div>
             <Link href="/dashboard/chat" className="dash-card-action">
@@ -382,13 +338,15 @@ export default function DashboardPage() {
           <div className="dash-agents-grid">
             {[
               { href: '/dashboard/chat',        icon: 'bi-chat-square-dots',         name: 'Chat',         desc: 'Orquestrador · roteia para o agente certo' },
-              { href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text',        name: 'Resumidor',    desc: 'Analisa contratos, acordaos e petições' },
-              { href: '/dashboard/redator',     icon: 'bi-pencil-square',            name: 'Redator',      desc: 'Peças processuais estruturadas' },
+              { href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text',        name: 'Resumidor',    desc: 'Analisa contratos, acordaos e peticoes' },
+              { href: '/dashboard/redator',     icon: 'bi-pencil-square',            name: 'Redator',      desc: 'Pecas processuais com fundamentacao' },
               { href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark',         name: 'Pesquisador',  desc: 'Jurisprudencia STF, STJ e tribunais' },
               { href: '/dashboard/negociador',  icon: 'bi-lightning',                name: 'Negociador',   desc: 'BATNA, ZOPA e cenarios de acordo' },
-              { href: '/dashboard/professor',   icon: 'bi-mortarboard',              name: 'Professor',    desc: 'Aulas 3 niveis + questoes OAB' },
+              { href: '/dashboard/professor',   icon: 'bi-mortarboard',              name: 'Professor',    desc: 'Aulas em 3 niveis + questoes OAB' },
               { href: '/dashboard/calculador',  icon: 'bi-calculator',               name: 'Calculador',   desc: 'Prazos, juros, correcao, custas' },
               { href: '/dashboard/legislacao',  icon: 'bi-book',                     name: 'Legislacao',   desc: 'Artigos de lei explicados' },
+              { href: '/dashboard/simulado',    icon: 'bi-patch-check',              name: 'Simulado',     desc: 'Questoes OAB e concursos com gabarito' },
+              { href: '/dashboard/consultor',   icon: 'bi-briefcase',                name: 'Consultor',    desc: 'Pareceres juridicos estruturados' },
               { href: '/dashboard/rotina',      icon: 'bi-calendar-week',            name: 'Rotina',       desc: 'Agenda, compromissos, fluxos' },
               { href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet', name: 'Planilhas',    desc: 'Timesheet, controle, honorarios' },
             ].map((ag, i) => (

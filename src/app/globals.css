@@ -1035,6 +1035,8 @@ input[type="date"] { cursor: pointer; }
   .mobile-toggle { display: block; }
   .page-content { padding: 20px 16px 36px; max-width: 100%; }
   .top-header   { padding: 0 16px; }
+  .header-user-info { display: none; }
+  .header-avatar { width: 34px; height: 34px; font-size: 11px; }
   .stat-grid    { grid-template-columns: 1fr 1fr; gap: 10px; }
   .stat-card    { padding: 16px; }
   .stat-card-value { font-size: 22px; }
