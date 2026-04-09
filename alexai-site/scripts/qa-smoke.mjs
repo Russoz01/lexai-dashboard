@@ -107,9 +107,9 @@ async function main() {
   check('hero corner TR says ALEX AI, not LEXAI',
     /hero-corner--tr[^>]*>\s*ALEX AI \/ 2026/.test(html),
     'verify index.html hero-corner--tr');
-  check('hero corner BL starts with S, not N',
-    /hero-corner--bl[^>]*>\s*S 18\.918/.test(html),
-    'verify index.html hero-corner--bl');
+  check('hero corner BL uses interior-SP coordinate (S 22.314 W 49.060, Bauru/SP)',
+    /hero-corner--bl[^>]*>\s*S 22\.314 W 49\.060/.test(html),
+    'verify index.html hero-corner--bl matches interior SP');
   check('H1 targets WhatsApp outcome',
     /hero-title[\s\S]*?Atendimento[\s\S]*?WhatsApp[\s\S]*?fecha venda/.test(html),
     'verify .hero-title copy');
@@ -304,6 +304,46 @@ async function main() {
   check('no "Logotipos representativos" disclaimer',
     !/Logotipos representativos/.test(html),
     'fake-logo disclaimer returned');
+  // 14.b — Metrics neutralized in the 2026-04-09 credibility pass.
+  check('no "Piloto fechado aberto" oxymoron in meta',
+    !/Piloto fechado aberto/.test(html),
+    'oxymoron returned in meta description');
+  check('no fabricated "3 em cada 4 clientes" plan badge',
+    !/3 em cada 4 clientes/.test(html),
+    'fake adoption badge returned');
+  check('no fabricated "14-22% em clientes atuais" CC card',
+    !/14-22%[^<]*em clientes atuais/.test(html),
+    'fake conversion claim returned');
+  check('no "90 dias de operacao" comp-footer claim',
+    !/clientes ativos com mais de 90 dias de operacao/.test(html),
+    'fabricated 90-day customer data returned');
+  check('no "7 em cada 10 leads viram cliente" transform claim',
+    !/7 em cada 10 leads viram cliente/.test(html),
+    'fabricated conversion ratio returned');
+  check('no hardcoded "R$ 47.800" recovered revenue claim',
+    !/\+R\$ 47\.800/.test(html),
+    'fabricated revenue recovery returned');
+  check('no "p50 de 420ms" fabricated latency measurement',
+    !/p50 de 420ms/.test(html),
+    'fabricated p50 returned (should be framed as meta/target)');
+  check('no "Reducao de 40%" fabricated clinic metric',
+    !/Reducao de 40% na taxa de ausencia/.test(html),
+    'fabricated clinic metric returned');
+  check('no "Recuperacao de 30%" fabricated ecommerce metric',
+    !/Recuperacao de 30% das vendas perdidas/.test(html),
+    'fabricated ecommerce metric returned');
+  check('no fabricated "14 dias do briefing" variant',
+    !/data-target="1\.8"/.test(html) && !/data-target="47\.8"/.test(html),
+    'fabricated counter targets returned');
+  check('no fabricated "0.4" hero latency counter',
+    !/data-target="0\.4"/.test(html),
+    'fabricated hero latency counter returned');
+  check('no fabricated "97.2" hero resolution counter',
+    !/data-target="97\.2"/.test(html),
+    'fabricated hero resolution counter returned');
+  check('favicon link present (SVG)',
+    /rel="icon"[^>]*type="image\/svg\+xml"[^>]*href="\/favicon\.svg"/.test(html),
+    'favicon missing from <head>');
 
   /* ---------- summary ---------- */
   console.log('\n' + '-'.repeat(60));
