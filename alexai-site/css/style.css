@@ -953,9 +953,28 @@ body.cursor-hover #c-ring { opacity: 0; }
 }
 /* Light-mode fix: .step cards use --bg-alt (light cream) as background,
    so the always-cream title/desc become unreadable on light theme.
-   Re-ink them with the theme tokens. Dark mode untouched. */
-[data-theme="light"] .step-title { color: var(--content-primary); }
-[data-theme="light"] .step-desc  { color: var(--content-secondary); }
+   Re-ink them with the theme tokens. Dark mode untouched.
+   !important because .step-title has multiple color overrides across
+   later sections of the cascade. */
+[data-theme="light"] .step-title {
+  color: var(--content-primary) !important;
+}
+[data-theme="light"] .step-desc {
+  color: var(--content-secondary) !important;
+}
+[data-theme="light"] .step-icon svg {
+  stroke: var(--accent) !important;
+}
+/* Safety net: force .step cards visible once scroll-reveal has fired.
+   Late rule to beat any duplicate `.rv { opacity: 0 }` declarations
+   further down the cascade. Prevents the "cards invisible on page load"
+   failure mode when IntersectionObserver misses due to body scroller. */
+.steps-grid .step.on,
+.steps-grid .step.rv-visible {
+  opacity: 1 !important;
+  transform: none !important;
+  --rv-y: 0px !important;
+}
 .step-time {
   display: inline-block;
   font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;

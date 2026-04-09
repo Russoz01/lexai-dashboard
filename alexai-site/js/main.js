@@ -289,8 +289,20 @@
       });
     }
     window.addEventListener('scroll', onScrollFallback, { passive: true });
+    /* Body scroller fallback: when <body> has its own overflow:auto
+       (happens in some layouts), scroll events fire on body, not window. */
+    document.addEventListener('scroll', onScrollFallback, { passive: true, capture: true });
     /* Initial sweep — also catches any element already in viewport */
     setTimeout(fallbackSweep, 400);
+    /* Hard safety net: if anything is still unrevealed after 4s
+       (IO throttled, fallback blocked, scroller mismatch), force-reveal
+       everything so content never stays invisible. */
+    setTimeout(function () {
+      var stragglers = document.querySelectorAll('.rv:not(.on), .rv-s:not(.on)');
+      Array.prototype.forEach.call(stragglers, function (el) {
+        el.classList.add('on');
+      });
+    }, 4000);
   }
 
   /* ============================================================
