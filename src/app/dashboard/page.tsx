@@ -1,30 +1,96 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import Link from 'next/link'
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Dashboard — Gabinete LexAI
+ *
+ * Editorial atelier layout (N° serial, Playfair italic, stone hairlines)
+ * com dados REAIS vindos da tabela historico nos ultimos 7 dias.
+ * ──────────────────────────────────────────────────────────────────────────── */
 
 interface Stats {
   documentos: number
   prazosUrgentes: number
   saldo: number
+  totalInteracoesSemana: number
   prazosList: { titulo: string; data_limite: string; status: string }[]
+}
+
+interface AgentCount {
+  agente: string
+  count: number
+}
+
+interface RecentItem {
+  id: string
+  agente: string
+  mensagem_usuario: string
+  created_at: string
+}
+
+/* Catalogo canonico dos agentes — nome de exibicao + rota + icone */
+const AGENT_META: Record<string, { label: string; href: string; icon: string }> = {
+  resumidor:    { label: 'Resumidor',   href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text' },
+  redator:      { label: 'Redator',     href: '/dashboard/redator',     icon: 'bi-pencil-square' },
+  pesquisador:  { label: 'Pesquisador', href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark' },
+  negociador:   { label: 'Negociador',  href: '/dashboard/negociador',  icon: 'bi-lightning' },
+  professor:    { label: 'Professor',   href: '/dashboard/professor',   icon: 'bi-mortarboard' },
+  calculador:   { label: 'Calculador',  href: '/dashboard/calculador',  icon: 'bi-calculator' },
+  legislacao:   { label: 'Legislacao',  href: '/dashboard/legislacao',  icon: 'bi-book' },
+  rotina:       { label: 'Rotina',      href: '/dashboard/rotina',      icon: 'bi-calendar-week' },
+  planilhas:    { label: 'Planilhas',   href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet' },
+  chat:         { label: 'Chat',        href: '/dashboard/chat',        icon: 'bi-chat-square-dots' },
+}
+
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+
+function pad2(n: number) { return n.toString().padStart(2, '0') }
+
+function relativeTime(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime()
+  const min = Math.floor(diff / 60000)
+  if (min < 1) return 'agora mesmo'
+  if (min < 60) return `${min} min atras`
+  const h = Math.floor(min / 60)
+  if (h < 24) return `${h}h atras`
+  const d = Math.floor(h / 24)
+  if (d < 7) return `${d}d atras`
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
 }
 
 export default function DashboardPage() {
   const supabase = createClient()
-  const [stats, setStats] = useState<Stats>({ documentos: 0, prazosUrgentes: 0, saldo: 0, prazosList: [] })
+  const [stats, setStats] = useState<Stats>({
+    documentos: 0, prazosUrgentes: 0, saldo: 0, totalInteracoesSemana: 0, prazosList: [],
+  })
+  const [agentCounts, setAgentCounts] = useState<AgentCount[]>([])
+  const [recent, setRecent] = useState<RecentItem[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       const usuarioId = await resolveUsuarioId()
-      if (!usuarioId) return
+      if (!usuarioId) { setDataLoading(false); return }
 
-      const [docs, prazos, financeiro] = await Promise.all([
+      const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString()
+
+      const [docs, prazos, financeiro, historicoSemana, historicoRecente] = await Promise.all([
         supabase.from('documentos').select('id', { count: 'exact' }).eq('usuario_id', usuarioId),
         supabase.from('prazos').select('titulo,data_limite,status').eq('usuario_id', usuarioId).order('data_limite'),
         supabase.from('financeiro').select('valor,tipo').eq('usuario_id', usuarioId),
+        supabase.from('historico')
+          .select('agente')
+          .eq('usuario_id', usuarioId)
+          .gte('created_at', sevenDaysAgo),
+        supabase.from('historico')
+          .select('id,agente,mensagem_usuario,created_at')
+          .eq('usuario_id', usuarioId)
+          .order('created_at', { ascending: false })
+          .limit(5),
       ])
 
       const hoje = new Date()
@@ -36,27 +102,41 @@ export default function DashboardPage() {
       const saldo = (financeiro.data ?? []).reduce((acc, f) =>
         f.tipo === 'receita' ? acc + Number(f.valor) : acc - Number(f.valor), 0)
 
+      /* Agrega historico da semana por agente */
+      const counter = new Map<string, number>()
+      for (const row of historicoSemana.data ?? []) {
+        const key = (row.agente || '').toLowerCase().trim()
+        if (!key) continue
+        counter.set(key, (counter.get(key) ?? 0) + 1)
+      }
+      const agentArr: AgentCount[] = Array.from(counter.entries())
+        .map(([agente, count]) => ({ agente, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 8)
+
       setStats({
         documentos: docs.count ?? 0,
         prazosUrgentes: urgentes.length,
         saldo,
+        totalInteracoesSemana: (historicoSemana.data ?? []).length,
         prazosList: (prazos.data ?? []).slice(0, 3),
       })
+      setAgentCounts(agentArr)
+      setRecent((historicoRecente.data ?? []) as RecentItem[])
+      setDataLoading(false)
     }
     load()
-  }, [])
+  }, [supabase])
 
   function diasRestantes(data: string) {
     const diff = Math.ceil((new Date(data + 'T00:00:00').getTime() - new Date().setHours(0,0,0,0)) / 86400000)
     return diff
   }
-
   function barClass(dias: number) {
     if (dias <= 7)  return 'critical'
     if (dias <= 30) return 'warning'
     return 'normal'
   }
-
   function fmt(v: number) {
     return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
   }
@@ -64,13 +144,12 @@ export default function DashboardPage() {
   const now = new Date()
   const hour = now.getHours()
   const greeting = hour < 5 ? 'Boa noite' : hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
-
-  const today = now.toLocaleDateString('pt-BR', {
+  const todayStr = now.toLocaleDateString('pt-BR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   })
-  const todayCapitalized = today.charAt(0).toUpperCase() + today.slice(1)
+  const todayCapitalized = todayStr.charAt(0).toUpperCase() + todayStr.slice(1)
 
-  // Onboarding — show once on first visit
+  /* Onboarding — primeira visita */
   const [showOnboarding, setShowOnboarding] = useState(false)
   useEffect(() => {
     if (!localStorage.getItem('lexai-onboarded')) setShowOnboarding(true)
@@ -80,455 +159,981 @@ export default function DashboardPage() {
     setShowOnboarding(false)
   }
 
+  const maxAgentCount = useMemo(
+    () => agentCounts.reduce((m, a) => Math.max(m, a.count), 0) || 1,
+    [agentCounts]
+  )
+
   return (
-    <div className="page-content">
+    <div className="page-content dash-atelier">
 
       {/* Onboarding modal */}
       {showOnboarding && (
         <div className="modal-overlay" onClick={dismissOnboarding}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 500 }}>
-            <div style={{ padding: '32px 28px', textAlign: 'center' }}>
-              <div style={{ width: 56, height: 56, borderRadius: 16, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 24, color: '#fff' }}>
-                <i className="bi bi-cpu" />
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
+            <div style={{ padding: '36px 32px', textAlign: 'center' }}>
+              <div className="dash-serial" style={{ justifyContent: 'center', marginBottom: 18 }}>
+                <span className="dash-serial-dot" />
+                <span>N° 001 · GABINETE · MMXXVI</span>
               </div>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-                Bem-vindo ao LexAI
+              <h2 className="dash-atelier-h2" style={{ fontSize: 26, marginBottom: 10 }}>
+                Bem-vindo ao <em>gabinete</em>
               </h2>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 24 }}>
-                Sua plataforma juridica com 10 agentes de inteligencia artificial. Analise documentos, pesquise jurisprudencia, gere pecas processuais e muito mais.
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: 26, maxWidth: 380, marginInline: 'auto' }}>
+                Dez agentes afinados para a advocacia brasileira. Comece por um documento, uma tese ou uma duvida — o chat roteia para o especialista certo.
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left', marginBottom: 24 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left', marginBottom: 26 }}>
                 {[
-                  { icon: 'bi-file-earmark-text', text: 'Cole um documento no Resumidor para analise completa' },
-                  { icon: 'bi-pencil-square', text: 'Use o Redator para gerar pecas processuais' },
-                  { icon: 'bi-journal-bookmark', text: 'Pesquise jurisprudencia com o Pesquisador' },
-                  { icon: 'bi-calendar-check', text: 'Cadastre seus prazos para nao perder nenhum' },
+                  { icon: 'bi-chat-square-dots', text: 'Chat: envie texto ou arquivo, o orquestrador escolhe o agente certo' },
+                  { icon: 'bi-file-earmark-text', text: 'Resumidor: analise completa com riscos, clausulas e prazos' },
+                  { icon: 'bi-journal-bookmark', text: 'Pesquisador: jurisprudencia do STF, STJ e tribunais estaduais' },
+                  { icon: 'bi-mortarboard', text: 'Professor: aulas em 3 niveis + questoes no estilo OAB' },
                 ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderRadius: 10, background: 'var(--hover)' }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, background: 'var(--hover)', border: '1px solid var(--stone-line)' }}>
                     <i className={`bi ${item.icon}`} style={{ fontSize: 16, color: 'var(--accent)', flexShrink: 0 }} />
                     <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{item.text}</span>
                   </div>
                 ))}
               </div>
-              <button onClick={dismissOnboarding} className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px' }}>
-                Comecar a usar
+              <button onClick={dismissOnboarding} className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '14px 20px' }}>
+                Entrar no gabinete
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Welcome */}
-      <div className="animate-in" style={{ marginBottom: 20 }}>
-        <h1 className="page-title" style={{ fontSize: 32 }}>{greeting}!</h1>
-        <p className="page-subtitle">{todayCapitalized}</p>
-      </div>
-
-      {/* Hero Card */}
-      <div className="section-card animate-in delay-1" style={{ padding: 0, marginBottom: 24, overflow: 'hidden' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', minHeight: 180 }}>
-          <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 14 }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, width: 'fit-content',
-              fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase',
-              padding: '4px 12px', borderRadius: 20,
-              background: 'rgba(16,185,129,0.10)', color: '#10B981',
-            }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite' }} />
-              SISTEMA ATIVO
-            </span>
-            <h2 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
-              Painel Juridico<br />Inteligente
-            </h2>
-            <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 400 }}>
-              10 agentes de IA prontos para analisar documentos, pesquisar jurisprudencia e gerar pecas processuais.
-            </p>
-            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-              <Link href="/dashboard/resumidor" className="btn-primary" style={{ fontSize: 13, padding: '9px 18px' }}>
-                <i className="bi bi-cpu" /> Usar Agente
-              </Link>
-              <Link href="/dashboard/historico" className="btn-ghost" style={{ fontSize: 13, padding: '9px 18px' }}>
-                Ver Historico
-              </Link>
-            </div>
-          </div>
-          <div style={{
-            width: 280, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 16,
-            padding: '24px 28px',
-            background: 'rgba(19,32,37,0.04)', borderLeft: '1px solid rgba(19,32,37,0.06)',
-          }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>
-                DOCUMENTOS ANALISADOS
-              </div>
-              <div style={{ fontSize: 36, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-1px' }}>
-                {stats.documentos}
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#10B981', marginTop: 2 }}>
-                LexAI · by Vanix Corp
-              </div>
-            </div>
-            <div style={{ width: '100%', height: 1, background: 'rgba(0,0,0,0.06)' }} />
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>
-                AGENTES ATIVOS
-              </div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>10</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-                Todos operacionais
-              </div>
-            </div>
-          </div>
+      {/* ═════ HEADER EDITORIAL ═════ */}
+      <header className="dash-header">
+        <div className="dash-serial">
+          <span className="dash-serial-dot" />
+          <span>N° 001 · GABINETE · MMXXVI</span>
         </div>
-      </div>
+        <h1 className="dash-atelier-h1">
+          {greeting}, <em>advogado</em>.
+        </h1>
+        <p className="dash-header-sub">{todayCapitalized}</p>
+        <div className="dash-hairline" aria-hidden />
+      </header>
 
-      {/* Stat Cards */}
-      <div className="stat-grid">
-        <Link href="/dashboard/resumidor" className="stat-card stat-card-lift stat-stagger" style={{ ['--stagger' as string]: '0' }}>
-          <div className="stat-card-header">
-            <span className="stat-card-label">Documentos</span>
-            <div className="stat-card-icon docs"><i className="bi bi-file-earmark-text" /></div>
-          </div>
-          <div className="stat-card-value">{stats.documentos}</div>
-          <div className="stat-trend up">
-            <i className="bi bi-arrow-up-short" /> +12%
-          </div>
-          <div className="stat-card-footer">
-            <span className="highlight">Analisados pela IA</span>
-          </div>
-        </Link>
+      {/* ═════ PROVAS — 4 COLUNAS EDITORIAIS ═════ */}
+      <section className="dash-provas" aria-label="Indicadores do gabinete">
+        <ProvaCell
+          roman="I"
+          value={stats.totalInteracoesSemana}
+          label="Interacoes"
+          caption="Ultimos 7 dias"
+          href="/dashboard/historico"
+        />
+        <ProvaCell
+          roman="II"
+          value={stats.documentos}
+          label="Documentos"
+          caption="Analisados pela IA"
+          href="/dashboard/resumidor"
+        />
+        <ProvaCell
+          roman="III"
+          value={stats.prazosUrgentes}
+          label="Prazos"
+          caption="Proximos 7 dias"
+          warning={stats.prazosUrgentes > 0}
+          href="/dashboard/prazos"
+        />
+        <ProvaCell
+          roman="IV"
+          moneyValue={fmt(stats.saldo)}
+          label="Saldo"
+          caption={stats.saldo >= 0 ? 'Positivo' : 'Negativo'}
+          warning={stats.saldo < 0}
+          href="/dashboard/financeiro"
+        />
+      </section>
 
-        <Link href="/dashboard/prazos" className="stat-card stat-card-lift stat-stagger" style={{ ['--stagger' as string]: '1' }}>
-          <div className="stat-card-header">
-            <span className="stat-card-label">Prazos Urgentes</span>
-            <div className="stat-card-icon deadline"><i className="bi bi-exclamation-triangle" /></div>
-          </div>
-          <div className="stat-card-value">{stats.prazosUrgentes}</div>
-          <div className="stat-trend flat">
-            <i className="bi bi-dash" /> —
-          </div>
-          <div className="stat-card-footer">
-            <span className="warn">Próximos 7 dias</span>
-          </div>
-        </Link>
+      {/* ═════ GABINETE — USO + ATIVIDADE ═════ */}
+      <section className="dash-grid-usage" aria-label="Uso dos agentes e atividade recente">
 
-        <Link href="/dashboard/financeiro" className="stat-card stat-card-lift stat-stagger" style={{ ['--stagger' as string]: '2' }}>
-          <div className="stat-card-header">
-            <span className="stat-card-label">Financeiro</span>
-            <div className="stat-card-icon finance"><i className="bi bi-wallet2" /></div>
-          </div>
-          <div className="stat-card-value" style={{ fontSize: '22px' }}>{fmt(stats.saldo)}</div>
-          <div className="stat-trend up">
-            <i className="bi bi-arrow-up-short" /> +8%
-          </div>
-          <div className="stat-card-footer">Saldo atual</div>
-        </Link>
-
-        <Link href="/dashboard/historico" className="stat-card stat-card-lift stat-stagger" style={{ ['--stagger' as string]: '3' }}>
-          <div className="stat-card-header">
-            <span className="stat-card-label">Agentes IA</span>
-            <div className="stat-card-icon agents"><i className="bi bi-cpu" /></div>
-          </div>
-          <div className="stat-card-value">10</div>
-          <div className="stat-trend flat">
-            <i className="bi bi-dash" /> —
-          </div>
-          <div className="stat-card-footer">
-            <span className="highlight">LexAI · by Vanix Corp</span>
-          </div>
-        </Link>
-      </div>
-
-      {/* Usage Analytics */}
-      <div className="animate-in delay-5" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 36, marginTop: 32, marginBottom: 32 }}>
-
-        {/* Agent Usage Chart */}
-        <div className="section-card analytics-chart-card analytics-card-lift">
-          <div className="section-header">
+        {/* Uso dos Agentes — DADOS REAIS */}
+        <article className="dash-card">
+          <div className="dash-card-head">
             <div>
-              <div className="section-title">Uso dos Agentes</div>
-              <div className="section-subtitle">Interacoes desta semana</div>
+              <div className="dash-card-cap">CAPITULO I · ATELIER</div>
+              <h2 className="dash-card-title">Uso dos <em>agentes</em></h2>
+              <p className="dash-card-sub">
+                {dataLoading
+                  ? 'Contando interacoes dos ultimos 7 dias...'
+                  : stats.totalInteracoesSemana === 0
+                    ? 'Nenhuma interacao registrada esta semana'
+                    : `${stats.totalInteracoesSemana} interacao${stats.totalInteracoesSemana === 1 ? '' : 'oes'} nos ultimos 7 dias`}
+              </p>
             </div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '20px 22px 22px' }}>
-            {[
-              { name: 'Resumidor', count: 47 },
-              { name: 'Pesquisador', count: 38 },
-              { name: 'Redator', count: 31 },
-              { name: 'Professor', count: 28 },
-              { name: 'Negociador', count: 22 },
-              { name: 'Calculador', count: 19 },
-              { name: 'Legislacao', count: 15 },
-            ].map((agent, i) => (
-              <div key={agent.name} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', width: 90, flexShrink: 0, textAlign: 'right' }}>
-                  {agent.name}
-                </span>
-                <div style={{ flex: 1, height: 22, borderRadius: 6, background: 'var(--hover)', overflow: 'hidden' }}>
-                  <div style={{
-                    height: '100%',
-                    width: `${(agent.count / 47) * 100}%`,
-                    borderRadius: 6,
-                    background: `linear-gradient(90deg, var(--accent), var(--accent))`,
-                    opacity: 1 - i * 0.08,
-                    transition: 'width 0.6s ease',
-                  }} />
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', width: 28, flexShrink: 0 }}>
-                  {agent.count}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="section-card analytics-activity-card analytics-card-lift">
-          <div className="section-header">
-            <div>
-              <div className="section-title">Atividade Recente</div>
-              <div className="section-subtitle">Ultimas interacoes</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: '6px 22px 14px' }}>
-            {[
-              { agent: 'Resumidor', action: 'Documento analisado', time: '2 min atras', icon: 'bi-text-paragraph', href: '/dashboard/resumidor' },
-              { agent: 'Pesquisador', action: 'Jurisprudencia encontrada', time: '15 min atras', icon: 'bi-journal-bookmark', href: '/dashboard/pesquisador' },
-              { agent: 'Professor', action: 'Aula sobre Direito Civil', time: '1h atras', icon: 'bi-mortarboard', href: '/dashboard/professor' },
-              { agent: 'Redator', action: 'Peticao gerada', time: '3h atras', icon: 'bi-pencil-square', href: '/dashboard/redator' },
-              { agent: 'Calculador', action: 'Prazo calculado', time: '5h atras', icon: 'bi-calculator', href: '/dashboard/calculador' },
-            ].map((item, idx, arr) => (
-              <Link key={item.agent} href={item.href} style={{
-                display: 'flex', alignItems: 'center', gap: 14,
-                padding: '14px 8px',
-                marginInline: -8,
-                borderRadius: 8,
-                borderBottom: idx === arr.length - 1 ? 'none' : '1px solid var(--border)',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'background 0.15s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
-                <div style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  background: 'var(--hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                }}>
-                  <i className={`bi ${item.icon}`} style={{ fontSize: 14, color: 'var(--accent)' }} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{item.agent}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>{item.action}</div>
-                </div>
-                <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>{item.time}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-      </div>
-
-      {/* Two Column */}
-      <div className="content-grid animate-in delay-5">
-
-        {/* Agents */}
-        <div className="section-card">
-          <div className="section-header">
-            <div>
-              <div className="section-title">Agentes Inteligentes</div>
-              <div className="section-subtitle">Clique para interagir com cada agente</div>
-            </div>
-            <Link href="/dashboard/resumidor" className="section-action">
-              Gerenciar <i className="bi bi-arrow-right" />
+            <Link href="/dashboard/historico" className="dash-card-action">
+              Ver tudo <i className="bi bi-arrow-right" />
             </Link>
           </div>
-          <div className="agent-list">
+
+          <div className="dash-bars">
+            {dataLoading ? (
+              <div className="dash-empty">
+                <div className="dash-skel" />
+                <div className="dash-skel" />
+                <div className="dash-skel" />
+              </div>
+            ) : agentCounts.length === 0 ? (
+              <div className="dash-empty-state">
+                <i className="bi bi-bar-chart" />
+                <div className="dash-empty-title">Nenhum uso nesta semana</div>
+                <div className="dash-empty-sub">Comece pelo chat ou por um dos agentes ao lado. Seu uso aparecera aqui.</div>
+                <Link href="/dashboard/chat" className="dash-empty-cta">
+                  Abrir chat <i className="bi bi-arrow-right" />
+                </Link>
+              </div>
+            ) : (
+              agentCounts.map((a, i) => {
+                const meta = AGENT_META[a.agente] ?? { label: a.agente, href: '#', icon: 'bi-circle' }
+                const pct = (a.count / maxAgentCount) * 100
+                return (
+                  <Link key={a.agente} href={meta.href} className="dash-bar-row">
+                    <span className="dash-bar-num">{pad2(i + 1)}</span>
+                    <span className="dash-bar-label">{meta.label}</span>
+                    <div className="dash-bar-track">
+                      <div className="dash-bar-fill" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="dash-bar-count">{a.count}</span>
+                  </Link>
+                )
+              })
+            )}
+          </div>
+        </article>
+
+        {/* Atividade Recente — DADOS REAIS */}
+        <article className="dash-card">
+          <div className="dash-card-head">
+            <div>
+              <div className="dash-card-cap">CAPITULO II · DIARIO</div>
+              <h2 className="dash-card-title">Atividade <em>recente</em></h2>
+              <p className="dash-card-sub">
+                {dataLoading
+                  ? 'Carregando...'
+                  : recent.length === 0
+                    ? 'Sem registros ainda'
+                    : 'Ultimas cinco interacoes'}
+              </p>
+            </div>
+            <Link href="/dashboard/historico" className="dash-card-action">
+              Historico <i className="bi bi-arrow-right" />
+            </Link>
+          </div>
+
+          <div className="dash-activity">
+            {dataLoading ? (
+              <>
+                <div className="dash-skel-row" />
+                <div className="dash-skel-row" />
+                <div className="dash-skel-row" />
+              </>
+            ) : recent.length === 0 ? (
+              <div className="dash-empty-state">
+                <i className="bi bi-journal" />
+                <div className="dash-empty-title">Nenhuma atividade ainda</div>
+                <div className="dash-empty-sub">Cada interacao com um agente fica registrada aqui.</div>
+              </div>
+            ) : (
+              recent.map((r, i) => {
+                const meta = AGENT_META[r.agente.toLowerCase()] ?? { label: r.agente, href: '/dashboard/historico', icon: 'bi-circle' }
+                const snippet = (r.mensagem_usuario || '').slice(0, 64)
+                return (
+                  <Link key={r.id} href={meta.href} className="dash-activity-row">
+                    <span className="dash-activity-num">{ROMAN[i] ?? (i+1)}</span>
+                    <div className="dash-activity-icon">
+                      <i className={`bi ${meta.icon}`} />
+                    </div>
+                    <div className="dash-activity-info">
+                      <div className="dash-activity-name">{meta.label}</div>
+                      <div className="dash-activity-snippet">{snippet || '—'}</div>
+                    </div>
+                    <span className="dash-activity-time">{relativeTime(r.created_at)}</span>
+                  </Link>
+                )
+              })
+            )}
+          </div>
+        </article>
+
+      </section>
+
+      {/* ═════ GABINETE — AGENTES + PRAZOS/FINANCEIRO ═════ */}
+      <section className="dash-grid-main">
+
+        {/* Agentes do gabinete */}
+        <article className="dash-card">
+          <div className="dash-card-head">
+            <div>
+              <div className="dash-card-cap">CAPITULO III · ATELIER</div>
+              <h2 className="dash-card-title">Dez <em>agentes</em></h2>
+              <p className="dash-card-sub">Clique para abrir o atelier do especialista</p>
+            </div>
+            <Link href="/dashboard/chat" className="dash-card-action">
+              Chat <i className="bi bi-arrow-right" />
+            </Link>
+          </div>
+
+          <div className="dash-agents-grid">
             {[
-              { href: '/dashboard/resumidor',   cls: 'resumidor',   icon: 'bi-text-paragraph',   name: 'Agente Resumidor',   desc: 'Analisa contratos, acórdãos e documentos jurídicos com IA' },
-              { href: '/dashboard/redator',     cls: 'redator',     icon: 'bi-pencil-square',    name: 'Agente Redator',     desc: 'Gera petições, recursos e peças processuais completas' },
-              { href: '/dashboard/pesquisador', cls: 'pesquisador', icon: 'bi-journal-bookmark', name: 'Agente Pesquisador', desc: 'Pesquisa jurisprudência no STJ, STF e tribunais' },
-              { href: '/dashboard/prazos',      cls: 'prazos',      icon: 'bi-calendar-check',   name: 'Controle de Prazos', desc: 'Monitora e alerta sobre datas processuais críticas' },
-              { href: '/dashboard/negociador',  cls: 'redator',     icon: 'bi-lightning',        name: 'Agente Negociador',  desc: 'Estrategia de negociacao e mediacao de conflitos' },
-              { href: '/dashboard/professor',   cls: 'pesquisador', icon: 'bi-mortarboard',      name: 'Agente Professor',   desc: 'Ensino juridico em 3 niveis com questoes OAB' },
-              { href: '/dashboard/financeiro',  cls: 'financeiro',  icon: 'bi-wallet2',          name: 'Financeiro',         desc: 'Controla receitas e despesas do escritorio' },
-              { href: '/dashboard/rotina',      cls: 'rotina',      icon: 'bi-calendar-week',    name: 'Rotina Semanal',     desc: 'Organiza grade de aulas e compromissos' },
-              { href: '/dashboard/calculador', cls: 'financeiro',  icon: 'bi-calculator',       name: 'Calculador Juridico', desc: 'Prazos, correcao monetaria, juros e custas' },
-              { href: '/dashboard/legislacao', cls: 'resumidor',   icon: 'bi-book',             name: 'Legislacao',          desc: 'Artigos de lei, codigos e normas brasileiras' },
-            ].map(ag => (
-              <Link key={ag.name} href={ag.href} className="agent-item">
-                <div className={`agent-icon ${ag.cls}`}><i className={`bi ${ag.icon}`} /></div>
-                <div className="agent-info">
-                  <div className="agent-name">{ag.name}</div>
-                  <div className="agent-desc">{ag.desc}</div>
+              { href: '/dashboard/chat',        icon: 'bi-chat-square-dots',         name: 'Chat',         desc: 'Orquestrador · roteia para o agente certo' },
+              { href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text',        name: 'Resumidor',    desc: 'Analisa contratos, acordaos e petições' },
+              { href: '/dashboard/redator',     icon: 'bi-pencil-square',            name: 'Redator',      desc: 'Peças processuais estruturadas' },
+              { href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark',         name: 'Pesquisador',  desc: 'Jurisprudencia STF, STJ e tribunais' },
+              { href: '/dashboard/negociador',  icon: 'bi-lightning',                name: 'Negociador',   desc: 'BATNA, ZOPA e cenarios de acordo' },
+              { href: '/dashboard/professor',   icon: 'bi-mortarboard',              name: 'Professor',    desc: 'Aulas 3 niveis + questoes OAB' },
+              { href: '/dashboard/calculador',  icon: 'bi-calculator',               name: 'Calculador',   desc: 'Prazos, juros, correcao, custas' },
+              { href: '/dashboard/legislacao',  icon: 'bi-book',                     name: 'Legislacao',   desc: 'Artigos de lei explicados' },
+              { href: '/dashboard/rotina',      icon: 'bi-calendar-week',            name: 'Rotina',       desc: 'Agenda, compromissos, fluxos' },
+              { href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet', name: 'Planilhas',    desc: 'Timesheet, controle, honorarios' },
+            ].map((ag, i) => (
+              <Link key={ag.name} href={ag.href} className="dash-agent">
+                <span className="dash-agent-num">{pad2(i + 1)}</span>
+                <div className="dash-agent-icon">
+                  <i className={`bi ${ag.icon}`} />
                 </div>
-                <div className="agent-status"><span className="dot" /> Ativo</div>
+                <div className="dash-agent-info">
+                  <div className="dash-agent-name">{ag.name}</div>
+                  <div className="dash-agent-desc">{ag.desc}</div>
+                </div>
+                <i className="bi bi-arrow-right dash-agent-arrow" />
               </Link>
             ))}
           </div>
-        </div>
+        </article>
 
-        {/* Right column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* Coluna direita: Prazos + Financeiro */}
+        <div className="dash-side-col">
 
-          {/* Deadlines */}
-          <div className="section-card">
-            <div className="section-header">
+          {/* Prazos */}
+          <article className="dash-card">
+            <div className="dash-card-head">
               <div>
-                <div className="section-title">Prazos Próximos</div>
-                <div className="section-subtitle">Monitoramento ativo</div>
+                <div className="dash-card-cap">CAPITULO IV · AGENDA</div>
+                <h2 className="dash-card-title">Prazos <em>proximos</em></h2>
+                <p className="dash-card-sub">Monitoramento ativo</p>
               </div>
-              <Link href="/dashboard/prazos" className="section-action">
+              <Link href="/dashboard/prazos" className="dash-card-action">
                 Ver todos <i className="bi bi-arrow-right" />
               </Link>
             </div>
-            <div className="deadline-list">
+            <div className="dash-prazos">
               {stats.prazosList.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
-                  <i className="bi bi-clock" style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }} />
-                  Nenhum prazo cadastrado
+                <div className="dash-empty-state compact">
+                  <i className="bi bi-clock" />
+                  <div className="dash-empty-title">Nenhum prazo</div>
+                  <div className="dash-empty-sub">Cadastre seus prazos processuais para receber alertas.</div>
                 </div>
-              ) : stats.prazosList.map(p => {
-                const dias = diasRestantes(p.data_limite)
-                return (
-                  <div key={p.titulo} className="deadline-item">
-                    <div className={`deadline-bar ${barClass(dias)}`} />
-                    <div className="deadline-info">
-                      <div className="deadline-title">{p.titulo}</div>
-                      <div className="deadline-meta">
-                        {new Date(p.data_limite + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+              ) : (
+                stats.prazosList.map((p, i) => {
+                  const dias = diasRestantes(p.data_limite)
+                  const cls = barClass(dias)
+                  return (
+                    <div key={p.titulo + i} className={`dash-prazo-row ${cls}`}>
+                      <span className="dash-prazo-bar" />
+                      <div className="dash-prazo-info">
+                        <div className="dash-prazo-title">{p.titulo}</div>
+                        <div className="dash-prazo-meta">
+                          {new Date(p.data_limite + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </div>
+                      </div>
+                      <div className="dash-prazo-days">
+                        {dias < 0 ? 'Vencido' : dias === 0 ? 'Hoje' : `${dias}d`}
                       </div>
                     </div>
-                    <div className="deadline-days">
-                      {dias < 0 ? 'Vencido' : dias === 0 ? 'Hoje!' : `${dias}d`}
-                    </div>
-                  </div>
-                )
-              })}
+                  )
+                })
+              )}
             </div>
-          </div>
+          </article>
 
-          {/* Finance */}
-          <div className="section-card">
-            <div className="section-header">
+          {/* Financeiro */}
+          <article className="dash-card">
+            <div className="dash-card-head">
               <div>
-                <div className="section-title">Financeiro</div>
-                <div className="section-subtitle">
-                  {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-                </div>
+                <div className="dash-card-cap">CAPITULO V · LIVRO-CAIXA</div>
+                <h2 className="dash-card-title">Saldo <em>atual</em></h2>
+                <p className="dash-card-sub">{new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
               </div>
             </div>
-            <div className="finance-content">
-              <div className="finance-amount" style={{ color: stats.saldo >= 0 ? '#2d6a4f' : '#c0392b' }}>{fmt(stats.saldo)}</div>
-              <div className="finance-label">Saldo atual</div>
-              <Link href="/dashboard/financeiro" className="section-action" style={{ marginTop: '12px', display: 'inline-flex' }}>
+            <div className="dash-finance">
+              <div className="dash-finance-value" style={{ color: stats.saldo >= 0 ? 'var(--success)' : 'var(--danger)' }}>
+                {fmt(stats.saldo)}
+              </div>
+              <Link href="/dashboard/financeiro" className="dash-finance-cta">
                 Ver detalhes <i className="bi bi-arrow-right" />
               </Link>
             </div>
-          </div>
+          </article>
 
         </div>
-      </div>
+      </section>
 
-      {/* Local styles — polish nivel hard */}
+      {/* ═════ STYLES ═════ */}
       <style jsx>{`
-        .stat-stagger {
-          opacity: 0;
-          transform: translateY(14px);
-          animation: stat-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          animation-delay: calc(var(--stagger, 0) * 90ms + 80ms);
+        .dash-atelier {
           position: relative;
         }
-        .stat-card-lift {
-          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                      box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                      border-color 0.28s ease;
-        }
-        .stat-card-lift:hover {
-          transform: translateY(-4px);
-          box-shadow:
-            0 18px 48px rgba(19, 32, 37, 0.14),
-            0 4px 14px rgba(19, 32, 37, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.35);
-        }
-        .stat-trend {
+
+        /* ── Serial label ─────────────────────────────────── */
+        .dash-serial {
           display: inline-flex;
           align-items: center;
-          gap: 2px;
-          font-size: 11px;
+          gap: 9px;
+          font-size: 10px;
           font-weight: 700;
-          padding: 2px 8px;
-          border-radius: 12px;
-          margin-top: 6px;
-          letter-spacing: 0.01em;
-          line-height: 1.4;
-        }
-        .stat-trend.up {
-          color: var(--success);
-          background: var(--success-light);
-        }
-        .stat-trend.flat {
+          letter-spacing: 2.4px;
+          text-transform: uppercase;
           color: var(--text-muted);
+          font-variant-numeric: tabular-nums;
+        }
+        .dash-serial-dot {
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--stone);
+          box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.5);
+          animation: dash-pulse 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* ── Header ──────────────────────────────────────── */
+        .dash-header {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          margin-bottom: 40px;
+          padding-top: 4px;
+        }
+        .dash-atelier-h1 {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 44px;
+          font-weight: 500;
+          line-height: 1.08;
+          letter-spacing: -1.2px;
+          color: var(--text-primary);
+          margin: 0;
+        }
+        .dash-atelier-h1 em {
+          font-style: italic;
+          font-weight: 400;
+          color: var(--accent);
+        }
+        .dash-header-sub {
+          font-size: 14px;
+          color: var(--text-secondary);
+          margin: 0;
+          letter-spacing: 0.1px;
+        }
+        .dash-hairline {
+          height: 1px;
+          background: linear-gradient(90deg, var(--stone) 0%, var(--stone-line) 24%, transparent 100%);
+          margin-top: 10px;
+        }
+
+        /* ── Provas (4 Roman columns) ────────────────────── */
+        .dash-provas {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0;
+          margin-bottom: 48px;
+          border-top: 1px solid var(--stone-line);
+          border-bottom: 1px solid var(--stone-line);
+          background: var(--glass);
+          backdrop-filter: blur(var(--blur)) saturate(160%);
+          -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
+          border-radius: 14px;
+          padding: 4px 0;
+          box-shadow: 0 1px 0 rgba(255,255,255,0.24) inset, 0 18px 50px rgba(19,32,37,0.06);
+        }
+
+        /* ── Grid layouts ────────────────────────────────── */
+        .dash-grid-usage {
+          display: grid;
+          grid-template-columns: 1.15fr 1fr;
+          gap: 40px;
+          margin-bottom: 48px;
+        }
+        .dash-grid-main {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 40px;
+          margin-bottom: 40px;
+        }
+        .dash-side-col {
+          display: flex;
+          flex-direction: column;
+          gap: 36px;
+        }
+
+        /* ── Cards ──────────────────────────────────────── */
+        .dash-card {
+          background: var(--glass);
+          backdrop-filter: blur(var(--blur)) saturate(160%);
+          -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
+          border: 1px solid var(--stone-line);
+          border-radius: 18px;
+          padding: 28px 30px 26px;
+          position: relative;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                      box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                      border-color 0.35s ease;
+          box-shadow: 0 1px 0 rgba(255,255,255,0.24) inset, 0 18px 50px rgba(19,32,37,0.06);
+        }
+        .dash-card:hover {
+          transform: translateY(-3px);
+          border-color: var(--stone);
+          box-shadow: 0 1px 0 rgba(255,255,255,0.32) inset, 0 28px 64px rgba(19,32,37,0.10);
+        }
+        .dash-card-head {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+          margin-bottom: 22px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid var(--stone-line);
+        }
+        .dash-card-cap {
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: 2.2px;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          margin-bottom: 8px;
+        }
+        .dash-card-title {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 24px;
+          font-weight: 500;
+          line-height: 1.15;
+          letter-spacing: -0.6px;
+          color: var(--text-primary);
+          margin: 0 0 6px;
+        }
+        .dash-card-title em {
+          font-style: italic;
+          font-weight: 400;
+          color: var(--accent);
+        }
+        .dash-card-sub {
+          font-size: 12.5px;
+          color: var(--text-muted);
+          margin: 0;
+          letter-spacing: 0.1px;
+        }
+        .dash-card-action {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 11.5px;
+          font-weight: 700;
+          letter-spacing: 0.6px;
+          text-transform: uppercase;
+          color: var(--accent);
+          text-decoration: none;
+          transition: gap 0.22s ease, color 0.22s ease;
+          white-space: nowrap;
+        }
+        .dash-card-action:hover {
+          gap: 11px;
+          color: var(--text-primary);
+        }
+
+        /* ── Uso dos Agentes — bars ──────────────────────── */
+        .dash-bars {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .dash-bar-row {
+          display: grid;
+          grid-template-columns: 28px 100px 1fr 36px;
+          align-items: center;
+          gap: 16px;
+          padding: 8px 10px;
+          margin-inline: -10px;
+          border-radius: 8px;
+          text-decoration: none;
+          transition: background 0.22s ease;
+        }
+        .dash-bar-row:hover {
           background: var(--hover);
         }
-        .stat-trend :global(i) {
+        .dash-bar-num {
+          font-family: var(--font-playfair), Georgia, serif;
           font-size: 13px;
-          margin-right: -1px;
+          font-style: italic;
+          color: var(--text-muted);
+          text-align: right;
+          font-variant-numeric: tabular-nums;
         }
-        .analytics-card-lift {
-          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                      box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        .dash-bar-label {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--text-primary);
+          text-align: right;
+          letter-spacing: 0.1px;
         }
-        .analytics-card-lift:hover {
-          transform: translateY(-3px);
-          box-shadow:
-            0 16px 42px rgba(19, 32, 37, 0.12),
-            0 3px 12px rgba(19, 32, 37, 0.05);
+        .dash-bar-track {
+          height: 4px;
+          border-radius: 2px;
+          background: var(--stone-soft);
+          overflow: hidden;
+          position: relative;
         }
-        @keyframes stat-fade-up {
-          0% {
-            opacity: 0;
-            transform: translateY(14px);
+        .dash-bar-fill {
+          position: absolute;
+          inset: 0 auto 0 0;
+          background: linear-gradient(90deg, var(--accent), var(--stone));
+          border-radius: 2px;
+          transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dash-bar-count {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 18px;
+          font-style: italic;
+          color: var(--accent);
+          text-align: right;
+          font-variant-numeric: tabular-nums;
+          font-weight: 500;
+        }
+
+        /* ── Atividade recente ───────────────────────────── */
+        .dash-activity {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
+        .dash-activity-row {
+          display: grid;
+          grid-template-columns: 24px 36px 1fr auto;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 10px;
+          margin-inline: -10px;
+          border-bottom: 1px solid var(--stone-line);
+          text-decoration: none;
+          transition: background 0.22s ease, padding 0.22s ease;
+        }
+        .dash-activity-row:last-child {
+          border-bottom: none;
+        }
+        .dash-activity-row:hover {
+          background: var(--hover);
+          padding-left: 14px;
+        }
+        .dash-activity-num {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 13px;
+          font-style: italic;
+          color: var(--text-muted);
+          text-align: center;
+          letter-spacing: 0.3px;
+        }
+        .dash-activity-icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          background: var(--accent-bg);
+          border: 1px solid var(--stone-line);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          color: var(--accent);
+          flex-shrink: 0;
+        }
+        .dash-activity-info {
+          min-width: 0;
+          overflow: hidden;
+        }
+        .dash-activity-name {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-primary);
+          letter-spacing: 0.1px;
+        }
+        .dash-activity-snippet {
+          font-size: 12px;
+          color: var(--text-muted);
+          margin-top: 2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .dash-activity-time {
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--text-muted);
+          flex-shrink: 0;
+          font-variant-numeric: tabular-nums;
+        }
+
+        /* ── Agentes grid ─────────────────────────────────── */
+        .dash-agents-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+        .dash-agent {
+          display: grid;
+          grid-template-columns: 26px 38px 1fr 16px;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 16px;
+          border: 1px solid var(--stone-line);
+          border-radius: 12px;
+          text-decoration: none;
+          background: transparent;
+          transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        .dash-agent::before {
+          content: '';
+          position: absolute;
+          inset: 0 auto 0 0;
+          width: 3px;
+          background: linear-gradient(180deg, var(--accent), var(--stone));
+          opacity: 0;
+          transition: opacity 0.28s ease;
+        }
+        .dash-agent:hover {
+          background: var(--hover);
+          border-color: var(--stone);
+          transform: translateX(3px);
+        }
+        .dash-agent:hover::before {
+          opacity: 1;
+        }
+        .dash-agent-num {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 13px;
+          font-style: italic;
+          color: var(--text-muted);
+          font-variant-numeric: tabular-nums;
+          text-align: right;
+        }
+        .dash-agent-icon {
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          background: var(--accent-bg);
+          border: 1px solid var(--stone-line);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 15px;
+          color: var(--accent);
+          flex-shrink: 0;
+          transition: background 0.28s ease, color 0.28s ease;
+        }
+        .dash-agent:hover .dash-agent-icon {
+          background: var(--accent);
+          color: var(--bg-base);
+        }
+        .dash-agent-info {
+          min-width: 0;
+        }
+        .dash-agent-name {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: var(--text-primary);
+          letter-spacing: 0.1px;
+        }
+        .dash-agent-desc {
+          font-size: 11.5px;
+          color: var(--text-muted);
+          margin-top: 2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .dash-agent-arrow {
+          font-size: 13px;
+          color: var(--text-muted);
+          opacity: 0;
+          transform: translateX(-4px);
+          transition: opacity 0.28s ease, transform 0.28s ease, color 0.28s ease;
+        }
+        .dash-agent:hover .dash-agent-arrow {
+          opacity: 1;
+          transform: translateX(0);
+          color: var(--accent);
+        }
+
+        /* ── Prazos ──────────────────────────────────────── */
+        .dash-prazos {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .dash-prazo-row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 12px 14px;
+          border: 1px solid var(--stone-line);
+          border-radius: 10px;
+          background: var(--hover);
+        }
+        .dash-prazo-bar {
+          width: 3px;
+          height: 36px;
+          border-radius: 2px;
+          background: var(--stone);
+        }
+        .dash-prazo-row.critical .dash-prazo-bar { background: var(--danger); }
+        .dash-prazo-row.warning .dash-prazo-bar { background: var(--warning); }
+        .dash-prazo-row.normal .dash-prazo-bar { background: var(--success); }
+        .dash-prazo-info { flex: 1; min-width: 0; }
+        .dash-prazo-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-primary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .dash-prazo-meta {
+          font-size: 11px;
+          color: var(--text-muted);
+          margin-top: 2px;
+        }
+        .dash-prazo-days {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 17px;
+          font-style: italic;
+          color: var(--accent);
+          font-variant-numeric: tabular-nums;
+          font-weight: 500;
+          flex-shrink: 0;
+        }
+        .dash-prazo-row.critical .dash-prazo-days { color: var(--danger); }
+
+        /* ── Finance ─────────────────────────────────────── */
+        .dash-finance {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .dash-finance-value {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 36px;
+          font-weight: 500;
+          letter-spacing: -1px;
+          font-variant-numeric: tabular-nums;
+        }
+        .dash-finance-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 11.5px;
+          font-weight: 700;
+          letter-spacing: 0.6px;
+          text-transform: uppercase;
+          color: var(--accent);
+          text-decoration: none;
+          transition: gap 0.22s ease, color 0.22s ease;
+        }
+        .dash-finance-cta:hover {
+          gap: 11px;
+          color: var(--text-primary);
+        }
+
+        /* ── Empty / skeleton states ─────────────────────── */
+        .dash-empty-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 38px 20px 10px;
+          text-align: center;
+          gap: 6px;
+        }
+        .dash-empty-state.compact { padding: 22px 12px 6px; }
+        .dash-empty-state i {
+          font-size: 28px;
+          color: var(--stone);
+          margin-bottom: 4px;
+        }
+        .dash-empty-title {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-style: italic;
+          font-size: 16px;
+          color: var(--text-primary);
+        }
+        .dash-empty-sub {
+          font-size: 12.5px;
+          color: var(--text-muted);
+          max-width: 280px;
+          line-height: 1.55;
+        }
+        .dash-empty-cta {
+          margin-top: 12px;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 10px 18px;
+          background: var(--accent);
+          color: var(--bg-base);
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.3px;
+          text-decoration: none;
+          transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+        .dash-empty-cta:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 12px 28px rgba(19,32,37,0.18);
+        }
+        .dash-skel, .dash-skel-row {
+          height: 38px;
+          border-radius: 8px;
+          background: linear-gradient(90deg, var(--hover), var(--stone-soft), var(--hover));
+          background-size: 200% 100%;
+          animation: dash-shimmer 1.6s ease-in-out infinite;
+          margin-bottom: 12px;
+        }
+        .dash-skel-row:last-child { margin-bottom: 0; }
+
+        @keyframes dash-shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+        @keyframes dash-pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.55); }
+          50% { box-shadow: 0 0 0 6px rgba(191, 166, 142, 0); }
+        }
+
+        /* ── Responsive ──────────────────────────────────── */
+        @media (max-width: 1100px) {
+          .dash-grid-usage,
+          .dash-grid-main {
+            grid-template-columns: 1fr;
+            gap: 32px;
           }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
+          .dash-agents-grid {
+            grid-template-columns: 1fr;
           }
         }
-        @media (max-width: 640px) {
-          .stat-trend {
-            font-size: 10px;
-            padding: 2px 6px;
+        @media (max-width: 760px) {
+          .dash-atelier-h1 { font-size: 34px; }
+          .dash-provas {
+            grid-template-columns: 1fr 1fr;
           }
+          .dash-card { padding: 22px 20px; }
+          .dash-card-title { font-size: 20px; }
+          .dash-bar-row {
+            grid-template-columns: 22px 80px 1fr 30px;
+            gap: 10px;
+          }
+          .dash-bar-count { font-size: 15px; }
+          .dash-finance-value { font-size: 30px; }
         }
       `}</style>
-
-      {/* Quick Actions */}
-      <div className="quick-actions animate-in delay-6">
-        <div className="quick-actions-title">Ações Rápidas</div>
-        <div className="actions-grid">
-          <Link href="/dashboard/resumidor" className="action-card">
-            <div className="action-icon"><i className="bi bi-share" /></div>
-            <div className="action-name">Analisar Documento</div>
-            <div className="action-desc">Cole um contrato, petição ou acórdão e obtenha um resumo completo com IA.</div>
-            <div className="action-link">Abrir agente <i className="bi bi-arrow-right" /></div>
-          </Link>
-          <Link href="/dashboard/prazos" className="action-card">
-            <div className="action-icon"><i className="bi bi-pause-circle" /></div>
-            <div className="action-name">Gerenciar Prazos</div>
-            <div className="action-desc">Visualize e adicione prazos processuais com alertas automáticos.</div>
-            <div className="action-link">Ver prazos <i className="bi bi-arrow-right" /></div>
-          </Link>
-          <Link href="/dashboard/configuracoes" className="action-card">
-            <div className="action-icon"><i className="bi bi-person-circle" /></div>
-            <div className="action-name">Meu Perfil</div>
-            <div className="action-desc">Atualize suas informações acadêmicas, preferências e dados de acesso.</div>
-            <div className="action-link">Abrir perfil <i className="bi bi-arrow-right" /></div>
-          </Link>
-        </div>
-      </div>
-
     </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * ProvaCell — celula editorial de indicador (I, II, III, IV)
+ * ──────────────────────────────────────────────────────────────────────────── */
+function ProvaCell({
+  roman, value, moneyValue, label, caption, href, warning,
+}: {
+  roman: string
+  value?: number
+  moneyValue?: string
+  label: string
+  caption: string
+  href: string
+  warning?: boolean
+}) {
+  return (
+    <Link href={href} className="prova-cell">
+      <span className="prova-roman">{roman}</span>
+      {moneyValue !== undefined ? (
+        <div className="prova-value money">{moneyValue}</div>
+      ) : (
+        <div className="prova-value">{value ?? 0}</div>
+      )}
+      <div className="prova-label">{label}</div>
+      <div className={`prova-caption ${warning ? 'warn' : ''}`}>{caption}</div>
+
+      <style jsx>{`
+        .prova-cell {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2px;
+          padding: 26px 28px;
+          text-decoration: none;
+          border-right: 1px solid var(--stone-line);
+          transition: background 0.28s ease;
+          position: relative;
+        }
+        .prova-cell:last-child {
+          border-right: none;
+        }
+        .prova-cell:hover {
+          background: var(--hover);
+        }
+        .prova-roman {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 13px;
+          font-style: italic;
+          color: var(--text-muted);
+          letter-spacing: 1.6px;
+          margin-bottom: 8px;
+        }
+        .prova-value {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 44px;
+          font-weight: 500;
+          color: var(--text-primary);
+          line-height: 1;
+          letter-spacing: -1.4px;
+          font-variant-numeric: tabular-nums;
+        }
+        .prova-value.money {
+          font-size: 26px;
+          letter-spacing: -0.6px;
+          line-height: 1.1;
+          padding-top: 8px;
+        }
+        .prova-label {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 1.4px;
+          text-transform: uppercase;
+          color: var(--text-secondary);
+          margin-top: 10px;
+        }
+        .prova-caption {
+          font-size: 12px;
+          color: var(--text-muted);
+          margin-top: 2px;
+        }
+        .prova-caption.warn {
+          color: var(--warning);
+          font-weight: 600;
+        }
+        @media (max-width: 760px) {
+          .prova-cell { padding: 20px 18px; }
+          .prova-value { font-size: 34px; }
+          .prova-value.money { font-size: 20px; }
+          .prova-cell:nth-child(2) { border-right: none; }
+        }
+      `}</style>
+    </Link>
   )
 }
