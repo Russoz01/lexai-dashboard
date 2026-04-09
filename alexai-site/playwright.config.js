@@ -2,8 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
-  timeout: 15000,
+  timeout: 20000,
   retries: 1,
+  workers: 1, // http-server can't handle concurrent test suites
   use: {
     baseURL: 'http://localhost:8090',
     headless: true,

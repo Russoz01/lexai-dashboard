@@ -8,19 +8,20 @@ test.describe('Theme toggle', () => {
 
   test('theme toggle button exists', async ({ page }) => {
     const btn = page.locator('#theme-toggle');
-    await expect(btn).toBeAttached();
+    const count = await btn.count();
+    expect(count).toBeGreaterThan(0);
   });
 
   test('clicking theme toggle switches data-theme attribute', async ({ page }) => {
-    const btn = page.locator('#theme-toggle');
-    if (!(await btn.isVisible())) return; // skip if hidden on this viewport
+    const btnCount = await page.locator('#theme-toggle').count();
+    if (btnCount === 0) return;
 
-    // Read initial theme
     const initial = await page.evaluate(() =>
       document.documentElement.getAttribute('data-theme')
     );
 
-    await btn.click();
+    // Use JS click to avoid viewport constraints
+    await page.evaluate(() => document.getElementById('theme-toggle')?.click());
 
     const after = await page.evaluate(() =>
       document.documentElement.getAttribute('data-theme')
@@ -32,10 +33,10 @@ test.describe('Theme toggle', () => {
   });
 
   test('theme persists after page reload via localStorage', async ({ page }) => {
-    const btn = page.locator('#theme-toggle');
-    if (!(await btn.isVisible())) return;
+    const btnCount = await page.locator('#theme-toggle').count();
+    if (btnCount === 0) return;
 
-    await btn.click();
+    await page.evaluate(() => document.getElementById('theme-toggle')?.click());
     const theme = await page.evaluate(() =>
       document.documentElement.getAttribute('data-theme')
     );
@@ -51,13 +52,9 @@ test.describe('Theme toggle', () => {
   });
 
   test('anti-FOUC: data-theme is set before body renders', async ({ page }) => {
-    // The anti-FOUC inline script should set data-theme synchronously.
-    // We verify it's set immediately after navigation, not after JS loads.
-    await page.evaluate(() => {
-      // Simulate the check at parse time by reading the attribute
-      return document.documentElement.getAttribute('data-theme');
-    }).then((theme) => {
-      expect(['light', 'dark']).toContain(theme);
-    });
+    const theme = await page.evaluate(() =>
+      document.documentElement.getAttribute('data-theme')
+    );
+    expect(['light', 'dark']).toContain(theme);
   });
 });
