@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 const PLANOS_BASE = [
   {
     id: 'starter', nome: 'Starter', tagline: 'Para estudantes e iniciantes',
-    precoMensal: 59, precoAnual: 48,
+    precoMensal: 89, precoAnual: 75,
     stripeLink: 'https://buy.stripe.com/test_dRm4gy6gG1Nb2T14ZA2oE01',
     economiaReal: 'Economize 12h por semana em pesquisas',
     features: [
@@ -20,7 +20,7 @@ const PLANOS_BASE = [
   },
   {
     id: 'pro', nome: 'Pro', tagline: 'Para advogados autonomos',
-    precoMensal: 119, precoAnual: 98,
+    precoMensal: 179, precoAnual: 150,
     stripeLink: 'https://buy.stripe.com/test_9B69ASawWajH5192Rs2oE02',
     economiaReal: 'Economia de R$ 3.200/mes em horas de trabalho',
     features: [
@@ -35,11 +35,11 @@ const PLANOS_BASE = [
   },
   {
     id: 'enterprise', nome: 'Enterprise', tagline: 'Para escritorios e bancas',
-    precoMensal: 239, precoAnual: 196,
+    precoMensal: 399, precoAnual: 335,
     stripeLink: 'https://buy.stripe.com/test_cNicN434u0J7fFN1No2oE03',
     economiaReal: 'ROI de 8x sobre o investimento mensal',
     features: [
-      { label: 'Todos os 10 agentes + exclusivos', disponivel: true },
+      { label: 'Todos os 12 agentes + exclusivos', disponivel: true },
       { label: 'Analises ilimitadas', disponivel: true },
       { label: 'Historico ilimitado e backup em nuvem', disponivel: true },
       { label: 'Suporte prioritario via WhatsApp 24h', disponivel: true },
@@ -181,7 +181,7 @@ export default function PlanosPage() {
             padding: '3px 10px', borderRadius: 20,
             animation: 'fadeIn 0.2s',
           }}>
-            Economize 18%
+            Economize 16%
           </span>
         )}
       </div>
@@ -249,7 +249,7 @@ export default function PlanosPage() {
                   {ciclo === 'anual' && (
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
                       <span style={{ textDecoration: 'line-through', marginRight: 6 }}>R$ {plano.precoMensal}</span>
-                      <span style={{ color: 'var(--success)', fontWeight: 600 }}>-18% no anual</span>
+                      <span style={{ color: 'var(--success)', fontWeight: 600 }}>-16% no anual</span>
                     </div>
                   )}
                   {/* Economia real — value driver */}

@@ -499,14 +499,13 @@ export default function DashboardPage() {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 0;
-          margin-bottom: 48px;
-          border-top: 1px solid var(--stone-line);
-          border-bottom: 1px solid var(--stone-line);
+          margin-bottom: 56px;
+          border: 1px solid var(--stone-line);
           background: var(--glass);
           backdrop-filter: blur(var(--blur)) saturate(160%);
           -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
-          border-radius: 14px;
-          padding: 4px 0;
+          border-radius: 16px;
+          padding: 8px 0;
           box-shadow: 0 1px 0 rgba(255,255,255,0.24) inset, 0 18px 50px rgba(19,32,37,0.06);
         }
 
@@ -514,19 +513,19 @@ export default function DashboardPage() {
         .dash-grid-usage {
           display: grid;
           grid-template-columns: 1.15fr 1fr;
-          gap: 40px;
-          margin-bottom: 48px;
+          gap: 48px;
+          margin-bottom: 56px;
         }
         .dash-grid-main {
           display: grid;
           grid-template-columns: 1.2fr 1fr;
-          gap: 40px;
-          margin-bottom: 40px;
+          gap: 48px;
+          margin-bottom: 48px;
         }
         .dash-side-col {
           display: flex;
           flex-direction: column;
-          gap: 36px;
+          gap: 48px;
         }
 
         /* ── Cards ──────────────────────────────────────── */
