@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -161,6 +161,30 @@ export default function LoginPage() {
   const anyLoading = oauthLoading !== null || emailLoading || success
   const strength = useMemo(() => scorePassword(senha), [senha])
 
+  // Cursor-follow glow nos dois paineis
+  const leftRef = useRef<HTMLDivElement>(null)
+  const asideRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+    const attach = (el: HTMLElement | null) => {
+      if (!el) return () => {}
+      const onMove = (e: MouseEvent) => {
+        const rect = el.getBoundingClientRect()
+        el.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`)
+        el.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`)
+      }
+      el.addEventListener('mousemove', onMove)
+      return () => el.removeEventListener('mousemove', onMove)
+    }
+    const offLeft = attach(leftRef.current)
+    const offAside = attach(asideRef.current)
+    return () => {
+      offLeft()
+      offAside()
+    }
+  }, [])
+
   function toggleMode() {
     setMode((m) => (m === 'login' ? 'signup' : 'login'))
     setErro('')
@@ -226,10 +250,13 @@ export default function LoginPage() {
 
   return (
     <main className="ax-login">
+      <div className="ax-login-glow" aria-hidden />
+
       {/* ══════════════ LEFT — Form ══════════════ */}
-      <section className="ax-login-form-col">
+      <section className="ax-login-form-col" ref={leftRef}>
+        <div className="ax-login-cursor-glow" aria-hidden />
         <Link href="/" className="ax-login-home">
-          <span aria-hidden>←</span>
+          <span aria-hidden className="ax-home-arrow">←</span>
           <span>voltar ao site</span>
         </Link>
 
@@ -384,7 +411,8 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════ RIGHT — Manifesto (desktop only) ══════════════ */}
-      <aside className="ax-login-aside" aria-hidden="true">
+      <aside className="ax-login-aside" aria-hidden="true" ref={asideRef}>
+        <div className="ax-login-cursor-glow" aria-hidden />
         <div className="ax-aside-inner">
           <div>
             <div className="ax-serial">Atelier · MMXXVI</div>
@@ -400,8 +428,8 @@ export default function LoginPage() {
           </div>
 
           <div className="ax-values">
-            {VALUE_PROPS.map((v) => (
-              <div key={v.title} className="ax-value">
+            {VALUE_PROPS.map((v, i) => (
+              <div key={v.title} className="ax-value" style={{ animationDelay: `${0.35 + i * 0.08}s` }}>
                 <div className="ax-value-num">{v.n}</div>
                 <div>
                   <div className="ax-value-title">{v.title}</div>
@@ -450,6 +478,34 @@ export default function LoginPage() {
             radial-gradient(ellipse 50% 40% at 12% 10%, var(--stone-soft), transparent 68%),
             radial-gradient(ellipse 60% 55% at 88% 100%, rgba(68,55,43,0.10), transparent 70%);
         }
+        .ax-login-glow {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 1;
+          background: radial-gradient(circle at 50% 0%, rgba(191, 166, 142, 0.08), transparent 60%);
+          animation: ax-breathe 7s ease-in-out infinite;
+        }
+        .ax-login-cursor-glow {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: radial-gradient(
+            circle 360px at var(--mx, 50%) var(--my, 50%),
+            rgba(191, 166, 142, 0.07),
+            transparent 55%
+          );
+          opacity: 0;
+          transition: opacity 0.5s ease;
+        }
+        .ax-login-form-col:hover .ax-login-cursor-glow,
+        .ax-login-aside:hover .ax-login-cursor-glow {
+          opacity: 1;
+        }
+        @keyframes ax-breathe {
+          0%, 100% { opacity: 1; }
+          50%      { opacity: 0.6; }
+        }
 
         .ax-italic {
           font-family: var(--font-playfair, 'Playfair Display'), Georgia, serif;
@@ -476,6 +532,11 @@ export default function LoginPage() {
           justify-content: center;
           padding: 80px 48px 48px;
           min-height: 100vh;
+          overflow: hidden;
+        }
+        .ax-login-form-col > *:not(.ax-login-cursor-glow) {
+          position: relative;
+          z-index: 2;
         }
         .ax-login-home {
           position: absolute;
@@ -483,22 +544,28 @@ export default function LoginPage() {
           left: 48px;
           display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           font-size: 12px;
           color: var(--text-muted);
           text-decoration: none;
           letter-spacing: 0.3px;
-          transition: color 0.2s ease;
+          transition: color 0.3s ease, gap 0.3s ease;
+          z-index: 3;
         }
-        .ax-login-home:hover { color: var(--accent); }
+        .ax-login-home .ax-home-arrow {
+          display: inline-block;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ax-login-home:hover { color: var(--accent); gap: 14px; }
+        .ax-login-home:hover .ax-home-arrow { transform: translateX(-4px); }
         .ax-form-wrap {
           width: 100%;
           animation: ax-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         .ax-logo-mark {
-          width: 44px;
-          height: 44px;
+          width: 46px;
+          height: 46px;
           border: 1px solid var(--stone-line);
           border-radius: 2px;
           display: flex;
@@ -507,6 +574,26 @@ export default function LoginPage() {
           background: var(--stone-soft);
           color: var(--text-primary);
           flex-shrink: 0;
+          position: relative;
+          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+        }
+        .ax-logo-mark::after {
+          content: '';
+          position: absolute;
+          inset: -1px;
+          border: 1px solid var(--accent);
+          border-radius: 2px;
+          opacity: 0;
+          transform: scale(1.12);
+          transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .ax-login-brand:hover .ax-logo-mark {
+          transform: rotate(-4deg);
+          border-color: var(--accent);
+        }
+        .ax-login-brand:hover .ax-logo-mark::after {
+          opacity: 1;
+          transform: scale(1);
         }
         .ax-login-brand {
           display: flex;
@@ -546,7 +633,7 @@ export default function LoginPage() {
         /* ── OAuth ──────────────────────────────────────── */
         .ax-oauth {
           width: 100%;
-          height: 50px;
+          height: 52px;
           background: transparent;
           border: 1px solid var(--stone-line);
           display: flex;
@@ -559,11 +646,25 @@ export default function LoginPage() {
           font-family: inherit;
           cursor: pointer;
           letter-spacing: 0.2px;
-          transition: background 0.2s ease, border-color 0.2s ease;
+          transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+        .ax-oauth::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(120deg, transparent 30%, rgba(191, 166, 142, 0.12) 50%, transparent 70%);
+          transform: translateX(-100%);
+          transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .ax-oauth:hover:not(:disabled) {
           background: var(--stone-soft);
           border-color: var(--accent);
+          transform: translateY(-1px);
+        }
+        .ax-oauth:hover:not(:disabled)::after {
+          transform: translateX(100%);
         }
         .ax-oauth:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -605,7 +706,7 @@ export default function LoginPage() {
         .ax-field-wrap { position: relative; }
         .ax-input {
           width: 100%;
-          height: 48px;
+          height: 50px;
           padding: 12px 16px;
           background: var(--input-bg);
           border: 1px solid var(--stone-line);
@@ -613,15 +714,16 @@ export default function LoginPage() {
           font-size: 14px;
           font-family: inherit;
           outline: none;
-          transition: border-color 0.2s ease, background 0.2s ease;
+          transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
           -webkit-appearance: none;
           border-radius: 0;
         }
         .ax-input::placeholder { color: var(--text-muted); opacity: 0.7; }
-        .ax-input:hover { border-color: var(--accent); }
+        .ax-input:hover { border-color: rgba(191, 166, 142, 0.42); }
         .ax-input:focus {
           border-color: var(--accent);
           box-shadow: 0 0 0 3px var(--stone-soft);
+          transform: translateY(-1px);
         }
         .ax-input[aria-invalid="true"] {
           border-color: var(--danger);
@@ -665,7 +767,7 @@ export default function LoginPage() {
         /* ── Submit ─────────────────────────────────────── */
         .ax-submit {
           width: 100%;
-          height: 52px;
+          height: 54px;
           margin-top: 8px;
           background: var(--text-primary);
           color: var(--bg-base);
@@ -679,14 +781,30 @@ export default function LoginPage() {
           align-items: center;
           justify-content: center;
           gap: 10px;
-          transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+          position: relative;
+          overflow: hidden;
+          transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.4s ease;
         }
+        .ax-submit::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(120deg, transparent 20%, rgba(191, 166, 142, 0.22) 50%, transparent 80%);
+          transform: translateX(-100%);
+          transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ax-submit > * { position: relative; z-index: 1; }
         .ax-submit:hover:not(:disabled) {
           background: var(--accent);
           border-color: var(--accent);
           color: var(--bg-base);
-          transform: translateY(-1px);
+          transform: translateY(-2px);
+          box-shadow: 0 14px 42px rgba(68, 55, 43, 0.28);
         }
+        .ax-submit:hover:not(:disabled)::before {
+          transform: translateX(100%);
+        }
+        .ax-submit:active:not(:disabled) { transform: translateY(0); }
         .ax-submit:disabled { opacity: 0.55; cursor: not-allowed; }
         .ax-submit--success { background: var(--success); border-color: var(--success); }
 
@@ -733,6 +851,11 @@ export default function LoginPage() {
           background: var(--bg-raise);
           border-left: 1px solid var(--stone-line);
           min-height: 100vh;
+          overflow: hidden;
+        }
+        .ax-login-aside > *:not(.ax-login-cursor-glow) {
+          position: relative;
+          z-index: 2;
         }
         .ax-login-aside::before {
           content: '';
@@ -777,7 +900,12 @@ export default function LoginPage() {
           gap: 22px;
           padding: 22px 0;
           border-bottom: 1px solid var(--stone-line);
+          opacity: 0;
+          transform: translateY(14px);
+          animation: ax-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          transition: padding 0.3s ease;
         }
+        .ax-value:hover { padding-left: 8px; }
         .ax-value:last-child { border-bottom: none; }
         .ax-value-num {
           font-family: var(--font-playfair), Georgia, serif;

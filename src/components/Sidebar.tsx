@@ -27,6 +27,7 @@ const nav: { title: string; items: NavItem[] }[] = [
   {
     title: 'Agentes IA',
     items: [
+      { href: '/dashboard/chat',        icon: 'bi-chat-square-dots',  label: 'Chat'        },
       { href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text', label: 'Resumidor'   },
       { href: '/dashboard/redator',     icon: 'bi-pencil-square',     label: 'Redator'     },
       { href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark',  label: 'Pesquisador' },

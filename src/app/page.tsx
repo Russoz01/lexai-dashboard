@@ -1,14 +1,16 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 
 /* ----------------------------------------------------------------------------
  * LexAI — Atelier Landing
  *
- * Editorial minimalism. No gradients, no glow, no noise. The page earns its
- * premium feel from type, whitespace and a single warm-stone accent over the
- * deep navy base. Both themes route through the CSS custom properties defined
- * in globals.css, so the same markup reads correctly in dark and light.
+ * Editorial minimalism com micro-interacoes de precisao. O premium vem do tipo,
+ * whitespace e um unico stone-accent sobre o deep navy. Tres camadas de
+ * animacao: (a) entrada sequencial do hero, (b) scroll-reveal com stagger
+ * por IntersectionObserver, (c) cursor-follow glow no hero card + marquee
+ * editorial no corte entre secoes. Zero dependencias externas.
  * -------------------------------------------------------------------------- */
 
 const shell = {
@@ -129,14 +131,73 @@ function BrandMark() {
 }
 
 /* --------------------------------------------------------------------------
+ * Scroll-reveal hook — IntersectionObserver-based.
+ * Add `data-reveal` to any element. Once visible it gains `is-revealed`.
+ * Stagger children with `style={{ '--reveal-delay': '...' }}`.
+ * ------------------------------------------------------------------------ */
+
+function useScrollReveal() {
+  useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const nodes = document.querySelectorAll<HTMLElement>('[data-reveal]')
+    if (prefersReduced) {
+      nodes.forEach((n) => n.classList.add('is-revealed'))
+      return
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed')
+            io.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.14, rootMargin: '0px 0px -80px 0px' },
+    )
+    nodes.forEach((n) => io.observe(n))
+    return () => io.disconnect()
+  }, [])
+}
+
+/* --------------------------------------------------------------------------
  * Page
  * ------------------------------------------------------------------------ */
 
 export default function LandingPage() {
+  useScrollReveal()
+
+  // Nav shadow appears after 24px of scroll
+  const [navScrolled, setNavScrolled] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setNavScrolled(window.scrollY > 24)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Cursor-follow glow on hero card
+  const heroCardRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = heroCardRef.current
+    if (!el) return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+    const onMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / rect.width) * 100
+      const y = ((e.clientY - rect.top) / rect.height) * 100
+      el.style.setProperty('--mx', `${x}%`)
+      el.style.setProperty('--my', `${y}%`)
+    }
+    el.addEventListener('mousemove', onMove)
+    return () => el.removeEventListener('mousemove', onMove)
+  }, [])
+
   return (
     <div className="ax-root">
       {/* ── NAV ────────────────────────────────────────────────────────── */}
-      <header className="ax-nav">
+      <header className={`ax-nav${navScrolled ? ' ax-nav--scrolled' : ''}`}>
         <div style={{ ...shell, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 40px' }}>
           <BrandMark />
           <nav className="ax-nav-links">
@@ -155,24 +216,32 @@ export default function LandingPage() {
           <div className="ax-hero-left">
             <SerialLabel>N° 001 · LEXAI · MMXXVI</SerialLabel>
             <h1 className="ax-hero-title">
-              Um escritorio juridico
+              <span className="ax-line" style={{ '--d': '0ms' } as React.CSSProperties}>Um escritorio juridico</span>
               <br />
-              <em className="ax-italic">feito a mao</em>,
+              <span className="ax-line" style={{ '--d': '140ms' } as React.CSSProperties}>
+                <em className="ax-italic">feito a mao</em>,
+              </span>
               <br />
-              <span className="ax-hero-muted">potencializado por inteligencia artificial.</span>
+              <span className="ax-line ax-hero-muted" style={{ '--d': '280ms' } as React.CSSProperties}>
+                potencializado por inteligencia artificial.
+              </span>
             </h1>
-            <p className="ax-hero-lede">
+            <p className="ax-hero-lede ax-line" style={{ '--d': '420ms' } as React.CSSProperties}>
               Dez agentes treinados no ordenamento juridico brasileiro. Cada um afinado como
               uma ferramenta de precisao — documentos, jurisprudencia, calculos, pecas
               processuais. Ninguem se perde entre abas.
             </p>
-            <div className="ax-hero-cta-row">
-              <Link href="/login" className="ax-cta-primary ax-cta-large">Reservar acesso</Link>
+            <div className="ax-hero-cta-row ax-line" style={{ '--d': '560ms' } as React.CSSProperties}>
+              <Link href="/login" className="ax-cta-primary ax-cta-large">
+                <span>Reservar acesso</span>
+                <span className="ax-cta-arrow" aria-hidden>→</span>
+              </Link>
               <a href="#agentes" className="ax-cta-ghost">Conhecer os agentes &nbsp;→</a>
             </div>
           </div>
           <aside className="ax-hero-right">
-            <div className="ax-hero-card">
+            <div className="ax-hero-card" ref={heroCardRef}>
+              <div className="ax-hero-card-glow" aria-hidden />
               <div className="ax-hero-card-head">
                 <span className="ax-serial">Edicao limitada</span>
                 <span className="ax-serial">MMXXVI</span>
@@ -191,11 +260,31 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── MARQUEE editorial — faixa em movimento constante ───────────── */}
+      <section className="ax-marquee-wrap" aria-hidden="true">
+        <div className="ax-marquee">
+          <div className="ax-marquee-track">
+            {[...Array(2)].map((_, k) => (
+              <div key={k} className="ax-marquee-inner">
+                <span>Estrategia</span><span className="ax-marquee-dot">◆</span>
+                <span><em className="ax-italic">Precisao</em></span><span className="ax-marquee-dot">◆</span>
+                <span>Oficio</span><span className="ax-marquee-dot">◆</span>
+                <span><em className="ax-italic">Atelier</em></span><span className="ax-marquee-dot">◆</span>
+                <span>Jurisprudencia</span><span className="ax-marquee-dot">◆</span>
+                <span><em className="ax-italic">Feito a mao</em></span><span className="ax-marquee-dot">◆</span>
+                <span>MMXXVI</span><span className="ax-marquee-dot">◆</span>
+                <span><em className="ax-italic">Ituverava, SP</em></span><span className="ax-marquee-dot">◆</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── PROVAS (serialized stats) ──────────────────────────────────── */}
       <section style={{ ...shell, padding: '80px 40px' }}>
-        <div className="ax-provas">
-          {provas.map((p) => (
-            <div key={p.label} className="ax-prova">
+        <div className="ax-provas" data-reveal>
+          {provas.map((p, i) => (
+            <div key={p.label} className="ax-prova" style={{ '--reveal-delay': `${i * 90}ms` } as React.CSSProperties}>
               <div className="ax-prova-num">{p.n}</div>
               <div className="ax-prova-metric">{p.metric}</div>
               <div className="ax-prova-label">{p.label}</div>
@@ -206,7 +295,7 @@ export default function LandingPage() {
 
       {/* ── AGENTES ────────────────────────────────────────────────────── */}
       <section id="agentes" style={{ ...shell, padding: '140px 40px 120px' }}>
-        <div className="ax-section-head">
+        <div className="ax-section-head" data-reveal>
           <SerialLabel>Capitulo I</SerialLabel>
           <h2 className="ax-section-title">
             Dez agentes. <em className="ax-italic">Um unico gabinete.</em>
@@ -219,14 +308,15 @@ export default function LandingPage() {
 
         <Rule />
 
-        <div className="ax-agents">
-          {agentes.map((a) => (
-            <div key={a.name} className="ax-agent">
+        <div className="ax-agents" data-reveal>
+          {agentes.map((a, i) => (
+            <div key={a.name} className="ax-agent" style={{ '--reveal-delay': `${i * 70}ms` } as React.CSSProperties}>
               <div className="ax-agent-num">{a.n}</div>
               <div className="ax-agent-body">
                 <div className="ax-agent-name">{a.name}</div>
                 <div className="ax-agent-desc">{a.desc}</div>
               </div>
+              <div className="ax-agent-arrow" aria-hidden>→</div>
             </div>
           ))}
         </div>
@@ -234,7 +324,7 @@ export default function LandingPage() {
 
       {/* ── ATELIER (philosophy strip) ─────────────────────────────────── */}
       <section id="atelier" style={{ ...shell, padding: '140px 40px' }}>
-        <div className="ax-atelier">
+        <div className="ax-atelier" data-reveal>
           <SerialLabel>Capitulo II · Atelier</SerialLabel>
           <h2 className="ax-section-title ax-atelier-title">
             Nao somos mais um SaaS.
@@ -255,16 +345,16 @@ export default function LandingPage() {
 
       {/* ── DEPOIMENTOS ────────────────────────────────────────────────── */}
       <section style={{ ...shell, padding: '60px 40px 140px' }}>
-        <div className="ax-section-head">
+        <div className="ax-section-head" data-reveal>
           <SerialLabel>Capitulo III · Vozes</SerialLabel>
           <h2 className="ax-section-title">
             O que dizem <em className="ax-italic">os primeiros</em>.
           </h2>
         </div>
         <Rule />
-        <div className="ax-tests">
-          {depoimentos.map((d) => (
-            <figure key={d.name} className="ax-test">
+        <div className="ax-tests" data-reveal>
+          {depoimentos.map((d, i) => (
+            <figure key={d.name} className="ax-test" style={{ '--reveal-delay': `${i * 110}ms` } as React.CSSProperties}>
               <blockquote className="ax-test-quote">&ldquo;{d.quote}&rdquo;</blockquote>
               <figcaption className="ax-test-foot">
                 <div className="ax-test-initials">{d.initials}</div>
@@ -280,7 +370,7 @@ export default function LandingPage() {
 
       {/* ── PRICING ────────────────────────────────────────────────────── */}
       <section id="planos" style={{ ...shell, padding: '60px 40px 160px', maxWidth: 1180 }}>
-        <div className="ax-section-head">
+        <div className="ax-section-head" data-reveal>
           <SerialLabel>Capitulo IV · Acesso</SerialLabel>
           <h2 className="ax-section-title">
             Planos <em className="ax-italic">transparentes</em>.
@@ -290,9 +380,9 @@ export default function LandingPage() {
           </p>
         </div>
         <Rule />
-        <div className="ax-plans">
-          {planos.map((p) => (
-            <div key={p.name} className={`ax-plan${p.popular ? ' ax-plan--popular' : ''}`}>
+        <div className="ax-plans" data-reveal>
+          {planos.map((p, i) => (
+            <div key={p.name} className={`ax-plan${p.popular ? ' ax-plan--popular' : ''}`} style={{ '--reveal-delay': `${i * 130}ms` } as React.CSSProperties}>
               {p.popular && <div className="ax-plan-badge">Recomendado</div>}
               <div className="ax-plan-name">{p.name}</div>
               <div className="ax-plan-price">
@@ -319,15 +409,20 @@ export default function LandingPage() {
 
       {/* ── CLOSING MARK ───────────────────────────────────────────────── */}
       <section style={{ ...shell, padding: '80px 40px 120px', textAlign: 'center' }}>
-        <SerialLabel>Ad finem · MMXXVI</SerialLabel>
-        <h2 className="ax-closing-title">
-          Pronto para praticar Direito <em className="ax-italic">com instrumento a altura</em>?
-        </h2>
-        <div style={{ marginTop: 36 }}>
-          <Link href="/login" className="ax-cta-primary ax-cta-large">Reservar meu acesso</Link>
-        </div>
-        <div style={{ marginTop: 20, fontSize: 12, color: 'var(--text-muted)', letterSpacing: '0.3px' }}>
-          Dois dias gratuitos · Sem cartao · Cancelamento em um clique
+        <div data-reveal>
+          <SerialLabel>Ad finem · MMXXVI</SerialLabel>
+          <h2 className="ax-closing-title">
+            Pronto para praticar Direito <em className="ax-italic">com instrumento a altura</em>?
+          </h2>
+          <div style={{ marginTop: 36 }}>
+            <Link href="/login" className="ax-cta-primary ax-cta-large">
+              <span>Reservar meu acesso</span>
+              <span className="ax-cta-arrow" aria-hidden>→</span>
+            </Link>
+          </div>
+          <div style={{ marginTop: 20, fontSize: 12, color: 'var(--text-muted)', letterSpacing: '0.3px' }}>
+            Dois dias gratuitos · Sem cartao · Cancelamento em um clique
+          </div>
         </div>
       </section>
 
@@ -467,6 +562,27 @@ export default function LandingPage() {
           margin-top: 3px;
         }
 
+        /* ── Scroll reveal ───────────────────────────────── */
+        [data-reveal] {
+          opacity: 0;
+          transform: translateY(22px);
+          transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+          transition-delay: var(--reveal-delay, 0ms);
+        }
+        [data-reveal].is-revealed {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* Hero sequential lines (independent from scroll reveal) */
+        .ax-hero-left .ax-line {
+          opacity: 0;
+          transform: translateY(22px);
+          animation: ax-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+          animation-delay: var(--d, 0ms);
+        }
+        .ax-hero-title .ax-line { display: inline-block; }
+
         /* ── Nav ─────────────────────────────────────────── */
         .ax-nav {
           position: sticky;
@@ -475,7 +591,12 @@ export default function LandingPage() {
           background: var(--glass);
           backdrop-filter: blur(18px) saturate(140%);
           -webkit-backdrop-filter: blur(18px) saturate(140%);
-          border-bottom: 1px solid var(--stone-line);
+          border-bottom: 1px solid transparent;
+          transition: border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .ax-nav--scrolled {
+          border-bottom-color: var(--stone-line);
+          box-shadow: 0 4px 30px rgba(19, 32, 37, 0.04);
         }
         .ax-nav-links {
           display: flex;
@@ -497,6 +618,7 @@ export default function LandingPage() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
+          gap: 8px;
           padding: 11px 22px;
           background: var(--text-primary);
           color: var(--bg-base);
@@ -506,13 +628,35 @@ export default function LandingPage() {
           font-weight: 500;
           letter-spacing: 0.3px;
           text-decoration: none;
-          transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+          position: relative;
+          overflow: hidden;
+          transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.35s ease;
         }
+        .ax-cta-primary::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(120deg, transparent 20%, rgba(191,166,142,0.18) 50%, transparent 80%);
+          transform: translateX(-100%);
+          transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ax-cta-primary > * { position: relative; z-index: 1; }
         .ax-cta-primary:hover {
           background: var(--accent);
           border-color: var(--accent);
           color: var(--bg-base);
-          transform: translateY(-1px);
+          transform: translateY(-2px);
+          box-shadow: 0 10px 40px rgba(68, 55, 43, 0.25);
+        }
+        .ax-cta-primary:hover::before {
+          transform: translateX(100%);
+        }
+        .ax-cta-arrow {
+          display: inline-block;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ax-cta-primary:hover .ax-cta-arrow {
+          transform: translateX(4px);
         }
         .ax-cta-large { padding: 17px 36px; font-size: 14px; letter-spacing: 0.4px; }
 
@@ -547,9 +691,8 @@ export default function LandingPage() {
           gap: 80px;
           align-items: center;
         }
-        .ax-hero-left { animation: ax-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
         .ax-hero-right {
-          animation: ax-rise 1s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+          animation: ax-rise 1s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
         }
         .ax-hero-title {
           font-size: clamp(44px, 6.2vw, 78px);
@@ -588,6 +731,14 @@ export default function LandingPage() {
           backdrop-filter: blur(18px);
           padding: 38px 36px;
           position: relative;
+          overflow: hidden;
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+          --mx: 50%;
+          --my: 0%;
+        }
+        .ax-hero-card:hover {
+          border-color: rgba(191, 166, 142, 0.42);
+          transform: translateY(-2px);
         }
         .ax-hero-card::before {
           content: '';
@@ -598,7 +749,25 @@ export default function LandingPage() {
           height: 1px;
           background: var(--accent);
           opacity: 0.4;
+          z-index: 2;
         }
+        .ax-hero-card-glow {
+          position: absolute;
+          inset: -40%;
+          pointer-events: none;
+          background: radial-gradient(
+            circle 280px at var(--mx) var(--my),
+            rgba(191, 166, 142, 0.16),
+            transparent 60%
+          );
+          opacity: 0;
+          transition: opacity 0.5s ease;
+          z-index: 0;
+        }
+        .ax-hero-card:hover .ax-hero-card-glow {
+          opacity: 1;
+        }
+        .ax-hero-card > *:not(.ax-hero-card-glow) { position: relative; z-index: 1; }
         .ax-hero-card-head {
           display: flex;
           justify-content: space-between;
@@ -693,6 +862,53 @@ export default function LandingPage() {
           margin: 0;
         }
 
+        /* ── Marquee ─────────────────────────────────────── */
+        .ax-marquee-wrap {
+          border-top: 1px solid var(--stone-line);
+          border-bottom: 1px solid var(--stone-line);
+          padding: 22px 0;
+          overflow: hidden;
+          background: var(--stone-soft);
+          margin-top: 40px;
+        }
+        .ax-marquee {
+          display: flex;
+          width: 100%;
+          overflow: hidden;
+          mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+          -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+        }
+        .ax-marquee-track {
+          display: flex;
+          animation: ax-marquee 38s linear infinite;
+          will-change: transform;
+        }
+        .ax-marquee-inner {
+          display: flex;
+          align-items: center;
+          gap: 36px;
+          padding-right: 36px;
+          flex-shrink: 0;
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 22px;
+          letter-spacing: -0.3px;
+          color: var(--text-primary);
+          white-space: nowrap;
+        }
+        .ax-marquee-inner .ax-italic {
+          font-size: 1em;
+          letter-spacing: -0.6px;
+        }
+        .ax-marquee-dot {
+          color: var(--accent);
+          font-size: 11px;
+          opacity: 0.6;
+        }
+        @keyframes ax-marquee {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+
         /* ── Agents ──────────────────────────────────────── */
         .ax-agents {
           display: grid;
@@ -707,9 +923,26 @@ export default function LandingPage() {
           display: flex;
           gap: 28px;
           align-items: flex-start;
-          transition: background 0.35s ease;
+          transition: background 0.35s ease, transform 0.35s ease;
+          position: relative;
+          overflow: hidden;
         }
-        .ax-agent:hover { background: var(--stone-soft); }
+        .ax-agent::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 0;
+          height: 1px;
+          background: var(--accent);
+          transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ax-agent:hover {
+          background: var(--stone-soft);
+        }
+        .ax-agent:hover::before {
+          width: 100%;
+        }
         .ax-agent-num {
           font-family: var(--font-playfair), Georgia, serif;
           font-style: italic;
@@ -718,7 +951,12 @@ export default function LandingPage() {
           line-height: 1;
           padding-top: 4px;
           letter-spacing: -0.5px;
+          transition: transform 0.4s ease;
         }
+        .ax-agent:hover .ax-agent-num {
+          transform: translateX(-4px);
+        }
+        .ax-agent-body { flex: 1; }
         .ax-agent-name {
           font-size: 19px;
           font-weight: 500;
@@ -731,6 +969,18 @@ export default function LandingPage() {
           line-height: 1.65;
           color: var(--text-secondary);
           max-width: 420px;
+        }
+        .ax-agent-arrow {
+          align-self: center;
+          font-size: 18px;
+          color: var(--accent);
+          opacity: 0;
+          transform: translateX(-10px);
+          transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .ax-agent:hover .ax-agent-arrow {
+          opacity: 1;
+          transform: translateX(0);
         }
 
         /* ── Atelier ─────────────────────────────────────── */
@@ -834,9 +1084,12 @@ export default function LandingPage() {
           display: flex;
           flex-direction: column;
           background: transparent;
-          transition: background 0.35s ease;
+          transition: background 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .ax-plan:hover { background: var(--stone-soft); }
+        .ax-plan:hover {
+          background: var(--stone-soft);
+          transform: translateY(-4px);
+        }
         .ax-plan--popular {
           background: var(--card-bg);
           backdrop-filter: blur(18px);
