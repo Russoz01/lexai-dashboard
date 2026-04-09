@@ -1,11 +1,20 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+const REQUEST_TIMEOUT_MS = 60_000
+
+interface ChargeResult {
+  ok: boolean
+  reason?: string
+  usuario_id?: string
+  plano?: string
+  limite?: number
+  usado?: number
+  remaining?: number
+}
 
 const SYSTEM_PROMPT = `You are a world-class professor combining the pedagogical excellence of Harvard, MIT, Stanford, USP, FGV, UnB, and Unicamp. You have 30+ years of experience teaching ANY academic subject — Law, Mathematics, Physics, Chemistry, Biology, History, Geography, Portuguese, English, Philosophy, Sociology, Literature, Essay Writing (Redacao ENEM), and more. You are recognized internationally for your ability to make complex concepts crystal clear, whether the student is preparing for OAB, ENEM, Vestibular (USP/UNICAMP/UFRJ), Concursos, Magistratura, MP, or simply learning out of curiosity.
 
@@ -107,22 +116,49 @@ Return this JSON:
 }`
 
 export async function POST(req: NextRequest) {
+  const supabase = await createClient()
   try {
-    const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
     if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
 
-    // Sliding-window rate limit (20 req/min per user per agent)
+    // Sliding-window rate limit (20 req/min per user per agent) — fails open
     const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
     const rl = await checkRateLimit(supabase, `user:${user.id}:professor`)
     if (!rl.ok) return rateLimitResponse(rl)
 
-    // Server-side quota enforcement (server-trusted, never localStorage)
-    const quota = await checkAndIncrementQuota(supabase, user.id, 'professor')
-    if (!quota.ok && quota.response) {
-      return quota.response
+    // Atomic quota check + charge via SECURITY DEFINER RPC. This RPC handles
+    // the usuarios lookup, trial detection, user_quotas upsert, and atomic
+    // increment in a single round-trip and returns the correct usuarios.id
+    // for the historico insert below.
+    const { data: chargeData, error: chargeErr } = await supabase
+      .rpc('check_and_charge', { p_auth_user_id: user.id, p_agente: 'professor' })
+
+    if (chargeErr) {
+      console.error('[API /ensinar] check_and_charge rpc error:', chargeErr.message, chargeErr.code)
+      return NextResponse.json({ error: 'Erro ao validar quota.' }, { status: 500 })
     }
+
+    const charge = (chargeData ?? {}) as ChargeResult
+    if (!charge.ok) {
+      if (charge.reason === 'user_not_found') {
+        return NextResponse.json({ error: 'Perfil de usuario nao encontrado' }, { status: 403 })
+      }
+      if (charge.reason === 'quota_exceeded') {
+        const plano = charge.plano ?? 'free'
+        const limite = charge.limite ?? 0
+        const usado = charge.usado ?? 0
+        return NextResponse.json({
+          error: `Limite mensal do plano ${plano} atingido (${usado}/${limite}). Faca upgrade para continuar.`,
+          quota: { used: usado, limit: limite, plan: plano },
+        }, { status: 429 })
+      }
+      console.error('[API /ensinar] check_and_charge returned ok:false with unknown reason:', charge.reason)
+      return NextResponse.json({ error: 'Erro ao validar quota.' }, { status: 500 })
+    }
+
+    const usuarioId = charge.usuario_id ?? null
+    const plano = charge.plano ?? 'free'
 
     const body = await req.json().catch(() => ({}))
     const tema = typeof body?.tema === 'string' ? body.tema : ''
@@ -164,42 +200,85 @@ export async function POST(req: NextRequest) {
       userMessage += `\n\nSTUDENT HISTORY (previous topics studied): ${historico}`
     }
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-      ],
-      messages: [{ role: 'user', content: userMessage }],
-    })
+    // AbortController gives us a hard 60s cap instead of waiting for the
+    // platform's request timeout. Without this, a stuck Anthropic call
+    // holds the lambda until Vercel kills it and the user sees a generic
+    // 504 with no actionable message.
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
+    let message: Anthropic.Messages.Message
+    try {
+      message = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8192,
+        system: [
+          {
+            type: 'text' as const,
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' as const },
+          },
+        ],
+        messages: [{ role: 'user', content: userMessage }],
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeoutId)
+    }
+
+    // Find the first text block — Anthropic may return tool_use blocks or
+    // other types mixed in, and message.content[0] isn't guaranteed to be
+    // text. The previous code crashed here if content was empty or the
+    // first block was non-text.
+    const textBlock = message.content.find(
+      (b): b is Anthropic.Messages.TextBlock => b.type === 'text',
+    )
+    const responseText = textBlock?.text.trim() ?? ''
+
     let aula
     try {
-      aula = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
+      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+      aula = cleaned ? JSON.parse(cleaned) : { basico: { definicao: '' }, erro_parse: true }
     } catch {
       aula = { basico: { definicao: responseText }, erro_parse: true }
     }
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
     if (usuarioId) {
-      await supabase.from('historico').insert({
-        usuario_id: usuarioId, agente: 'professor',
+      const { error: histErr } = await supabase.from('historico').insert({
+        usuario_id: usuarioId,
+        agente: 'professor',
         mensagem_usuario: `Ensinar: ${tema}${instituicao ? ` (${instituicao})` : ''}`,
         resposta_agente: `Aula sobre ${tema}`,
       })
+      if (histErr) {
+        console.error('[API /ensinar] historico insert error:', histErr.message, histErr.code)
+      }
     }
 
-    events.agentUsed(user.id, 'professor', 'unknown').catch(() => {})
+    events.agentUsed(user.id, 'professor', plano).catch(() => {})
 
     return NextResponse.json({ aula })
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /ensinar]', msg)
+    // Log the full error shape (name, message, stack) so the next Vercel
+    // log entry reveals the actual cause instead of the generic 500.
+    const errName = err instanceof Error ? err.name : 'Unknown'
+    const errMsg = err instanceof Error ? err.message : String(err)
+    const errStack = err instanceof Error ? err.stack?.split('\n').slice(0, 5).join(' | ') : undefined
+    console.error('[API /ensinar] unhandled:', errName, '-', errMsg, '|', errStack ?? '')
+
+    // Map common Anthropic SDK errors to actionable HTTP codes.
+    const lower = errMsg.toLowerCase()
+    if (errName === 'AbortError' || errName === 'TimeoutError' || lower.includes('timeout') || lower.includes('aborted')) {
+      return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente um documento menor.' }, { status: 504 })
+    }
+    if (errMsg.includes('401') || lower.includes('invalid_api_key') || lower.includes('authentication')) {
+      return NextResponse.json({ error: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.' }, { status: 503 })
+    }
+    if (errMsg.includes('429') || lower.includes('rate_limit') || lower.includes('quota')) {
+      return NextResponse.json({ error: 'Muitas requisicoes. Aguarde 60 segundos antes de tentar novamente.' }, { status: 429 })
+    }
+    if (errMsg.includes('529') || lower.includes('overloaded')) {
+      return NextResponse.json({ error: 'O servico de IA esta sobrecarregado. Tente novamente em 30 segundos.' }, { status: 503 })
+    }
     return NextResponse.json({ error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }, { status: 500 })
   }
 }
