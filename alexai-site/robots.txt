@@ -1,0 +1,7 @@
+# robots.txt — Alex AI
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_vercel/
+
+Sitemap: https://alexai.com.br/sitemap.xml

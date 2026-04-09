@@ -1,0 +1,14 @@
+{
+  "name": "alexai-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Alex AI marketing site (Vanix Corp). Vanilla HTML/CSS/JS, no build step.",
+  "scripts": {
+    "qa": "node scripts/qa-smoke.mjs",
+    "qa:online": "node scripts/qa-smoke.mjs --url",
+    "build": "node scripts/qa-smoke.mjs && echo QA passed. Static site ready."
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

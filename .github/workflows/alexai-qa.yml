@@ -1,0 +1,52 @@
+name: alexai-qa
+
+# Pre-deploy QA gate for alexai-site.
+# Blocks merges that break the QA_CHECKLIST.md invariants.
+# Mirrors the same script Vercel runs as `buildCommand`, so green here
+# means green in prod.
+
+on:
+  push:
+    branches:
+      - main
+      - 'claude/**'
+    paths:
+      - 'alexai-site/**'
+      - '.github/workflows/alexai-qa.yml'
+  pull_request:
+    paths:
+      - 'alexai-site/**'
+      - '.github/workflows/alexai-qa.yml'
+
+jobs:
+  qa-smoke:
+    name: QA smoke (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Run QA smoke (offline)
+        working-directory: alexai-site
+        run: node scripts/qa-smoke.mjs
+
+      - name: Verify no fabricated content
+        working-directory: alexai-site
+        run: |
+          set -e
+          ! grep -q "680 leads" index.html
+          ! grep -q "Diretor Comercial" index.html
+          ! grep -q "Logotipos representativos" index.html
+          ! grep -q "Natural Language Processing" index.html
+          ! grep -q "Apenas 3 vagas" index.html
+          echo "Defensive grep checks passed."
