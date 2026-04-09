@@ -499,13 +499,14 @@ export default function DashboardPage() {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 0;
+          margin-top: 36px;
           margin-bottom: 56px;
           border: 1px solid var(--stone-line);
           background: var(--glass);
           backdrop-filter: blur(var(--blur)) saturate(160%);
           -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
           border-radius: 16px;
-          padding: 8px 0;
+          padding: 12px 0;
           box-shadow: 0 1px 0 rgba(255,255,255,0.24) inset, 0 18px 50px rgba(19,32,37,0.06);
         }
 
