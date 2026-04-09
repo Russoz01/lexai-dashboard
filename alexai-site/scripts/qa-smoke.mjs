@@ -115,9 +115,9 @@ async function main() {
     'verify .hero-title copy');
 
   section('2. Footer legal (Tier 1.4)');
-  check('footer shows CNPJ line (em registro)',
-    /CNPJ:\s*em registro/i.test(html),
-    'verify .footer-legal extension');
+  check('footer has CNPJ line',
+    /CNPJ:[^<]*em processo de abertura/i.test(html),
+    'verify .footer-legal CNPJ text');
   check('footer shows DPO email contact',
     /contato@alexai\.com\.br/.test(html),
     'verify mailto DPO');
@@ -344,6 +344,31 @@ async function main() {
   check('favicon link present (SVG)',
     /rel="icon"[^>]*type="image\/svg\+xml"[^>]*href="\/favicon\.svg"/.test(html),
     'favicon missing from <head>');
+  // 14.c — Credibility pass 2026-04-09 (comparativo bars, demo, ROI, CNPJ)
+  check('no "0.4 segundos" fabricated bar value in comp chart',
+    !/comp-bar--ai[^>]*>[\s\S]{0,200}0\.4 segundos/.test(html),
+    'fabricated bar value returned in comparativo');
+  check('no "respondeu em 0.4s" in demo chat',
+    !/respondeu em 0\.4s/.test(html),
+    'demo chat timestamp not updated');
+  check('no "Recupera 38%" fabricated pro-plan feature',
+    !/Recupera 38% da receita/.test(html),
+    'fabricated 38% pro-plan claim returned');
+  check('no ROI disclaimer with hardcoded "45%"',
+    !/recuperacao de 45%/.test(html),
+    'fabricated ROI disclaimer returned');
+  check('meta-compare differentiation block present',
+    /class="meta-compare/.test(html),
+    'Meta Business AI comparison block missing');
+  check('skip-link present for keyboard a11y',
+    /class="skip-link"/.test(html),
+    'skip link missing — keyboard a11y regression');
+  check('FAQ buttons have aria-controls',
+    /faq-question[^>]*aria-controls="faq-answer-1"/.test(html),
+    'FAQ aria-controls missing');
+  check('CNPJ updated to "em processo de abertura"',
+    /em processo de abertura/.test(html),
+    'CNPJ text not updated');
 
   /* ---------- summary ---------- */
   console.log('\n' + '-'.repeat(60));

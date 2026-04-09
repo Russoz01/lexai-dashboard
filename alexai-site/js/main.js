@@ -827,6 +827,16 @@
         paybackText = '> 1 ano';
       }
       paybackEl.textContent = paybackText;
+
+      // Dynamic CTA: update button text with calculated loss value
+      var ctaTextEl = document.querySelector('.roi-cta-dynamic .roi-cta-text');
+      if (ctaTextEl) {
+        if (monthlyLoss > 0) {
+          ctaTextEl.textContent = 'Recuperar ' + formatBRL(monthlyLoss) + '/m\u00eas \u2192 Diagn\u00f3stico gr\u00e1tis';
+        } else {
+          ctaTextEl.textContent = 'Quero ver isso operando no meu negocio';
+        }
+      }
     }
 
     [leads, ticket, conv, off].forEach(function (el) {
