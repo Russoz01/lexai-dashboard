@@ -502,9 +502,9 @@ export default function ProfessorPage() {
               { nome: 'Dominio Publico', desc: 'Livros, teses e monografias gratuitas', url: 'http://www.dominiopublico.gov.br/', icon: 'bi-collection', color: '#06B6D4' },
               { nome: 'Khan Academy BR', desc: 'Matematica, ciencias e fisica gratis', url: 'https://pt.khanacademy.org/', icon: 'bi-mortarboard', color: '#14B8A6' },
               { nome: 'Brasil Escola', desc: 'Resumos de todas as materias ENEM', url: 'https://brasilescola.uol.com.br/', icon: 'bi-backpack', color: '#6366F1' },
-              { nome: 'Me Salva!', desc: 'Aulas ENEM e vestibular no YouTube', url: 'https://www.youtube.com/@MeSalvaENEM', icon: 'bi-youtube', color: '#EF4444' },
+              { nome: 'Me Salva!', desc: 'Aulas ENEM e vestibular no YouTube', url: 'https://www.youtube.com/@MeSalva', icon: 'bi-youtube', color: '#EF4444' },
               { nome: 'Duolingo', desc: 'Aprenda idiomas gratuitamente', url: 'https://www.duolingo.com/', icon: 'bi-translate', color: '#22C55E' },
-              { nome: 'Gran Cursos YouTube', desc: 'Aulas gratuitas de Direito no YouTube', url: 'https://www.youtube.com/@grancursos', icon: 'bi-play-btn', color: '#F97316' },
+              { nome: 'Gran Cursos Online', desc: 'Aulas gratuitas de Direito no YouTube', url: 'https://www.youtube.com/@GranCursosOnline', icon: 'bi-play-btn', color: '#F97316' },
             ].map((rec, i) => (
               <a key={i} href={rec.url} target="_blank" rel="noopener noreferrer"
                 className="section-card"
