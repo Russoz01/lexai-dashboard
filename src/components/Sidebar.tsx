@@ -7,9 +7,9 @@ import { usePlan } from '@/hooks/usePlan'
 
 const PLANOS: Record<string, { nome: string; preco: string }> = {
   free:       { nome: 'Free Trial', preco: 'Gratis 2 dias' },
-  starter:    { nome: 'Starter',    preco: 'R$ 59 / mes' },
-  pro:        { nome: 'Pro',        preco: 'R$ 119 / mes' },
-  enterprise: { nome: 'Enterprise', preco: 'R$ 239 / mes' },
+  starter:    { nome: 'Starter',    preco: 'R$ 89 / mes' },
+  pro:        { nome: 'Pro',        preco: 'R$ 179 / mes' },
+  enterprise: { nome: 'Enterprise', preco: 'R$ 399 / mes' },
 }
 
 interface NavItem { href: string; icon: string; label: string; badge?: number; badgeWarn?: boolean }

@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'LexAI para Escritorios e Bancas | Solucoes B2B',
-  description: 'Transforme seu escritorio em uma maquina de eficiencia juridica. Acesso ilimitado a 10 agentes IA, API propria, suporte WhatsApp 24h e onboarding dedicado. A partir de R$ 239/mes.',
+  description: 'Transforme seu escritorio em uma maquina de eficiencia juridica. Acesso ilimitado a 12 agentes IA, API propria, suporte WhatsApp 24h e onboarding dedicado. A partir de R$ 399/mes.',
   keywords: 'lexai empresas, ia para escritorios, b2b direito, bancas juridicas, api juridica',
   alternates: { canonical: 'https://lexai.com.br/empresas' },
 }
@@ -227,7 +227,7 @@ export default function EmpresasPage() {
             Plano Enterprise
           </div>
           <h2 style={{ fontSize: 36, fontWeight: 800, color: '#fff', letterSpacing: '-1.5px', marginBottom: 12 }}>
-            A partir de <span style={{ color: '#bfa68e' }}>R$ 239/mes</span>
+            A partir de <span style={{ color: '#bfa68e' }}>R$ 399/mes</span>
           </h2>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 520, margin: '0 auto 28px', lineHeight: 1.6 }}>
             Personalizado para o tamanho e as necessidades do seu escritorio. Desconto progressivo por volume de usuarios e condicoes especiais para parceiros.

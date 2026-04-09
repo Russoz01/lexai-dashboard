@@ -64,21 +64,25 @@ const depoimentos = [
 const planos = [
   {
     name: 'Starter',
-    price: '59',
+    priceMonthly: '89',
+    priceAnnual: '75',
     headline: '5 agentes · 50 documentos / mes',
     features: ['Resumidor, Pesquisador, Professor, Legislacao, Calculador', 'Historico de 30 dias', 'Suporte por email'],
   },
   {
     name: 'Pro',
-    price: '119',
+    priceMonthly: '179',
+    priceAnnual: '150',
     headline: '10 agentes · 200 documentos / mes',
     popular: true,
     features: ['Todos os agentes incluindo Simulado e Consultor', 'Exportacao em PDF', 'Suporte prioritario em 48h', 'Historico de 90 dias'],
   },
   {
     name: 'Enterprise',
-    price: '239',
+    priceMonthly: '399',
+    priceAnnual: '335',
     headline: '12 agentes · volume ilimitado',
+    beta: true,
     features: ['Todos os agentes + Chat orquestrador + Planilhas', 'API privada + SLA', 'WhatsApp 24h', 'Historico ilimitado', 'Modelos customizados'],
   },
 ]
@@ -167,8 +171,30 @@ function useScrollReveal() {
  * Page
  * ------------------------------------------------------------------------ */
 
+function PricingToggle({ annual, onChange }: { annual: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <div className="ax-billing-toggle" data-reveal>
+      <button
+        className={`ax-billing-opt${!annual ? ' active' : ''}`}
+        onClick={() => onChange(false)}
+      >
+        Mensal
+      </button>
+      <button
+        className={`ax-billing-opt${annual ? ' active' : ''}`}
+        onClick={() => onChange(true)}
+      >
+        Anual
+        <span className="ax-billing-discount">−16%</span>
+      </button>
+    </div>
+  )
+}
+
 export default function LandingPage() {
   useScrollReveal()
+
+  const [annualBilling, setAnnualBilling] = useState(false)
 
   // Nav shadow appears after 24px of scroll
   const [navScrolled, setNavScrolled] = useState(false)
@@ -382,30 +408,51 @@ export default function LandingPage() {
           </p>
         </div>
         <Rule />
+
+        {/* Toggle mensal / anual */}
+        <PricingToggle annual={annualBilling} onChange={setAnnualBilling} />
+
         <div className="ax-plans" data-reveal>
-          {planos.map((p, i) => (
-            <div key={p.name} className={`ax-plan${p.popular ? ' ax-plan--popular' : ''}`} style={{ '--reveal-delay': `${i * 130}ms` } as React.CSSProperties}>
-              {p.popular && <div className="ax-plan-badge">Recomendado</div>}
-              <div className="ax-plan-name">{p.name}</div>
-              <div className="ax-plan-price">
-                <span className="ax-plan-currency">R$</span>
-                <span className="ax-plan-value">{p.price}</span>
-                <span className="ax-plan-per">/ mes</span>
+          {planos.map((p, i) => {
+            const price = annualBilling ? p.priceAnnual : p.priceMonthly
+            return (
+              <div key={p.name} className={`ax-plan${p.popular ? ' ax-plan--popular' : ''}`} style={{ '--reveal-delay': `${i * 130}ms` } as React.CSSProperties}>
+                {p.popular && <div className="ax-plan-badge">Recomendado</div>}
+                {p.beta && !p.popular && (
+                  <div className="ax-plan-badge ax-plan-badge--beta">
+                    Beta · R$ 329 no 1º mes
+                  </div>
+                )}
+                <div className="ax-plan-name">{p.name}</div>
+                <div className="ax-plan-price">
+                  <span className="ax-plan-currency">R$</span>
+                  <span className="ax-plan-value">{price}</span>
+                  <span className="ax-plan-per">/ mes</span>
+                </div>
+                {annualBilling && (
+                  <div className="ax-plan-annual-note">cobrado anualmente · 16% off</div>
+                )}
+                {p.beta && !annualBilling && (
+                  <div className="ax-plan-beta-note">
+                    <span className="ax-plan-price-strike">R$ 399</span>
+                    {' '}→ R$ 329 no primeiro mes para beta testers
+                  </div>
+                )}
+                <div className="ax-plan-headline">{p.headline}</div>
+                <ul className="ax-plan-features">
+                  {p.features.map((f) => (
+                    <li key={f}>
+                      <span aria-hidden className="ax-plan-dot" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/login" className={`ax-plan-cta${p.popular ? ' ax-plan-cta--solid' : ''}`}>
+                  {p.beta && !annualBilling ? 'Garantir R$ 329' : 'Reservar acesso'}
+                </Link>
               </div>
-              <div className="ax-plan-headline">{p.headline}</div>
-              <ul className="ax-plan-features">
-                {p.features.map((f) => (
-                  <li key={f}>
-                    <span aria-hidden className="ax-plan-dot" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/login" className={`ax-plan-cta${p.popular ? ' ax-plan-cta--solid' : ''}`}>
-                Reservar acesso
-              </Link>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
 
@@ -1103,6 +1150,69 @@ export default function LandingPage() {
           height: 2px;
           background: var(--accent);
         }
+        /* Billing toggle */
+        .ax-billing-toggle {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin: 0 auto 40px;
+          width: fit-content;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 100px;
+          padding: 4px;
+        }
+        .ax-billing-opt {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 20px;
+          border-radius: 100px;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 500;
+          letter-spacing: 0.4px;
+          color: var(--text-muted);
+          transition: background 0.2s, color 0.2s;
+        }
+        .ax-billing-opt.active {
+          background: var(--accent);
+          color: #fff;
+        }
+        .ax-billing-discount {
+          font-size: 10px;
+          font-weight: 700;
+          background: rgba(255,255,255,0.25);
+          padding: 2px 6px;
+          border-radius: 100px;
+          letter-spacing: 0.5px;
+        }
+        .ax-billing-opt:not(.active) .ax-billing-discount {
+          background: var(--accent-light);
+          color: var(--accent);
+        }
+
+        .ax-plan-annual-note {
+          font-size: 11px;
+          color: var(--accent);
+          letter-spacing: 0.5px;
+          margin-bottom: 4px;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+        .ax-plan-beta-note {
+          font-size: 12px;
+          color: var(--text-secondary);
+          margin-bottom: 4px;
+          line-height: 1.5;
+        }
+        .ax-plan-price-strike {
+          text-decoration: line-through;
+          color: var(--text-muted);
+        }
+
         .ax-plan-badge {
           position: absolute;
           top: 20px;
@@ -1114,6 +1224,11 @@ export default function LandingPage() {
           color: var(--accent);
           font-family: var(--font-playfair), Georgia, serif;
           font-style: italic;
+        }
+        .ax-plan-badge--beta {
+          color: var(--warning, #f59e0b);
+          letter-spacing: 1px;
+          font-size: 9px;
         }
         .ax-plan-name {
           font-size: 13px;
