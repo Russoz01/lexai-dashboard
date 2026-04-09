@@ -951,6 +951,11 @@ body.cursor-hover #c-ring { opacity: 0; }
   font-size: .85rem; color: rgba(245,242,236,.65); line-height: 1.75;
   margin-bottom: 14px;
 }
+/* Light-mode fix: .step cards use --bg-alt (light cream) as background,
+   so the always-cream title/desc become unreadable on light theme.
+   Re-ink them with the theme tokens. Dark mode untouched. */
+[data-theme="light"] .step-title { color: var(--content-primary); }
+[data-theme="light"] .step-desc  { color: var(--content-secondary); }
 .step-time {
   display: inline-block;
   font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
