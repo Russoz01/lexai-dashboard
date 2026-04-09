@@ -1,76 +1,59 @@
 'use client'
 
-import { useEffect } from 'react'
 import Link from 'next/link'
-import TopoBackground from '@/components/TopoBackground'
 
 /* ----------------------------------------------------------------------------
- * Design tokens — extracted so styles read like a stylesheet, not noise.
- * Spacing is on an 8px rhythm; colors are kept tight to the brand palette.
+ * LexAI — Atelier Landing
+ *
+ * Editorial minimalism. No gradients, no glow, no noise. The page earns its
+ * premium feel from type, whitespace and a single warm-stone accent over the
+ * deep navy base. Both themes route through the CSS custom properties defined
+ * in globals.css, so the same markup reads correctly in dark and light.
  * -------------------------------------------------------------------------- */
-
-const accent = '#3B82F6'
-const accentDeep = '#2563EB'
-const ink = '#F1F1F1'
-const inkDim = 'rgba(255,255,255,0.55)'
-const inkFaint = 'rgba(255,255,255,0.40)'
-const hairline = 'rgba(255,255,255,0.06)'
-const surface = 'rgba(255,255,255,0.03)'
-const surfaceLift = 'rgba(255,255,255,0.05)'
 
 const shell = {
   position: 'relative' as const,
-  zIndex: 10,
-  maxWidth: 1120,
+  maxWidth: 1180,
   margin: '0 auto',
-  padding: '0 32px',
+  padding: '0 40px',
 }
 
-const sectionPad = '96px 0'
-
-/* ----------------------------------------------------------------------------
- * Content — single source of truth, easier to scan than inline literals.
- * -------------------------------------------------------------------------- */
-
-const navStats = [
-  { value: '10', label: 'Agentes IA especializados' },
-  { value: '7', label: 'Areas do Direito cobertas' },
-  { value: '36', label: 'Materias academicas' },
-  { value: '2 dias', label: 'Trial gratuito sem cartao' },
+const agentes = [
+  { n: '01', name: 'Resumidor',   desc: 'Analise completa de documentos juridicos com riscos e fundamentacao mapeados.' },
+  { n: '02', name: 'Redator',     desc: 'Peticoes, recursos, contestacoes e pareceres estruturados em minutos.' },
+  { n: '03', name: 'Pesquisador', desc: 'Jurisprudencia do STF, STJ e tribunais estaduais consultada com contexto.' },
+  { n: '04', name: 'Negociador',  desc: 'BATNA, ZOPA e cenarios de acordo desenhados para sua estrategia.' },
+  { n: '05', name: 'Professor',   desc: 'Aulas em tres niveis e questoes no estilo OAB, concursos e magistratura.' },
+  { n: '06', name: 'Calculador',  desc: 'Prazos processuais, correcao monetaria, juros e custas com precisao.' },
+  { n: '07', name: 'Legislacao',  desc: 'Artigos de lei explicados com jurisprudencia aplicada ao caso concreto.' },
+  { n: '08', name: 'Rotina',      desc: 'Agenda de audiencias, prazos, estagios e compromissos organizados.' },
 ]
 
-const agentes = [
-  { name: 'Resumidor',  desc: 'Analise completa de documentos juridicos com riscos e fundamentacao', color: '#2563EB' },
-  { name: 'Redator',    desc: 'Gere peticoes, recursos, contestacoes e pareceres completos',         color: '#F59E0B' },
-  { name: 'Pesquisador', desc: 'Pesquise jurisprudencia do STF, STJ e tribunais estaduais',          color: '#EC4899' },
-  { name: 'Negociador', desc: 'Estrategia BATNA/ZOPA com cenarios e proposta de acordo',             color: '#8B5CF6' },
-  { name: 'Professor',  desc: 'Aulas em 3 niveis com questoes estilo OAB/concursos',                 color: '#06B6D4' },
-  { name: 'Calculador', desc: 'Prazos processuais, correcao monetaria, juros e custas',              color: '#10B981' },
-  { name: 'Legislacao', desc: 'Artigos de lei explicados com exemplos e jurisprudencia',             color: '#6366F1' },
-  { name: 'Rotina',     desc: 'Organize sua agenda de aulas, estagios e compromissos',               color: '#F97316' },
+const provas = [
+  { n: 'I',   metric: '10',    label: 'Agentes especializados' },
+  { n: 'II',  metric: '7',     label: 'Areas do Direito cobertas' },
+  { n: 'III', metric: '36',    label: 'Materias academicas' },
+  { n: 'IV',  metric: '2 dias', label: 'Trial gratuito sem cartao' },
 ]
 
 const depoimentos = [
   {
     initials: 'MC',
     name: 'Mariana Castro',
-    cargo: 'Advogada Civil — SP',
-    quote: 'Em 2 semanas economizei mais de 20 horas que eu gastava em pesquisa de jurisprudencia. O Pesquisador encontra acordaos que eu nem sabia que existiam.',
-    color: '#2563EB',
+    cargo: 'Advogada Civil · OAB/SP',
+    quote: 'Em duas semanas economizei mais de vinte horas de pesquisa. O Pesquisador encontra acordaos que eu nem sabia que existiam.',
   },
   {
     initials: 'LF',
     name: 'Lucas Ferreira',
-    cargo: 'Estudante OAB — RJ',
-    quote: 'O Professor explica conceitos juridicos como nenhum livro consegue. Passei na 1a fase da OAB de primeira usando os planos de estudo personalizados.',
-    color: '#10B981',
+    cargo: 'Aprovado na 1a fase da OAB · RJ',
+    quote: 'O Professor explica conceitos juridicos como nenhum livro consegue. Passei de primeira usando os planos de estudo personalizados.',
   },
   {
     initials: 'RL',
     name: 'Renata Lima',
-    cargo: 'Socia — Lima Advocacia',
-    quote: 'Substituiu 2 estagiarios e ainda entrega mais rapido. O Redator gera peticoes que so precisam de pequenos ajustes. Investimento que se pagou em 1 mes.',
-    color: '#8B5CF6',
+    cargo: 'Socia · Lima Advocacia',
+    quote: 'Substituiu dois estagiarios e ainda entrega mais rapido. O investimento se pagou no primeiro mes de uso.',
   },
 ]
 
@@ -78,21 +61,21 @@ const planos = [
   {
     name: 'Starter',
     price: '59',
-    headline: '3 agentes · 50 docs/mes',
-    features: ['Resumidor, Pesquisador, Professor', 'Suporte FAQ', 'Historico 30 dias'],
+    headline: '3 agentes · 50 documentos / mes',
+    features: ['Resumidor, Pesquisador, Professor', 'Historico de 30 dias', 'Suporte por email'],
   },
   {
     name: 'Pro',
     price: '119',
-    headline: '6 agentes · 200 docs/mes',
+    headline: '6 agentes · 200 documentos / mes',
     popular: true,
-    features: ['Todos os basicos', 'Exportacao PDF', 'Email 48h', 'Historico 90 dias'],
+    features: ['Todos os basicos do Starter', 'Exportacao em PDF', 'Suporte prioritario em 48h', 'Historico de 90 dias'],
   },
   {
     name: 'Enterprise',
     price: '239',
-    headline: '10 agentes · Ilimitado',
-    features: ['Todos + exclusivos', 'API propria', 'WhatsApp 24h', 'Historico ilimitado', 'Modelos customizados'],
+    headline: '10 agentes · volume ilimitado',
+    features: ['Todos os agentes', 'API privada + SLA', 'WhatsApp 24h', 'Historico ilimitado', 'Modelos customizados'],
   },
 ]
 
@@ -100,345 +83,284 @@ const footerColumns = [
   {
     title: 'Produto',
     links: [
-      { label: 'Para Empresas', href: '/empresas' },
-      { label: 'Agentes', href: '#agentes' },
-      { label: 'Planos', href: '#planos' },
+      { label: 'Para empresas', href: '/empresas' },
+      { label: 'Agentes',       href: '#agentes' },
+      { label: 'Planos',        href: '#planos' },
     ],
   },
   {
     title: 'Empresa',
     links: [
-      { label: 'Entrar', href: '/login' },
+      { label: 'Entrar',         href: '/login' },
       { label: 'Comecar gratis', href: '/login' },
     ],
   },
   {
     title: 'Legal',
     links: [
-      { label: 'Privacidade (LGPD)', href: '/privacidade' },
-      { label: 'Termos de Uso', href: '/termos' },
+      { label: 'Privacidade LGPD', href: '/privacidade' },
+      { label: 'Termos de uso',    href: '/termos' },
     ],
   },
 ]
 
-/* ----------------------------------------------------------------------------
- * Small composable pieces — keep the page body declarative.
- * -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+ * Atomic pieces — kept declarative.
+ * ------------------------------------------------------------------------ */
+
+function SerialLabel({ children }: { children: React.ReactNode }) {
+  return <div className="ax-serial">{children}</div>
+}
+
+function Rule() {
+  return <div aria-hidden className="ax-rule" />
+}
 
 function BrandMark() {
   return (
-    <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-      <div
-        style={{
-          width: 38, height: 38, borderRadius: 11,
-          background: 'linear-gradient(135deg, #141414, #2A2A2A)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 2px 16px rgba(59,130,246,0.30)',
-        }}
-      >
-        <span style={{ color: ink, fontSize: 14, fontWeight: 800, letterSpacing: '0.5px' }}>LX</span>
-      </div>
-      <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.5px', color: ink }}>LexAI</span>
+    <Link href="/" className="ax-brand">
+      <span className="ax-brand-mark" aria-hidden>LX</span>
+      <span className="ax-brand-text">
+        <span className="ax-brand-name">LexAI</span>
+        <span className="ax-brand-sub">Atelier juridico</span>
+      </span>
     </Link>
   )
 }
 
-function PrimaryCTA({ children, href = '/login', large = false }: { children: React.ReactNode; href?: string; large?: boolean }) {
-  return (
-    <Link
-      href={href}
-      className="lx-cta"
-      style={{
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: large ? 16 : 14,
-        color: ink,
-        background: `linear-gradient(135deg, ${accent}, ${accentDeep})`,
-        padding: large ? '15px 32px' : '9px 20px',
-        borderRadius: large ? 12 : 9,
-        textDecoration: 'none',
-        fontWeight: 600,
-        letterSpacing: '-0.1px',
-        boxShadow: `0 8px 28px rgba(37,99,235,${large ? 0.38 : 0.22})`,
-      }}
-    >
-      {children}
-    </Link>
-  )
-}
-
-function GhostCTA({ children, href }: { children: React.ReactNode; href: string }) {
-  return (
-    <a
-      href={href}
-      className="lx-ghost"
-      style={{
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 16,
-        color: 'rgba(255,255,255,0.7)',
-        padding: '15px 28px',
-        borderRadius: 12,
-        textDecoration: 'none',
-        fontWeight: 500,
-        border: '1px solid rgba(255,255,255,0.14)',
-        background: 'rgba(255,255,255,0.02)',
-      }}
-    >
-      {children}
-    </a>
-  )
-}
-
-function AgentCard({ name, desc, color }: { name: string; desc: string; color: string }) {
-  return (
-    <div className="lx-agent">
-      <span className="lx-agent-bar" style={{ background: color, boxShadow: `0 0 18px ${color}55` }} />
-      <div>
-        <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: ink }}>{name}</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.50)', lineHeight: 1.55 }}>{desc}</div>
-      </div>
-    </div>
-  )
-}
-
-function TestimonialCard({ initials, name, cargo, quote, color }: typeof depoimentos[number]) {
-  return (
-    <div className="lx-test">
-      <div style={{ display: 'flex', gap: 3, marginBottom: 4 }}>
-        {[0, 1, 2, 3, 4].map((s) => (
-          <i key={s} className="bi bi-star-fill" style={{ color: '#F59E0B', fontSize: 13 }} />
-        ))}
-      </div>
-      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65, fontStyle: 'italic', margin: 0, flex: 1 }}>
-        &ldquo;{quote}&rdquo;
-      </p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
-        <div
-          style={{
-            width: 42, height: 42, borderRadius: '50%',
-            background: `linear-gradient(135deg, ${color}, ${color}99)`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: ink, fontWeight: 700, fontSize: 13, flexShrink: 0,
-            boxShadow: `0 4px 16px ${color}33`,
-          }}
-        >
-          {initials}
-        </div>
-        <div>
-          <div style={{ color: ink, fontWeight: 700, fontSize: 13 }}>{name}</div>
-          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11 }}>{cargo}</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function PricingCard({ plan }: { plan: typeof planos[number] }) {
-  const isPopular = !!plan.popular
-  return (
-    <div className={`lx-plan ${isPopular ? 'lx-plan--popular' : ''}`}>
-      {isPopular && <div className="lx-badge">Mais popular</div>}
-      <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, color: ink }}>{plan.name}</div>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4, marginBottom: 4 }}>
-        <span style={{ fontSize: 14, color: inkFaint }}>R$</span>
-        <span style={{ fontSize: 48, fontWeight: 800, letterSpacing: '-2px', color: ink }}>{plan.price}</span>
-        <span style={{ fontSize: 14, color: inkFaint }}>/mes</span>
-      </div>
-      <div style={{ fontSize: 13, color: inkFaint, marginBottom: 24 }}>{plan.headline}</div>
-      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left' }}>
-        {plan.features.map((f) => (
-          <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
-            <span style={{ color: '#10B981', fontSize: 14, lineHeight: 1 }}>&#10003;</span>
-            {f}
-          </li>
-        ))}
-      </ul>
-      <Link
-        href="/login"
-        className={isPopular ? 'lx-plan-cta lx-plan-cta--solid' : 'lx-plan-cta'}
-      >
-        Comecar gratis
-      </Link>
-    </div>
-  )
-}
-
-/* ----------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
  * Page
- * -------------------------------------------------------------------------- */
+ * ------------------------------------------------------------------------ */
 
 export default function LandingPage() {
-  // Force dark theme on the public landing without polluting localStorage.
-  useEffect(() => {
-    const root = document.documentElement
-    const previous = root.getAttribute('data-theme')
-    root.setAttribute('data-theme', 'dark')
-    return () => {
-      if (previous) root.setAttribute('data-theme', previous)
-    }
-  }, [])
-
   return (
-    <div data-theme="dark" style={{ position: 'relative', minHeight: '100vh', background: '#0A0A0A', color: ink, fontFamily: "'DM Sans', sans-serif", overflow: 'hidden' }}>
-      {/* Animated topographic waves — sits behind everything */}
-      <TopoBackground />
-
-      {/* Soft accent glow under hero */}
-      <div
-        aria-hidden
-        style={{
-          position: 'fixed',
-          top: '-10%', left: '50%',
-          width: 1200, height: 800,
-          transform: 'translateX(-50%)',
-          background: 'radial-gradient(ellipse at center, rgba(59,130,246,0.10) 0%, rgba(59,130,246,0.04) 30%, transparent 65%)',
-          pointerEvents: 'none',
-          zIndex: 1,
-        }}
-      />
-
-      {/* ── NAV ─────────────────────────────────────────────────────────── */}
-      <header
-        style={{
-          position: 'sticky', top: 0, zIndex: 50,
-          backdropFilter: 'blur(14px) saturate(160%)',
-          WebkitBackdropFilter: 'blur(14px) saturate(160%)',
-          background: 'rgba(10,10,10,0.65)',
-          borderBottom: `1px solid ${hairline}`,
-        }}
-      >
-        <nav style={{ ...shell, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 32px' }}>
+    <div className="ax-root">
+      {/* ── NAV ────────────────────────────────────────────────────────── */}
+      <header className="ax-nav">
+        <div style={{ ...shell, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 40px' }}>
           <BrandMark />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-            <a href="#agentes" className="lx-nav-link">Agentes</a>
-            <a href="#planos" className="lx-nav-link">Planos</a>
-            <Link href="/login" className="lx-nav-link">Entrar</Link>
-            <PrimaryCTA>Comecar gratis</PrimaryCTA>
-          </div>
-        </nav>
+          <nav className="ax-nav-links">
+            <a href="#agentes" className="ax-nav-link">Agentes</a>
+            <a href="#atelier" className="ax-nav-link">Atelier</a>
+            <a href="#planos"  className="ax-nav-link">Planos</a>
+            <Link href="/login" className="ax-nav-link">Entrar</Link>
+            <Link href="/login" className="ax-cta-primary">Reservar acesso</Link>
+          </nav>
+        </div>
       </header>
 
-      {/* ── HERO ────────────────────────────────────────────────────────── */}
-      <section style={{ ...shell, padding: '120px 32px 60px', textAlign: 'center', maxWidth: 880 }}>
-        <div className="lx-pill">
-          <span style={{ color: '#10B981' }}>•</span>
-          2 dias gratis · Sem cartao
-        </div>
-
-        <h1 className="lx-hero-title">
-          Seu escritorio juridico<br />
-          <span className="lx-hero-accent">potencializado por IA</span>
-        </h1>
-
-        <p style={{ fontSize: 19, color: inkDim, lineHeight: 1.65, maxWidth: 600, margin: '0 auto 40px' }}>
-          10 agentes de inteligencia artificial especializados em Direito brasileiro.
-          Analise documentos, pesquise jurisprudencia e gere pecas processuais em minutos.
-        </p>
-
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <PrimaryCTA large>Comecar gratis por 2 dias</PrimaryCTA>
-          <GhostCTA href="#agentes">Ver agentes</GhostCTA>
+      {/* ── HERO ───────────────────────────────────────────────────────── */}
+      <section style={{ ...shell, padding: '140px 40px 60px' }}>
+        <div className="ax-hero-grid">
+          <div className="ax-hero-left">
+            <SerialLabel>N° 001 · LEXAI · MMXXVI</SerialLabel>
+            <h1 className="ax-hero-title">
+              Um escritorio juridico
+              <br />
+              <em className="ax-italic">feito a mao</em>,
+              <br />
+              <span className="ax-hero-muted">potencializado por inteligencia artificial.</span>
+            </h1>
+            <p className="ax-hero-lede">
+              Dez agentes treinados no ordenamento juridico brasileiro. Cada um afinado como
+              uma ferramenta de precisao — documentos, jurisprudencia, calculos, pecas
+              processuais. Ninguem se perde entre abas.
+            </p>
+            <div className="ax-hero-cta-row">
+              <Link href="/login" className="ax-cta-primary ax-cta-large">Reservar acesso</Link>
+              <a href="#agentes" className="ax-cta-ghost">Conhecer os agentes &nbsp;→</a>
+            </div>
+          </div>
+          <aside className="ax-hero-right">
+            <div className="ax-hero-card">
+              <div className="ax-hero-card-head">
+                <span className="ax-serial">Edicao limitada</span>
+                <span className="ax-serial">MMXXVI</span>
+              </div>
+              <div className="ax-hero-card-body">
+                <div className="ax-hero-card-metric">10</div>
+                <div className="ax-hero-card-metric-label">agentes</div>
+                <Rule />
+                <p className="ax-hero-card-quote">
+                  &ldquo;Estrategia e precisao para quem trata Direito como <em className="ax-italic">oficio</em>.&rdquo;
+                </p>
+                <div className="ax-hero-card-sign">— Vanix Corp, <em className="ax-italic">atelier de software</em></div>
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
 
-      {/* ── STATS ───────────────────────────────────────────────────────── */}
-      <section style={{ ...shell, padding: '24px 32px 80px' }}>
-        <div className="lx-stats">
-          {navStats.map((s) => (
-            <div key={s.label} className="lx-stat">
-              <div className="lx-stat-value">{s.value}</div>
-              <div className="lx-stat-label">{s.label}</div>
+      {/* ── PROVAS (serialized stats) ──────────────────────────────────── */}
+      <section style={{ ...shell, padding: '80px 40px' }}>
+        <div className="ax-provas">
+          {provas.map((p) => (
+            <div key={p.label} className="ax-prova">
+              <div className="ax-prova-num">{p.n}</div>
+              <div className="ax-prova-metric">{p.metric}</div>
+              <div className="ax-prova-label">{p.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── AGENTES ─────────────────────────────────────────────────────── */}
-      <section id="agentes" style={{ ...shell, padding: sectionPad }}>
-        <SectionHead
-          eyebrow="Agentes especializados"
-          title="10 agentes treinados em Direito brasileiro"
-          subtitle="Cada agente e treinado com prompts elite para o ordenamento juridico nacional"
-        />
-        <div className="lx-agent-grid">
-          {agentes.map((a) => <AgentCard key={a.name} {...a} />)}
+      {/* ── AGENTES ────────────────────────────────────────────────────── */}
+      <section id="agentes" style={{ ...shell, padding: '140px 40px 120px' }}>
+        <div className="ax-section-head">
+          <SerialLabel>Capitulo I</SerialLabel>
+          <h2 className="ax-section-title">
+            Dez agentes. <em className="ax-italic">Um unico gabinete.</em>
+          </h2>
+          <p className="ax-section-sub">
+            Nao e um assistente generico. Cada agente foi afinado para uma funcao especifica do
+            exercicio da advocacia no Brasil — e responde na lingua do processo.
+          </p>
+        </div>
+
+        <Rule />
+
+        <div className="ax-agents">
+          {agentes.map((a) => (
+            <div key={a.name} className="ax-agent">
+              <div className="ax-agent-num">{a.n}</div>
+              <div className="ax-agent-body">
+                <div className="ax-agent-name">{a.name}</div>
+                <div className="ax-agent-desc">{a.desc}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ── DEPOIMENTOS ─────────────────────────────────────────────────── */}
-      <section style={{ ...shell, padding: sectionPad }}>
-        <SectionHead
-          eyebrow="Quem ja usa"
-          title="O que nossos usuarios dizem"
-          subtitle="Resultados reais de quem ja usa LexAI no dia a dia"
-        />
-        <div className="lx-test-grid">
-          {depoimentos.map((d) => <TestimonialCard key={d.name} {...d} />)}
-        </div>
-      </section>
-
-      {/* ── PRICING ─────────────────────────────────────────────────────── */}
-      <section id="planos" style={{ ...shell, padding: sectionPad, maxWidth: 1040 }}>
-        <SectionHead
-          eyebrow="Planos"
-          title="Planos simples e transparentes"
-          subtitle="Comece gratis por 2 dias. Cancele quando quiser."
-        />
-        <div className="lx-plans">
-          {planos.map((p) => <PricingCard key={p.name} plan={p} />)}
-        </div>
-      </section>
-
-      {/* ── CTA FINAL ───────────────────────────────────────────────────── */}
-      <section style={{ ...shell, padding: '80px 32px 60px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-1.5px', marginBottom: 16, color: ink }}>
-          Pronto para transformar sua pratica juridica?
-        </h2>
-        <p style={{ fontSize: 17, color: inkDim, marginBottom: 32, maxWidth: 560, margin: '0 auto 32px' }}>
-          Junte-se a advogados e estudantes que ja usam IA no dia a dia.
-        </p>
-        <PrimaryCTA large>Comecar agora — 2 dias gratis</PrimaryCTA>
-      </section>
-
-      {/* ── DISCLAIMER LGPD ─────────────────────────────────────────────── */}
-      <section style={{ ...shell, padding: '32px 32px 56px', maxWidth: 920 }}>
-        <div
-          style={{
-            padding: '22px 26px', borderRadius: 14,
-            background: 'rgba(255,255,255,0.02)',
-            border: `1px solid ${hairline}`,
-            fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65,
-          }}
-        >
-          <div style={{ fontWeight: 700, color: 'rgba(255,255,255,0.78)', marginBottom: 8, fontSize: 13 }}>
-            <i className="bi bi-info-circle" style={{ marginRight: 8 }} />
-            Aviso importante
+      {/* ── ATELIER (philosophy strip) ─────────────────────────────────── */}
+      <section id="atelier" style={{ ...shell, padding: '140px 40px' }}>
+        <div className="ax-atelier">
+          <SerialLabel>Capitulo II · Atelier</SerialLabel>
+          <h2 className="ax-section-title ax-atelier-title">
+            Nao somos mais um SaaS.
+            <br />
+            <em className="ax-italic">Somos um atelier.</em>
+          </h2>
+          <p className="ax-atelier-body">
+            Cada prompt e afinado. Cada resposta, revisada. A experiencia e pensada para quem
+            trata o Direito como oficio — e nao tolera ferramentas genericas. LexAI e uma
+            ferramenta privada, feita para um numero limitado de profissionais por vez.
+          </p>
+          <Rule />
+          <div className="ax-atelier-sig">
+            Assinatura · <strong style={{ color: 'var(--text-primary)' }}>Leonardo, Vanix Corp</strong>
           </div>
-          A LexAI e uma ferramenta de apoio baseada em inteligencia artificial. Os resultados gerados pelos agentes
-          devem ser sempre revisados por profissional habilitado pela OAB antes de qualquer uso processual ou contratual.
-          A plataforma nao substitui o aconselhamento juridico profissional. Estamos em conformidade com a Lei Geral
-          de Protecao de Dados (LGPD) — seus dados sao criptografados e nunca usados para treinamento de modelos.
         </div>
       </section>
 
-      {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-      <footer style={{ borderTop: `1px solid ${hairline}`, background: 'rgba(0,0,0,0.35)' }}>
-        <div style={{ ...shell, padding: '56px 32px 28px' }}>
-          <div className="lx-footer-grid">
+      {/* ── DEPOIMENTOS ────────────────────────────────────────────────── */}
+      <section style={{ ...shell, padding: '60px 40px 140px' }}>
+        <div className="ax-section-head">
+          <SerialLabel>Capitulo III · Vozes</SerialLabel>
+          <h2 className="ax-section-title">
+            O que dizem <em className="ax-italic">os primeiros</em>.
+          </h2>
+        </div>
+        <Rule />
+        <div className="ax-tests">
+          {depoimentos.map((d) => (
+            <figure key={d.name} className="ax-test">
+              <blockquote className="ax-test-quote">&ldquo;{d.quote}&rdquo;</blockquote>
+              <figcaption className="ax-test-foot">
+                <div className="ax-test-initials">{d.initials}</div>
+                <div>
+                  <div className="ax-test-name">{d.name}</div>
+                  <div className="ax-test-cargo">{d.cargo}</div>
+                </div>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* ── PRICING ────────────────────────────────────────────────────── */}
+      <section id="planos" style={{ ...shell, padding: '60px 40px 160px', maxWidth: 1180 }}>
+        <div className="ax-section-head">
+          <SerialLabel>Capitulo IV · Acesso</SerialLabel>
+          <h2 className="ax-section-title">
+            Planos <em className="ax-italic">transparentes</em>.
+          </h2>
+          <p className="ax-section-sub">
+            Dois dias gratuitos, sem cartao. Cancelamento em um clique, sem fidelidade.
+          </p>
+        </div>
+        <Rule />
+        <div className="ax-plans">
+          {planos.map((p) => (
+            <div key={p.name} className={`ax-plan${p.popular ? ' ax-plan--popular' : ''}`}>
+              {p.popular && <div className="ax-plan-badge">Recomendado</div>}
+              <div className="ax-plan-name">{p.name}</div>
+              <div className="ax-plan-price">
+                <span className="ax-plan-currency">R$</span>
+                <span className="ax-plan-value">{p.price}</span>
+                <span className="ax-plan-per">/ mes</span>
+              </div>
+              <div className="ax-plan-headline">{p.headline}</div>
+              <ul className="ax-plan-features">
+                {p.features.map((f) => (
+                  <li key={f}>
+                    <span aria-hidden className="ax-plan-dot" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/login" className={`ax-plan-cta${p.popular ? ' ax-plan-cta--solid' : ''}`}>
+                Reservar acesso
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CLOSING MARK ───────────────────────────────────────────────── */}
+      <section style={{ ...shell, padding: '80px 40px 120px', textAlign: 'center' }}>
+        <SerialLabel>Ad finem · MMXXVI</SerialLabel>
+        <h2 className="ax-closing-title">
+          Pronto para praticar Direito <em className="ax-italic">com instrumento a altura</em>?
+        </h2>
+        <div style={{ marginTop: 36 }}>
+          <Link href="/login" className="ax-cta-primary ax-cta-large">Reservar meu acesso</Link>
+        </div>
+        <div style={{ marginTop: 20, fontSize: 12, color: 'var(--text-muted)', letterSpacing: '0.3px' }}>
+          Dois dias gratuitos · Sem cartao · Cancelamento em um clique
+        </div>
+      </section>
+
+      {/* ── LGPD NOTE ──────────────────────────────────────────────────── */}
+      <section style={{ ...shell, padding: '0 40px 80px', maxWidth: 920 }}>
+        <div className="ax-lgpd">
+          <div className="ax-lgpd-head">Aviso · LGPD</div>
+          LexAI e uma ferramenta de apoio baseada em inteligencia artificial. Os resultados
+          gerados pelos agentes devem ser revisados por profissional habilitado pela OAB
+          antes de qualquer uso processual ou contratual. A plataforma esta em conformidade
+          com a Lei Geral de Protecao de Dados — seus dados sao criptografados e nunca
+          utilizados para treinamento de modelos.
+        </div>
+      </section>
+
+      {/* ── FOOTER ─────────────────────────────────────────────────────── */}
+      <footer className="ax-footer">
+        <div style={{ ...shell, padding: '64px 40px 32px' }}>
+          <div className="ax-footer-grid">
             <div>
               <BrandMark />
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 14, lineHeight: 1.6, maxWidth: 280 }}>
-                Inteligencia artificial especializada em Direito brasileiro para advogados e estudantes.
+              <p className="ax-footer-blurb">
+                Inteligencia juridica feita a mao. Um atelier de software por
+                <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}> Vanix Corp</strong>.
               </p>
             </div>
             {footerColumns.map((col) => (
               <div key={col.title}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: ink, letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: 14 }}>
-                  {col.title}
-                </div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="ax-footer-title">{col.title}</div>
+                <ul className="ax-footer-list">
                   {col.links.map((l) => (
                     <li key={l.label}>
-                      <Link href={l.href} className="lx-foot-link">{l.label}</Link>
+                      <Link href={l.href} className="ax-footer-link">{l.label}</Link>
                     </li>
                   ))}
                 </ul>
@@ -446,257 +368,703 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div
-            style={{
-              marginTop: 40, paddingTop: 24,
-              borderTop: `1px solid ${hairline}`,
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              flexWrap: 'wrap', gap: 16,
-              fontSize: 12, color: 'rgba(255,255,255,0.40)',
-            }}
-          >
-            <div>© 2026 LexAI · uma marca <strong style={{ color: ink }}>Vanix Corp</strong></div>
-            <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
+          <div className="ax-footer-bottom">
+            <div>© MMXXVI · LexAI — uma marca <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Vanix Corp</strong></div>
+            <div className="ax-footer-contact">
               <span>luizfernandoleonardoleonardo@gmail.com</span>
+              <span className="ax-footer-sep">·</span>
               <span>(34) 99302-6456</span>
             </div>
           </div>
         </div>
       </footer>
 
-      {/* ── PAGE STYLES ─────────────────────────────────────────────────── */}
+      {/* ── STYLES ─────────────────────────────────────────────────────── */}
       <style>{`
-        html { scroll-behavior: smooth; }
+        /* ═══════════════════════════════════════════════════
+           ATELIER — editorial design system for landing
+           ═══════════════════════════════════════════════════ */
 
-        @keyframes lx-rise {
-          from { opacity: 0; transform: translateY(14px); }
-          to   { opacity: 1; transform: translateY(0); }
+        .ax-root {
+          position: relative;
+          min-height: 100vh;
+          background: var(--bg-base);
+          color: var(--text-primary);
+          font-family: var(--font-dm-sans, 'DM Sans'), -apple-system, sans-serif;
+          overflow-x: hidden;
+          -webkit-font-smoothing: antialiased;
         }
-
-        .lx-pill {
-          display: inline-flex; align-items: center; gap: 8px;
-          font-size: 12px; font-weight: 600; letter-spacing: 0.8px;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.78);
-          padding: 8px 16px; border-radius: 999px;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.10);
-          margin-bottom: 28px;
-          backdrop-filter: blur(10px);
-          animation: lx-rise 0.6s ease both;
+        .ax-root::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+          background:
+            radial-gradient(ellipse 60% 45% at 15% 8%, var(--stone-soft), transparent 68%),
+            radial-gradient(ellipse 55% 50% at 90% 95%, rgba(68,55,43,0.08), transparent 70%);
         }
+        .ax-root > * { position: relative; z-index: 1; }
 
-        .lx-hero-title {
-          font-size: clamp(40px, 6vw, 64px);
-          font-weight: 800;
-          letter-spacing: -2px;
-          line-height: 1.05;
-          margin: 0 0 22px;
-          color: ${ink};
-          animation: lx-rise 0.7s ease 0.05s both;
-        }
-        .lx-hero-accent {
-          background: linear-gradient(135deg, #60A5FA 0%, ${accent} 50%, #6366F1 100%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          filter: drop-shadow(0 8px 32px rgba(59,130,246,0.45));
-        }
-
-        .lx-cta { transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; }
-        .lx-cta:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 12px 36px rgba(37,99,235,0.45); }
-
-        .lx-ghost { transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
-        .lx-ghost:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.22); color: ${ink}; }
-
-        .lx-nav-link {
-          font-size: 14px;
-          color: rgba(255,255,255,0.62);
-          text-decoration: none;
+        /* ── Italics + serial labels ─────────────────────── */
+        .ax-italic {
+          font-family: var(--font-playfair, 'Playfair Display'), Georgia, serif;
+          font-style: italic;
           font-weight: 500;
-          transition: color 0.15s ease;
+          color: var(--accent);
+          letter-spacing: -0.5px;
         }
-        .lx-nav-link:hover { color: ${ink}; }
+        .ax-serial {
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 2.4px;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          font-variant-numeric: tabular-nums;
+        }
+        .ax-rule {
+          height: 1px;
+          width: 100%;
+          background: var(--stone-line);
+          margin: 40px 0;
+        }
 
-        .lx-stats {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-          padding: 28px 32px;
-          background: rgba(255,255,255,0.02);
-          border: 1px solid ${hairline};
-          border-radius: 20px;
-          backdrop-filter: blur(8px);
-        }
-        .lx-stat { text-align: center; }
-        .lx-stat-value {
-          font-size: 32px; font-weight: 800;
-          letter-spacing: -1px;
-          background: linear-gradient(135deg, #60A5FA, ${accent});
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-        }
-        .lx-stat-label { font-size: 13px; color: ${inkFaint}; margin-top: 4px; }
-
-        .lx-agent-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 16px;
-        }
-        .lx-agent {
-          padding: 22px 24px;
-          border-radius: 16px;
-          background: ${surface};
-          border: 1px solid ${hairline};
+        /* ── Brand ───────────────────────────────────────── */
+        .ax-brand {
           display: flex;
           align-items: center;
-          gap: 18px;
-          transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
-        }
-        .lx-agent:hover {
-          transform: translateY(-3px) scale(1.01);
-          background: ${surfaceLift};
-          border-color: rgba(255,255,255,0.12);
-        }
-        .lx-agent-bar {
-          width: 4px; height: 44px;
-          border-radius: 999px;
-          flex-shrink: 0;
-          transition: height 0.25s ease, box-shadow 0.25s ease;
-        }
-        .lx-agent:hover .lx-agent-bar { height: 52px; }
-
-        .lx-test-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
-        }
-        .lx-test {
-          background: ${surface};
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 18px;
-          padding: 26px;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          transition: transform 0.25s ease, border-color 0.25s ease;
-        }
-        .lx-test:hover {
-          transform: translateY(-3px);
-          border-color: rgba(255,255,255,0.16);
-        }
-
-        .lx-plans {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
-          align-items: stretch;
-        }
-        .lx-plan {
-          position: relative;
-          padding: 36px 30px;
-          border-radius: 22px;
-          text-align: center;
-          background: ${surface};
-          border: 1px solid ${hairline};
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.25s ease, border-color 0.25s ease;
-        }
-        .lx-plan:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.14); }
-        .lx-plan--popular {
-          background: linear-gradient(180deg, rgba(37,99,235,0.10) 0%, rgba(37,99,235,0.04) 100%);
-          border-color: rgba(59,130,246,0.35);
-          transform: scale(1.03);
-          box-shadow: 0 24px 60px rgba(37,99,235,0.18);
-        }
-        .lx-plan--popular:hover { transform: scale(1.03) translateY(-3px); }
-        .lx-badge {
-          position: absolute;
-          top: -12px; left: 50%; transform: translateX(-50%);
-          padding: 6px 14px;
-          border-radius: 999px;
-          background: linear-gradient(135deg, ${accent}, ${accentDeep});
-          color: ${ink};
-          font-size: 11px; font-weight: 700;
-          letter-spacing: 1px; text-transform: uppercase;
-          box-shadow: 0 6px 20px rgba(37,99,235,0.45);
-        }
-        .lx-plan-cta {
-          display: block;
-          margin-top: auto;
-          padding: 13px 20px;
-          border-radius: 11px;
+          gap: 14px;
           text-decoration: none;
-          font-weight: 600;
+        }
+        .ax-brand-mark {
+          width: 40px;
+          height: 40px;
+          border: 1px solid var(--stone-line);
+          border-radius: 2px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: var(--font-playfair), Georgia, serif;
           font-size: 14px;
-          color: rgba(255,255,255,0.75);
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          color: var(--text-primary);
+          background: var(--stone-soft);
+        }
+        .ax-brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+        .ax-brand-name {
+          font-size: 17px;
+          font-weight: 600;
+          letter-spacing: -0.3px;
+          color: var(--text-primary);
+        }
+        .ax-brand-sub {
+          font-size: 9px;
+          font-weight: 500;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          margin-top: 3px;
+        }
+
+        /* ── Nav ─────────────────────────────────────────── */
+        .ax-nav {
+          position: sticky;
+          top: 0;
+          z-index: 50;
+          background: var(--glass);
+          backdrop-filter: blur(18px) saturate(140%);
+          -webkit-backdrop-filter: blur(18px) saturate(140%);
+          border-bottom: 1px solid var(--stone-line);
+        }
+        .ax-nav-links {
+          display: flex;
+          align-items: center;
+          gap: 28px;
+        }
+        .ax-nav-link {
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--text-secondary);
+          text-decoration: none;
+          letter-spacing: 0.2px;
+          transition: color 0.2s ease;
+        }
+        .ax-nav-link:hover { color: var(--text-primary); }
+
+        /* ── CTAs ────────────────────────────────────────── */
+        .ax-cta-primary {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 11px 22px;
+          background: var(--text-primary);
+          color: var(--bg-base);
+          border: 1px solid var(--text-primary);
+          border-radius: 2px;
+          font-size: 13px;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+          text-decoration: none;
+          transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+        }
+        .ax-cta-primary:hover {
+          background: var(--accent);
+          border-color: var(--accent);
+          color: var(--bg-base);
+          transform: translateY(-1px);
+        }
+        .ax-cta-large { padding: 17px 36px; font-size: 14px; letter-spacing: 0.4px; }
+
+        .ax-cta-ghost {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 17px 10px;
+          color: var(--text-secondary);
+          font-size: 14px;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+          text-decoration: none;
+          border-bottom: 1px solid transparent;
+          transition: color 0.2s ease, border-color 0.2s ease;
+        }
+        .ax-cta-ghost:hover {
+          color: var(--text-primary);
+          border-bottom-color: var(--accent);
+        }
+
+        /* ── Hero ────────────────────────────────────────── */
+        @keyframes ax-rise {
+          from { opacity: 0; transform: translateY(18px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes ax-fade { from { opacity: 0; } to { opacity: 1; } }
+
+        .ax-hero-grid {
+          display: grid;
+          grid-template-columns: 1.45fr 1fr;
+          gap: 80px;
+          align-items: center;
+        }
+        .ax-hero-left { animation: ax-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .ax-hero-right {
+          animation: ax-rise 1s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+        }
+        .ax-hero-title {
+          font-size: clamp(44px, 6.2vw, 78px);
+          font-weight: 300;
+          letter-spacing: -2.4px;
+          line-height: 1.02;
+          margin: 28px 0 36px;
+          color: var(--text-primary);
+        }
+        .ax-hero-title .ax-italic {
+          font-size: 1.02em;
+          letter-spacing: -2px;
+        }
+        .ax-hero-muted {
+          color: var(--text-secondary);
+          font-weight: 300;
+        }
+        .ax-hero-lede {
+          font-size: 17px;
+          line-height: 1.72;
+          color: var(--text-secondary);
+          max-width: 540px;
+          margin: 0 0 44px;
+          font-weight: 400;
+        }
+        .ax-hero-cta-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .ax-hero-card {
+          border: 1px solid var(--stone-line);
+          background: var(--card-bg);
+          backdrop-filter: blur(18px);
+          padding: 38px 36px;
+          position: relative;
+        }
+        .ax-hero-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 24px;
+          right: 24px;
+          height: 1px;
+          background: var(--accent);
+          opacity: 0.4;
+        }
+        .ax-hero-card-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 28px;
+        }
+        .ax-hero-card-metric {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 108px;
+          font-weight: 400;
+          line-height: 0.9;
+          color: var(--text-primary);
+          letter-spacing: -4px;
+        }
+        .ax-hero-card-metric-label {
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          margin-top: 8px;
+          margin-bottom: 28px;
+        }
+        .ax-hero-card-quote {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 17px;
+          line-height: 1.55;
+          font-style: italic;
+          color: var(--text-primary);
+          margin: 24px 0 16px;
+        }
+        .ax-hero-card-sign {
+          font-size: 11px;
+          color: var(--text-muted);
+          letter-spacing: 0.3px;
+        }
+
+        /* ── Provas (stats) ──────────────────────────────── */
+        .ax-provas {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          border-top: 1px solid var(--stone-line);
+          border-bottom: 1px solid var(--stone-line);
+        }
+        .ax-prova {
+          padding: 40px 32px;
+          text-align: left;
+          border-left: 1px solid var(--stone-line);
+        }
+        .ax-prova:first-child { border-left: none; }
+        .ax-prova-num {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-style: italic;
+          font-size: 13px;
+          color: var(--accent);
+          margin-bottom: 14px;
+        }
+        .ax-prova-metric {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 56px;
+          font-weight: 400;
+          color: var(--text-primary);
+          letter-spacing: -2px;
+          line-height: 1;
+        }
+        .ax-prova-label {
+          font-size: 12px;
+          font-weight: 500;
+          letter-spacing: 0.6px;
+          color: var(--text-secondary);
+          margin-top: 14px;
+          line-height: 1.5;
+        }
+
+        /* ── Section heads ───────────────────────────────── */
+        .ax-section-head { margin-bottom: 20px; max-width: 680px; }
+        .ax-section-title {
+          font-size: clamp(32px, 4.6vw, 56px);
+          font-weight: 300;
+          letter-spacing: -1.8px;
+          line-height: 1.08;
+          color: var(--text-primary);
+          margin: 22px 0 16px;
+        }
+        .ax-section-title .ax-italic { font-size: 1em; letter-spacing: -1.4px; }
+        .ax-section-sub {
+          font-size: 16px;
+          line-height: 1.65;
+          color: var(--text-secondary);
+          max-width: 620px;
+          font-weight: 400;
+          margin: 0;
+        }
+
+        /* ── Agents ──────────────────────────────────────── */
+        .ax-agents {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          border-top: 1px solid var(--stone-line);
+          border-left: 1px solid var(--stone-line);
+        }
+        .ax-agent {
+          padding: 36px 32px;
+          border-right: 1px solid var(--stone-line);
+          border-bottom: 1px solid var(--stone-line);
+          display: flex;
+          gap: 28px;
+          align-items: flex-start;
+          transition: background 0.35s ease;
+        }
+        .ax-agent:hover { background: var(--stone-soft); }
+        .ax-agent-num {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-style: italic;
+          font-size: 22px;
+          color: var(--accent);
+          line-height: 1;
+          padding-top: 4px;
+          letter-spacing: -0.5px;
+        }
+        .ax-agent-name {
+          font-size: 19px;
+          font-weight: 500;
+          letter-spacing: -0.4px;
+          color: var(--text-primary);
+          margin-bottom: 8px;
+        }
+        .ax-agent-desc {
+          font-size: 14px;
+          line-height: 1.65;
+          color: var(--text-secondary);
+          max-width: 420px;
+        }
+
+        /* ── Atelier ─────────────────────────────────────── */
+        .ax-atelier {
+          max-width: 780px;
+          margin: 0 auto;
+          text-align: center;
+        }
+        .ax-atelier-title { margin-bottom: 36px; }
+        .ax-atelier-body {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 21px;
+          line-height: 1.75;
+          color: var(--text-secondary);
+          font-weight: 400;
+          max-width: 680px;
+          margin: 0 auto;
+          font-style: italic;
+        }
+        .ax-atelier-sig {
+          font-size: 12px;
+          letter-spacing: 0.4px;
+          color: var(--text-muted);
+          text-align: center;
+        }
+
+        /* ── Testimonials ────────────────────────────────── */
+        .ax-tests {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0;
+          border-top: 1px solid var(--stone-line);
+          border-left: 1px solid var(--stone-line);
+        }
+        .ax-test {
+          padding: 44px 36px;
+          border-right: 1px solid var(--stone-line);
+          border-bottom: 1px solid var(--stone-line);
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 28px;
+        }
+        .ax-test-quote {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 18px;
+          line-height: 1.65;
+          font-style: italic;
+          color: var(--text-primary);
+          margin: 0;
+          flex: 1;
+        }
+        .ax-test-foot {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding-top: 20px;
+          border-top: 1px solid var(--stone-line);
+        }
+        .ax-test-initials {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          background: var(--stone-soft);
+          border: 1px solid var(--stone-line);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--text-primary);
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 14px;
+          font-weight: 600;
+          flex-shrink: 0;
+        }
+        .ax-test-name {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--text-primary);
+          letter-spacing: -0.1px;
+        }
+        .ax-test-cargo {
+          font-size: 11px;
+          color: var(--text-muted);
+          letter-spacing: 0.2px;
+          margin-top: 2px;
+        }
+
+        /* ── Plans ───────────────────────────────────────── */
+        .ax-plans {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0;
+          border-top: 1px solid var(--stone-line);
+          border-left: 1px solid var(--stone-line);
+        }
+        .ax-plan {
+          position: relative;
+          padding: 52px 40px 44px;
+          border-right: 1px solid var(--stone-line);
+          border-bottom: 1px solid var(--stone-line);
+          display: flex;
+          flex-direction: column;
           background: transparent;
-          border: 1px solid rgba(255,255,255,0.16);
+          transition: background 0.35s ease;
+        }
+        .ax-plan:hover { background: var(--stone-soft); }
+        .ax-plan--popular {
+          background: var(--card-bg);
+          backdrop-filter: blur(18px);
+        }
+        .ax-plan--popular::before {
+          content: '';
+          position: absolute;
+          top: -1px; left: -1px; right: -1px;
+          height: 2px;
+          background: var(--accent);
+        }
+        .ax-plan-badge {
+          position: absolute;
+          top: 20px;
+          right: 28px;
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          color: var(--accent);
+          font-family: var(--font-playfair), Georgia, serif;
+          font-style: italic;
+        }
+        .ax-plan-name {
+          font-size: 13px;
+          font-weight: 600;
+          letter-spacing: 2.4px;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          margin-bottom: 18px;
+        }
+        .ax-plan-price {
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+          margin-bottom: 8px;
+        }
+        .ax-plan-currency {
+          font-size: 15px;
+          color: var(--text-muted);
+          letter-spacing: 0.5px;
+        }
+        .ax-plan-value {
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: 72px;
+          font-weight: 400;
+          line-height: 1;
+          color: var(--text-primary);
+          letter-spacing: -3px;
+        }
+        .ax-plan-per {
+          font-size: 13px;
+          color: var(--text-muted);
+          letter-spacing: 0.3px;
+        }
+        .ax-plan-headline {
+          font-size: 13px;
+          color: var(--text-secondary);
+          margin-bottom: 28px;
+          letter-spacing: 0.2px;
+        }
+        .ax-plan-features {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 32px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          flex: 1;
+        }
+        .ax-plan-features li {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 13px;
+          color: var(--text-secondary);
+          line-height: 1.55;
+        }
+        .ax-plan-dot {
+          width: 5px;
+          height: 5px;
+          background: var(--accent);
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+        .ax-plan-cta {
+          display: block;
+          text-align: center;
+          padding: 14px 20px;
+          border: 1px solid var(--stone-line);
+          color: var(--text-primary);
+          text-decoration: none;
+          font-size: 13px;
+          font-weight: 500;
+          letter-spacing: 0.4px;
           transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
-        .lx-plan-cta:hover { background: rgba(255,255,255,0.06); color: ${ink}; border-color: rgba(255,255,255,0.28); }
-        .lx-plan-cta--solid {
-          background: linear-gradient(135deg, ${accent}, ${accentDeep});
-          color: ${ink};
-          border: none;
-          box-shadow: 0 8px 24px rgba(37,99,235,0.40);
+        .ax-plan-cta:hover {
+          background: var(--text-primary);
+          color: var(--bg-base);
+          border-color: var(--text-primary);
         }
-        .lx-plan-cta--solid:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 12px 32px rgba(37,99,235,0.50); }
+        .ax-plan-cta--solid {
+          background: var(--text-primary);
+          color: var(--bg-base);
+          border-color: var(--text-primary);
+        }
+        .ax-plan-cta--solid:hover {
+          background: var(--accent);
+          border-color: var(--accent);
+        }
 
-        .lx-footer-grid {
+        /* ── Closing ─────────────────────────────────────── */
+        .ax-closing-title {
+          font-size: clamp(34px, 4.8vw, 58px);
+          font-weight: 300;
+          letter-spacing: -1.6px;
+          line-height: 1.1;
+          color: var(--text-primary);
+          margin: 28px 0 0;
+          max-width: 800px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        /* ── LGPD ────────────────────────────────────────── */
+        .ax-lgpd {
+          padding: 28px 32px;
+          border: 1px solid var(--stone-line);
+          font-size: 12px;
+          line-height: 1.75;
+          color: var(--text-muted);
+          background: var(--stone-soft);
+        }
+        .ax-lgpd-head {
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 2.4px;
+          text-transform: uppercase;
+          color: var(--accent);
+          margin-bottom: 10px;
+        }
+
+        /* ── Footer ──────────────────────────────────────── */
+        .ax-footer {
+          border-top: 1px solid var(--stone-line);
+          background: transparent;
+        }
+        .ax-footer-grid {
           display: grid;
-          grid-template-columns: 1.4fr 1fr 1fr 1fr;
-          gap: 40px;
+          grid-template-columns: 1.6fr 1fr 1fr 1fr;
+          gap: 48px;
         }
-        .lx-foot-link {
+        .ax-footer-blurb {
           font-size: 13px;
-          color: rgba(255,255,255,0.50);
-          text-decoration: none;
-          transition: color 0.15s ease;
+          color: var(--text-secondary);
+          line-height: 1.65;
+          margin-top: 18px;
+          max-width: 320px;
         }
-        .lx-foot-link:hover { color: ${ink}; }
+        .ax-footer-title {
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 2.4px;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          margin-bottom: 18px;
+        }
+        .ax-footer-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .ax-footer-link {
+          font-size: 13px;
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: color 0.2s ease;
+        }
+        .ax-footer-link:hover { color: var(--accent); }
+        .ax-footer-bottom {
+          margin-top: 56px;
+          padding-top: 28px;
+          border-top: 1px solid var(--stone-line);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 14px;
+          font-size: 11px;
+          color: var(--text-muted);
+          letter-spacing: 0.3px;
+        }
+        .ax-footer-contact {
+          display: flex;
+          gap: 14px;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .ax-footer-sep { color: var(--text-muted); opacity: 0.5; }
 
-        @media (max-width: 900px) {
-          .lx-agent-grid { grid-template-columns: 1fr; }
-          .lx-test-grid  { grid-template-columns: 1fr; }
-          .lx-plans      { grid-template-columns: 1fr; }
-          .lx-plan--popular { transform: none; }
-          .lx-plan--popular:hover { transform: translateY(-3px); }
-          .lx-stats { grid-template-columns: repeat(2, 1fr); }
-          .lx-footer-grid { grid-template-columns: 1fr 1fr; }
+        /* ── Responsive ──────────────────────────────────── */
+        @media (max-width: 960px) {
+          .ax-hero-grid { grid-template-columns: 1fr; gap: 48px; }
+          .ax-hero-right { max-width: 400px; }
+          .ax-provas { grid-template-columns: repeat(2, 1fr); }
+          .ax-prova:nth-child(3) { border-left: none; }
+          .ax-prova { border-bottom: 1px solid var(--stone-line); }
+          .ax-prova:nth-child(n+3) { border-bottom: none; }
+          .ax-agents { grid-template-columns: 1fr; }
+          .ax-tests { grid-template-columns: 1fr; }
+          .ax-plans { grid-template-columns: 1fr; }
+          .ax-footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+          .ax-nav-links { gap: 16px; }
+          .ax-nav-link:not(.ax-cta-primary) { display: none; }
         }
         @media (max-width: 560px) {
-          .lx-footer-grid { grid-template-columns: 1fr; }
-          .lx-stats { grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px; }
+          .ax-hero-grid { gap: 36px; }
+          .ax-provas { grid-template-columns: 1fr; }
+          .ax-prova { border-left: none !important; border-bottom: 1px solid var(--stone-line); }
+          .ax-footer-grid { grid-template-columns: 1fr; }
+          .ax-plan-value { font-size: 56px; }
+          .ax-hero-card-metric { font-size: 80px; }
         }
       `}</style>
-    </div>
-  )
-}
-
-/* ----------------------------------------------------------------------------
- * Helper: section header — same composition reused throughout the page.
- * -------------------------------------------------------------------------- */
-
-function SectionHead({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle: string }) {
-  return (
-    <div style={{ textAlign: 'center', marginBottom: 56 }}>
-      <div
-        style={{
-          fontSize: 11, fontWeight: 700, letterSpacing: '1.5px',
-          textTransform: 'uppercase', color: accent, marginBottom: 12,
-        }}
-      >
-        {eyebrow}
-      </div>
-      <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-1.5px', marginBottom: 14, color: ink, lineHeight: 1.15 }}>
-        {title}
-      </h2>
-      <p style={{ fontSize: 16, color: inkDim, maxWidth: 560, margin: '0 auto', lineHeight: 1.6 }}>
-        {subtitle}
-      </p>
     </div>
   )
 }

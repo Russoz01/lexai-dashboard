@@ -84,8 +84,8 @@ function NotFoundView() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#F8FAFC',
-      color: '#0F172A',
+      background: '#F5EFE6',
+      color: '#132025',
       fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
       display: 'flex',
       alignItems: 'center',
@@ -120,7 +120,7 @@ function NotFoundView() {
           fontSize: '22px',
           fontWeight: 700,
           marginBottom: '10px',
-          color: '#0F172A',
+          color: '#132025',
         }}>
           Link expirado ou nao encontrado
         </h1>
@@ -139,7 +139,7 @@ function NotFoundView() {
             alignItems: 'center',
             gap: '8px',
             padding: '11px 22px',
-            background: '#2563EB',
+            background: '#bfa68e',
             color: '#FFFFFF',
             borderRadius: '10px',
             fontSize: '14px',
@@ -197,8 +197,8 @@ export default async function SharedDocumentPage({
 
       <div style={{
         minHeight: '100vh',
-        background: '#F8FAFC',
-        color: '#0F172A',
+        background: '#F5EFE6',
+        color: '#132025',
         fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
         padding: '48px 24px',
       }}>
@@ -223,7 +223,7 @@ export default async function SharedDocumentPage({
               marginBottom: '14px',
               fontSize: '12px',
               fontWeight: 600,
-              color: '#2563EB',
+              color: '#bfa68e',
               letterSpacing: '0.5px',
               textTransform: 'uppercase',
             }}>
@@ -231,7 +231,7 @@ export default async function SharedDocumentPage({
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                background: '#2563EB',
+                background: '#bfa68e',
                 display: 'inline-block',
               }} />
               Compartilhado via LexAI
@@ -242,7 +242,7 @@ export default async function SharedDocumentPage({
               fontWeight: 700,
               lineHeight: 1.3,
               marginBottom: '14px',
-              color: '#0F172A',
+              color: '#132025',
             }}>
               {doc.titulo}
             </h1>
@@ -288,7 +288,7 @@ export default async function SharedDocumentPage({
               <div style={{
                 fontSize: '12px',
                 fontWeight: 600,
-                color: '#2563EB',
+                color: '#bfa68e',
                 letterSpacing: '0.5px',
                 textTransform: 'uppercase',
                 marginBottom: '10px',
@@ -321,7 +321,7 @@ export default async function SharedDocumentPage({
               <div style={{
                 fontSize: '12px',
                 fontWeight: 600,
-                color: '#2563EB',
+                color: '#bfa68e',
                 letterSpacing: '0.5px',
                 textTransform: 'uppercase',
                 marginBottom: '14px',
@@ -350,7 +350,7 @@ export default async function SharedDocumentPage({
                       width: '6px',
                       height: '6px',
                       borderRadius: '50%',
-                      background: '#2563EB',
+                      background: '#bfa68e',
                       flexShrink: 0,
                       marginTop: '8px',
                     }} />
@@ -528,13 +528,13 @@ export default async function SharedDocumentPage({
 
           {/* Footer CTA */}
           <div style={{
-            background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+            background: 'linear-gradient(135deg, #bfa68e 0%, #a08970 100%)',
             borderRadius: '16px',
             padding: '32px',
             marginTop: '32px',
             textAlign: 'center',
             color: '#FFFFFF',
-            boxShadow: '0 10px 25px rgba(37,99,235,0.25)',
+            boxShadow: '0 10px 25px rgba(191,166,142,0.28)',
           }}>
             <div style={{
               fontSize: '20px',
@@ -560,7 +560,7 @@ export default async function SharedDocumentPage({
                 gap: '8px',
                 padding: '12px 26px',
                 background: '#FFFFFF',
-                color: '#2563EB',
+                color: '#bfa68e',
                 borderRadius: '10px',
                 fontSize: '14px',
                 fontWeight: 700,

@@ -52,7 +52,7 @@ function baseTemplate(content: string): string {
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.06);">
               <tr>
                 <td style="padding:32px 32px 24px;border-bottom:1px solid #e5e7eb;">
-                  <div style="font-size:24px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;">LexAI</div>
+                  <div style="font-size:24px;font-weight:800;color:#132025;letter-spacing:-0.5px;">LexAI</div>
                   <div style="font-size:13px;color:#64748b;margin-top:4px;">IA para Direito brasileiro</div>
                 </td>
               </tr>
@@ -79,39 +79,39 @@ function baseTemplate(content: string): string {
 
 export function welcomeEmailHtml(nome: string): string {
   return baseTemplate(`
-    <h1 style="font-size:22px;font-weight:800;color:#0f172a;margin:0 0 16px;letter-spacing:-0.3px;">Bem-vindo a LexAI, ${nome}!</h1>
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;letter-spacing:-0.3px;">Bem-vindo a LexAI, ${nome}!</h1>
     <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Seu trial gratuito de <strong>2 dias</strong> esta ativo. Voce tem acesso a todos os 10 agentes IA, sem cobranca e sem precisar cadastrar cartao.</p>
-    <div style="background:#eff6ff;border-left:4px solid #2563eb;padding:14px 18px;border-radius:8px;margin:20px 0;">
-      <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:6px;">Comece pelo Resumidor</div>
+    <div style="background:#f5efe6;border-left:4px solid #bfa68e;padding:14px 18px;border-radius:8px;margin:20px 0;">
+      <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Comece pelo Resumidor</div>
       <div style="font-size:13px;color:#475569;line-height:1.5;">E o agente mais usado. Cole qualquer documento juridico e veja a magia acontecer em 45 segundos.</div>
     </div>
-    <a href="https://lexai.com.br/dashboard/resumidor" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;">Acessar Dashboard</a>
+    <a href="https://lexai.com.br/dashboard/resumidor" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;">Acessar Dashboard</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Duvidas? Responda este email ou nos chame em (34) 99302-6456.</p>
   `)
 }
 
 export function trialEndingEmailHtml(nome: string, daysLeft: number): string {
   return baseTemplate(`
-    <h1 style="font-size:22px;font-weight:800;color:#0f172a;margin:0 0 16px;">${nome}, seu trial termina em ${daysLeft} dia${daysLeft === 1 ? '' : 's'}</h1>
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">${nome}, seu trial termina em ${daysLeft} dia${daysLeft === 1 ? '' : 's'}</h1>
     <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Esperamos que voce esteja aproveitando os agentes da LexAI. Para continuar usando todos os 10 agentes, escolha um plano antes do trial expirar.</p>
     <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:6px;">Oferta de lancamento</div>
       <div style="font-size:13px;color:#78350f;line-height:1.5;">Plano anual com 18% de desconto. Garanta o preco fixo por 12 meses.</div>
     </div>
-    <a href="https://lexai.com.br/dashboard/planos" style="display:inline-block;background:#0f172a;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ver planos</a>
+    <a href="https://lexai.com.br/dashboard/planos" style="display:inline-block;background:#132025;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ver planos</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Sem cobranca automatica. Voce so paga se escolher um plano.</p>
   `)
 }
 
 export function paymentReceivedEmailHtml(nome: string, plano: string, valor: string): string {
   return baseTemplate(`
-    <h1 style="font-size:22px;font-weight:800;color:#0f172a;margin:0 0 16px;">Pagamento confirmado, ${nome}!</h1>
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">Pagamento confirmado, ${nome}!</h1>
     <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Sua assinatura do plano <strong>${plano}</strong> esta ativa. Voce ja tem acesso completo a todos os agentes incluidos no plano.</p>
     <div style="background:#ecfdf5;border-left:4px solid #10b981;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:6px;">Detalhes do pagamento</div>
       <div style="font-size:13px;color:#047857;line-height:1.6;">Plano: ${plano}<br>Valor: ${valor}<br>Cobranca: mensal recorrente</div>
     </div>
-    <a href="https://lexai.com.br/dashboard" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ir para o Dashboard</a>
+    <a href="https://lexai.com.br/dashboard" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ir para o Dashboard</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Gerencie sua assinatura, cancele ou baixe faturas em <strong>Configuracoes &gt; Pagamento</strong>.</p>
   `)
 }

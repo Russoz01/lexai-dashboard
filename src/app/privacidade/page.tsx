@@ -45,12 +45,12 @@ const ulStyle: React.CSSProperties = {
 
 export default function PrivacidadePage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#0A0A0A', color: '#F1F1F1', fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#132025', color: '#F3EEE4', fontFamily: "'DM Sans', sans-serif" }}>
 
       {/* Nav */}
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#F1F1F1' }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #141414, #2A2A2A)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(59,130,246,0.20)' }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #132025, #18282e)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(191,166,142,0.22)' }}>
             <span style={{ color: '#fff', fontSize: 14, fontWeight: 800 }}>LX</span>
           </div>
           <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.5px' }}>LexAI</span>
@@ -58,7 +58,7 @@ export default function PrivacidadePage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link href="/" style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontWeight: 500 }}>Inicio</Link>
           <Link href="/termos" style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontWeight: 500 }}>Termos</Link>
-          <Link href="/login" style={{ fontSize: 14, color: '#fff', background: '#2563EB', padding: '8px 20px', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
+          <Link href="/login" style={{ fontSize: 14, color: '#132025', background: '#bfa68e', padding: '8px 20px', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
             Entrar
           </Link>
         </div>
@@ -276,20 +276,20 @@ export default function PrivacidadePage() {
             marginBottom: 14,
           }}>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 6 }}>
-              <i className="bi bi-envelope-fill" style={{ marginRight: 8, color: '#3B82F6' }} />
+              <i className="bi bi-envelope-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
               <strong style={{ color: '#fff' }}>E-mail:</strong> luizfernandoleonardoleonardo@gmail.com
             </div>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 6 }}>
-              <i className="bi bi-telephone-fill" style={{ marginRight: 8, color: '#3B82F6' }} />
+              <i className="bi bi-telephone-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
               <strong style={{ color: '#fff' }}>Telefone:</strong> (34) 99302-6456
             </div>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>
-              <i className="bi bi-geo-alt-fill" style={{ marginRight: 8, color: '#3B82F6' }} />
+              <i className="bi bi-geo-alt-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
               <strong style={{ color: '#fff' }}>Endereco:</strong> Uberlandia, Minas Gerais &mdash; Brasil
             </div>
           </div>
           <p style={pStyle}>
-            Voce tambem pode apresentar reclamacao diretamente a Autoridade Nacional de Protecao de Dados (ANPD) atraves do site <span style={{ color: '#3B82F6' }}>www.gov.br/anpd</span>.
+            Voce tambem pode apresentar reclamacao diretamente a Autoridade Nacional de Protecao de Dados (ANPD) atraves do site <span style={{ color: '#bfa68e' }}>www.gov.br/anpd</span>.
           </p>
         </section>
 

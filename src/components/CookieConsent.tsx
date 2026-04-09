@@ -73,14 +73,14 @@ export default function CookieConsent() {
               width: 40,
               height: 40,
               borderRadius: 12,
-              background: 'rgba(59,130,246,0.12)',
-              border: '1px solid rgba(59,130,246,0.25)',
+              background: 'rgba(191,166,142,0.12)',
+              border: '1px solid rgba(191,166,142,0.28)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <i className="bi bi-shield-lock" style={{ color: '#3B82F6', fontSize: 18 }} />
+            <i className="bi bi-shield-lock" style={{ color: '#bfa68e', fontSize: 18 }} />
           </div>
         </div>
 
@@ -90,7 +90,7 @@ export default function CookieConsent() {
           </div>
           <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.62)', lineHeight: 1.5, margin: 0 }}>
             Usamos cookies para autenticacao (necessarios) e analytics (opcional). Voce pode revogar o consentimento a qualquer momento em{' '}
-            <Link href="/privacidade" style={{ color: '#3B82F6', textDecoration: 'underline' }}>
+            <Link href="/privacidade" style={{ color: '#bfa68e', textDecoration: 'underline' }}>
               /privacidade
             </Link>
             . LGPD compliant.
@@ -132,11 +132,11 @@ export default function CookieConsent() {
               fontWeight: 600,
               padding: '9px 18px',
               borderRadius: 10,
-              background: '#2563EB',
-              color: '#fff',
+              background: '#bfa68e',
+              color: '#132025',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(37,99,235,0.35)',
+              boxShadow: '0 4px 14px rgba(191,166,142,0.35)',
               whiteSpace: 'nowrap',
               fontFamily: 'inherit',
             }}

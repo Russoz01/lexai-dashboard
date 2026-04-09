@@ -78,7 +78,7 @@ export default function LegislacaoPage() {
             {[
               { nome: 'Constituicao Federal 1988', desc: 'Texto integral atualizado no Planalto', url: 'https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm', icon: 'bi-bank', color: '#c9a84c' },
               { nome: 'Codigo Penal (Decreto-Lei 2.848/40)', desc: 'CP brasileiro &mdash; texto consolidado', url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm', icon: 'bi-shield-exclamation', color: '#EF4444' },
-              { nome: 'Codigo Civil (Lei 10.406/02)', desc: 'CC brasileiro &mdash; texto consolidado', url: 'https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm', icon: 'bi-file-earmark-text', color: '#2563EB' },
+              { nome: 'Codigo Civil (Lei 10.406/02)', desc: 'CC brasileiro &mdash; texto consolidado', url: 'https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm', icon: 'bi-file-earmark-text', color: '#44372b' },
               { nome: 'Codigo de Processo Civil (Lei 13.105/15)', desc: 'CPC/2015 atualizado', url: 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm', icon: 'bi-journal-check', color: '#6366F1' },
               { nome: 'Codigo de Processo Penal (DL 3.689/41)', desc: 'CPP brasileiro consolidado', url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del3689compilado.htm', icon: 'bi-gavel', color: '#8B5CF6' },
               { nome: 'CLT (DL 5.452/43)', desc: 'Consolidacao das Leis do Trabalho', url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm', icon: 'bi-briefcase', color: '#F59E0B' },

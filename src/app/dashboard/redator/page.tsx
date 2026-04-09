@@ -978,8 +978,8 @@ export default function RedatorPage() {
         }
         .template-card:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 22px rgba(15, 23, 42, 0.09),
-                      0 2px 6px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 8px 22px rgba(19, 32, 37, 0.10),
+                      0 2px 6px rgba(19, 32, 37, 0.05);
           border-color: var(--accent);
         }
         .template-card.is-active {
@@ -987,7 +987,7 @@ export default function RedatorPage() {
           border: 2.5px solid var(--accent);
           background: var(--accent-light);
           padding: 10px 12px;
-          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.14);
+          box-shadow: 0 6px 20px rgba(191, 166, 142, 0.18);
         }
         .template-card.is-active:hover {
           transform: scale(1.02) translateY(-1px);

@@ -45,12 +45,12 @@ const ulStyle: React.CSSProperties = {
 
 export default function TermosPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#0A0A0A', color: '#F1F1F1', fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#132025', color: '#F3EEE4', fontFamily: "'DM Sans', sans-serif" }}>
 
       {/* Nav */}
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#F1F1F1' }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #141414, #2A2A2A)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(59,130,246,0.20)' }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #132025, #18282e)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(191,166,142,0.22)' }}>
             <span style={{ color: '#fff', fontSize: 14, fontWeight: 800 }}>LX</span>
           </div>
           <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.5px' }}>LexAI</span>
@@ -58,7 +58,7 @@ export default function TermosPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link href="/" style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontWeight: 500 }}>Inicio</Link>
           <Link href="/privacidade" style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontWeight: 500 }}>Privacidade</Link>
-          <Link href="/login" style={{ fontSize: 14, color: '#fff', background: '#2563EB', padding: '8px 20px', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
+          <Link href="/login" style={{ fontSize: 14, color: '#132025', background: '#bfa68e', padding: '8px 20px', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
             Entrar
           </Link>
         </div>
@@ -76,7 +76,7 @@ export default function TermosPage() {
 
         {/* Header */}
         <div style={{ marginBottom: 48 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#3B82F6', marginBottom: 16, padding: '6px 12px', borderRadius: 20, background: 'rgba(59,130,246,0.10)', border: '1px solid rgba(59,130,246,0.20)' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#bfa68e', marginBottom: 16, padding: '6px 12px', borderRadius: 20, background: 'rgba(191,166,142,0.12)', border: '1px solid rgba(191,166,142,0.22)' }}>
             <i className="bi bi-file-text" />Termos e Condicoes
           </div>
           <h1 style={{ fontSize: 44, fontWeight: 800, color: '#fff', letterSpacing: '-1.5px', marginBottom: 12, lineHeight: 1.15 }}>
@@ -91,7 +91,7 @@ export default function TermosPage() {
         <section style={sectionStyle}>
           <h2 style={h2Style}>1. Aceitacao dos termos</h2>
           <p style={pStyle}>
-            Ao se cadastrar, acessar ou utilizar a plataforma LexAI (&ldquo;Plataforma&rdquo;), voce (&ldquo;Usuario&rdquo;) declara ter lido, compreendido e aceito integralmente estes Termos de Uso (&ldquo;Termos&rdquo;) e a nossa <Link href="/privacidade" style={{ color: '#3B82F6', textDecoration: 'underline' }}>Politica de Privacidade</Link>, formando um contrato juridicamente vinculante entre voce e a LexAI.
+            Ao se cadastrar, acessar ou utilizar a plataforma LexAI (&ldquo;Plataforma&rdquo;), voce (&ldquo;Usuario&rdquo;) declara ter lido, compreendido e aceito integralmente estes Termos de Uso (&ldquo;Termos&rdquo;) e a nossa <Link href="/privacidade" style={{ color: '#bfa68e', textDecoration: 'underline' }}>Politica de Privacidade</Link>, formando um contrato juridicamente vinculante entre voce e a LexAI.
           </p>
           <p style={pStyle}>
             Se voce nao concordar com qualquer disposicao destes Termos, voce deve imediatamente interromper o uso da Plataforma. O uso continuado sera considerado aceitacao tacita dos Termos vigentes.
@@ -303,15 +303,15 @@ export default function TermosPage() {
             marginBottom: 14,
           }}>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 6 }}>
-              <i className="bi bi-envelope-fill" style={{ marginRight: 8, color: '#3B82F6' }} />
+              <i className="bi bi-envelope-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
               <strong style={{ color: '#fff' }}>E-mail:</strong> luizfernandoleonardoleonardo@gmail.com
             </div>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 6 }}>
-              <i className="bi bi-telephone-fill" style={{ marginRight: 8, color: '#3B82F6' }} />
+              <i className="bi bi-telephone-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
               <strong style={{ color: '#fff' }}>Telefone:</strong> (34) 99302-6456
             </div>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>
-              <i className="bi bi-geo-alt-fill" style={{ marginRight: 8, color: '#3B82F6' }} />
+              <i className="bi bi-geo-alt-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
               <strong style={{ color: '#fff' }}>Endereco:</strong> Uberlandia, Minas Gerais &mdash; Brasil
             </div>
           </div>

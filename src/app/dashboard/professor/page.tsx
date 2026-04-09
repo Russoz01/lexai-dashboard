@@ -150,7 +150,7 @@ export default function ProfessorPage() {
     { key: 'avancado' as const, label: 'Avancado', icon: 'bi-mortarboard', color: '#c0392b' },
     { key: 'questoes' as const, label: 'Questoes', icon: 'bi-patch-question', color: '#e67e22' },
     { key: 'flashcards' as const, label: 'Flashcards', icon: 'bi-collection', color: '#8B5CF6' },
-    { key: 'plano' as const, label: 'Plano de Estudo', icon: 'bi-calendar-check', color: '#3B82F6' },
+    { key: 'plano' as const, label: 'Plano de Estudo', icon: 'bi-calendar-check', color: '#bfa68e' },
   ]
 
   return (
@@ -346,7 +346,7 @@ export default function ProfessorPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="study-grid">
             {[
-              { area: 'Direito Civil', temas: ['Responsabilidade Civil', 'Contratos', 'Prescricao', 'Posse e Propriedade'], icon: 'bi-file-earmark-text', color: '#2563EB' },
+              { area: 'Direito Civil', temas: ['Responsabilidade Civil', 'Contratos', 'Prescricao', 'Posse e Propriedade'], icon: 'bi-file-earmark-text', color: '#44372b' },
               { area: 'Direito Penal', temas: ['Legitima Defesa', 'Crimes contra o patrimonio', 'Principio da Legalidade', 'Dosimetria da Pena'], icon: 'bi-shield-exclamation', color: '#EF4444' },
               { area: 'Direito Constitucional', temas: ['Direitos Fundamentais', 'Controle de Constitucionalidade', 'Remedios Constitucionais', 'Separacao de Poderes'], icon: 'bi-building', color: '#8B5CF6' },
               { area: 'Direito do Trabalho', temas: ['Rescisao Indireta', 'Horas Extras', 'Acidente de Trabalho', 'FGTS'], icon: 'bi-briefcase', color: '#F59E0B' },
@@ -391,7 +391,7 @@ export default function ProfessorPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="study-grid">
             {[
-              { area: 'Matematica', temas: ['Funcoes', 'Trigonometria', 'Geometria', 'Probabilidade'], icon: 'bi-calculator', color: '#2563EB' },
+              { area: 'Matematica', temas: ['Funcoes', 'Trigonometria', 'Geometria', 'Probabilidade'], icon: 'bi-calculator', color: '#44372b' },
               { area: 'Portugues', temas: ['Sintaxe', 'Interpretacao de Texto', 'Figuras de Linguagem', 'Crase'], icon: 'bi-translate', color: '#10B981' },
               { area: 'Fisica', temas: ['Cinematica', 'Leis de Newton', 'Termodinamica', 'Eletromagnetismo'], icon: 'bi-lightning-charge', color: '#F59E0B' },
               { area: 'Quimica', temas: ['Tabela Periodica', 'Ligacoes Quimicas', 'Quimica Organica', 'Estequiometria'], icon: 'bi-moisture', color: '#06B6D4' },
@@ -440,7 +440,7 @@ export default function ProfessorPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="study-grid">
             {[
-              { area: 'Calculo', temas: ['Limites', 'Derivadas', 'Integrais', 'Equacoes Diferenciais'], icon: 'bi-graph-up', color: '#2563EB' },
+              { area: 'Calculo', temas: ['Limites', 'Derivadas', 'Integrais', 'Equacoes Diferenciais'], icon: 'bi-graph-up', color: '#44372b' },
               { area: 'Algebra Linear', temas: ['Matrizes', 'Determinantes', 'Autovalores', 'Espacos Vetoriais'], icon: 'bi-grid-3x3', color: '#6366F1' },
               { area: 'Estatistica', temas: ['Distribuicao Normal', 'Hipoteses', 'Regressao', 'Inferencia'], icon: 'bi-bar-chart', color: '#0EA5E9' },
               { area: 'Programacao', temas: ['Algoritmos', 'POO', 'Estruturas de Dados', 'Complexidade'], icon: 'bi-code-slash', color: '#10B981' },
@@ -453,7 +453,7 @@ export default function ProfessorPage() {
               { area: 'Administracao', temas: ['Marketing', 'RH', 'Estrategia', 'Logistica'], icon: 'bi-briefcase', color: '#0891B2' },
               { area: 'Contabilidade', temas: ['DRE', 'Balanco', 'Custos', 'Auditoria'], icon: 'bi-calculator', color: '#14B8A6' },
               { area: 'Arquitetura', temas: ['Bauhaus', 'Sustentabilidade', 'Urbanismo', 'CAD'], icon: 'bi-house', color: '#D97706' },
-              { area: 'Engenharia de Software', temas: ['UML', 'Scrum', 'Padroes Projeto', 'DevOps'], icon: 'bi-laptop', color: '#3B82F6' },
+              { area: 'Engenharia de Software', temas: ['UML', 'Scrum', 'Padroes Projeto', 'DevOps'], icon: 'bi-laptop', color: '#bfa68e' },
               { area: 'Ciencia de Dados', temas: ['Python', 'Machine Learning', 'SQL', 'Visualizacao'], icon: 'bi-bar-chart-line', color: '#8B5CF6' },
               { area: 'Marketing Digital', temas: ['SEO', 'Trafego Pago', 'Funil de Vendas', 'Analytics'], icon: 'bi-megaphone', color: '#F97316' },
             ].map((cat, i) => (
@@ -494,7 +494,7 @@ export default function ProfessorPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="study-grid">
             {[
               { nome: 'Portal do STF', desc: 'Supremo Tribunal Federal &mdash; acordaos e sumulas', url: 'https://portal.stf.jus.br/', icon: 'bi-bank', color: '#c9a84c' },
-              { nome: 'Portal do STJ', desc: 'Superior Tribunal de Justica &mdash; jurisprudencia', url: 'https://www.stj.jus.br/', icon: 'bi-bank2', color: '#2563EB' },
+              { nome: 'Portal do STJ', desc: 'Superior Tribunal de Justica &mdash; jurisprudencia', url: 'https://www.stj.jus.br/', icon: 'bi-bank2', color: '#44372b' },
               { nome: 'Planalto — Leis', desc: 'Codigos, leis federais e decretos', url: 'https://www.planalto.gov.br/ccivil_03/', icon: 'bi-book', color: '#10B981' },
               { nome: 'CNJ', desc: 'Conselho Nacional de Justica', url: 'https://www.cnj.jus.br/', icon: 'bi-diagram-3', color: '#8B5CF6' },
               { nome: 'JusBrasil', desc: 'Maior acervo juridico da internet', url: 'https://www.jusbrasil.com.br/', icon: 'bi-search', color: '#EC4899' },
@@ -696,7 +696,7 @@ export default function ProfessorPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                 {aula.plano_estudo && (
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3B82F6', marginBottom: 8 }}>Plano de Estudo Sugerido</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#bfa68e', marginBottom: 8 }}>Plano de Estudo Sugerido</div>
                     <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{String(aula.plano_estudo)}</p>
                   </div>
                 )}
@@ -1067,7 +1067,7 @@ function FlashcardReview({
               { q: 1, label: 'Errei', color: '#c0392b' },
               { q: 3, label: 'Dificil', color: '#e67e22' },
               { q: 4, label: 'Bom', color: '#2d8659' },
-              { q: 5, label: 'Facil', color: '#3B82F6' },
+              { q: 5, label: 'Facil', color: '#bfa68e' },
             ] as const).map(opt => (
               <button
                 key={opt.q}

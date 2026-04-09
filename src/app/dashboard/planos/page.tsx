@@ -209,7 +209,7 @@ export default function PlanosPage() {
                   ? '0 8px 32px rgba(201,168,76,0.15)'
                   : undefined,
               backgroundImage: isEnterprisePremium
-                ? 'linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(135deg, #c9a84c, #3b82f6, #c9a84c)'
+                ? 'linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(135deg, #c9a84c, #bfa68e, #c9a84c)'
                 : undefined,
               backgroundOrigin: isEnterprisePremium ? 'border-box' : undefined,
               backgroundClip: isEnterprisePremium ? 'padding-box, border-box' : undefined,
@@ -219,7 +219,7 @@ export default function PlanosPage() {
                 <div style={{
                   position: 'absolute', top: 0, left: 0, right: 0,
                   background: isEnterprisePremium
-                    ? 'linear-gradient(135deg, #c9a84c, #3b82f6)'
+                    ? 'linear-gradient(135deg, #c9a84c, #bfa68e)'
                     : 'linear-gradient(135deg, #c9a84c, #d4b86a)',
                   padding: '6px 0', textAlign: 'center',
                   fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase',
@@ -348,7 +348,7 @@ export default function PlanosPage() {
         <div className="section-card animate-in" style={{
           padding: '20px 28px', marginBottom: 40,
           border: '1px solid rgba(201,168,76,0.25)',
-          background: 'linear-gradient(135deg, rgba(201,168,76,0.04), rgba(59,130,246,0.03))',
+          background: 'linear-gradient(135deg, rgba(201,168,76,0.04), rgba(191,166,142,0.05))',
         }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16,
@@ -442,7 +442,7 @@ export default function PlanosPage() {
               nome: 'Mariana Castro',
               cargo: 'Advogada Civil — SP',
               foto: 'MC',
-              cor: '#2563EB',
+              cor: '#44372b',
               estrelas: 5,
               texto: 'Em 2 semanas economizei mais de 20 horas que eu gastava em pesquisa de jurisprudencia. O Pesquisador encontra acordaos que eu nem sabia que existiam.',
             },
@@ -521,7 +521,7 @@ export default function PlanosPage() {
       <div className="section-card" style={{
         padding: '36px 32px',
         marginBottom: 24,
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.10), rgba(59,130,246,0.06))',
+        background: 'linear-gradient(135deg, rgba(201,168,76,0.10), rgba(191,166,142,0.10))',
         border: '1px solid rgba(201,168,76,0.30)',
         textAlign: 'center',
       }}>

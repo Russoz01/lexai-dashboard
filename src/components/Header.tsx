@@ -77,9 +77,10 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
         </div>
         <div className="header-avatar" style={{
           transition: 'all 0.3s ease',
-          background: 'linear-gradient(135deg, #2563EB, #3B82F6)',
+          background: 'linear-gradient(135deg, var(--accent), var(--stone))',
+          color: 'var(--bg-base)',
         }}
-          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 16px rgba(59,130,246,0.40)' }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 16px rgba(191,166,142,0.42)' }}
           onMouseLeave={e => { e.currentTarget.style.boxShadow = '' }}>
           {initials}
         </div>

@@ -17,7 +17,7 @@ export default async function OpenGraphImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: 'linear-gradient(135deg, #0A0A0A 0%, #0F172A 50%, #0A0A0A 100%)',
+          background: 'linear-gradient(135deg, #0e181c 0%, #132025 50%, #0e181c 100%)',
           padding: 80,
           fontFamily: 'Inter, system-ui, sans-serif',
           position: 'relative',
@@ -32,7 +32,7 @@ export default async function OpenGraphImage() {
             width: 520,
             height: 520,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(59,130,246,0.22) 0%, rgba(59,130,246,0) 70%)',
+            background: 'radial-gradient(circle, rgba(191,166,142,0.22) 0%, rgba(191,166,142,0) 70%)',
             display: 'flex',
           }}
         />
@@ -44,7 +44,7 @@ export default async function OpenGraphImage() {
             width: 460,
             height: 460,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, rgba(139,92,246,0) 70%)',
+            background: 'radial-gradient(circle, rgba(68,55,43,0.18) 0%, rgba(68,55,43,0) 70%)',
             display: 'flex',
           }}
         />
@@ -63,11 +63,11 @@ export default async function OpenGraphImage() {
               width: 88,
               height: 88,
               borderRadius: 22,
-              background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
+              background: 'linear-gradient(135deg, #bfa68e, #a08970)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 10px 40px rgba(59,130,246,0.40)',
+              boxShadow: '0 10px 40px rgba(191,166,142,0.42)',
             }}
           >
             <svg width="52" height="44" viewBox="0 0 28 24" fill="none">
@@ -121,7 +121,7 @@ export default async function OpenGraphImage() {
             style={{
               fontSize: 80,
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #60A5FA, #3B82F6, #6366F1)',
+              background: 'linear-gradient(135deg, #d4c1a7, #bfa68e, #a08970)',
               backgroundClip: 'text',
               color: 'transparent',
               letterSpacing: '-2.5px',

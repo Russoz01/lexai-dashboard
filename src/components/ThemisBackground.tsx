@@ -104,13 +104,13 @@ export default function ThemisBackground() {
         // Composite onto main canvas
         ctx.drawImage(tempCanvas, 0, 0)
 
-        // LAYER 3: Blue glow at cursor
+        // LAYER 3: Stone glow at cursor
         ctx.save()
         ctx.globalAlpha = 0.06
         const glowGrad = ctx.createRadialGradient(mx, my, 0, mx, my, 250)
-        glowGrad.addColorStop(0, 'rgba(37,99,235,0.4)')
-        glowGrad.addColorStop(0.5, 'rgba(37,99,235,0.1)')
-        glowGrad.addColorStop(1, 'rgba(37,99,235,0)')
+        glowGrad.addColorStop(0, 'rgba(191,166,142,0.42)')
+        glowGrad.addColorStop(0.5, 'rgba(191,166,142,0.12)')
+        glowGrad.addColorStop(1, 'rgba(191,166,142,0)')
         ctx.fillStyle = glowGrad
         ctx.fillRect(0, 0, w, h)
         ctx.restore()

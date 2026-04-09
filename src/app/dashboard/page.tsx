@@ -155,7 +155,7 @@ export default function DashboardPage() {
           <div style={{
             width: 280, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 16,
             padding: '24px 28px',
-            background: 'rgba(15,23,42,0.04)', borderLeft: '1px solid rgba(0,0,0,0.04)',
+            background: 'rgba(19,32,37,0.04)', borderLeft: '1px solid rgba(19,32,37,0.06)',
           }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>
@@ -448,8 +448,8 @@ export default function DashboardPage() {
         .stat-card-lift:hover {
           transform: translateY(-4px);
           box-shadow:
-            0 18px 48px rgba(15, 23, 42, 0.14),
-            0 4px 14px rgba(15, 23, 42, 0.06),
+            0 18px 48px rgba(19, 32, 37, 0.14),
+            0 4px 14px rgba(19, 32, 37, 0.06),
             inset 0 1px 0 rgba(255, 255, 255, 0.35);
         }
         .stat-trend {
@@ -483,8 +483,8 @@ export default function DashboardPage() {
         .analytics-card-lift:hover {
           transform: translateY(-3px);
           box-shadow:
-            0 16px 42px rgba(15, 23, 42, 0.12),
-            0 3px 12px rgba(15, 23, 42, 0.05);
+            0 16px 42px rgba(19, 32, 37, 0.12),
+            0 3px 12px rgba(19, 32, 37, 0.05);
         }
         @keyframes stat-fade-up {
           0% {

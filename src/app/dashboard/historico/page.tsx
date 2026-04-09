@@ -14,7 +14,7 @@ interface HistoricoItem {
 }
 
 const AGENTE_CORES: Record<string, { bg: string; color: string }> = {
-  resumidor:    { bg: '#dbeafe', color: '#2563eb' },
+  resumidor:    { bg: '#f0e7d8', color: '#44372b' },
   prazos:       { bg: '#fef5e7', color: '#d97706' },
   redator:      { bg: '#ede9fe', color: '#7c3aed' },
   pesquisador:  { bg: '#d1fae5', color: '#059669' },

@@ -173,10 +173,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           width: 7px;
           height: 7px;
           border-radius: 50%;
-          background: var(--accent);
+          background: var(--stone);
           flex-shrink: 0;
           animation: pulse-plan 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-          box-shadow: 0 0 0 0 var(--accent);
+          box-shadow: 0 0 0 0 var(--stone);
         }
         .plan-dot.urgent {
           background: var(--warning);
@@ -192,10 +192,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         }
         @keyframes pulse-plan {
           0%, 100% {
-            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45);
+            box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.50);
           }
           50% {
-            box-shadow: 0 0 0 6px rgba(37, 99, 235, 0);
+            box-shadow: 0 0 0 6px rgba(191, 166, 142, 0);
           }
         }
         @keyframes pulse-plan-urgent {
@@ -210,10 +210,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         }
         @keyframes badge-glow {
           0%, 100% {
-            border-color: rgba(37, 99, 235, 0.15);
+            border-color: rgba(191, 166, 142, 0.18);
           }
           50% {
-            border-color: rgba(37, 99, 235, 0.45);
+            border-color: rgba(191, 166, 142, 0.50);
           }
         }
         @keyframes badge-glow-urgent {

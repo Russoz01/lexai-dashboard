@@ -372,7 +372,7 @@ export default function PesquisadorPage() {
         }
         :global(.result-card:hover) {
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
+          box-shadow: 0 6px 20px rgba(19, 32, 37, 0.08);
         }
         .pesquisador-empty {
           text-align: center;
@@ -395,11 +395,11 @@ export default function PesquisadorPage() {
         @keyframes empty-pulse {
           0%, 100% {
             transform: scale(1);
-            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.18);
+            box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.22);
           }
           50% {
             transform: scale(1.05);
-            box-shadow: 0 0 0 12px rgba(37, 99, 235, 0);
+            box-shadow: 0 0 0 12px rgba(191, 166, 142, 0);
           }
         }
         @media (max-width: 640px) {
