@@ -795,6 +795,24 @@ body.cursor-hover #c-ring { opacity: 0; }
   font-weight: 300; max-width: 520px;
 }
 .about-lead strong { font-weight: 500; color: var(--ink); }
+/* Plain-language one-liner preceding the technical about-lead.
+   Non-technical reader gets the product in a single sentence
+   before the jargon-heavy paragraphs below. */
+.about-plain {
+  font-family: var(--f-sans, 'Inter', sans-serif);
+  font-size: .92rem;
+  line-height: 1.7;
+  color: var(--ink-2);
+  max-width: 520px;
+  margin: 0 0 8px;
+  padding: 14px 18px;
+  border-left: 2px solid var(--brand-gold, #D9BE8A);
+  background: color-mix(in srgb, var(--brand-gold, #D9BE8A) 6%, transparent);
+}
+.about-plain strong {
+  font-weight: 500;
+  color: var(--ink);
+}
 .about-tags {
   display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
 }
