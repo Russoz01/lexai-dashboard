@@ -80,7 +80,7 @@ function baseTemplate(content: string): string {
 export function welcomeEmailHtml(nome: string): string {
   return baseTemplate(`
     <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;letter-spacing:-0.3px;">Bem-vindo a LexAI, ${nome}!</h1>
-    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Seu trial gratuito de <strong>2 dias</strong> esta ativo. Voce tem acesso a todos os 10 agentes IA, sem cobranca e sem precisar cadastrar cartao.</p>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Seu trial gratuito de <strong>7 dias</strong> esta ativo. Voce tem acesso a todos os 12 agentes IA, sem cobranca e sem precisar cadastrar cartao.</p>
     <div style="background:#f5efe6;border-left:4px solid #bfa68e;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Comece pelo Resumidor</div>
       <div style="font-size:13px;color:#475569;line-height:1.5;">E o agente mais usado. Cole qualquer documento juridico e veja a magia acontecer em 45 segundos.</div>
@@ -93,10 +93,10 @@ export function welcomeEmailHtml(nome: string): string {
 export function trialEndingEmailHtml(nome: string, daysLeft: number): string {
   return baseTemplate(`
     <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">${nome}, seu trial termina em ${daysLeft} dia${daysLeft === 1 ? '' : 's'}</h1>
-    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Esperamos que voce esteja aproveitando os agentes da LexAI. Para continuar usando todos os 10 agentes, escolha um plano antes do trial expirar.</p>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Esperamos que voce esteja aproveitando os agentes da LexAI. Para continuar usando todos os 12 agentes, escolha um plano antes do trial expirar.</p>
     <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:6px;">Oferta de lancamento</div>
-      <div style="font-size:13px;color:#78350f;line-height:1.5;">Plano anual com 18% de desconto. Garanta o preco fixo por 12 meses.</div>
+      <div style="font-size:13px;color:#78350f;line-height:1.5;">Plano anual com 16% de desconto. Garanta o preco fixo por 12 meses.</div>
     </div>
     <a href="https://lexai.com.br/dashboard/planos" style="display:inline-block;background:#132025;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ver planos</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Sem cobranca automatica. Voce so paga se escolher um plano.</p>

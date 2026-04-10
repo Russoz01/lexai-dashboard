@@ -41,7 +41,7 @@ export default function EmpresasPage() {
           <span style={{ color: '#bfa68e' }}>maquina de eficiencia juridica</span>
         </h1>
         <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: 640, margin: '0 auto 36px' }}>
-          Acesso ilimitado a 10 agentes IA especializados, API propria, integracao por webhooks e onboarding dedicado. Feito para escritorios, bancas e departamentos juridicos que querem escalar sem abrir mao da qualidade.
+          Acesso ilimitado a 12 agentes IA especializados, API propria, integracao por webhooks e onboarding dedicado. Feito para escritorios, bancas e departamentos juridicos que querem escalar sem abrir mao da qualidade.
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: '#132025', background: '#bfa68e', padding: '14px 32px', borderRadius: 10, textDecoration: 'none', fontWeight: 600, boxShadow: '0 4px 16px rgba(191,166,142,0.32)' }}>
@@ -95,7 +95,7 @@ export default function EmpresasPage() {
           {[
             {
               icon: 'bi-stars',
-              title: 'Acesso ilimitado a 10 agentes',
+              title: 'Acesso ilimitado a 12 agentes',
               desc: 'Todos os agentes especializados disponiveis sem limite de uso: Resumidor, Redator, Pesquisador, Negociador, Professor, Calculador, Legislacao, Rotina, Financeiro e Compliance.',
               color: '#bfa68e',
             },
@@ -251,7 +251,7 @@ export default function EmpresasPage() {
           Pronto para conhecer a LexAI na pratica?
         </h2>
         <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', marginBottom: 32, lineHeight: 1.6 }}>
-          Agende uma demonstracao ao vivo e veja como os 10 agentes podem acelerar sua operacao juridica. Sem compromisso de assinatura.
+          Agende uma demonstracao ao vivo e veja como os 12 agentes podem acelerar sua operacao juridica. Sem compromisso de assinatura.
         </p>
         <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,

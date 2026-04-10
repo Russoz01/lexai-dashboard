@@ -105,7 +105,7 @@ export default function TermosPage() {
         <section style={sectionStyle}>
           <h2 style={h2Style}>2. Descricao do servico</h2>
           <p style={pStyle}>
-            A LexAI e uma plataforma de software como servico (SaaS) que oferece 10 agentes de inteligencia artificial especializados para apoiar profissionais e estudantes do Direito brasileiro em tarefas como analise de documentos, pesquisa jurisprudencial, redacao de pecas, calculos juridicos, estudo de legislacao e organizacao de rotina.
+            A LexAI e uma plataforma de software como servico (SaaS) que oferece 12 agentes de inteligencia artificial especializados para apoiar profissionais e estudantes do Direito brasileiro em tarefas como analise de documentos, pesquisa jurisprudencial, redacao de pecas, calculos juridicos, estudo de legislacao e organizacao de rotina.
           </p>
           <p style={pStyle}>
             <strong style={{ color: '#fff' }}>A LexAI e uma ferramenta de apoio tecnologico e NAO substitui o trabalho de advogado habilitado.</strong> Os agentes utilizam modelos de linguagem (LLMs) treinados em textos juridicos, mas suas respostas devem ser entendidas como ponto de partida e jamais como parecer juridico definitivo.

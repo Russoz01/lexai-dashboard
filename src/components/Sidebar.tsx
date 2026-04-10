@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase'
 import { usePlan } from '@/hooks/usePlan'
 
 const PLANOS: Record<string, { nome: string; preco: string }> = {
-  free:       { nome: 'Free Trial', preco: 'Gratis 2 dias' },
+  free:       { nome: 'Free Trial', preco: 'Gratis 7 dias' },
   starter:    { nome: 'Starter',    preco: 'R$ 89 / mes' },
   pro:        { nome: 'Pro',        preco: 'R$ 179 / mes' },
   enterprise: { nome: 'Enterprise', preco: 'R$ 399 / mes' },
@@ -112,7 +112,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 onClick={onClose}
                 className={`sidebar-link ${isActive(item.href) ? 'active' : ''}`}
               >
-                <i className={`bi ${item.icon}`} />
+                <i className={`bi ${item.icon}`} aria-hidden="true" />
                 {item.label}
                 {item.badge != null && (
                   <span className={`badge-count ${item.badgeWarn ? 'warn' : ''}`}>
@@ -131,7 +131,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             className="sidebar-link"
             style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
           >
-            <i className="bi bi-box-arrow-right" />
+            <i className="bi bi-box-arrow-right" aria-hidden="true" />
             Sair da conta
           </button>
         </div>
@@ -160,7 +160,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           fontSize: 10, color: 'var(--text-muted)',
           textAlign: 'center', letterSpacing: '0.4px',
         }}>
-          <i className="bi bi-stars" style={{ marginRight: 5, color: 'var(--accent)' }} />
+          <i className="bi bi-stars" aria-hidden="true" style={{ marginRight: 5, color: 'var(--accent)' }} />
           Uma marca <strong style={{ color: 'var(--text-secondary)' }}>Vanix Corp</strong>
         </div>
       </div>

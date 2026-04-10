@@ -106,6 +106,7 @@ export default function PesquisadorPage() {
             <i className="bi bi-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }} />
             <input
               type="text" value={query} onChange={e => setQuery(e.target.value)}
+              maxLength={2000}
               placeholder="Ex: responsabilidade civil do fornecedor, dano moral, prescrição..."
               className="form-input"
               style={{ paddingLeft: 40, paddingRight: 16 }}
@@ -256,7 +257,7 @@ export default function PesquisadorPage() {
                     </div>
                   )}
                 </div>
-                <button onClick={() => setExpandido(expandido === String(idx) ? null : String(idx))}
+                <button type="button" onClick={() => setExpandido(expandido === String(idx) ? null : String(idx))}
                   className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                   <i className={`bi ${expandido === String(idx) ? 'bi-chevron-up' : 'bi-chevron-down'}`} /> {expandido === String(idx) ? 'Recolher' : 'Ver ementa'}
                 </button>

@@ -142,7 +142,7 @@ export default async function OpenGraphImage() {
               display: 'flex',
             }}
           >
-            10 agentes de IA para advogados e estudantes &mdash; analise de documentos,
+            12 agentes de IA para advogados e estudantes &mdash; analise de documentos,
             jurisprudencia, pecas processuais, calculos e mais.
           </div>
         </div>

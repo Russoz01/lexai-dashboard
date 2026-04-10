@@ -215,11 +215,15 @@ export default function ConsultorPage() {
             <textarea
               value={pergunta}
               onChange={e => setPergunta(e.target.value)}
+              maxLength={50000}
               placeholder="Descreva a questao juridica para o parecer. Ex: Uma empresa de e-commerce pode ser responsabilizada por danos causados por produto vendido por terceiro em seu marketplace?"
               className="form-input consultor-textarea"
               rows={5}
               style={{ resize: 'vertical', minHeight: 120 }}
             />
+            <div style={{ fontSize: 11, color: pergunta.length > 45000 ? 'var(--danger)' : pergunta.length > 40000 ? '#f59e0b' : 'var(--text-muted)', textAlign: 'right', marginTop: 4 }}>
+              {pergunta.length.toLocaleString('pt-BR')} / 50.000
+            </div>
           </div>
 
           {/* Area + Contexto row */}
@@ -247,11 +251,15 @@ export default function ConsultorPage() {
               <textarea
                 value={contexto}
                 onChange={e => setContexto(e.target.value)}
+                maxLength={30000}
                 placeholder="Fatos relevantes, documentos envolvidos, jurisprudencia conhecida..."
                 className="form-input"
                 rows={3}
                 style={{ resize: 'vertical', minHeight: 80 }}
               />
+              <div style={{ fontSize: 11, color: contexto.length > 27000 ? 'var(--danger)' : contexto.length > 24000 ? '#f59e0b' : 'var(--text-muted)', textAlign: 'right', marginTop: 4 }}>
+                {contexto.length.toLocaleString('pt-BR')} / 30.000
+              </div>
             </div>
           </div>
 
@@ -311,11 +319,11 @@ export default function ConsultorPage() {
         <>
           {/* Action buttons */}
           <div style={{ display: 'flex', gap: 10, marginBottom: 16, justifyContent: 'flex-end' }}>
-            <button onClick={copiarParecer} className="consultor-action-btn" title="Copiar parecer">
+            <button type="button" onClick={copiarParecer} className="consultor-action-btn" title="Copiar parecer">
               <i className={`bi ${copiado ? 'bi-check-lg' : 'bi-clipboard'}`} />
               {copiado ? 'Copiado' : 'Copiar'}
             </button>
-            <button onClick={downloadParecer} className="consultor-action-btn" title="Baixar parecer">
+            <button type="button" onClick={downloadParecer} className="consultor-action-btn" title="Baixar parecer">
               <i className="bi bi-download" /> Baixar .txt
             </button>
           </div>
@@ -463,7 +471,7 @@ export default function ConsultorPage() {
           </div>
 
           {/* Reset + branding */}
-          <button onClick={() => { setParecer(null); setPergunta(''); setArea(''); setContexto('') }}
+          <button type="button" onClick={() => { setParecer(null); setPergunta(''); setArea(''); setContexto('') }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 16 }}>
             <i className="bi bi-arrow-counterclockwise" /> Novo parecer
           </button>

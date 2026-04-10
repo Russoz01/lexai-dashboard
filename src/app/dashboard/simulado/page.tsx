@@ -240,7 +240,7 @@ export default function SimuladoPage() {
                 </>
               )}
             </div>
-            <button onClick={novoSimulado} className="btn-secondary" style={{ fontSize: 12, padding: '8px 16px' }}>
+            <button type="button" onClick={novoSimulado} className="btn-secondary" style={{ fontSize: 12, padding: '8px 16px' }}>
               <i className="bi bi-arrow-counterclockwise" style={{ marginRight: 6 }} />Novo simulado
             </button>
           </div>
@@ -455,7 +455,7 @@ export default function SimuladoPage() {
                 }} />
               </div>
 
-              <button onClick={novoSimulado} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13 }}>
+              <button type="button" onClick={novoSimulado} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13 }}>
                 <i className="bi bi-arrow-counterclockwise" style={{ marginRight: 8 }} />
                 Novo simulado
               </button>

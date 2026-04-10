@@ -24,11 +24,8 @@ export async function GET() {
       return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
     }
 
-    // Simple state: user id + random nonce. Not persisted yet (stub) — a
-    // future implementation should store this server-side to validate the
-    // callback and defeat CSRF.
-    const nonce = randomBytes(12).toString('hex')
-    const state = `${user.id}.${nonce}`
+    // State = random nonce stored in a httpOnly cookie for CSRF validation.
+    const state = randomBytes(16).toString('hex')
 
     const url = getGoogleAuthUrl(state)
     if (!url) {
@@ -38,7 +35,15 @@ export async function GET() {
       )
     }
 
-    return NextResponse.json({ url })
+    const res = NextResponse.json({ url })
+    res.cookies.set('google_oauth_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 600, // 10 min
+      path: '/',
+    })
+    return res
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Erro interno'
     // eslint-disable-next-line no-console

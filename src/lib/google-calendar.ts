@@ -43,7 +43,7 @@ export interface GCalEvent {
 
 export async function exchangeCodeForToken(
   code: string,
-): Promise<{ access_token: string; refresh_token?: string } | null> {
+): Promise<{ access_token: string; refresh_token?: string; expires_in?: number } | null> {
   if (!isGoogleCalendarConfigured()) return null
   try {
     const res = await fetch('https://oauth2.googleapis.com/token', {
@@ -58,7 +58,7 @@ export async function exchangeCodeForToken(
       }),
     })
     if (!res.ok) return null
-    return (await res.json()) as { access_token: string; refresh_token?: string }
+    return (await res.json()) as { access_token: string; refresh_token?: string; expires_in?: number }
   } catch {
     return null
   }

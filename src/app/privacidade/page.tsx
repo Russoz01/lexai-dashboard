@@ -91,7 +91,7 @@ export default function PrivacidadePage() {
         <section style={sectionStyle}>
           <h2 style={h2Style}>1. Quem somos</h2>
           <p style={pStyle}>
-            A LexAI (&ldquo;nos&rdquo;, &ldquo;nossa&rdquo; ou &ldquo;plataforma&rdquo;) e uma plataforma de inteligencia artificial voltada para advogados, estudantes de Direito e departamentos juridicos brasileiros. Nossos 10 agentes especializados auxiliam em analise de documentos, pesquisa jurisprudencial, redacao de pecas processuais, calculos juridicos e outras tarefas de apoio juridico.
+            A LexAI (&ldquo;nos&rdquo;, &ldquo;nossa&rdquo; ou &ldquo;plataforma&rdquo;) e uma plataforma de inteligencia artificial voltada para advogados, estudantes de Direito e departamentos juridicos brasileiros. Nossos 12 agentes especializados auxiliam em analise de documentos, pesquisa jurisprudencial, redacao de pecas processuais, calculos juridicos e outras tarefas de apoio juridico.
           </p>
           <h3 style={h3Style}>Controlador dos dados</h3>
           <p style={pStyle}>

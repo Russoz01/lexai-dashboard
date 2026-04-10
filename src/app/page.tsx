@@ -37,7 +37,7 @@ const provas = [
   { n: 'I',   metric: '12',    label: 'Agentes especializados' },
   { n: 'II',  metric: '9',     label: 'Areas do Direito cobertas' },
   { n: 'III', metric: '36',    label: 'Materias academicas' },
-  { n: 'IV',  metric: '2 dias', label: 'Trial gratuito sem cartao' },
+  { n: 'IV',  metric: '7 dias', label: 'Trial gratuito sem cartao' },
 ]
 
 const depoimentos = [
@@ -233,7 +233,7 @@ export default function LandingPage() {
             <a href="#atelier" className="ax-nav-link">Atelier</a>
             <a href="#planos"  className="ax-nav-link">Planos</a>
             <Link href="/login" className="ax-nav-link">Entrar</Link>
-            <Link href="/login" className="ax-cta-primary">Reservar acesso</Link>
+            <Link href="/login" className="ax-cta-primary">Abrir meu gabinete</Link>
           </nav>
         </div>
       </header>
@@ -261,7 +261,7 @@ export default function LandingPage() {
             </p>
             <div className="ax-hero-cta-row ax-line" style={{ '--d': '560ms' } as React.CSSProperties}>
               <Link href="/login" className="ax-cta-primary ax-cta-large">
-                <span>Reservar acesso</span>
+                <span>Abrir meu gabinete</span>
                 <span className="ax-cta-arrow" aria-hidden>→</span>
               </Link>
               <a href="#agentes" className="ax-cta-ghost">Conhecer os agentes &nbsp;→</a>
@@ -404,7 +404,7 @@ export default function LandingPage() {
             Planos <em className="ax-italic">transparentes</em>.
           </h2>
           <p className="ax-section-sub">
-            Dois dias gratuitos, sem cartao. Cancelamento em um clique, sem fidelidade.
+            Sete dias gratuitos, sem cartao. Cancelamento em um clique, sem fidelidade.
           </p>
         </div>
         <Rule />
@@ -448,7 +448,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Link href="/login" className={`ax-plan-cta${p.popular ? ' ax-plan-cta--solid' : ''}`}>
-                  {p.beta && !annualBilling ? 'Garantir R$ 329' : 'Reservar acesso'}
+                  {p.beta && !annualBilling ? 'Garantir R$ 329' : 'Abrir meu gabinete'}
                 </Link>
               </div>
             )
@@ -465,12 +465,12 @@ export default function LandingPage() {
           </h2>
           <div style={{ marginTop: 36 }}>
             <Link href="/login" className="ax-cta-primary ax-cta-large">
-              <span>Reservar meu acesso</span>
+              <span>Abrir meu gabinete</span>
               <span className="ax-cta-arrow" aria-hidden>→</span>
             </Link>
           </div>
           <div style={{ marginTop: 20, fontSize: 12, color: 'var(--text-muted)', letterSpacing: '0.3px' }}>
-            Dois dias gratuitos · Sem cartao · Cancelamento em um clique
+            Sete dias gratuitos · Sem cartao · Cancelamento em um clique
           </div>
         </div>
       </section>

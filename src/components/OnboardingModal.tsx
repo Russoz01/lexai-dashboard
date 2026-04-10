@@ -63,16 +63,16 @@ export default function OnboardingModal({ open, onClose }: { open: boolean; onCl
         {/* Buttons */}
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
           {step > 0 && (
-            <button onClick={() => setStep(s => s - 1)} className="btn-ghost" style={{ minWidth: 120 }}>
+            <button type="button" onClick={() => setStep(s => s - 1)} className="btn-ghost" style={{ minWidth: 120 }}>
               <i className="bi bi-arrow-left" /> Anterior
             </button>
           )}
           {!isLast ? (
-            <button onClick={() => setStep(s => s + 1)} className="btn-primary" style={{ minWidth: 120 }}>
+            <button type="button" onClick={() => setStep(s => s + 1)} className="btn-primary" style={{ minWidth: 120 }}>
               Proximo <i className="bi bi-arrow-right" />
             </button>
           ) : (
-            <button onClick={onClose} className="btn-primary" style={{ minWidth: 160 }}>
+            <button type="button" onClick={onClose} className="btn-primary" style={{ minWidth: 160 }}>
               <i className="bi bi-check-lg" /> Comecar a usar
             </button>
           )}

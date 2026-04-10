@@ -175,7 +175,7 @@ export default function ProfessorPage() {
             className="form-input" style={{ paddingLeft: 40 }}
             onKeyDown={e => e.key === 'Enter' && ensinar()} />
         </div>
-        <button onClick={ensinar} disabled={!tema.trim() || loading} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
+        <button type="button" onClick={ensinar} disabled={!tema.trim() || loading} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
           {loading ? 'Preparando aula...' : <><i className="bi bi-mortarboard" /> Ensinar</>}
         </button>
       </div>
@@ -331,7 +331,7 @@ export default function ProfessorPage() {
               ))}
             </div>
           </div>
-          <button onClick={() => { if (confirm('Limpar todo o historico de estudo?')) { setStudyHistory([]); localStorage.removeItem('lexai-study-history') } }}
+          <button type="button" onClick={() => { if (confirm('Limpar todo o historico de estudo?')) { setStudyHistory([]); localStorage.removeItem('lexai-study-history') } }}
             style={{ fontSize: 11, padding: '6px 10px', borderRadius: 6, background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
             <i className="bi bi-trash" style={{ marginRight: 4 }} />Limpar
           </button>
@@ -728,7 +728,7 @@ export default function ProfessorPage() {
             </div>
           )}
 
-          <button onClick={() => { setAula(null); setTema('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 16 }}>
+          <button type="button" onClick={() => { setAula(null); setTema('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 16 }}>
             <i className="bi bi-arrow-counterclockwise" /> Novo tema
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
@@ -965,7 +965,7 @@ function FlashcardsTab({
         <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#8B5CF6' }}>
           <i className="bi bi-collection" style={{ marginRight: 6 }} />Flashcards &mdash; Spaced Repetition
         </div>
-        <button onClick={onRefresh} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+        <button type="button" onClick={onRefresh} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
           <i className="bi bi-arrow-clockwise" style={{ marginRight: 4 }} />Atualizar
         </button>
       </div>

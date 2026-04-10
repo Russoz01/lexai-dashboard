@@ -147,7 +147,7 @@ export default function PrazosPage() {
                   <div className={`deadline-bar ${barCls(d)}`} style={{ width:4, height:'auto', borderRadius:'12px 0 0 12px', flexShrink:0, margin:0 }} />
                   <div style={{ flex:1, padding:'14px 16px', display:'flex', alignItems:'flex-start', gap:14 }}>
                     {/* Status toggle */}
-                    <button onClick={() => toggleStatus(prazo.id, prazo.status)} style={{
+                    <button type="button" onClick={() => toggleStatus(prazo.id, prazo.status)} style={{
                       width:22, height:22, borderRadius:'50%', flexShrink:0, marginTop:1,
                       border: prazo.status === 'concluido' ? 'none' : '2px solid var(--border)',
                       background: prazo.status === 'concluido' ? 'var(--accent)' : 'none',
@@ -182,7 +182,7 @@ export default function PrazosPage() {
                       </div>
                     </div>
                     {/* Delete */}
-                    <button onClick={() => deletar(prazo.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:14, padding:'4px', borderRadius:6, transition:'all 0.15s' }}
+                    <button type="button" onClick={() => deletar(prazo.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:14, padding:'4px', borderRadius:6, transition:'all 0.15s' }}
                       onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color='var(--danger)'}
                       onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color='var(--text-muted)'}
                     >

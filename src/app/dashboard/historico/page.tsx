@@ -117,7 +117,7 @@ export default function HistoricoPage() {
               style={{ paddingLeft: 40, width: '100%' }}
             />
             {filtro && (
-              <button onClick={() => setFiltro('')} style={{
+              <button type="button" onClick={() => setFiltro('')} style={{
                 position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
                 background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)',
                 fontSize: 14, padding: 4,

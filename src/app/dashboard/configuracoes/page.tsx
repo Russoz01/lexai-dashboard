@@ -380,7 +380,7 @@ export default function ConfiguracoesPage() {
                       </span>
                     )}
                     {/* Toggle switch */}
-                    <button onClick={() => toggleIntegracao(intg.id)} style={{
+                    <button type="button" onClick={() => toggleIntegracao(intg.id)} style={{
                       width:44, height:24, borderRadius:12, border:'none', cursor:'pointer', flexShrink:0,
                       background: ativos[intg.id] ? 'var(--accent)' : 'var(--border)',
                       position:'relative', transition:'background 0.2s',

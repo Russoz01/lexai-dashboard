@@ -340,7 +340,7 @@ export default function ChatPage() {
           <div className="chat-error" role="alert">
             <i className="bi bi-exclamation-triangle" />
             <span>{erro}</span>
-            <button onClick={() => setErro('')} aria-label="Fechar">
+            <button type="button" onClick={() => setErro('')} aria-label="Fechar">
               <i className="bi bi-x" />
             </button>
           </div>

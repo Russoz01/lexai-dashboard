@@ -132,8 +132,12 @@ export default function NegociadorPage() {
             Descricao do Conflito
           </div>
           <textarea value={situacao} onChange={e => setSituacao(e.target.value)}
+            maxLength={50000}
             placeholder={"Descreva a situacao de conflito com detalhes:\n\n- Partes envolvidas\n- Objeto da disputa\n- Valor em discussao\n- Historico de tentativas de acordo\n- Posicao do seu cliente"}
             className="form-input" style={{ resize: 'vertical', minHeight: 280, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6 }} />
+          <div style={{ fontSize: 11, color: situacao.length > 45000 ? 'var(--danger)' : situacao.length > 40000 ? '#f59e0b' : 'var(--text-muted)', textAlign: 'right', marginTop: 4 }}>
+            {situacao.length.toLocaleString('pt-BR')} / 50.000
+          </div>
 
           {/* Cenarios pre-prontos */}
           <div style={{ marginTop: 16 }}>
@@ -192,7 +196,7 @@ export default function NegociadorPage() {
               <i className="bi bi-exclamation-triangle-fill" /> {erro}
             </div>
           )}
-          <button onClick={analisar} disabled={!situacao.trim() || loading} className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
+          <button type="button" onClick={analisar} disabled={!situacao.trim() || loading} className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
             {loading ? <><span style={{ display: 'inline-block', width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /> Analisando estrategia...</>
               : <><i className="bi bi-lightning" /> Analisar Negociacao</>}
           </button>
@@ -263,7 +267,7 @@ export default function NegociadorPage() {
                 </div>
               )}
               {r.proposta_acordo ? <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)', whiteSpace: 'pre-wrap' }}><strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 8 }}>Proposta de Acordo</strong>{String(r.proposta_acordo)}</div> : null}
-              <button onClick={() => { setResultado(null); setSituacao('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+              <button type="button" onClick={() => { setResultado(null); setSituacao('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
                 <i className="bi bi-arrow-counterclockwise" /> Nova analise
               </button>
               <div style={{ display: 'flex', justifyContent: 'center' }}>

@@ -697,6 +697,7 @@ export default function ResumidorPage() {
                 <textarea
                   value={texto}
                   onChange={e => setTexto(e.target.value)}
+                  maxLength={50000}
                   onKeyDown={e => {
                     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                       e.preventDefault()
@@ -713,6 +714,9 @@ export default function ResumidorPage() {
                     lineHeight: '1.7',
                   }}
                 />
+                <div style={{ fontSize: 11, color: texto.length > 45000 ? 'var(--danger)' : texto.length > 40000 ? '#f59e0b' : 'var(--text-muted)', textAlign: 'right', marginTop: 4 }}>
+                  {texto.length.toLocaleString('pt-BR')} / 50.000 caracteres
+                </div>
                 {/* LGPD anonymizer toggle */}
                 <label style={{
                   display: 'flex', alignItems: 'flex-start', gap: '8px',

@@ -585,7 +585,7 @@ export default function RotinaPage() {
                     <span style={{ padding:'1px 7px', borderRadius:20, background:`${c.cor}20`, color:c.cor, fontSize:11, fontWeight:600 }}>{c.disciplina}</span>
                   </div>
                 </div>
-                <button onClick={() => remover(c.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:14, padding:'4px 6px', borderRadius:6 }}
+                <button type="button" onClick={() => remover(c.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:14, padding:'4px 6px', borderRadius:6 }}
                   onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color='var(--danger)'}
                   onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color='var(--text-muted)'}>
                   <i className="bi bi-trash3" />
@@ -607,7 +607,7 @@ export default function RotinaPage() {
 
         {/* Header com navegação */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16, gap:8 }}>
-          <button onClick={irMesAnterior} style={{
+          <button type="button" onClick={irMesAnterior} style={{
             background:'none', border:'1px solid var(--border)', cursor:'pointer',
             color:'var(--text-secondary)', width:32, height:32, borderRadius:8,
             display:'flex', alignItems:'center', justifyContent:'center',
@@ -622,7 +622,7 @@ export default function RotinaPage() {
             <span style={{ fontSize:15, fontWeight:700, color:'var(--text-primary)' }}>
               {MESES[mesVisivel.getMonth()]} {mesVisivel.getFullYear()}
             </span>
-            <button onClick={irHoje} style={{
+            <button type="button" onClick={irHoje} style={{
               fontSize:11, padding:'4px 10px', borderRadius:6,
               border:'1px solid var(--border)', background:'transparent',
               color:'var(--text-secondary)', cursor:'pointer', fontWeight:600,
@@ -633,7 +633,7 @@ export default function RotinaPage() {
             </button>
           </div>
 
-          <button onClick={irMesSeguinte} style={{
+          <button type="button" onClick={irMesSeguinte} style={{
             background:'none', border:'1px solid var(--border)', cursor:'pointer',
             color:'var(--text-secondary)', width:32, height:32, borderRadius:8,
             display:'flex', alignItems:'center', justifyContent:'center',
@@ -796,7 +796,7 @@ export default function RotinaPage() {
                         <div style={{ fontSize:12, color:'var(--text-muted)' }}>{p.descricao}</div>
                       )}
                     </div>
-                    <button onClick={() => removerPlano(p.id)} style={{
+                    <button type="button" onClick={() => removerPlano(p.id)} style={{
                       background:'none', border:'none', cursor:'pointer',
                       color:'var(--text-muted)', fontSize:13, padding:'4px 6px', borderRadius:6,
                     }}

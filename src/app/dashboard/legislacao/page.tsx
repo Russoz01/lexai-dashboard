@@ -42,11 +42,12 @@ export default function LegislacaoPage() {
         <div style={{ flex: 1, position: 'relative' }}>
           <i className="bi bi-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }} />
           <input type="text" value={consulta} onChange={e => setConsulta(e.target.value)}
+            maxLength={1000}
             placeholder="Ex: Art. 5 CF/88, Art. 927 CC, Art. 300 CPC, Lei 8.078/90..."
             className="form-input" style={{ paddingLeft: 40 }}
             onKeyDown={e => e.key === 'Enter' && pesquisar()} />
         </div>
-        <button onClick={pesquisar} disabled={!consulta.trim() || loading} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
+        <button type="button" onClick={pesquisar} disabled={!consulta.trim() || loading} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
           {loading ? 'Pesquisando...' : <><i className="bi bi-book" /> Pesquisar</>}
         </button>
       </div>
@@ -143,7 +144,7 @@ export default function LegislacaoPage() {
             {resultado.exemplos_praticos.map((ex: string, i: number) => <p key={i} style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 8, paddingLeft: 12, borderLeft: '2px solid var(--border)' }}>{ex}</p>)}
           </div>}
 
-          <button onClick={() => { setResultado(null); setConsulta('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 8 }}>
+          <button type="button" onClick={() => { setResultado(null); setConsulta('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 8 }}>
             <i className="bi bi-arrow-counterclockwise" /> Nova pesquisa
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>

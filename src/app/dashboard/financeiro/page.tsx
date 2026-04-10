@@ -845,7 +845,7 @@ export default function FinanceiroPage() {
                     {item.tipo === 'despesa' ? '− ' : '+ '}{fmt(Number(item.valor))}
                   </td>
                   <td style={{ padding:'11px 14px' }}>
-                    <button onClick={() => deletar(item.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:13, padding:'4px 6px', borderRadius:6 }}
+                    <button type="button" onClick={() => deletar(item.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:13, padding:'4px 6px', borderRadius:6 }}
                       onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color='var(--danger)'}
                       onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color='var(--text-muted)'}>
                       <i className="bi bi-trash3" />

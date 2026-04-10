@@ -335,7 +335,7 @@ export default function PlanosPage() {
             Atualize cartao, baixe faturas, faca downgrade ou cancele a qualquer momento via Stripe.
           </div>
         </div>
-        <button onClick={abrirPortal} className="btn-primary" style={{
+        <button type="button" onClick={abrirPortal} className="btn-primary" style={{
           display: 'inline-flex', alignItems: 'center', gap: 8, flexShrink: 0,
         }}>
           <i className="bi bi-credit-card" />
@@ -535,7 +535,7 @@ export default function PlanosPage() {
         <div style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 540, margin: '0 auto 24px', lineHeight: 1.6 }}>
           Junte-se aos primeiros advogados e estudantes que ja transformaram sua rotina. Comece em 30 segundos &mdash; sem cartao de credito.
         </div>
-        <button onClick={() => {
+        <button type="button" onClick={() => {
           const link = PLANOS_BASE.find(p => p.id === destaqueId)?.stripeLink
           if (link) window.open(link, '_blank')
         }} style={{
