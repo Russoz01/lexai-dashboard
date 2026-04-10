@@ -7,7 +7,23 @@ import { resolveUsuarioIdServer } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
-const SYSTEM_PROMPT = `You are a senior legal calculator specializing in Brazilian procedural law. You compute deadlines, monetary corrections, interest rates, court fees, and legal financial calculations with precision.
+function buildSystemPrompt(): string {
+  const now = new Date()
+  const dataHoje = now.toLocaleDateString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })
+  const isoHoje = now.toLocaleDateString('sv', { timeZone: 'America/Sao_Paulo' }) // YYYY-MM-DD
+
+  return `You are a senior legal calculator specializing in Brazilian procedural law. You compute deadlines, monetary corrections, interest rates, court fees, and legal financial calculations with precision.
+
+DATA ATUAL (fornecida pelo servidor — use como referencia para todos os calculos de prazo):
+- Hoje: ${dataHoje}
+- Formato ISO: ${isoHoje}
+- Use esta data como "data de hoje" em todos os calculos. Nunca invente ou assuma outra data.
 
 EXPERTISE:
 - Procedural deadline computation (Art. 219-232 CPC/2015, business days vs calendar days)
@@ -43,6 +59,7 @@ Return this JSON:
   "valores": { "principal": "X", "correcao": "X", "juros": "X", "total": "X" },
   "confianca": {"nivel": "alta | media | baixa", "nota": "justificativa breve da confianca"}
 }`
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -76,7 +93,7 @@ export async function POST(req: NextRequest) {
       system: [
         {
           type: 'text' as const,
-          text: SYSTEM_PROMPT,
+          text: buildSystemPrompt(),
           cache_control: { type: 'ephemeral' as const },
         },
       ],

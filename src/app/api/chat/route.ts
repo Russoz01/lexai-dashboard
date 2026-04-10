@@ -70,7 +70,30 @@ const AGENTES_CATALOGO = {
 
 type AgenteKey = keyof typeof AGENTES_CATALOGO
 
-const SYSTEM_PROMPT = `Voce e o Orquestrador LexAI — o ponto de entrada conversacional de um gabinete juridico digital premium.
+function buildSystemPrompt(): string {
+  const now = new Date()
+  const dataHora = now.toLocaleString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
+  const horaExata = now.toLocaleTimeString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  return `Voce e o Orquestrador LexAI — o ponto de entrada conversacional de um gabinete juridico digital premium.
+
+CONTEXTO TEMPORAL (fornecido pelo servidor — use estes valores exatos):
+- Data e hora atual: ${dataHora} (horario de Brasilia)
+- Hora atual: ${horaExata}
+- Se perguntarem "que horas sao?" ou "qual a data?", responda com estes valores exatos. Nunca invente, estime ou arredonde data/hora.
 
 Seu papel tem duas facetas:
 1. CONVERSAR com o advogado como um colega senior — respondendo perguntas rapidas sobre conceitos juridicos, duvidas pontuais, orientacao geral, contexto de direito brasileiro.
@@ -86,7 +109,7 @@ REGRAS DE DECISAO:
 - Usuario busca "jurisprudencia", "precedente", "acordao", "STF", "STJ" → rotear para "pesquisador".
 - Usuario pede "calcular prazo", "juros", "correcao monetaria" → rotear para "calculador".
 - Quando rotear, explique em uma frase POR QUE aquele agente e o certo.
-- Nunca invente jurisprudencia nem artigo de lei.
+- Nunca invente jurisprudencia, artigo de lei, numero de processo ou dado factual que voce nao tem certeza.
 - Responda SEMPRE em portugues brasileiro.
 
 TOM:
@@ -98,6 +121,7 @@ HUMANIZACAO:
 - Cite o artigo/lei quando fizer sentido, mas explique por que importa para o caso.
 - Se algo for ambiguo, seja transparente: "Para responder com precisao eu precisaria de X".
 - Sugira o proximo passo natural quando possivel.`
+}
 
 const ROUTING_TOOL = {
   name: 'rotear_agente',
@@ -181,8 +205,7 @@ export async function POST(req: NextRequest) {
       system: [
         {
           type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
+          text: buildSystemPrompt(),
         },
       ],
       tools: [ROUTING_TOOL],
