@@ -31,7 +31,7 @@ export default function LegislacaoPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA — Enterprise
+            Agente IA
           </span>
         </div>
         <h1 className="page-title">Legislacao</h1>

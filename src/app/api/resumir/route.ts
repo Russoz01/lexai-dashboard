@@ -108,7 +108,8 @@ export async function POST(req: NextRequest) {
       messages: [{ role: 'user', content: `Document to analyze:\n\n${texto}` }],
     })
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
+    const textBlock = message.content.find(b => b.type === 'text')
+    const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
     let analise
     try {
       const jsonStr = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
@@ -132,8 +133,17 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ analise })
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /resumir]', message)
-    return NextResponse.json({ error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : 'Erro interno'
+    console.error('[API /resumir]', msg)
+    if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {
+      return NextResponse.json({
+        error: 'Agente temporariamente sobrecarregado. Aguarde 30 segundos e tente novamente.',
+        retry: true,
+      }, { status: 503 })
+    }
+    return NextResponse.json({
+      error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
+      details: msg,
+    }, { status: 500 })
   }
 }

@@ -86,7 +86,7 @@ export function welcomeEmailHtml(nome: string): string {
       <div style="font-size:13px;color:#475569;line-height:1.5;">E o agente mais usado. Cole qualquer documento juridico e veja a magia acontecer em 45 segundos.</div>
     </div>
     <a href="https://lexai.com.br/dashboard/resumidor" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;">Acessar Dashboard</a>
-    <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Duvidas? Responda este email ou nos chame em (34) 99302-6456.</p>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Duvidas? Responda este email ou escreva para contato@vanixcorp.com.</p>
   `)
 }
 

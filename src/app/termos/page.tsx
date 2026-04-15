@@ -105,7 +105,7 @@ export default function TermosPage() {
         <section style={sectionStyle}>
           <h2 style={h2Style}>2. Descricao do servico</h2>
           <p style={pStyle}>
-            A LexAI e uma plataforma de software como servico (SaaS) que oferece 12 agentes de inteligencia artificial especializados para apoiar profissionais e estudantes do Direito brasileiro em tarefas como analise de documentos, pesquisa jurisprudencial, redacao de pecas, calculos juridicos, estudo de legislacao e organizacao de rotina.
+            A LexAI e uma plataforma de software como servico (SaaS) que oferece 12 agentes de inteligencia artificial especializados para apoiar profissionais do Direito brasileiro em tarefas como analise de documentos, pesquisa jurisprudencial, redacao de pecas, calculos juridicos, estudo de legislacao e organizacao de rotina.
           </p>
           <p style={pStyle}>
             <strong style={{ color: '#fff' }}>A LexAI e uma ferramenta de apoio tecnologico e NAO substitui o trabalho de advogado habilitado.</strong> Os agentes utilizam modelos de linguagem (LLMs) treinados em textos juridicos, mas suas respostas devem ser entendidas como ponto de partida e jamais como parecer juridico definitivo.
@@ -179,7 +179,7 @@ export default function TermosPage() {
           <ul style={ulStyle}>
             <li><strong style={{ color: '#fff' }}>1 trial por pessoa:</strong> cada pessoa fisica tem direito a apenas 1 trial, mesmo que crie contas diferentes. A tentativa de obter multiplos trials e vedada.</li>
             <li><strong style={{ color: '#fff' }}>Detecao de fraude:</strong> a LexAI monitora padroes de uso (e-mails descartaveis, IPs, dispositivos, dados de cadastro) para identificar tentativas de fraude. Contas suspeitas podem ser bloqueadas sem aviso previo.</li>
-            <li><strong style={{ color: '#fff' }}>Sem cobranca no trial:</strong> o trial nao exige cartao de credito cadastrado. Ao final dos 2 dias, o acesso e limitado ate a contratacao de um plano pago.</li>
+            <li><strong style={{ color: '#fff' }}>Sem cobranca no trial:</strong> o trial nao exige cartao de credito cadastrado. Ao final dos 7 dias, o acesso e limitado ate a contratacao de um plano pago.</li>
             <li><strong style={{ color: '#fff' }}>Limites:</strong> durante o trial, o Usuario tem acesso aos recursos do plano Starter, respeitados os limites de uso descritos na pagina de planos.</li>
           </ul>
         </section>
@@ -304,11 +304,7 @@ export default function TermosPage() {
           }}>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 6 }}>
               <i className="bi bi-envelope-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
-              <strong style={{ color: '#fff' }}>E-mail:</strong> luizfernandoleonardoleonardo@gmail.com
-            </div>
-            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 6 }}>
-              <i className="bi bi-telephone-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
-              <strong style={{ color: '#fff' }}>Telefone:</strong> (34) 99302-6456
+              <strong style={{ color: '#fff' }}>E-mail:</strong> contato@vanixcorp.com
             </div>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>
               <i className="bi bi-geo-alt-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
@@ -334,8 +330,7 @@ export default function TermosPage() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 20, fontSize: 13, flexWrap: 'wrap' }}>
-          <span style={{ color: 'rgba(255,255,255,0.30)' }}>luizfernandoleonardoleonardo@gmail.com</span>
-          <span style={{ color: 'rgba(255,255,255,0.30)' }}>(34) 99302-6456</span>
+          <span style={{ color: 'rgba(255,255,255,0.30)' }}>contato@vanixcorp.com</span>
         </div>
       </footer>
 

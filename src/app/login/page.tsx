@@ -16,8 +16,8 @@ import { createClient } from '@/lib/supabase/client'
 const MAX_FORM_WIDTH = 440
 
 const VALUE_PROPS = [
-  { n: 'I',   title: 'Dez agentes afinados',    desc: 'Treinados especificamente para o ordenamento juridico brasileiro.' },
-  { n: 'II',  title: 'Dois dias gratis',        desc: 'Experimente sem cartao, cancele em um clique, sem fidelidade.' },
+  { n: 'I',   title: 'Doze agentes afinados',    desc: 'Treinados especificamente para o ordenamento juridico brasileiro.' },
+  { n: 'II',  title: '7 dias gratis',             desc: 'Experimente sem cartao, cancele em um clique, sem fidelidade.' },
   { n: 'III', title: 'Seguranca e LGPD',        desc: 'Dados criptografados em transito e em repouso. Nunca utilizados em treinamento.' },
   { n: 'IV',  title: 'Feito a mao',             desc: 'Nao somos mais um SaaS generico. Somos um atelier.' },
 ]
@@ -273,7 +273,7 @@ export default function LoginPage() {
 
           <p className="ax-login-lede">
             {isSignUp
-              ? 'Crie sua conta. Dois dias gratuitos, sem cartao. Apenas um profissional por vez.'
+              ? 'Crie sua conta. 7 dias gratuitos, sem cartao. Apenas um profissional por vez.'
               : 'Bem-vindo de volta ao atelier. Entre para retomar seu gabinete digital.'}
           </p>
 
@@ -422,7 +422,7 @@ export default function LoginPage() {
               <em className="ax-italic">feito a mao</em>.
             </h2>
             <p className="ax-aside-lede">
-              Dez agentes afinados para o exercicio da advocacia no Brasil. Estrategia e
+              Doze agentes afinados para o exercicio da advocacia no Brasil. Estrategia e
               precisao para quem trata Direito como oficio.
             </p>
           </div>

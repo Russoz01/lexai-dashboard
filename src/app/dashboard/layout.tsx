@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         const meta = data.user.user_metadata
         setUser({
           name: meta?.nome || data.user.email?.split('@')[0] || 'Usuario',
-          role: meta?.role || 'Estudante · Direito',
+          role: meta?.role || 'Advogado',
         })
       } catch {
         if (isMounted) router.replace('/login')

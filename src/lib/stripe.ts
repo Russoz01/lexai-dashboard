@@ -12,20 +12,15 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_place
 
 // Map Stripe price IDs to internal plan slugs.
 // Set these in your environment after creating prices in Stripe.
-export const PRICE_TO_PLAN: Record<string, 'starter' | 'pro' | 'enterprise'> = {
-  [process.env.STRIPE_PRICE_STARTER || 'price_starter_placeholder']: 'starter',
-  [process.env.STRIPE_PRICE_PRO || 'price_pro_placeholder']: 'pro',
+export const PRICE_TO_PLAN: Record<string, 'escritorio' | 'firma' | 'enterprise'> = {
+  [process.env.STRIPE_PRICE_ESCRITORIO || 'price_escritorio_placeholder']: 'escritorio',
+  [process.env.STRIPE_PRICE_FIRMA      || 'price_firma_placeholder']:      'firma',
   [process.env.STRIPE_PRICE_ENTERPRISE || 'price_enterprise_placeholder']: 'enterprise',
+  // Legacy slugs — keep for backward compat with existing DB rows
+  [process.env.STRIPE_PRICE_STARTER   || 'price_starter_placeholder']:    'escritorio',
+  [process.env.STRIPE_PRICE_PRO       || 'price_pro_placeholder']:        'firma',
 }
 
-// Plan limits — server-side enforced
-export const PLAN_LIMITS = {
-  free:       { docsPerMonth: 5,    agents: ['resumidor', 'pesquisador', 'professor'] },
-  starter:    { docsPerMonth: 50,   agents: ['resumidor', 'pesquisador', 'professor'] },
-  pro:        { docsPerMonth: 200,  agents: ['resumidor', 'pesquisador', 'professor', 'redator', 'negociador', 'rotina'] },
-  enterprise: { docsPerMonth: Infinity, agents: ['resumidor', 'pesquisador', 'professor', 'redator', 'negociador', 'rotina', 'calculador', 'legislacao', 'financeiro', 'prazos'] },
-}
-
-export function planFromPriceId(priceId: string): 'starter' | 'pro' | 'enterprise' | 'free' {
+export function planFromPriceId(priceId: string): 'escritorio' | 'firma' | 'enterprise' | 'free' {
   return PRICE_TO_PLAN[priceId] || 'free'
 }

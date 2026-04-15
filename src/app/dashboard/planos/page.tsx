@@ -4,48 +4,51 @@ import { useState, useEffect } from 'react'
 
 const PLANOS_BASE = [
   {
-    id: 'starter', nome: 'Starter', tagline: 'Para estudantes e iniciantes',
-    precoMensal: 89, precoAnual: 75,
+    id: 'starter', nome: 'Escritorio', tagline: '1–5 advogados',
+    precoMensal: 1399,
+    perSeat: true,
     stripeLink: 'https://buy.stripe.com/test_dRm4gy6gG1Nb2T14ZA2oE01',
-    economiaReal: 'Economize 12h por semana em pesquisas',
+    economiaReal: 'Recupere 12h por semana em pesquisas por advogado',
     features: [
-      { label: '3 agentes essenciais (Resumidor, Pesquisador, Professor)', disponivel: true },
-      { label: '50 analises de documentos por mes', disponivel: true },
-      { label: 'Historico de 30 dias', disponivel: true },
-      { label: 'Suporte via FAQ', disponivel: true },
+      { label: '5 agentes (Resumidor, Pesquisador, Redator, Calculador, Monitor Legislativo)', disponivel: true },
+      { label: '200 documentos por mes', disponivel: true },
+      { label: 'Historico de 45 dias', disponivel: true },
+      { label: 'Suporte por email em 24h', disponivel: true },
       { label: 'Exportacao em PDF', disponivel: false },
       { label: 'API propria para integracao', disponivel: false },
-      { label: 'Modelos customizados', disponivel: false },
+      { label: 'Agentes customizados', disponivel: false },
     ],
   },
   {
-    id: 'pro', nome: 'Pro', tagline: 'Para advogados autonomos',
-    precoMensal: 179, precoAnual: 150,
+    id: 'pro', nome: 'Firma', tagline: '6–15 advogados · Mais escolhido',
+    precoMensal: 1459,
+    perSeat: true,
     stripeLink: 'https://buy.stripe.com/test_9B69ASawWajH5192Rs2oE02',
-    economiaReal: 'Economia de R$ 3.200/mes em horas de trabalho',
+    economiaReal: 'Capacidade de atendimento +40% sem contratar',
     features: [
-      { label: '6 agentes especializados para pratica diaria', disponivel: true },
-      { label: '200 analises de documentos por mes', disponivel: true },
-      { label: 'Historico estendido de 90 dias', disponivel: true },
-      { label: 'Suporte por email em ate 48h', disponivel: true },
+      { label: 'Todos os 12 agentes especializados', disponivel: true },
+      { label: 'Documentos ilimitados', disponivel: true },
+      { label: 'Historico de 90 dias', disponivel: true },
+      { label: 'Suporte prioritario em 3h', disponivel: true },
       { label: 'Exportacao em PDF profissional', disponivel: true },
-      { label: 'API propria para integracao', disponivel: false },
-      { label: 'Modelos customizados', disponivel: false },
+      { label: 'Sessao de onboarding dedicada', disponivel: true },
+      { label: 'Compra avulsa de tokens', disponivel: true },
     ],
   },
   {
-    id: 'enterprise', nome: 'Enterprise', tagline: 'Para escritorios e bancas',
-    precoMensal: 399, precoAnual: 335,
+    id: 'enterprise', nome: 'Enterprise', tagline: '16+ advogados',
+    precoMensal: 1599,
+    perSeat: true,
     stripeLink: 'https://buy.stripe.com/test_cNicN434u0J7fFN1No2oE03',
     economiaReal: 'ROI de 8x sobre o investimento mensal',
     features: [
-      { label: 'Todos os 12 agentes + exclusivos', disponivel: true },
-      { label: 'Analises ilimitadas', disponivel: true },
+      { label: 'Agentes customizados para o escritorio', disponivel: true },
+      { label: 'Analises ilimitadas + fair use', disponivel: true },
       { label: 'Historico ilimitado e backup em nuvem', disponivel: true },
-      { label: 'Suporte prioritario via WhatsApp 24h', disponivel: true },
-      { label: 'Exportacao em PDF profissional', disponivel: true },
-      { label: 'API propria para integracao', disponivel: true },
-      { label: 'Modelos customizados da sua banca', disponivel: true },
+      { label: 'Suporte via WhatsApp 24h + Gerente dedicado', disponivel: true },
+      { label: 'API privada + SLA de uptime', disponivel: true },
+      { label: 'Opcao on-premise', disponivel: true },
+      { label: 'DPA incluso', disponivel: true },
     ],
   },
 ]
@@ -72,13 +75,15 @@ function getBadgeLabel(planoId: string, planoAtual: string): string | null {
 
 function getCtaLabel(planoId: string, planoAtual: string, precoPlano: number, precoAtual: number): string {
   if (planoId === planoAtual) return '\u2713  Voce esta aqui'
-  if (precoPlano > precoAtual) return 'Iniciar 2 dias gratis'
+  // Downgrade: current plan is more expensive than target
+  if (precoAtual > precoPlano) return 'Mudar para este plano'
+  if (planoId === 'starter' || planoId === 'escritorio') return 'Comecar 7 dias gratis'
+  if (precoPlano > precoAtual) return 'Agendar demonstracao'
   return 'Mudar para este plano'
 }
 
 export default function PlanosPage() {
   const [planoAtual, setPlanoAtual] = useState('enterprise')
-  const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal')
 
   useEffect(() => {
     const saved = localStorage.getItem('lexai-plano')
@@ -109,7 +114,7 @@ export default function PlanosPage() {
           padding: '5px 12px', borderRadius: 20,
           background: 'var(--accent-light)', border: '1px solid var(--border)', marginBottom: 16,
         }}>
-          <i className="bi bi-lightning-charge-fill" />Oferta de lancamento &mdash; 2 dias gratis sem cartao
+          <i className="bi bi-lightning-charge-fill" />Oferta de lancamento &mdash; 7 dias gratis sem cartao
         </span>
         <h1 className="page-title" style={{ fontSize: 36, marginBottom: 8 }}>
           Trabalhe <span style={{ color: 'var(--accent)' }}>10x mais rapido</span> no Direito
@@ -140,50 +145,12 @@ export default function PlanosPage() {
         ))}
       </div>
 
-      {/* Billing cycle toggle */}
+      {/* Pricing model note */}
       <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 28,
+        textAlign: 'center', marginBottom: 28, fontSize: 13,
+        color: 'var(--text-secondary)', letterSpacing: '0.2px',
       }}>
-        <span style={{
-          fontSize: 13, fontWeight: ciclo === 'mensal' ? 700 : 500,
-          color: ciclo === 'mensal' ? 'var(--text-primary)' : 'var(--text-muted)',
-          cursor: 'pointer', transition: 'all 0.15s',
-        }} onClick={() => setCiclo('mensal')}>
-          Mensal
-        </span>
-        <div
-          onClick={() => setCiclo(ciclo === 'mensal' ? 'anual' : 'mensal')}
-          style={{
-            width: 44, height: 24, borderRadius: 12, cursor: 'pointer',
-            background: ciclo === 'anual' ? 'var(--accent)' : 'var(--border)',
-            position: 'relative', transition: 'background 0.2s',
-          }}
-        >
-          <div style={{
-            width: 18, height: 18, borderRadius: '50%', background: '#fff',
-            position: 'absolute', top: 3,
-            left: ciclo === 'anual' ? 23 : 3,
-            transition: 'left 0.2s',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-          }} />
-        </div>
-        <span style={{
-          fontSize: 13, fontWeight: ciclo === 'anual' ? 700 : 500,
-          color: ciclo === 'anual' ? 'var(--text-primary)' : 'var(--text-muted)',
-          cursor: 'pointer', transition: 'all 0.15s',
-        }} onClick={() => setCiclo('anual')}>
-          Anual
-        </span>
-        {ciclo === 'anual' && (
-          <span style={{
-            fontSize: 11, fontWeight: 700, color: '#0f1923',
-            background: 'linear-gradient(135deg, #c9a84c, #d4b86a)',
-            padding: '3px 10px', borderRadius: 20,
-            animation: 'fadeIn 0.2s',
-          }}>
-            Economize 16%
-          </span>
-        )}
+        Cobranca <strong style={{ color: 'var(--accent)' }}>por advogado registrado</strong> · De R$ 1.399 a R$ 1.599 conforme o plano
       </div>
 
       {/* Plan cards */}
@@ -191,7 +158,7 @@ export default function PlanosPage() {
         {PLANOS_BASE.map(plano => {
           const isDestaque = plano.id === destaqueId
           const badgeLabel = getBadgeLabel(plano.id, planoAtual)
-          const preco = ciclo === 'anual' ? plano.precoAnual : plano.precoMensal
+          const preco = plano.precoMensal
           const isCurrentPlan = plano.id === planoAtual
           const isEnterprisePremium = plano.id === 'enterprise' && planoAtual === 'enterprise'
 
@@ -242,16 +209,12 @@ export default function PlanosPage() {
                       fontSize: 44, fontWeight: 800, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums',
                       color: isDestaque ? 'var(--accent)' : 'var(--text-primary)',
                     }}>
-                      {preco}
+                      {preco.toLocaleString('pt-BR')}
                     </span>
-                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>/mes</span>
                   </div>
-                  {ciclo === 'anual' && (
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                      <span style={{ textDecoration: 'line-through', marginRight: 6 }}>R$ {plano.precoMensal}</span>
-                      <span style={{ color: 'var(--success)', fontWeight: 600 }}>-16% no anual</span>
-                    </div>
-                  )}
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                    por advogado / mes
+                  </div>
                   {/* Economia real — value driver */}
                   <div style={{
                     marginTop: 12, padding: '8px 12px', borderRadius: 8,
@@ -290,21 +253,25 @@ export default function PlanosPage() {
                     ? 'var(--hover)'
                     : isDestaque
                       ? 'linear-gradient(135deg, #c9a84c, #d4b86a)'
-                      : 'var(--primary)',
+                      : 'var(--accent)',
                   color: isCurrentPlan
                     ? 'var(--text-muted)'
                     : isDestaque
                       ? '#0f1923'
-                      : '#fff',
+                      : 'var(--bg-base)',
                   border: isCurrentPlan ? '1px solid var(--border)' : 'none',
                 }} disabled={isCurrentPlan}
                 onClick={() => {
-                  if (!isCurrentPlan && plano.stripeLink) {
-                    // Open Stripe checkout for upgrade
-                    window.open(plano.stripeLink, '_blank')
-                    // Also update local plan state
-                    setPlanoAtual(plano.id)
-                    localStorage.setItem('lexai-plano', plano.id)
+                  if (!isCurrentPlan) {
+                    if (plano.stripeLink) {
+                      // Open Stripe checkout for upgrade
+                      window.open(plano.stripeLink, '_blank')
+                      // Also update local plan state
+                      setPlanoAtual(plano.id)
+                      localStorage.setItem('lexai-plano', plano.id)
+                    } else if (plano.id === 'starter' || plano.id === 'escritorio') {
+                      window.location.href = '/login'
+                    }
                   }
                 }}>
                   {getCtaLabel(plano.id, planoAtual, plano.precoMensal, precoAtual)}
@@ -447,12 +414,12 @@ export default function PlanosPage() {
               texto: 'Em 2 semanas economizei mais de 20 horas que eu gastava em pesquisa de jurisprudencia. O Pesquisador encontra acordaos que eu nem sabia que existiam.',
             },
             {
-              nome: 'Lucas Ferreira',
-              cargo: 'Estudante OAB — RJ',
-              foto: 'LF',
+              nome: 'Dr. Pedro Henrique',
+              cargo: 'Socio — PHM Advogados',
+              foto: 'PH',
               cor: '#10B981',
               estrelas: 5,
-              texto: 'O Professor explica conceitos juridicos como nenhum livro consegue. Passei na 1a fase da OAB de primeira usando os planos de estudo personalizados.',
+              texto: 'O Calculador e o Monitor Legislativo mudaram a forma como gerenciamos prazos. Zero perda processual desde que adotamos a plataforma no escritorio.',
             },
             {
               nome: 'Renata Lima',
@@ -533,7 +500,7 @@ export default function PlanosPage() {
           Pronto para acabar com as horas perdidas?
         </div>
         <div style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 540, margin: '0 auto 24px', lineHeight: 1.6 }}>
-          Junte-se aos primeiros advogados e estudantes que ja transformaram sua rotina. Comece em 30 segundos &mdash; sem cartao de credito.
+          Junte-se aos primeiros escritorios que ja transformaram sua rotina. Comece em 30 segundos &mdash; sem cartao de credito.
         </div>
         <button type="button" onClick={() => {
           const link = PLANOS_BASE.find(p => p.id === destaqueId)?.stripeLink
@@ -548,7 +515,7 @@ export default function PlanosPage() {
           onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'}
           onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'}>
           <i className="bi bi-rocket-takeoff-fill" />
-          Comecar 2 dias gratis agora
+          Comecar 7 dias gratis agora
         </button>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 12 }}>
           Cancele a qualquer momento &middot; Sem cobranca durante o periodo gratis &middot; Suporte em portugues
@@ -560,12 +527,12 @@ export default function PlanosPage() {
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>Perguntas Frequentes</div>
         {[
           { q: 'E se eu nao gostar? Tenho como cancelar?', a: 'Sim. Voce pode cancelar com 1 clique a qualquer momento, sem multas, sem ligacao com vendedor, sem perguntas. Alem disso, oferecemos 7 dias de garantia: se nao economizar 5h na primeira semana, devolvemos 100% do valor.' },
-          { q: 'Preciso ter conhecimento tecnico para usar?', a: 'Nao. A LexAI foi projetada para ser usada por advogados e estudantes sem nenhum conhecimento de programacao. Voce digita em portugues e a IA responde estruturado, pronto para usar.' },
+          { q: 'Preciso ter conhecimento tecnico para usar?', a: 'Nao. A LexAI foi projetada para ser usada por advogados sem nenhum conhecimento de programacao. Voce digita em portugues e a IA responde estruturado, pronto para usar.' },
           { q: 'Os documentos que eu enviar ficam seguros?', a: 'Totalmente. Somos LGPD compliant, todos os dados sao criptografados em transito e em repouso. Nao usamos seus documentos para treinar modelos. Sua privacidade e prioridade.' },
           { q: 'Posso trocar de plano depois?', a: 'Sim, voce pode fazer upgrade ou downgrade a qualquer momento. A diferenca e calculada proporcionalmente. Sem fidelidade nem multa.' },
           { q: 'Como funciona o limite de documentos?', a: 'Cada analise, pesquisa ou peca conta como 1 documento. O contador reseta no inicio do mes. Se atingir o limite, voce recebe aviso e pode fazer upgrade ou aguardar o proximo ciclo.' },
           { q: 'Quanto tempo eu economizo de verdade?', a: 'A media dos nossos usuarios e 12 a 20 horas por semana. Uma analise de contrato que levaria 3h leva 45 segundos. Uma peca que voce escreveria em 2h sai pronta em 2 minutos.' },
-          { q: 'Qual a vantagem do plano anual?', a: 'No plano anual voce economiza 18% em relacao ao mensal, garante preco fixo por 12 meses sem reajustes e ainda recebe 1 mes adicional de bonus.' },
+          { q: 'Como funciona a cobranca por advogado?', a: 'O valor por advogado varia conforme o plano: Escritorio R$ 1.399, Firma R$ 1.459 e Enterprise R$ 1.599. Quanto maior o plano, mais agentes e recursos disponiveis por usuario.' },
         ].map((item, i, arr) => (
           <div key={i} style={{ padding: '14px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{item.q}</div>
@@ -576,7 +543,7 @@ export default function PlanosPage() {
 
       {/* Contact */}
       <div style={{ textAlign: 'center', marginTop: 24, padding: '20px 0', color: 'var(--text-muted)', fontSize: 13 }}>
-        Duvidas? Entre em contato: luizfernandoleonardoleonardo@gmail.com | (34) 99302-6456
+        Duvidas? Entre em contato: contato@vanixcorp.com
       </div>
     </div>
   )

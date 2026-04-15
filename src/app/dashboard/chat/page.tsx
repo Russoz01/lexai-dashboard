@@ -39,7 +39,7 @@ const AGENTES_ICONS: Record<string, string> = {
   redator:     'bi-pencil-square',
   pesquisador: 'bi-journal-bookmark',
   negociador:  'bi-lightning',
-  professor:   'bi-mortarboard',
+  professor:   'bi-bell',
   calculador:  'bi-calculator',
   legislacao:  'bi-book',
   rotina:      'bi-calendar-week',

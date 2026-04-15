@@ -3,9 +3,13 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 export const PLAN_QUOTAS: Record<string, number> = {
   free:       5,
-  starter:    50,
-  pro:        200,
-  enterprise: 100000, // effectively unlimited
+  // Current plan names
+  escritorio: 200,
+  firma:      100000, // ilimitado na pratica
+  enterprise: 100000,
+  // Legacy slugs — backward compat with existing DB rows
+  starter:    200,
+  pro:        100000,
 }
 
 interface QuotaCheckResult {

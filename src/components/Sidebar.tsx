@@ -6,10 +6,10 @@ import { createClient } from '@/lib/supabase'
 import { usePlan } from '@/hooks/usePlan'
 
 const PLANOS: Record<string, { nome: string; preco: string }> = {
-  free:       { nome: 'Free Trial', preco: 'Gratis 7 dias' },
-  starter:    { nome: 'Starter',    preco: 'R$ 89 / mes' },
-  pro:        { nome: 'Pro',        preco: 'R$ 179 / mes' },
-  enterprise: { nome: 'Enterprise', preco: 'R$ 399 / mes' },
+  free:       { nome: 'Demonstracao', preco: '30 min guiados' },
+  starter:    { nome: 'Escritorio',   preco: 'R$ 1.399 / advogado' },
+  pro:        { nome: 'Firma',        preco: 'R$ 1.459 / advogado' },
+  enterprise: { nome: 'Enterprise',   preco: 'R$ 1.599 / advogado' },
 }
 
 interface NavItem { href: string; icon: string; label: string; badge?: number; badgeWarn?: boolean }
@@ -32,12 +32,14 @@ const nav: { title: string; items: NavItem[] }[] = [
       { href: '/dashboard/redator',     icon: 'bi-pencil-square',     label: 'Redator'     },
       { href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark',  label: 'Pesquisador' },
       { href: '/dashboard/negociador',  icon: 'bi-lightning',         label: 'Negociador'  },
-      { href: '/dashboard/professor',   icon: 'bi-mortarboard',       label: 'Professor'   },
+      { href: '/dashboard/professor',   icon: 'bi-bell',              label: 'Monitor Legislativo' },
       { href: '/dashboard/rotina',      icon: 'bi-calendar-week',     label: 'Rotina'      },
       { href: '/dashboard/calculador', icon: 'bi-calculator',        label: 'Calculador'  },
       { href: '/dashboard/legislacao', icon: 'bi-book',              label: 'Legislacao'  },
-      { href: '/dashboard/simulado',  icon: 'bi-patch-check',       label: 'Simulado'   },
-      { href: '/dashboard/consultor', icon: 'bi-briefcase',         label: 'Consultor'  },
+      { href: '/dashboard/simulado',  icon: 'bi-file-earmark-check', label: 'Parecerista' },
+      { href: '/dashboard/consultor', icon: 'bi-shield-check',       label: 'Estrategista' },
+      { href: '/dashboard/compliance', icon: 'bi-shield-check',      label: 'Compliance'   },
+      { href: '/dashboard/tradutor',  icon: 'bi-translate',          label: 'Tradutor Juridico' },
       { href: '/dashboard/planilhas',  icon: 'bi-file-earmark-spreadsheet', label: 'Planilhas' },
     ],
   },

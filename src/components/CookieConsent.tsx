@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 const STORAGE_KEY = 'lexai-cookie-consent'
 
-export default function CookieConsent() {
+export function CookieConsent() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -166,3 +166,5 @@ export default function CookieConsent() {
     </>
   )
 }
+
+export default CookieConsent

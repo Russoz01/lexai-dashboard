@@ -58,9 +58,9 @@ export default function ConfiguracoesPage() {
 
   // Dynamic plan from localStorage
   const planoMap: Record<string, { nome: string; preco: number }> = {
-    starter: { nome: 'Starter', preco: 59 },
-    pro: { nome: 'Pro', preco: 119 },
-    enterprise: { nome: 'Enterprise', preco: 239 },
+    starter: { nome: 'Escritorio', preco: 1399 },
+    pro: { nome: 'Firma', preco: 1459 },
+    enterprise: { nome: 'Enterprise', preco: 1599 },
   }
   const [planoId, setPlanoId] = useState('enterprise')
   useEffect(() => {
@@ -262,7 +262,7 @@ export default function ConfiguracoesPage() {
                     placeholder="(11) 99999-9999" className="form-input" />
                 </div>
                 <div>
-                  <label className="form-label">Escritório / Faculdade</label>
+                  <label className="form-label">Escritório</label>
                   <input type="text" value={empresa} onChange={e => setEmpresa(e.target.value)} placeholder="Nome da instituição" className="form-input" />
                 </div>
               </div>
@@ -415,8 +415,7 @@ export default function ConfiguracoesPage() {
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Canais de Atendimento</div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
               {[
-                { icon:'bi-envelope-fill',  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'luizfernandoleonardoleonardo@gmail.com', href:'mailto:luizfernandoleonardoleonardo@gmail.com' },
-                { icon:'bi-whatsapp',       color:'#25D366', bg:'#f0fdf4', label:'WhatsApp',  value:'(34) 99302-6456',       href:'https://wa.me/5534993026456' },
+                { icon:'bi-envelope-fill',  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'contato@vanixcorp.com', href:'mailto:contato@vanixcorp.com' },
               ].map(ch => (
                 <a key={ch.label} href={ch.href} target="_blank" rel="noopener noreferrer" style={{
                   display:'flex', alignItems:'center', gap:12, padding:'14px', borderRadius:10,

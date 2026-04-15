@@ -38,13 +38,13 @@ const AGENT_META: Record<string, { label: string; href: string; icon: string }> 
   redator:      { label: 'Redator',     href: '/dashboard/redator',     icon: 'bi-pencil-square' },
   pesquisador:  { label: 'Pesquisador', href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark' },
   negociador:   { label: 'Negociador',  href: '/dashboard/negociador',  icon: 'bi-lightning' },
-  professor:    { label: 'Professor',   href: '/dashboard/professor',   icon: 'bi-mortarboard' },
+  professor:    { label: 'Monitor Legislativo', href: '/dashboard/professor', icon: 'bi-bell' },
   calculador:   { label: 'Calculador',  href: '/dashboard/calculador',  icon: 'bi-calculator' },
   legislacao:   { label: 'Legislacao',  href: '/dashboard/legislacao',  icon: 'bi-book' },
   rotina:       { label: 'Rotina',      href: '/dashboard/rotina',      icon: 'bi-calendar-week' },
   planilhas:    { label: 'Planilhas',   href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet' },
-  simulado:     { label: 'Simulado',    href: '/dashboard/simulado',    icon: 'bi-patch-check' },
-  consultor:    { label: 'Consultor',   href: '/dashboard/consultor',   icon: 'bi-briefcase' },
+  simulado:     { label: 'Parecerista', href: '/dashboard/simulado',    icon: 'bi-file-earmark-check' },
+  consultor:    { label: 'Estrategista', href: '/dashboard/consultor',  icon: 'bi-shield-check' },
   chat:         { label: 'Chat',        href: '/dashboard/chat',        icon: 'bi-chat-square-dots' },
 }
 
@@ -342,11 +342,11 @@ export default function DashboardPage() {
               { href: '/dashboard/redator',     icon: 'bi-pencil-square',            name: 'Redator',      desc: 'Pecas processuais com fundamentacao' },
               { href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark',         name: 'Pesquisador',  desc: 'Jurisprudencia STF, STJ e tribunais' },
               { href: '/dashboard/negociador',  icon: 'bi-lightning',                name: 'Negociador',   desc: 'BATNA, ZOPA e cenarios de acordo' },
-              { href: '/dashboard/professor',   icon: 'bi-mortarboard',              name: 'Professor',    desc: 'Aulas em 3 niveis + questoes OAB' },
+              { href: '/dashboard/professor',   icon: 'bi-bell',                     name: 'Monitor Legislativo', desc: 'Mudancas normativas e precedentes' },
               { href: '/dashboard/calculador',  icon: 'bi-calculator',               name: 'Calculador',   desc: 'Prazos, juros, correcao, custas' },
               { href: '/dashboard/legislacao',  icon: 'bi-book',                     name: 'Legislacao',   desc: 'Artigos de lei explicados' },
-              { href: '/dashboard/simulado',    icon: 'bi-patch-check',              name: 'Simulado',     desc: 'Questoes OAB e concursos com gabarito' },
-              { href: '/dashboard/consultor',   icon: 'bi-briefcase',                name: 'Consultor',    desc: 'Pareceres juridicos estruturados' },
+              { href: '/dashboard/simulado',    icon: 'bi-file-earmark-check',       name: 'Parecerista',  desc: 'Pareceres com fundamentacao legal' },
+              { href: '/dashboard/consultor',   icon: 'bi-shield-check',             name: 'Estrategista', desc: 'Risco processual e linha de atuacao' },
               { href: '/dashboard/rotina',      icon: 'bi-calendar-week',            name: 'Rotina',       desc: 'Agenda, compromissos, fluxos' },
               { href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet', name: 'Planilhas',    desc: 'Timesheet, controle, honorarios' },
             ].map((ag, i) => (
@@ -499,14 +499,15 @@ export default function DashboardPage() {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 0;
-          margin-top: 36px;
+          margin-top: 40px;
           margin-bottom: 56px;
           border: 1px solid var(--stone-line);
           background: var(--glass);
           backdrop-filter: blur(var(--blur)) saturate(160%);
           -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
           border-radius: 16px;
-          padding: 12px 0;
+          padding: 0;
+          overflow: hidden;
           box-shadow: 0 1px 0 rgba(255,255,255,0.24) inset, 0 18px 50px rgba(19,32,37,0.06);
         }
 
@@ -1032,8 +1033,8 @@ function ProvaCell({
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 2px;
-          padding: 26px 28px;
+          gap: 0;
+          padding: 44px 44px 40px;
           text-decoration: none;
           border-right: 1px solid var(--stone-line);
           transition: background 0.28s ease;
@@ -1051,11 +1052,11 @@ function ProvaCell({
           font-style: italic;
           color: var(--text-muted);
           letter-spacing: 1.6px;
-          margin-bottom: 8px;
+          margin-bottom: 20px;
         }
         .prova-value {
           font-family: var(--font-playfair), Georgia, serif;
-          font-size: 44px;
+          font-size: 48px;
           font-weight: 500;
           color: var(--text-primary);
           line-height: 1;
@@ -1063,10 +1064,10 @@ function ProvaCell({
           font-variant-numeric: tabular-nums;
         }
         .prova-value.money {
-          font-size: 26px;
+          font-size: 28px;
           letter-spacing: -0.6px;
           line-height: 1.1;
-          padding-top: 8px;
+          padding-top: 6px;
         }
         .prova-label {
           font-size: 11px;
@@ -1074,21 +1075,21 @@ function ProvaCell({
           letter-spacing: 1.4px;
           text-transform: uppercase;
           color: var(--text-secondary);
-          margin-top: 10px;
+          margin-top: 20px;
         }
         .prova-caption {
           font-size: 12px;
           color: var(--text-muted);
-          margin-top: 2px;
+          margin-top: 6px;
         }
         .prova-caption.warn {
           color: var(--warning);
           font-weight: 600;
         }
         @media (max-width: 760px) {
-          .prova-cell { padding: 20px 18px; }
-          .prova-value { font-size: 34px; }
-          .prova-value.money { font-size: 20px; }
+          .prova-cell { padding: 32px 28px 28px; }
+          .prova-value { font-size: 38px; }
+          .prova-value.money { font-size: 22px; }
           .prova-cell:nth-child(2) { border-right: none; }
         }
       `}</style>

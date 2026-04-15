@@ -142,7 +142,7 @@ export default async function OpenGraphImage() {
               display: 'flex',
             }}
           >
-            12 agentes de IA para advogados e estudantes &mdash; analise de documentos,
+            12 agentes de IA para escritorios de advocacia &mdash; analise de documentos,
             jurisprudencia, pecas processuais, calculos e mais.
           </div>
         </div>
@@ -179,7 +179,7 @@ export default async function OpenGraphImage() {
                   display: 'flex',
                 }}
               />
-              2 dias gratis sem cartao
+              7 dias gratis sem cartao
             </div>
             <div style={{ color: 'rgba(255,255,255,0.20)', display: 'flex' }}>·</div>
             <div style={{ display: 'flex' }}>LGPD compliant</div>

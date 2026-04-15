@@ -91,7 +91,7 @@ export default function PrivacidadePage() {
         <section style={sectionStyle}>
           <h2 style={h2Style}>1. Quem somos</h2>
           <p style={pStyle}>
-            A LexAI (&ldquo;nos&rdquo;, &ldquo;nossa&rdquo; ou &ldquo;plataforma&rdquo;) e uma plataforma de inteligencia artificial voltada para advogados, estudantes de Direito e departamentos juridicos brasileiros. Nossos 12 agentes especializados auxiliam em analise de documentos, pesquisa jurisprudencial, redacao de pecas processuais, calculos juridicos e outras tarefas de apoio juridico.
+            A LexAI (&ldquo;nos&rdquo;, &ldquo;nossa&rdquo; ou &ldquo;plataforma&rdquo;) e uma plataforma de inteligencia artificial voltada para advogados e departamentos juridicos brasileiros. Nossos 12 agentes especializados auxiliam em analise de documentos, pesquisa jurisprudencial, redacao de pecas processuais, calculos juridicos e outras tarefas de apoio juridico.
           </p>
           <h3 style={h3Style}>Controlador dos dados</h3>
           <p style={pStyle}>
@@ -277,11 +277,7 @@ export default function PrivacidadePage() {
           }}>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 6 }}>
               <i className="bi bi-envelope-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
-              <strong style={{ color: '#fff' }}>E-mail:</strong> luizfernandoleonardoleonardo@gmail.com
-            </div>
-            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 6 }}>
-              <i className="bi bi-telephone-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
-              <strong style={{ color: '#fff' }}>Telefone:</strong> (34) 99302-6456
+              <strong style={{ color: '#fff' }}>E-mail:</strong> contato@vanixcorp.com
             </div>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>
               <i className="bi bi-geo-alt-fill" style={{ marginRight: 8, color: '#bfa68e' }} />
@@ -321,8 +317,7 @@ export default function PrivacidadePage() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 20, fontSize: 13, flexWrap: 'wrap' }}>
-          <span style={{ color: 'rgba(255,255,255,0.30)' }}>luizfernandoleonardoleonardo@gmail.com</span>
-          <span style={{ color: 'rgba(255,255,255,0.30)' }}>(34) 99302-6456</span>
+          <span style={{ color: 'rgba(255,255,255,0.30)' }}>contato@vanixcorp.com</span>
         </div>
       </footer>
 

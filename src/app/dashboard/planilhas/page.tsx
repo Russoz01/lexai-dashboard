@@ -421,7 +421,7 @@ export default function PlanilhasPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     gap: 10, width: '100%', padding: 13,
                     background: (!csvText.trim() || loading) ? 'var(--border)' : 'var(--accent)',
-                    color: (!csvText.trim() || loading) ? 'var(--text-muted)' : '#fff',
+                    color: (!csvText.trim() || loading) ? 'var(--text-muted)' : 'var(--bg-base)',
                     border: 'none', borderRadius: 10,
                     fontSize: 14, fontWeight: 600,
                     cursor: loading || !csvText.trim() ? 'not-allowed' : 'pointer',
@@ -758,7 +758,7 @@ export default function PlanilhasPage() {
                             <span style={{
                               fontSize: 11, fontWeight: 700,
                               padding: '3px 10px', borderRadius: 6,
-                              background: 'var(--accent)', color: '#fff',
+                              background: 'var(--accent)', color: 'var(--bg-base)',
                               fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
                             }}>
                               {f.celula || '—'}
@@ -843,7 +843,7 @@ export default function PlanilhasPage() {
                             display: 'flex', alignItems: 'center', gap: 6,
                             padding: '8px 14px', borderRadius: 8,
                             background: 'var(--accent)', border: 'none',
-                            color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                            color: 'var(--bg-base)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
                             fontFamily: "'DM Sans', sans-serif",
                           }}
                         >

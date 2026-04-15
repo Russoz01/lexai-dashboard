@@ -6,9 +6,9 @@ const STEPS = [
   { icon: 'bi-text-paragraph', title: 'Resumidor', desc: 'Cole qualquer documento juridico — contrato, peticao, acordao — e receba uma analise estruturada com riscos, clausulas criticas e prazos.' },
   { icon: 'bi-journal-bookmark', title: 'Pesquisador', desc: 'Jurisprudencia do STF, STJ, TRFs e TJs estaduais. Cada resultado com ementa, tribunal e data de julgamento verificados.' },
   { icon: 'bi-pencil-square', title: 'Redator', desc: 'Peticoes iniciais, recursos, contestacoes e notificacoes com fundamentacao doutrinaria e jurisprudencial completa.' },
-  { icon: 'bi-mortarboard', title: 'Professor', desc: 'Aulas em 3 niveis de profundidade — basico, intermediario, avancado — com questoes no estilo OAB, concursos e magistratura.' },
-  { icon: 'bi-patch-check', title: 'Simulado & Consultor', desc: 'Gere simulados no estilo OAB/CESPE com gabarito comentado, ou solicite pareceres juridicos com argumentos pro e contra.' },
-  { icon: 'bi-rocket-takeoff', title: 'Pronto para comecar?', desc: 'Dois dias gratis para explorar tudo. Sem cartao de credito. Comece pelo Chat — o orquestrador roteia para o agente certo.' },
+  { icon: 'bi-bell', title: 'Monitor Legislativo', desc: 'Mudancas normativas e novos precedentes na sua area de atuacao, entregues automaticamente. Nunca seja surpreendido por alteracao legislativa.' },
+  { icon: 'bi-file-earmark-check', title: 'Parecerista & Estrategista', desc: 'Pareceres juridicos estruturados com fundamentacao legal, e analise estrategica de risco processual com recomendacao de atuacao.' },
+  { icon: 'bi-rocket-takeoff', title: 'Pronto para comecar?', desc: 'Agende uma demonstracao guiada de 30 minutos. Comece pelo Chat — o orquestrador roteia para o agente certo.' },
 ]
 
 export default function OnboardingModal({ open, onClose }: { open: boolean; onClose: () => void }) {

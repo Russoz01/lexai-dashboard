@@ -174,7 +174,7 @@ export default function ConsultorPage() {
     }
     lines.push(``)
     lines.push(`${'='.repeat(60)}`)
-    lines.push(`Parecer gerado via LexAI — Consultor Juridico`)
+    lines.push(`Parecer gerado via LexAI — Estrategista`)
 
     const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -197,7 +197,7 @@ export default function ConsultorPage() {
             Agente IA
           </span>
         </div>
-        <h1 className="page-title">Consultor</h1>
+        <h1 className="page-title">Estrategista</h1>
         <p className="consultor-subtitle">Pareceres Juridicos</p>
         <p className="page-subtitle" style={{ marginTop: 4 }}>
           Elabore pareceres juridicos fundamentados com analise multifacetada, legislacao, doutrina e recomendacoes estrategicas

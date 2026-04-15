@@ -16,55 +16,75 @@ interface ChargeResult {
   remaining?: number
 }
 
-const NIVEIS_VALIDOS = ['facil', 'medio', 'dificil'] as const
+const AREAS_VALIDAS = [
+  'Civil', 'Penal', 'Trabalhista', 'Tributario', 'Empresarial',
+  'Ambiental', 'Digital', 'Consumidor', 'Administrativo', 'Constitucional',
+] as const
 
-const SYSTEM_PROMPT = `Voce e um especialista em elaboracao de questoes para concursos publicos e exame da OAB no Brasil. Possui 20+ anos de experiencia como elaborador de bancas como CESPE/CEBRASPE, FGV, FCC, VUNESP e Exame de Ordem (OAB). Sua especialidade e criar questoes que simulam fielmente o estilo, a dificuldade e as armadilhas das provas reais.
+const TIPOS_VALIDOS = ['Consultivo', 'Contencioso', 'Preventivo', 'Regulatorio'] as const
 
-DIRETRIZES DE ELABORACAO:
-- Questoes devem seguir o padrao da banca especificada (se informada) ou OAB por padrao
-- Cada questao DEVE ter exatamente 5 alternativas (a, b, c, d, e)
-- Uma UNICA alternativa correta por questao
-- Enunciados devem ser tecnicos e precisos, usando terminologia juridica brasileira
-- Incluir casos praticos, situacoes hipoteticas e problemas reais quando possivel
-- Alternativas incorretas devem ser plausives (distratores de qualidade) — erros sutis, nao absurdos
-- Variar os niveis cognitivos: conhecimento, compreensao, aplicacao, analise
-- Referenciar legislacao vigente (CF/88, CC/2002, CP, CPC/2015, CLT, CTN, CDC, etc.)
-- Citar jurisprudencia do STF e STJ quando pertinente
-- Incluir doutrina majoritaria e minoritaria quando relevante
+const SYSTEM_PROMPT = `Voce e um consultor juridico senior com 25+ anos de experiencia na elaboracao de pareceres juridicos no Brasil. Possui amplo conhecimento em legislacao brasileira, doutrina e jurisprudencia dos tribunais superiores (STF, STJ, TST, TSE). Seu trabalho e reconhecido pela profundidade tecnica, clareza argumentativa e rigor nas citacoes.
 
-AJUSTE POR NIVEL:
-- facil: conceitos fundamentais, letra da lei, decoreba, sumulas vinculantes
-- medio: aplicacao pratica, casos concretos, interpretacao sistematica, jurisprudencia consolidada
-- dificil: controversias doutrinarias, jurisprudencia divergente, pegadinhas classicas de banca, questoes interdisciplinares
+DIRETRIZES PARA ELABORACAO DO PARECER:
 
-AJUSTE POR BANCA:
-- OAB: foco em etica profissional, Estatuto da Advocacia, questoes mais diretas
-- CESPE: estilo certo/errado adaptado para multipla escolha, enunciados longos e detalhados
-- FGV: questoes contextualizadas com casos praticos elaborados
-- FCC: questoes mais objetivas, foco em letra da lei
-- VUNESP: questoes regionais (SP), foco em legislacao estadual quando aplicavel
+1. EMENTA: Resumo conciso do parecer em 2-3 frases, identificando o tema central, a area do direito e a conclusao principal.
+
+2. FATOS: Apresentacao organizada dos fatos narrados pelo consulente, separando fatos incontroversos de fatos alegados, identificando lacunas factuais relevantes.
+
+3. QUESTAO JURIDICA: Formulacao precisa da(s) questao(oes) juridica(s) que o parecer pretende responder, delimitando o escopo da analise.
+
+4. FUNDAMENTACAO LEGAL: Analise detalhada da legislacao aplicavel, citando:
+   - Dispositivos constitucionais (CF/88)
+   - Legislacao federal (CC/2002, CP, CPC/2015, CLT, CTN, CDC, LGPD, etc.)
+   - Legislacao especial pertinente
+   - Sempre indicar artigo, paragrafo, inciso e alinea quando aplicavel
+   - Verificar a vigencia e eventuais alteracoes legislativas
+
+5. DOUTRINA APLICAVEL: Referenciar posicoes doutrinarias relevantes, indicando:
+   - Autores e obras de referencia na area
+   - Posicao majoritaria vs. minoritaria quando houver divergencia
+   - Tendencias doutrinarias emergentes
+
+6. JURISPRUDENCIA RELEVANTE: Citar decisoes dos tribunais superiores e tribunais regionais, incluindo:
+   - Numero do recurso/processo quando possivel
+   - Tribunal e turma/camara julgadora
+   - Tese fixada ou ratio decidendi
+   - Distinguir jurisprudencia consolidada de posicoes isoladas
+
+7. CONCLUSAO E RECOMENDACAO: Responder objetivamente a questao juridica, oferecendo:
+   - Conclusao fundamentada
+   - Recomendacoes praticas para o consulente
+   - Riscos juridicos identificados
+   - Alternativas e estrategias possiveis
+
+REGRAS GERAIS:
+- Toda citacao deve ser precisa e verificavel. Se nao tiver certeza absoluta, indique: "Esta referencia requer verificacao junto a fonte primaria."
+- Linguagem tecnica, mas acessivel. Evite jargao desnecessario sem explicacao.
+- Seja transparente sobre limitacoes e incertezas.
+- Sempre inclua o disclaimer sobre a natureza do parecer gerado por IA.
+- Todo o conteudo deve ser em portugues brasileiro (pt-BR).
+
+AJUSTE POR TIPO DE PARECER:
+- Consultivo: foco em orientacao preventiva, analise de viabilidade juridica, recomendacoes para tomada de decisao.
+- Contencioso: foco em teses defensivas/ofensivas, jurisprudencia favoravel, estrategia processual.
+- Preventivo: foco em compliance, mitigacao de riscos, adequacao a normas vigentes.
+- Regulatorio: foco em normas regulatorias setoriais, agencias reguladoras, conformidade administrativa.
 
 ALL OUTPUT IN BRAZILIAN PORTUGUESE.
 Return ONLY valid JSON, no markdown fences.
 
 Return this JSON:
 {
-  "questoes": [
-    {
-      "enunciado": "Enunciado completo da questao, incluindo caso pratico ou situacao hipotetica quando aplicavel",
-      "alternativas": {
-        "a": "Texto da alternativa A",
-        "b": "Texto da alternativa B",
-        "c": "Texto da alternativa C",
-        "d": "Texto da alternativa D",
-        "e": "Texto da alternativa E"
-      },
-      "gabarito": "a|b|c|d|e",
-      "justificativa": "Explicacao detalhada de por que a alternativa correta esta certa E por que cada alternativa incorreta esta errada, com fundamentacao legal",
-      "artigos_relacionados": ["Art. X da Lei Y", "Sumula Z do STF/STJ"],
-      "dica_estudo": "Dica pratica para o estudante memorizar ou aprofundar este ponto"
-    }
-  ]
+  "parecer": {
+    "ementa": "Resumo conciso do parecer",
+    "fatos": "Apresentacao organizada dos fatos",
+    "questao_juridica": "Formulacao das questoes juridicas a responder",
+    "fundamentacao_legal": "Analise detalhada com citacoes de artigos, leis e dispositivos legais",
+    "doutrina_aplicavel": "Referencias doutrinarias com autores e obras",
+    "jurisprudencia_relevante": "Decisoes de tribunais superiores com numeros e teses",
+    "conclusao_recomendacao": "Conclusao fundamentada com recomendacoes praticas",
+    "disclaimer": "Este parecer foi gerado por inteligencia artificial e possui carater meramente informativo e orientativo. Nao substitui a analise e validacao por advogado habilitado. As citacoes de legislacao, doutrina e jurisprudencia devem ser verificadas junto as fontes primarias antes de qualquer utilizacao profissional."
+  }
 }`
 
 export async function POST(req: NextRequest) {
@@ -110,22 +130,24 @@ export async function POST(req: NextRequest) {
     const plano = charge.plano ?? 'free'
 
     const body = await req.json().catch(() => ({}))
-    const materia = typeof body?.materia === 'string' ? body.materia.trim() : ''
-    const nivel = typeof body?.nivel === 'string' && NIVEIS_VALIDOS.includes(body.nivel as typeof NIVEIS_VALIDOS[number]) ? body.nivel : 'medio'
-    const quantidade = typeof body?.quantidade === 'number' && body.quantidade >= 1 && body.quantidade <= 10 ? body.quantidade : 5
-    const banca = typeof body?.banca === 'string' ? body.banca.trim() : ''
+    const area = typeof body?.area === 'string' && AREAS_VALIDAS.includes(body.area as typeof AREAS_VALIDAS[number]) ? body.area : 'Civil'
+    const tema = typeof body?.tema === 'string' ? body.tema.trim() : ''
+    const contexto = typeof body?.contexto === 'string' ? body.contexto.trim() : ''
+    const tipoParecer = typeof body?.tipo_parecer === 'string' && TIPOS_VALIDOS.includes(body.tipo_parecer as typeof TIPOS_VALIDOS[number]) ? body.tipo_parecer : ''
 
-    if (!materia || materia.length < 3) return NextResponse.json({ error: 'Informe a materia.' }, { status: 400 })
-    if (materia.length > 500) return NextResponse.json({ error: 'Nome da materia muito longo.' }, { status: 400 })
-    if (banca.length > 100) return NextResponse.json({ error: 'Nome da banca muito longo.' }, { status: 400 })
+    if (!tema || tema.length < 5) return NextResponse.json({ error: 'Informe o tema do parecer (minimo 5 caracteres).' }, { status: 400 })
+    if (tema.length > 500) return NextResponse.json({ error: 'Tema muito longo (maximo 500 caracteres).' }, { status: 400 })
+    if (!contexto || contexto.length < 20) return NextResponse.json({ error: 'Descreva o contexto com mais detalhes (minimo 20 caracteres).' }, { status: 400 })
+    if (contexto.length > 5000) return NextResponse.json({ error: 'Contexto muito longo (maximo 5000 caracteres).' }, { status: 400 })
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
 
-    let userMessage = `Gere ${quantidade} questoes de ${materia} no nivel "${nivel}".`
-    if (banca) {
-      userMessage += ` Estilo da banca: ${banca}.`
+    let userMessage = `Elabore um parecer juridico sobre o seguinte tema:\n\nAREA DO DIREITO: ${area}\nTEMA: ${tema}`
+    if (tipoParecer) {
+      userMessage += `\nTIPO DE PARECER: ${tipoParecer}`
     }
-    userMessage += `\n\nRetorne exatamente ${quantidade} questoes no formato JSON especificado.`
+    userMessage += `\n\nCONTEXTO E FATOS RELEVANTES:\n${contexto}`
+    userMessage += `\n\nRetorne o parecer completo no formato JSON especificado, com todas as secoes preenchidas de forma detalhada e fundamentada.`
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
@@ -156,17 +178,17 @@ export async function POST(req: NextRequest) {
     let resultado
     try {
       const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      resultado = cleaned ? JSON.parse(cleaned) : { questoes: [], erro_parse: true }
+      resultado = cleaned ? JSON.parse(cleaned) : { parecer: null, erro_parse: true }
     } catch {
-      resultado = { questoes: [], erro_parse: true, raw: responseText }
+      resultado = { parecer: null, erro_parse: true, raw: responseText }
     }
 
     if (usuarioId) {
       const { error: histErr } = await supabase.from('historico').insert({
         usuario_id: usuarioId,
         agente: 'simulado',
-        mensagem_usuario: `Simulado: ${materia} (${nivel}, ${quantidade}q${banca ? `, ${banca}` : ''})`,
-        resposta_agente: `Simulado com ${quantidade} questoes de ${materia}`,
+        mensagem_usuario: `Parecer: ${tema} (Direito ${area}${tipoParecer ? `, ${tipoParecer}` : ''})`,
+        resposta_agente: `Parecer juridico sobre ${tema}`,
       })
       if (histErr) {
         console.error('[API /simulado] historico insert error:', histErr.message, histErr.code)
@@ -175,7 +197,7 @@ export async function POST(req: NextRequest) {
 
     events.agentUsed(user.id, 'simulado', plano).catch(() => {})
 
-    return NextResponse.json({ questoes: resultado.questoes ?? [] })
+    return NextResponse.json({ parecer: resultado.parecer ?? null })
   } catch (err: unknown) {
     const errName = err instanceof Error ? err.name : 'Unknown'
     const errMsg = err instanceof Error ? err.message : String(err)
@@ -184,7 +206,7 @@ export async function POST(req: NextRequest) {
 
     const lower = errMsg.toLowerCase()
     if (errName === 'AbortError' || errName === 'TimeoutError' || lower.includes('timeout') || lower.includes('aborted')) {
-      return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente menos questoes.' }, { status: 504 })
+      return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente simplificar o contexto.' }, { status: 504 })
     }
     if (errMsg.includes('401') || lower.includes('invalid_api_key') || lower.includes('authentication')) {
       return NextResponse.json({ error: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.' }, { status: 503 })

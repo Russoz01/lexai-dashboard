@@ -42,9 +42,9 @@ const AGENTES_CATALOGO = {
     quando: 'Montar estrategia de negociacao, BATNA, ZOPA, roteiros de audiencia de conciliacao, tatica de acordo.',
   },
   professor: {
-    titulo: 'Professor',
+    titulo: 'Monitor Legislativo',
     rota: '/dashboard/professor',
-    quando: 'Explicar conceitos juridicos em profundidade, dar aulas, gerar questoes no estilo OAB, concursos e magistratura.',
+    quando: 'Monitorar mudancas normativas, novos precedentes, alteracoes legislativas relevantes para a area de atuacao do escritorio.',
   },
   calculador: {
     titulo: 'Calculador',
