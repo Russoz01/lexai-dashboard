@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { ok, unauthorized, serverError } from '@/lib/api-response'
+import { audit } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,7 +12,7 @@ export const dynamic = 'force-dynamic'
  * Sensitive fields (stripe_customer_id, auth_user_id) are included for the
  * data subject but nothing from other users.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const supabase = createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -56,6 +57,23 @@ export async function GET() {
     }
 
     const filename = `lexai-export-${usuarioId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.json`
+
+    // Fire-and-forget audit entry. Never blocks the response.
+    void audit({
+      usuarioId,
+      action: 'user.data_export',
+      entityType: 'usuario',
+      entityId: usuarioId,
+      metadata: {
+        rows: {
+          historico: (historico.data || []).length,
+          financeiro: (financeiro.data || []).length,
+          oauthTokens: (oauthTokens.data || []).length,
+          sharedDocuments: (sharedDocuments.data || []).length,
+        },
+      },
+      request: req,
+    })
 
     return new NextResponse(JSON.stringify(bundle, null, 2), {
       status: 200,

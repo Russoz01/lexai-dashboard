@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { ok, fail, unauthorized, serverError } from '@/lib/api-response'
+import { audit } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 
@@ -79,6 +80,18 @@ export async function POST(req: NextRequest) {
         'partial_deletion',
       )
     }
+
+    // Audit AFTER the delete succeeds. usuarioId is already gone from the
+    // usuarios table (FK set null preserves the log row), but we still want
+    // the action recorded with the id that was deleted.
+    await audit({
+      usuarioId: null, // foreign key is already severed
+      action: 'user.data_delete',
+      entityType: 'usuario',
+      entityId: usuarioId,
+      metadata: { authUserId: user.id, email: user.email },
+      request: req,
+    })
 
     // Sign out on client — session is already invalid
     return ok({
