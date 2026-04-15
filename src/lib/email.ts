@@ -103,6 +103,39 @@ export function trialEndingEmailHtml(nome: string, daysLeft: number): string {
   `)
 }
 
+export function inviteEmailHtml(
+  invitedByName: string,
+  equipeNome: string,
+  acceptUrl: string,
+): string {
+  return baseTemplate(`
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">Voce foi convidado para ${equipeNome}</h1>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;"><strong>${invitedByName}</strong> convidou voce para fazer parte da equipe <strong>${equipeNome}</strong> no LexAI &mdash; a IA juridica mais usada por escritorios brasileiros.</p>
+    <div style="background:#f5efe6;border-left:4px solid #bfa68e;padding:14px 18px;border-radius:8px;margin:20px 0;">
+      <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Ao aceitar o convite voce tera acesso a</div>
+      <div style="font-size:13px;color:#475569;line-height:1.6;">&bull; Todos os agentes contratados no plano da equipe<br>&bull; Historico compartilhado (quando autorizado pelo admin)<br>&bull; Suporte prioritario atraves do admin da equipe</div>
+    </div>
+    <a href="${acceptUrl}" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Aceitar convite</a>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Este convite expira em 7 dias. Se voce nao conhece quem te convidou, pode ignorar este email.</p>
+  `)
+}
+
+/**
+ * Thin wrapper: create + send invite email. Returns send result.
+ */
+export async function sendInviteEmail(params: {
+  to: string
+  invitedByName: string
+  equipeNome: string
+  acceptUrl: string
+}) {
+  return sendEmail({
+    to: params.to,
+    subject: `${params.invitedByName} te convidou para ${params.equipeNome} no LexAI`,
+    html: inviteEmailHtml(params.invitedByName, params.equipeNome, params.acceptUrl),
+  })
+}
+
 export function paymentReceivedEmailHtml(nome: string, plano: string, valor: string): string {
   return baseTemplate(`
     <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">Pagamento confirmado, ${nome}!</h1>

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { ok, fail, unauthorized, forbidden, serverError } from '@/lib/api-response'
 import { audit } from '@/lib/audit'
+import { sendInviteEmail } from '@/lib/email'
 import crypto from 'crypto'
 
 export const dynamic = 'force-dynamic'
@@ -148,9 +149,24 @@ export async function POST(req: NextRequest) {
     const origin = req.headers.get('origin') || 'https://lexai.com.br'
     const acceptUrl = `${origin}/equipe/aceitar?token=${invite.token}`
 
-    // Email dispatch is fire-and-forget — delivery failures shouldn't block
-    // invite creation (user can re-send from the admin UI).
-    // NOTE: sendInviteEmail() lives in src/lib/email.ts — see phase 6 commit.
+    // Fetch caller display name for the email salutation. Falls back to
+    // email local-part if nome is unset.
+    const { data: inviter } = await admin
+      .from('usuarios')
+      .select('nome, email')
+      .eq('id', user.id)
+      .maybeSingle()
+    const invitedByName =
+      inviter?.nome?.trim() || inviter?.email?.split('@')[0] || 'Um colega'
+
+    // Fire-and-forget — delivery failures shouldn't block invite creation
+    // (admin can re-send from the UI). Logged by the email lib.
+    void sendInviteEmail({
+      to: email,
+      invitedByName,
+      equipeNome: equipe.nome,
+      acceptUrl,
+    })
 
     return ok({
       inviteId: invite.id,
