@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import Link from 'next/link'
+import { UsagePanel } from '@/components/UsagePanel'
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * Dashboard — Gabinete LexAI
@@ -204,6 +205,11 @@ export default function DashboardPage() {
           warning={stats.saldo < 0}
           href="/dashboard/financeiro"
         />
+      </section>
+
+      {/* ═════ PAINEL DE CONSUMO ═════ */}
+      <section style={{ marginBottom: 32 }} aria-label="Consumo do plano">
+        <UsagePanel />
       </section>
 
       {/* ═════ GABINETE — USO + ATIVIDADE ═════ */}
