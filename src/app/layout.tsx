@@ -50,12 +50,37 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'LexAI',
   applicationCategory: 'BusinessApplication',
+  applicationSubCategory: 'LegalTech',
   operatingSystem: 'Web',
+  inLanguage: 'pt-BR',
+  url: 'https://lexai.com.br',
   description: 'Plataforma de inteligencia artificial para advogados brasileiros. 12 agentes IA especializados em analise de documentos, pesquisa jurisprudencial, redacao de pecas, calculos juridicos e mais.',
-  offers: [
-    { '@type': 'Offer', name: 'Escritorio', price: '1399', priceCurrency: 'BRL', billingIncrement: 'P1M', description: '1-5 advogados · 5 agentes' },
-    { '@type': 'Offer', name: 'Firma', price: '1459', priceCurrency: 'BRL', billingIncrement: 'P1M', description: '6-15 advogados · 10 agentes' },
-    { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', billingIncrement: 'P1M', description: '16+ advogados · agentes customizados' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Vanix Corp',
+    url: 'https://vanix.com.br',
+  },
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'BRL',
+    lowPrice: '1399',
+    highPrice: '1599',
+    offerCount: 3,
+    offers: [
+      { '@type': 'Offer', name: 'Escritorio', price: '1399', priceCurrency: 'BRL', category: 'subscription', description: '1-5 advogados · 5 agentes' },
+      { '@type': 'Offer', name: 'Firma', price: '1459', priceCurrency: 'BRL', category: 'subscription', description: '6-15 advogados · 10 agentes' },
+      { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', category: 'subscription', description: '16+ advogados · agentes customizados' },
+    ],
+  },
+  featureList: [
+    'Analise de documentos juridicos',
+    'Pesquisa de jurisprudencia',
+    'Redacao de pecas processuais',
+    'Calculo de prazos',
+    'Resumo automatico',
+    'Traducao juridica',
+    'Simulado OAB',
+    'Conformidade LGPD',
   ],
 }
 
@@ -80,6 +105,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={`${dmSans.variable} ${playfair.variable}`}>
+        <a href="#main-content" className="skip-link">Pular para o conteudo</a>
         <ThemeProvider>{children}</ThemeProvider>
         <CookieConsent />
       </body>

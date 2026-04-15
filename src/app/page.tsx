@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
+import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 
 /* ----------------------------------------------------------------------------
  * LexAI — Atelier Landing
@@ -252,7 +253,7 @@ export default function LandingPage() {
       </div>
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
-      <section style={{ ...shell, padding: '180px 40px 80px' }}>
+      <section id="main-content" style={{ ...shell, padding: '180px 40px 80px' }}>
         <div className="ax-hero-grid">
           <div className="ax-hero-left">
             <SerialLabel>N° 001 · LEXAI · MMXXVI</SerialLabel>
@@ -692,6 +693,8 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      <WhatsAppFloat />
 
       {/* ── STYLES ─────────────────────────────────────────────────────── */}
       <style>{`

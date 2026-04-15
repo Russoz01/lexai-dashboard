@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect } from 'react'
+import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * /empresas — Página B2B LexAI
@@ -136,7 +137,7 @@ export default function EmpresasPage() {
       </nav>
 
       {/* ── HERO ────────────────────────────────────────────────────────── */}
-      <section className="emp-hero">
+      <section id="main-content" className="emp-hero">
         <div className="emp-shell">
           <div className="emp-serial">
             <span className="emp-serial-dot" />
@@ -356,6 +357,8 @@ export default function EmpresasPage() {
           </div>
         </div>
       </footer>
+
+      <WhatsAppFloat message="Ola! Vim do site da LexAI Empresas e gostaria de uma demonstracao." />
 
       <style jsx global>{`
         /* ── Root ────────────────────────────────────────────────────────── */
