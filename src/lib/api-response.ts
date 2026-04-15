@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 
 /**
  * Standard response envelope used by every API route.
@@ -47,6 +48,22 @@ export function serverError(context: string, err: unknown) {
 
   // Map upstream errors to actionable status codes
   const lower = msg.toLowerCase()
+  const isUpstreamKnown =
+    msg.includes('401') || msg.includes('429') ||
+    lower.includes('invalid_api_key') || lower.includes('authentication') ||
+    lower.includes('rate_limit') || lower.includes('quota') ||
+    lower.includes('timeout') || lower.includes('etimedout') ||
+    lower.includes('overloaded')
+
+  // Ship ONLY unexpected errors to Sentry. The four mapped cases above are
+  // known upstream states (Anthropic overloaded, user rate-limited) and
+  // alerting on them would be noise, not signal.
+  if (!isUpstreamKnown) {
+    Sentry.captureException(err, {
+      tags: { route: context, kind: 'api_server_error' },
+    })
+  }
+
   if (msg.includes('401') || lower.includes('invalid_api_key') || lower.includes('authentication')) {
     return fail('Servico de IA temporariamente indisponivel.', 503, 'ai_auth_failed')
   }

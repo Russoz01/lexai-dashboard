@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import * as Sentry from '@sentry/nextjs'
 
 /**
  * Global error boundary — shown when a server or client component throws.
@@ -16,9 +17,12 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    // Console breadcrumb — Sentry will auto-capture when wired up
     // eslint-disable-next-line no-console
     console.error('[GlobalError]', error.message, { digest: error.digest })
+    Sentry.captureException(error, {
+      tags: { source: 'global-error-boundary' },
+      extra: { digest: error.digest },
+    })
   }, [error])
 
   return (

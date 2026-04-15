@@ -1,0 +1,14 @@
+// Next.js 14 instrumentation hook — loads the correct Sentry config
+// depending on the runtime (nodejs server vs edge runtime).
+// Required so sentry.server.config.ts and sentry.edge.config.ts actually run.
+
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    await import('./sentry.server.config')
+  }
+  if (process.env.NEXT_RUNTIME === 'edge') {
+    await import('./sentry.edge.config')
+  }
+}
+
+export { captureRequestError as onRequestError } from '@sentry/nextjs'
