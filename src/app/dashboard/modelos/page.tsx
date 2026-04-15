@@ -471,7 +471,7 @@ function TemplateModal({ template, onClose }: { template: Template; onClose: () 
           inset: 0;
           background: rgba(19, 32, 37, 0.56);
           backdrop-filter: blur(4px);
-          z-index: 200;
+          z-index: 10000;
           display: flex;
           align-items: center;
           justify-content: center;

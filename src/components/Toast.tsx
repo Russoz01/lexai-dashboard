@@ -27,9 +27,9 @@ export function ToastContainer() {
   }, [pushInternal])
 
   return (
-    <div style={{
+    <div role="status" aria-live="polite" aria-atomic="true" style={{
       position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
-      display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 360, pointerEvents: 'none',
+      display: 'flex', flexDirection: 'column-reverse', gap: 10, maxWidth: 360, pointerEvents: 'none',
     }}>
       {items.map(t => (
         <div key={t.id} className="toast-item" style={{

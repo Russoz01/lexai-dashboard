@@ -126,7 +126,7 @@ export default function PlanosPage() {
 
       {/* Trust bar — multiple signals */}
       <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10,
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10,
         margin: '0 auto 24px', maxWidth: 760,
       }} className="trust-grid">
         {[
