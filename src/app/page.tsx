@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
+import { ExitIntent } from '@/components/ExitIntent'
 
 /* ----------------------------------------------------------------------------
  * LexAI — Atelier Landing
@@ -210,6 +211,8 @@ export default function LandingPage() {
             <a href="#atelier" className="ax-nav-link">Atelier</a>
             <a href="#planos"  className="ax-nav-link">Planos</a>
             <Link href="/empresas" className="ax-nav-link">Empresas</Link>
+            <Link href="/roi" className="ax-nav-link">ROI</Link>
+            <Link href="/sobre" className="ax-nav-link">Sobre</Link>
             <Link href="/login" className="ax-nav-link">Entrar</Link>
             <Link href="/login" className="ax-cta-primary">Agendar demonstracao</Link>
           </nav>
@@ -695,6 +698,7 @@ export default function LandingPage() {
       </footer>
 
       <WhatsAppFloat />
+      <ExitIntent />
 
       {/* ── STYLES ─────────────────────────────────────────────────────── */}
       <style>{`

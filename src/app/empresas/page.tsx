@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect } from 'react'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
+import { ExitIntent } from '@/components/ExitIntent'
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * /empresas — Página B2B LexAI
@@ -16,18 +17,18 @@ import { WhatsAppFloat } from '@/components/WhatsAppFloat'
  * ──────────────────────────────────────────────────────────────────────────── */
 
 const AGENTES = [
-  { n: '01', name: 'Resumidor',           icon: 'bi-file-earmark-text',        desc: 'Contratos, acórdãos e petições analisados em segundos com risco, cláusulas críticas e prazos identificados.' },
-  { n: '02', name: 'Redator',             icon: 'bi-pencil-square',            desc: 'Petições iniciais, recursos e notificações com fundamentação doutrinária e jurisprudencial completa.' },
-  { n: '03', name: 'Pesquisador',         icon: 'bi-journal-bookmark',         desc: 'Jurisprudência do STF, STJ, TRFs e TJs estaduais. Ementa, tribunal e data em cada resultado.' },
-  { n: '04', name: 'Negociador',          icon: 'bi-lightning',                desc: 'Três cenários de acordo, mapeamento de posição e pontos de pressão para qualquer audiência de mediação.' },
-  { n: '05', name: 'Monitor Legislativo', icon: 'bi-bell',                     desc: 'Mudanças normativas e novos precedentes entregues automaticamente. Nunca seja surpreendido por alteração legislativa.' },
-  { n: '06', name: 'Calculador',          icon: 'bi-calculator',               desc: 'Prazos processuais com feriados, correção monetária (INPC, IGPM, IPCA), juros de mora e custas por estado.' },
-  { n: '07', name: 'Legislação',          icon: 'bi-book',                     desc: 'Qualquer artigo explicado com doutrina majoritária e jurisprudência aplicada ao caso concreto.' },
-  { n: '08', name: 'Rotina',              icon: 'bi-calendar-week',            desc: 'Audiências, prazos processuais e compromissos organizados por prioridade e urgência.' },
-  { n: '09', name: 'Parecerista',         icon: 'bi-file-earmark-check',       desc: 'Pareceres estruturados com fundamentação, doutrina majoritária, argumentos pro e contra e recomendação conclusiva.' },
-  { n: '10', name: 'Estrategista',        icon: 'bi-shield-check',             desc: 'Risco processual, mapeamento de precedentes favoráveis e linha de atuação antes de qualquer decisão.' },
-  { n: '11', name: 'Tradutor Jurídico',   icon: 'bi-translate',                desc: 'Contratos e documentos internacionais em inglês, espanhol e francês com vocabulário técnico preservado.' },
-  { n: '12', name: 'Compliance',          icon: 'bi-shield-lock',              desc: 'Conformidade regulatória, mapeamento de riscos LGPD e anticorrupção. Exposições identificadas antes de virarem passivos.' },
+  { n: '01', name: 'Resumidor',           icon: 'bi-file-earmark-text',        desc: 'Contrato de 80 paginas em 90 segundos. Clausulas de risco, prazos e obrigacoes destacadas com pagina de origem para voce conferir.' },
+  { n: '02', name: 'Redator',             icon: 'bi-pencil-square',            desc: 'Primeira versao de peticao, recurso ou notificacao em 4 minutos. Fundamentacao com jurisprudencia rastreavel \u2014 zero invencao.' },
+  { n: '03', name: 'Pesquisador',         icon: 'bi-journal-bookmark',         desc: 'Busca paralela em STF, STJ, TRFs e TJs. Cada acórdao retorna com ementa, data, relator e link. Sem rodeios, sem pagina 8 do Google.' },
+  { n: '04', name: 'Negociador',          icon: 'bi-lightning',                desc: 'Tres cenarios de acordo calculados antes da audiencia. Gatilhos da parte contraria, concessao minima viavel e roteiro de argumentos.' },
+  { n: '05', name: 'Monitor Legislativo', icon: 'bi-bell',                     desc: 'Alerta por area do escritorio: trabalhista, tributario, penal. Voce recebe a mudanca no dia que ela sai, nao duas semanas depois.' },
+  { n: '06', name: 'Calculador',          icon: 'bi-calculator',               desc: 'Prazo processual com feriado estadual e municipal. Correcao com INPC, IGPM, IPCA ou SELIC. Verba rescisoria, custa e honorario em uma planilha.' },
+  { n: '07', name: 'Professor',           icon: 'bi-book',                     desc: 'Artigo explicado com doutrina majoritaria, precedente aplicavel e exemplo do seu caso. Estudo para OAB, concurso ou atualizacao continua.' },
+  { n: '08', name: 'Rotina',              icon: 'bi-calendar-week',            desc: 'Audiencia, prazo e compromisso em uma unica pauta, com prioridade calculada. Sincroniza com Google Calendar.' },
+  { n: '09', name: 'Parecerista',         icon: 'bi-file-earmark-check',       desc: 'Parecer com fundamentacao estruturada: tese, anti-tese, doutrina, jurisprudencia e recomendacao assinavel. Pronto para protocolar.' },
+  { n: '10', name: 'Estrategista',        icon: 'bi-shield-check',             desc: 'Antes de aceitar a causa: taxa historica de vitoria no tribunal, precedentes contrarios e melhor angulo de abordagem. Voce entra sabendo a chance real.' },
+  { n: '11', name: 'Tradutor Juridico',   icon: 'bi-translate',                desc: 'Contrato internacional em ingles, espanhol ou frances sem perder terminologia tecnica. Glossario salvo por cliente.' },
+  { n: '12', name: 'Compliance',          icon: 'bi-shield-lock',              desc: 'Checklist LGPD e anticorrupcao por operacao. Identifica exposicao regulatoria antes de virar TAC, multa ou manchete.' },
 ]
 
 const CASOS = [
@@ -313,6 +314,92 @@ export default function EmpresasPage() {
 
       <div className="emp-hairline" aria-hidden />
 
+      {/* ── COMPARATIVO vs CHAT GENERICO ────────────────────────────────── */}
+      <section className="emp-section emp-shell" data-reveal>
+        <div className="emp-serial">
+          <span className="emp-serial-dot" />
+          CAPÍTULO IV · COMPARATIVO
+        </div>
+        <h2 className="emp-section-h2">
+          Por que <em>nao</em> usar ChatGPT para peca?
+        </h2>
+        <p className="emp-section-lede">
+          Um modelo generalista nao foi treinado para jurisprudencia brasileira.
+          Pior: ele inventa citacao para parecer util. A LexAI recusa responder
+          antes de fabricar.
+        </p>
+
+        <div className="emp-compare-table">
+          <div className="emp-compare-row emp-compare-head">
+            <div />
+            <div className="emp-compare-them">ChatGPT / Gemini generico</div>
+            <div className="emp-compare-us">LexAI</div>
+          </div>
+          {[
+            {
+              k: 'Jurisprudencia brasileira',
+              them: 'Inventa acórdao com numero falso',
+              us: 'Cada citacao com link rastreavel',
+              themBad: true,
+            },
+            {
+              k: 'Calculo de prazo com feriado',
+              them: 'Nao considera feriado local',
+              us: 'Feriado estadual + municipal + recesso forense',
+              themBad: true,
+            },
+            {
+              k: 'LGPD e retencao de dados',
+              them: 'Treina modelo publico com seu caso',
+              us: 'Dado do cliente nunca treina modelo publico',
+              themBad: true,
+            },
+            {
+              k: 'Modelo de peca padrao do escritorio',
+              them: 'Impossivel \u2014 memoria limitada',
+              us: 'Galeria propria, glossario por cliente',
+              themBad: true,
+            },
+            {
+              k: 'Correcao INPC / IGPM / SELIC',
+              them: 'Aproximacao errada',
+              us: 'Serie historica oficial integrada',
+              themBad: true,
+            },
+            {
+              k: 'Quando nao sabe',
+              them: 'Inventa resposta confiante',
+              us: 'Recusa e pede fonte adicional',
+              themBad: true,
+            },
+            {
+              k: 'Suporte em portugues',
+              them: 'Forum em ingles, fila infinita',
+              us: 'WhatsApp < 4h uteis, operador juridico',
+              themBad: true,
+            },
+            {
+              k: 'Conformidade LGPD',
+              them: 'Servidor nos EUA, clausula generica',
+              us: 'Processamento BR quando possivel, contrato DPA',
+              themBad: true,
+            },
+          ].map((row, i) => (
+            <div key={i} className="emp-compare-row">
+              <div className="emp-compare-k">{row.k}</div>
+              <div className="emp-compare-them emp-compare-them--bad">
+                <i className="bi bi-x" aria-hidden /> {row.them}
+              </div>
+              <div className="emp-compare-us">
+                <i className="bi bi-check2" aria-hidden /> {row.us}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="emp-hairline" aria-hidden />
+
       {/* ── CTA FINAL ───────────────────────────────────────────────────── */}
       <section className="emp-section emp-shell emp-cta-section" data-reveal>
         <div className="emp-cta-card">
@@ -359,6 +446,7 @@ export default function EmpresasPage() {
       </footer>
 
       <WhatsAppFloat message="Ola! Vim do site da LexAI Empresas e gostaria de uma demonstracao." />
+      <ExitIntent />
 
       <style jsx global>{`
         /* ── Root ────────────────────────────────────────────────────────── */
@@ -904,6 +992,61 @@ export default function EmpresasPage() {
           font-size: 13px;
           color: var(--text-secondary);
           opacity: 0.7;
+        }
+
+        /* ── Comparativo tabela ──────────────────────────────────────────── */
+        .emp-compare-table {
+          margin-top: 48px;
+          border: 1px solid var(--stone-line);
+          border-radius: 6px;
+          overflow: hidden;
+          background: var(--card-bg);
+        }
+        .emp-compare-row {
+          display: grid;
+          grid-template-columns: 1.1fr 1.4fr 1.4fr;
+          gap: 0;
+          border-bottom: 1px solid var(--stone-line);
+        }
+        .emp-compare-row:last-child { border-bottom: none; }
+        .emp-compare-row > div {
+          padding: 18px 22px;
+          font-size: 14px;
+          line-height: 1.5;
+          color: var(--text-secondary);
+          display: flex; align-items: center; gap: 10px;
+        }
+        .emp-compare-row > div + div {
+          border-left: 1px solid var(--stone-line);
+        }
+        .emp-compare-head > div {
+          font-size: 12px; letter-spacing: 0.12em;
+          text-transform: uppercase;
+          font-weight: 600;
+          background: color-mix(in srgb, var(--text-muted) 8%, transparent);
+        }
+        .emp-compare-head .emp-compare-us {
+          background: color-mix(in srgb, var(--accent) 12%, transparent);
+          color: var(--text-primary);
+        }
+        .emp-compare-k {
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+        .emp-compare-them i,
+        .emp-compare-us i {
+          font-size: 18px;
+          flex-shrink: 0;
+        }
+        .emp-compare-them--bad i { color: #b85540; }
+        .emp-compare-us i { color: #6B8F71; font-weight: 700; }
+        .emp-compare-us {
+          background: color-mix(in srgb, var(--accent) 4%, transparent);
+          color: var(--text-primary);
+        }
+        @media (max-width: 720px) {
+          .emp-compare-row { grid-template-columns: 1fr; }
+          .emp-compare-row > div + div { border-left: none; border-top: 1px solid var(--stone-line); }
         }
 
         /* ── CTA final ───────────────────────────────────────────────────── */
