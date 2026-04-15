@@ -208,6 +208,7 @@ export default function LandingPage() {
             <a href="#agentes" className="ax-nav-link">Agentes</a>
             <a href="#atelier" className="ax-nav-link">Atelier</a>
             <a href="#planos"  className="ax-nav-link">Planos</a>
+            <Link href="/empresas" className="ax-nav-link">Empresas</Link>
             <Link href="/login" className="ax-nav-link">Entrar</Link>
             <Link href="/login" className="ax-cta-primary">Agendar demonstracao</Link>
           </nav>
