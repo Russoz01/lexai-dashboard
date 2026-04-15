@@ -19,6 +19,7 @@ const nav: { title: string; items: NavItem[] }[] = [
     title: 'Principal',
     items: [
       { href: '/dashboard',             icon: 'bi-grid-1x2',          label: 'Dashboard'   },
+      { href: '/dashboard/modelos',     icon: 'bi-collection',        label: 'Modelos'     },
       { href: '/dashboard/historico',   icon: 'bi-clock-history',     label: 'Histórico'   },
       { href: '/dashboard/prazos',      icon: 'bi-calendar-check',    label: 'Prazos'      },
       { href: '/dashboard/financeiro',  icon: 'bi-wallet2',           label: 'Financeiro'  },
