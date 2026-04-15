@@ -144,13 +144,18 @@ export default function DashboardPage() {
     return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
   }
 
-  const now = new Date()
-  const hour = now.getHours()
-  const greeting = hour < 5 ? 'Boa noite' : hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
-  const todayStr = now.toLocaleDateString('pt-BR', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-  })
-  const todayCapitalized = todayStr.charAt(0).toUpperCase() + todayStr.slice(1)
+  // Time-dependent strings only on client to avoid hydration mismatch (#425)
+  const [greeting, setGreeting] = useState('Ola')
+  const [todayCapitalized, setTodayCapitalized] = useState('')
+  useEffect(() => {
+    const now = new Date()
+    const hour = now.getHours()
+    setGreeting(hour < 5 ? 'Boa noite' : hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite')
+    const todayStr = now.toLocaleDateString('pt-BR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    })
+    setTodayCapitalized(todayStr.charAt(0).toUpperCase() + todayStr.slice(1))
+  }, [])
 
   const maxAgentCount = useMemo(
     () => agentCounts.reduce((m, a) => Math.max(m, a.count), 0) || 1,
@@ -422,7 +427,7 @@ export default function DashboardPage() {
               <div>
                 <div className="dash-card-cap">CAPITULO V · LIVRO-CAIXA</div>
                 <h2 className="dash-card-title">Saldo <em>atual</em></h2>
-                <p className="dash-card-sub">{new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
+                <p className="dash-card-sub" suppressHydrationWarning>{typeof window === 'undefined' ? '' : new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
               </div>
             </div>
             <div className="dash-finance">

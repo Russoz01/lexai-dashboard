@@ -360,14 +360,7 @@ export default function LandingPage() {
 
         <div className="ax-agents" data-reveal>
           {/* ── Documentos ──────────────────────────────── */}
-          <div style={{
-            fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
-            textTransform: 'uppercase', color: 'var(--text-muted)',
-            marginBottom: 16, marginTop: 0, paddingBottom: 8,
-            borderBottom: '1px solid var(--stone-line)',
-          }}>
-            Documentos
-          </div>
+          <div className="ax-cat-head" data-first>Documentos</div>
           {agentes.filter(a => ['Resumidor', 'Redator', 'Parecerista'].includes(a.name)).map((a, i) => (
             <div key={a.name} className="ax-agent" style={{ '--reveal-delay': `${i * 70}ms` } as React.CSSProperties}>
               <div className="ax-agent-num">{a.n}</div>
@@ -378,16 +371,10 @@ export default function LandingPage() {
               <div className="ax-agent-arrow" aria-hidden>→</div>
             </div>
           ))}
+          <div className="ax-agent ax-agent--ghost" aria-hidden />
 
           {/* ── Pesquisa & Legislação ────────────────────── */}
-          <div style={{
-            fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
-            textTransform: 'uppercase', color: 'var(--text-muted)',
-            marginBottom: 16, marginTop: 40, paddingBottom: 8,
-            borderBottom: '1px solid var(--stone-line)',
-          }}>
-            Pesquisa &amp; Legislação
-          </div>
+          <div className="ax-cat-head">Pesquisa &amp; Legislação</div>
           {agentes.filter(a => ['Pesquisador', 'Monitor Legislativo', 'Legislacao'].includes(a.name)).map((a, i) => (
             <div key={a.name} className="ax-agent" style={{ '--reveal-delay': `${(i + 3) * 70}ms` } as React.CSSProperties}>
               <div className="ax-agent-num">{a.n}</div>
@@ -398,16 +385,10 @@ export default function LandingPage() {
               <div className="ax-agent-arrow" aria-hidden>→</div>
             </div>
           ))}
+          <div className="ax-agent ax-agent--ghost" aria-hidden />
 
           {/* ── Estratégia ───────────────────────────────── */}
-          <div style={{
-            fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
-            textTransform: 'uppercase', color: 'var(--text-muted)',
-            marginBottom: 16, marginTop: 40, paddingBottom: 8,
-            borderBottom: '1px solid var(--stone-line)',
-          }}>
-            Estratégia
-          </div>
+          <div className="ax-cat-head">Estratégia</div>
           {agentes.filter(a => ['Negociador', 'Estrategista'].includes(a.name)).map((a, i) => (
             <div key={a.name} className="ax-agent" style={{ '--reveal-delay': `${(i + 6) * 70}ms` } as React.CSSProperties}>
               <div className="ax-agent-num">{a.n}</div>
@@ -420,14 +401,7 @@ export default function LandingPage() {
           ))}
 
           {/* ── Gestão ───────────────────────────────────── */}
-          <div style={{
-            fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
-            textTransform: 'uppercase', color: 'var(--text-muted)',
-            marginBottom: 16, marginTop: 40, paddingBottom: 8,
-            borderBottom: '1px solid var(--stone-line)',
-          }}>
-            Gestão
-          </div>
+          <div className="ax-cat-head">Gestão</div>
           {agentes.filter(a => ['Calculador', 'Rotina'].includes(a.name)).map((a, i) => (
             <div key={a.name} className="ax-agent" style={{ '--reveal-delay': `${(i + 8) * 70}ms` } as React.CSSProperties}>
               <div className="ax-agent-num">{a.n}</div>
@@ -440,14 +414,7 @@ export default function LandingPage() {
           ))}
 
           {/* ── Internacional & Conformidade ─────────────── */}
-          <div style={{
-            fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
-            textTransform: 'uppercase', color: 'var(--text-muted)',
-            marginBottom: 16, marginTop: 40, paddingBottom: 8,
-            borderBottom: '1px solid var(--stone-line)',
-          }}>
-            Internacional &amp; Conformidade
-          </div>
+          <div className="ax-cat-head">Internacional &amp; Conformidade</div>
           {agentes.filter(a => ['Tradutor Juridico', 'Compliance'].includes(a.name)).map((a, i) => (
             <div key={a.name} className="ax-agent" style={{ '--reveal-delay': `${(i + 10) * 70}ms` } as React.CSSProperties}>
               <div className="ax-agent-num">{a.n}</div>
@@ -1385,6 +1352,30 @@ export default function LandingPage() {
           grid-template-columns: repeat(2, 1fr);
           border-top: 1px solid var(--stone-line);
           border-left: 1px solid var(--stone-line);
+        }
+        .ax-cat-head {
+          grid-column: 1 / -1;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          padding: 32px 40px 12px;
+          margin: 0;
+          border-right: 1px solid var(--stone-line);
+          border-bottom: 1px solid var(--stone-line);
+          background: color-mix(in srgb, var(--accent) 2%, transparent);
+        }
+        .ax-cat-head[data-first] { padding-top: 20px; }
+        .ax-agent--ghost {
+          background: color-mix(in srgb, var(--accent) 1.5%, transparent);
+          pointer-events: none;
+          min-height: 140px;
+        }
+        .ax-agent--ghost::before,
+        .ax-agent--ghost::after { display: none; }
+        @media (max-width: 760px) {
+          .ax-agent--ghost { display: none; }
         }
         .ax-agent {
           padding: 48px 40px;
