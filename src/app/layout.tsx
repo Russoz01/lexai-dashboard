@@ -45,6 +45,38 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'O que e a LexAI?',
+      acceptedAnswer: { '@type': 'Answer', text: 'LexAI e uma plataforma de inteligencia artificial com 12 agentes especializados no Direito brasileiro. Cada agente resolve uma tarefa especifica: analise de documentos, pesquisa de jurisprudencia, redacao de pecas, calculos processuais, compliance LGPD e mais.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Quanto custa a LexAI?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Os planos comecam em R$ 1.399 por mes por advogado (plano Escritorio, 1-5 advogados). O plano Firma custa R$ 1.459 (6-15 advogados) e o Enterprise R$ 1.599 (16+ advogados). Todos incluem 7 dias de teste gratuito.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'A LexAI inventa jurisprudencia?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Nao. Cada citacao de jurisprudencia retorna com ementa, tribunal, data de julgamento e link. O sistema foi projetado para negar a resposta quando nao puder ser sustentada por fonte rastreavel.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Meus dados de cliente estao seguros?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Sim. A LexAI processa dados no Brasil quando possivel, usa criptografia em repouso e em transito, isola completamente os dados entre escritorios e nunca usa dados de clientes para treinar modelos. Conformidade total com a LGPD (Lei 13.709/2018).' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Posso cancelar quando quiser?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Sim. Todos os planos podem ser cancelados a qualquer momento, sem multa, sem burocracia. O acesso permanece ativo ate o fim do periodo ja pago.' },
+    },
+  ],
+}
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
@@ -68,7 +100,7 @@ const jsonLd = {
     offerCount: 3,
     offers: [
       { '@type': 'Offer', name: 'Escritorio', price: '1399', priceCurrency: 'BRL', category: 'subscription', description: '1-5 advogados · 5 agentes' },
-      { '@type': 'Offer', name: 'Firma', price: '1459', priceCurrency: 'BRL', category: 'subscription', description: '6-15 advogados · 10 agentes' },
+      { '@type': 'Offer', name: 'Firma', price: '1459', priceCurrency: 'BRL', category: 'subscription', description: '6-15 advogados · 12 agentes' },
       { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', category: 'subscription', description: '16+ advogados · agentes customizados' },
     ],
   },
@@ -102,6 +134,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       </head>
       <body className={`${dmSans.variable} ${playfair.variable}`}>

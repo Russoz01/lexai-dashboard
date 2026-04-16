@@ -29,15 +29,37 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
+
+  // Rotas publicas — acessiveis sem autenticacao
   const isPublic =
     pathname === '/' ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/auth') ||
+    pathname.startsWith('/empresas') ||
+    pathname.startsWith('/roi') ||
+    pathname.startsWith('/sobre') ||
+    pathname.startsWith('/privacidade') ||
+    pathname.startsWith('/termos') ||
+    pathname.startsWith('/share') ||
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon')
+    pathname.startsWith('/favicon') ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt'
 
-  // Sem sessão e rota protegida → redireciona para /login
-  if (!user && !isPublic) {
+  // Rotas de API que nao exigem auth no middleware (possuem auth propria ou sao publicas)
+  const isOpenApi =
+    pathname.startsWith('/api/webhooks') ||
+    pathname.startsWith('/api/cron') ||
+    pathname === '/api/health' ||
+    pathname.startsWith('/api/stripe') ||
+    pathname.startsWith('/api/google')
+
+  // Sem sessao e rota protegida → redireciona para /login
+  if (!user && !isPublic && !isOpenApi) {
+    // API routes retornam 401 JSON em vez de redirect
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ ok: false, error: 'Nao autenticado.' }, { status: 401 })
+    }
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = '/login'
     loginUrl.searchParams.delete('next')

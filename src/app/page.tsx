@@ -26,7 +26,7 @@ const agentes = [
   { n: '01', name: 'Resumidor',          desc: 'Cole qualquer documento — contrato, acordao, peticao — e receba uma analise estruturada com riscos, clausulas criticas e prazos em segundos.' },
   { n: '02', name: 'Redator',            desc: 'Peticoes iniciais, recursos, contestacoes e notificacoes extrajudiciais com fundamentacao doutrinaria e jurisprudencial completa.' },
   { n: '03', name: 'Pesquisador',        desc: 'Busca inteligente em jurisprudencia do STF, STJ, TRFs e TJs estaduais. Cada resultado com ementa, tribunal e data de julgamento.' },
-  { n: '04', name: 'Negociador',         desc: 'Mapeamento de BATNA, ZOPA e tres cenarios de acordo. Estrategia de negociacao com fundamentacao e pontos de pressao.' },
+  { n: '04', name: 'Negociador',         desc: 'Melhor alternativa sem acordo, margem viavel de negociacao e tres cenarios calculados antes da audiencia. Estrategia com fundamentacao e pontos de pressao.' },
   { n: '05', name: 'Monitor Legislativo', desc: 'Mudancas normativas e novos precedentes na sua area de atuacao, entregues automaticamente. Nunca seja surpreendido por alteracao legislativa que afeta seus casos.' },
   { n: '06', name: 'Calculador',         desc: 'Prazos processuais com feriados, correcao monetaria (INPC, IGPM, IPCA), juros de mora e custas judiciais por estado.' },
   { n: '07', name: 'Legislacao',         desc: 'Qualquer artigo de lei explicado em linguagem acessivel, com doutrina majoritaria e jurisprudencia aplicada ao caso concreto.' },
@@ -282,6 +282,14 @@ export default function LandingPage() {
                 <span className="ax-cta-arrow" aria-hidden>→</span>
               </Link>
               <a href="/login" className="ax-cta-ghost">Comecar 7 dias gratis &nbsp;→</a>
+            </div>
+            <div className="ax-line" style={{ '--d': '640ms', marginTop: 14, display: 'flex', flexDirection: 'column', gap: 6 } as React.CSSProperties}>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+                A partir de <strong style={{ color: 'var(--text-secondary)' }}>R$ 1.399</strong>/mes por advogado
+              </div>
+              <div style={{ fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--accent)', opacity: 0.8 }}>
+                Mais de 40 escritorios no programa beta
+              </div>
             </div>
           </div>
           <aside className="ax-hero-right">
@@ -555,6 +563,51 @@ export default function LandingPage() {
                 </div>
               </figcaption>
             </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* ── COMPARATIVO vs CHAT GENERICO ─────────────────────────────── */}
+      <section style={{ ...shell, padding: '200px 40px 160px' }}>
+        <div className="ax-section-head" data-reveal>
+          <SerialLabel>Capitulo V-B · Diferencial</SerialLabel>
+          <h2 className="ax-section-title">
+            Por que <em className="ax-italic">nao</em> usar ChatGPT para peca?
+          </h2>
+          <p className="ax-section-sub">
+            Um modelo generalista inventa citacao para parecer util. A LexAI recusa
+            responder antes de fabricar.
+          </p>
+        </div>
+        <Rule />
+
+        <div className="ax-compare" data-reveal>
+          <div className="ax-compare-head">
+            <div />
+            <div className="ax-compare-label ax-compare-label--them">ChatGPT / Gemini</div>
+            <div className="ax-compare-label ax-compare-label--us">LexAI</div>
+          </div>
+          {[
+            { k: 'Jurisprudencia brasileira', them: 'Inventa acordao com numero falso', us: 'Cada citacao com link rastreavel' },
+            { k: 'Calculo de prazo', them: 'Nao considera feriado local', us: 'Feriado estadual + municipal + recesso' },
+            { k: 'Retencao de dados', them: 'Treina modelo publico com seu caso', us: 'Dado nunca treina modelo publico' },
+            { k: 'Modelo de peca padrao', them: 'Impossivel — memoria limitada', us: 'Galeria propria por escritorio' },
+            { k: 'Correcao monetaria', them: 'Aproximacao errada', us: 'Serie historica oficial integrada' },
+            { k: 'Quando nao sabe', them: 'Inventa resposta confiante', us: 'Recusa e pede fonte adicional' },
+            { k: 'Suporte', them: 'Forum em ingles, fila infinita', us: 'WhatsApp < 4h uteis, operador juridico' },
+            { k: 'Conformidade LGPD', them: 'Servidor nos EUA, clausula generica', us: 'Processamento BR, contrato DPA' },
+          ].map((row, i) => (
+            <div key={i} className="ax-compare-row" style={{ '--reveal-delay': `${i * 50}ms` } as React.CSSProperties}>
+              <div className="ax-compare-k">{row.k}</div>
+              <div className="ax-compare-cell ax-compare-cell--them">
+                <i className="bi bi-x" aria-hidden style={{ color: '#ef4444', marginRight: 6 }} />
+                {row.them}
+              </div>
+              <div className="ax-compare-cell ax-compare-cell--us">
+                <i className="bi bi-check2" aria-hidden style={{ color: 'var(--accent)', marginRight: 6 }} />
+                {row.us}
+              </div>
+            </div>
           ))}
         </div>
       </section>
@@ -1584,6 +1637,58 @@ export default function LandingPage() {
           0%, 100% { opacity: 0.5; }
           50% { opacity: 0.9; }
         }
+        /* ── Compare table ──────────────────────────────────────────── */
+        .ax-compare {
+          border: 1px solid var(--stone-line);
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .ax-compare-head {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          background: color-mix(in srgb, var(--accent) 4%, transparent);
+          border-bottom: 1px solid var(--stone-line);
+          padding: 14px 20px;
+          gap: 12px;
+        }
+        .ax-compare-label {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+        .ax-compare-label--them { color: var(--text-muted); }
+        .ax-compare-label--us { color: var(--accent); }
+        .ax-compare-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 12px;
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--stone-line);
+          transition: background 0.2s ease;
+        }
+        .ax-compare-row:last-child { border-bottom: none; }
+        .ax-compare-row:hover { background: color-mix(in srgb, var(--accent) 3%, transparent); }
+        .ax-compare-k {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+        .ax-compare-cell {
+          font-size: 13px;
+          line-height: 1.5;
+          display: flex;
+          align-items: flex-start;
+        }
+        .ax-compare-cell--them { color: var(--text-muted); }
+        .ax-compare-cell--us { color: var(--text-secondary); }
+        @media (max-width: 768px) {
+          .ax-compare-head,
+          .ax-compare-row { grid-template-columns: 1fr; gap: 8px; }
+          .ax-compare-head > div:first-child { display: none; }
+          .ax-compare-k { margin-bottom: 4px; }
+        }
+
         .ax-plans {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
