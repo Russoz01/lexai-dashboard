@@ -193,7 +193,7 @@ export default function SobrePage() {
         .sb-pillars {
           display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
         }
-        @media (max-width: 720px) { .sb-pillars { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .sb-pillars { grid-template-columns: 1fr; } }
         .sb-pillar { padding-top: 18px; border-top: 1px solid var(--stone-line); }
         .sb-pillar-n {
           font-family: var(--font-playfair), serif;

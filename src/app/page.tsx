@@ -1427,7 +1427,7 @@ export default function LandingPage() {
         }
         .ax-agent--ghost::before,
         .ax-agent--ghost::after { display: none; }
-        @media (max-width: 760px) {
+        @media (max-width: 768px) {
           .ax-agent--ghost { display: none; }
         }
         .ax-agent {
@@ -2104,7 +2104,7 @@ export default function LandingPage() {
         }
 
         /* ── Responsive ──────────────────────────────────── */
-        @media (max-width: 960px) {
+        @media (max-width: 1024px) {
           .ax-hero-grid { grid-template-columns: 1fr; gap: 48px; }
           .ax-hero-right { max-width: 400px; }
           .ax-provas { grid-template-columns: repeat(2, 1fr); }
@@ -2120,7 +2120,7 @@ export default function LandingPage() {
           .ax-nav-link:not(.ax-cta-primary) { display: none; }
           .ax-hamburger { display: flex; }
         }
-        @media (min-width: 961px) {
+        @media (min-width: 1025px) {
           .ax-hamburger { display: none; }
           .ax-mobile-panel { display: none; }
           .ax-mobile-overlay { display: none; }

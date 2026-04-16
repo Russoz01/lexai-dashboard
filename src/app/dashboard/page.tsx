@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import Link from 'next/link'
 import { UsagePanel } from '@/components/UsagePanel'
+import { ReferralPanel } from '@/components/ReferralPanel'
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * Dashboard — Gabinete LexAI
@@ -212,9 +213,10 @@ export default function DashboardPage() {
         />
       </section>
 
-      {/* ═════ PAINEL DE CONSUMO ═════ */}
-      <section style={{ marginBottom: 32 }} aria-label="Consumo do plano">
+      {/* ═════ PAINEL DE CONSUMO + INDICACAO ═════ */}
+      <section style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }} aria-label="Consumo e indicacao">
         <UsagePanel />
+        <ReferralPanel />
       </section>
 
       {/* ═════ GABINETE — USO + ATIVIDADE ═════ */}
@@ -995,7 +997,7 @@ export default function DashboardPage() {
             grid-template-columns: 1fr;
           }
         }
-        @media (max-width: 760px) {
+        @media (max-width: 768px) {
           .dash-atelier-h1 { font-size: 34px; }
           .dash-provas {
             grid-template-columns: 1fr 1fr;
