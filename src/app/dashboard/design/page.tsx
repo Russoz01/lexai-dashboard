@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import s from './page.module.css'
 
 /* ─────────────────────────────────────────────────────────────────
    TIPOS & CONSTANTES
@@ -160,21 +161,16 @@ function SectionCard({
   title, subtitle, icon, children,
 }: { title: string; subtitle: string; icon: string; children: React.ReactNode }) {
   return (
-    <div className="section-card" style={{ padding: '24px 28px', marginBottom: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 18 }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: 12,
-          background: 'var(--accent-light)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--accent)', flexShrink: 0,
-        }}>
+    <div className={`section-card ${s.sectionCardInner}`}>
+      <div className={s.sectionCardHeader}>
+        <div className={s.sectionCardIcon}>
           <i className={`bi ${icon}`} style={{ fontSize: 18 }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 3 }}>
+          <div className={s.sectionCardTitle}>
             {title}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.45 }}>
+          <div className={s.sectionCardSub}>
             {subtitle}
           </div>
         </div>
@@ -186,10 +182,10 @@ function SectionCard({
 
 function FieldLabel({ title, hint }: { title: string; hint?: string }) {
   return (
-    <div style={{ marginBottom: 8 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{title}</div>
+    <div className={s.fieldLabelWrap}>
+      <div className={s.fieldLabelTitle}>{title}</div>
       {hint && (
-        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2, lineHeight: 1.4 }}>{hint}</div>
+        <div className={s.fieldLabelHint}>{hint}</div>
       )}
     </div>
   )
@@ -276,28 +272,23 @@ export default function DesignPage() {
   const { colors } = prefs
 
   return (
-    <div className="page-content design-page" style={{ paddingBottom: 120 }}>
+    <div className={`page-content ${s.designPage}`}>
       {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>
+      <div className={s.headerWrap}>
+        <div className={s.headerHint}>
           Personalize a aparencia do seu painel
         </div>
         <h1 className="page-title" style={{ fontSize: 30, fontWeight: 700 }}>
           Design & Aparencia
         </h1>
-        <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 8, maxWidth: 720, lineHeight: 1.55 }}>
+        <div className={s.headerDesc}>
           Personalize cores, tipografia, espacamento e acessibilidade do seu painel.
           Todas as alteracoes sao aplicadas em tempo real e podem ser salvas para uso futuro.
         </div>
       </div>
 
       {/* Layout principal: configuracoes a esquerda, preview sticky a direita */}
-      <div className="design-layout" style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1fr) 320px',
-        gap: 24,
-        alignItems: 'start',
-      }}>
+      <div className={s.designLayout}>
         {/* ───────────── COLUNA DE CONFIGURACOES ───────────── */}
         <div>
 
@@ -695,15 +686,12 @@ export default function DesignPage() {
             icon="bi-universal-access-circle"
           >
             {/* High contrast */}
-            <div style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '14px 0', borderBottom: '1px solid var(--border)',
-            }}>
+            <div className={s.toggleRow}>
               <div style={{ flex: 1, paddingRight: 16 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>
+                <div className={s.toggleLabel}>
                   Alto contraste
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                <div className={s.toggleDesc}>
                   Aumenta o contraste entre textos e fundos para facilitar a leitura.
                 </div>
               </div>
@@ -729,15 +717,12 @@ export default function DesignPage() {
             </div>
 
             {/* Reduce motion */}
-            <div style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '14px 0', borderBottom: '1px solid var(--border)',
-            }}>
+            <div className={s.toggleRow}>
               <div style={{ flex: 1, paddingRight: 16 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>
+                <div className={s.toggleLabel}>
                   Reduzir animacoes
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                <div className={s.toggleDesc}>
                   Diminui ou desativa animacoes e transicoes na interface, util para sensibilidade ao movimento.
                 </div>
               </div>
@@ -865,10 +850,7 @@ export default function DesignPage() {
         </div>
 
         {/* ───────────── PREVIEW STICKY ───────────── */}
-        <aside className="design-preview" style={{
-          position: 'sticky', top: 100,
-          alignSelf: 'start',
-        }}>
+        <aside className={s.designPreview}>
           <div className="section-card" style={{ padding: 22 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
               <i className="bi bi-eye-fill" style={{ color: colors.primary, fontSize: 18 }} />
@@ -964,19 +946,7 @@ export default function DesignPage() {
       </div>
 
       {/* ───────────── BARRA FLUTUANTE DE ACOES ───────────── */}
-      <div style={{
-        position: 'fixed',
-        bottom: 24, right: 24,
-        zIndex: 50,
-        display: 'flex', gap: 10,
-        padding: 12,
-        borderRadius: 16,
-        background: 'var(--glass)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        border: '1px solid var(--glass-border)',
-        boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-      }}>
+      <div className={s.floatingBar}>
         <button
           onClick={resetDefaults}
           style={{
@@ -1004,17 +974,6 @@ export default function DesignPage() {
         </button>
       </div>
 
-      {/* Mobile responsive override */}
-      <style jsx>{`
-        @media (max-width: 900px) {
-          .design-layout {
-            grid-template-columns: 1fr !important;
-          }
-          .design-preview {
-            position: static !important;
-          }
-        }
-      `}</style>
     </div>
   )
 }

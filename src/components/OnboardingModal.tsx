@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import s from './OnboardingModal.module.css'
 
 /* ------------------------------------------------------------------ */
 /*  Agent definitions                                                  */
@@ -148,112 +149,38 @@ export default function OnboardingModal({
 
   const renderStep0 = () => (
     <>
-      <p
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 12,
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase' as const,
-          color: 'var(--accent, #BFA68E)',
-          marginBottom: 6,
-        }}
-      >
+      <p className={s.serial}>
         N&deg; 001 &middot; GABINETE &middot; MMXXVI
       </p>
-      <h2
-        style={{
-          fontFamily: "'Playfair Display', serif",
-          fontStyle: 'italic',
-          fontSize: 28,
-          fontWeight: 700,
-          color: 'var(--text-primary, #F3EEE4)',
-          marginBottom: 8,
-          lineHeight: 1.25,
-        }}
-      >
+      <h2 className={s.heading}>
         Bem-vindo ao LexAI
       </h2>
-      <p
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 14,
-          color: 'var(--text-secondary, #a8a8a0)',
-          lineHeight: 1.6,
-          marginBottom: 32,
-          maxWidth: 420,
-          marginInline: 'auto',
-        }}
-      >
+      <p className={s.desc}>
         Escolha um agente para experimentar. Voce pode explorar os demais depois.
       </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div className={s.agentList}>
         {AGENTS.map(agent => (
           <button
             key={agent.key}
             type="button"
             onClick={() => handleAgentPick(agent)}
-            className="onb-agent-card"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 16,
-              padding: '16px 20px',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid var(--border, rgba(255,255,255,0.08))',
-              borderRadius: 14,
-              cursor: 'pointer',
-              textAlign: 'left',
-              width: '100%',
-              transition: 'border-color 0.2s, background 0.2s',
-            }}
+            className={s.agentCard}
           >
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                background: 'var(--accent-light, rgba(191,166,142,0.12))',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
+            <div className={s.agentIcon}>
               <i
-                className={`bi ${agent.icon}`}
-                style={{ fontSize: 20, color: 'var(--accent, #BFA68E)' }}
+                className={`bi ${agent.icon} ${s.agentIconI}`}
               />
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <span
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: 'var(--text-primary, #F3EEE4)',
-                  display: 'block',
-                  marginBottom: 2,
-                }}
-              >
+            <div className={s.agentInfo}>
+              <span className={s.agentLabel}>
                 {agent.label}
               </span>
-              <span
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 12,
-                  color: 'var(--text-secondary, #a8a8a0)',
-                  lineHeight: 1.45,
-                  display: 'block',
-                }}
-              >
+              <span className={s.agentDesc}>
                 {agent.desc}
               </span>
             </div>
-            <i
-              className="bi bi-chevron-right"
-              style={{ fontSize: 14, color: 'var(--text-secondary, #a8a8a0)', flexShrink: 0 }}
-            />
+            <i className={`bi bi-chevron-right ${s.agentChevron}`} />
           </button>
         ))}
       </div>
@@ -264,98 +191,31 @@ export default function OnboardingModal({
     if (!selectedAgent) return null
     return (
       <>
-        <p
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: 12,
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase' as const,
-            color: 'var(--accent, #BFA68E)',
-            marginBottom: 6,
-          }}
-        >
+        <p className={s.serial}>
           {selectedAgent.serial}
         </p>
-        <h2
-          style={{
-            fontFamily: "'Playfair Display', serif",
-            fontStyle: 'italic',
-            fontSize: 26,
-            fontWeight: 700,
-            color: 'var(--text-primary, #F3EEE4)',
-            marginBottom: 8,
-            lineHeight: 1.25,
-          }}
-        >
+        <h2 className={s.headingSm}>
           {selectedAgent.label}
         </h2>
-        <p
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: 14,
-            color: 'var(--text-secondary, #a8a8a0)',
-            lineHeight: 1.6,
-            marginBottom: 24,
-            maxWidth: 420,
-            marginInline: 'auto',
-          }}
-        >
+        <p className={s.descSmGap}>
           Preparamos um exemplo para voce testar agora mesmo.
         </p>
 
         {/* Sample card */}
-        <div
-          style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid var(--border, rgba(255,255,255,0.08))',
-            borderRadius: 14,
-            padding: '20px 22px',
-            textAlign: 'left',
-            marginBottom: 28,
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 11,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase' as const,
-              color: 'var(--accent, #BFA68E)',
-              display: 'block',
-              marginBottom: 8,
-            }}
-          >
+        <div className={s.sampleCard}>
+          <span className={s.sampleTitle}>
             {selectedAgent.sampleTitle}
           </span>
-          <p
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 14,
-              color: 'var(--text-primary, #F3EEE4)',
-              lineHeight: 1.65,
-              margin: 0,
-            }}
-          >
+          <p className={s.sampleBody}>
             {selectedAgent.sampleBody}
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+        <div className={s.btnRow}>
           <button
             type="button"
             onClick={() => goTo(0)}
-            className="onb-btn-ghost"
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 14,
-              color: 'var(--text-secondary, #a8a8a0)',
-              background: 'none',
-              border: '1px solid var(--border, rgba(255,255,255,0.08))',
-              borderRadius: 10,
-              padding: '10px 20px',
-              cursor: 'pointer',
-              transition: 'border-color 0.2s',
-            }}
+            className={s.btnGhost}
           >
             <i className="bi bi-arrow-left" style={{ marginRight: 6 }} />
             Voltar
@@ -363,19 +223,7 @@ export default function OnboardingModal({
           <button
             type="button"
             onClick={handleAction}
-            className="onb-btn-primary"
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--bg-base, #0C1B20)',
-              background: 'var(--accent, #BFA68E)',
-              border: 'none',
-              borderRadius: 10,
-              padding: '10px 24px',
-              cursor: 'pointer',
-              transition: 'opacity 0.2s',
-            }}
+            className={s.btnPrimary}
           >
             {selectedAgent.cta}
             <i className="bi bi-arrow-right" style={{ marginLeft: 6 }} />
@@ -387,76 +235,21 @@ export default function OnboardingModal({
 
   const renderStep2 = () => (
     <>
-      <div
-        style={{
-          width: 64,
-          height: 64,
-          borderRadius: '50%',
-          background: 'var(--accent-light, rgba(191,166,142,0.12))',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: 20,
-        }}
-      >
-        <i
-          className="bi bi-check-lg"
-          style={{ fontSize: 28, color: 'var(--accent, #BFA68E)' }}
-        />
+      <div className={s.finishIcon}>
+        <i className={`bi bi-check-lg ${s.finishIconI}`} />
       </div>
-      <h2
-        style={{
-          fontFamily: "'Playfair Display', serif",
-          fontStyle: 'italic',
-          fontSize: 26,
-          fontWeight: 700,
-          color: 'var(--text-primary, #F3EEE4)',
-          marginBottom: 8,
-          lineHeight: 1.25,
-        }}
-      >
+      <h2 className={s.headingSm}>
         Seu gabinete esta pronto.
       </h2>
-      <p
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 14,
-          color: 'var(--text-secondary, #a8a8a0)',
-          lineHeight: 1.6,
-          marginBottom: 28,
-          maxWidth: 420,
-          marginInline: 'auto',
-        }}
-      >
+      <p className={s.descMdGap}>
         Explore os demais agentes no menu lateral ou use o Chat para que o
         orquestrador direcione automaticamente.
       </p>
 
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 8,
-          justifyContent: 'center',
-          marginBottom: 28,
-        }}
-      >
+      <div className={s.tagRow}>
         {AGENTS.filter(a => a.key !== selectedAgent?.key).map(a => (
-          <span
-            key={a.key}
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 12,
-              color: 'var(--accent, #BFA68E)',
-              border: '1px solid var(--border, rgba(255,255,255,0.08))',
-              borderRadius: 8,
-              padding: '6px 14px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            <i className={`bi ${a.icon}`} style={{ fontSize: 13 }} />
+          <span key={a.key} className={s.tag}>
+            <i className={`bi ${a.icon} ${s.tagIcon}`} />
             {a.label}
           </span>
         ))}
@@ -465,19 +258,7 @@ export default function OnboardingModal({
       <button
         type="button"
         onClick={handleFinish}
-        className="onb-btn-primary"
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 14,
-          fontWeight: 600,
-          color: 'var(--bg-base, #0C1B20)',
-          background: 'var(--accent, #BFA68E)',
-          border: 'none',
-          borderRadius: 10,
-          padding: '10px 28px',
-          cursor: 'pointer',
-          transition: 'opacity 0.2s',
-        }}
+        className={s.btnPrimaryWide}
       >
         Fechar
       </button>
@@ -493,56 +274,17 @@ export default function OnboardingModal({
   return (
     <div
       onClick={handleSkip}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9998,
-        background: 'rgba(0,0,0,0.55)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        paddingTop: 'max(80px, 14vh)',
-        paddingInline: 24,
-        paddingBottom: 24,
-        animation: 'onb-fadeIn 0.25s ease',
-      }}
+      className={s.backdrop}
     >
       <div
         onClick={e => e.stopPropagation()}
-        style={{
-          background: 'var(--card-bg, #11252B)',
-          border: '1px solid var(--border, rgba(255,255,255,0.08))',
-          borderRadius: 20,
-          maxWidth: 560,
-          width: '100%',
-          padding: '40px 36px 32px',
-          textAlign: 'center',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.45)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
+        className={s.modal}
       >
         {/* Skip button */}
         <button
           type="button"
           onClick={handleSkip}
-          style={{
-            position: 'absolute',
-            top: 16,
-            right: 20,
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: 12,
-            color: 'var(--text-secondary, #a8a8a0)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px 8px',
-            letterSpacing: '0.06em',
-            transition: 'color 0.2s',
-          }}
-          className="onb-skip"
+          className={s.skip}
         >
           Pular
         </button>
@@ -550,96 +292,28 @@ export default function OnboardingModal({
         {/* Animated step wrapper */}
         <div
           key={animKey}
-          style={{
-            animation:
-              direction === 'forward'
-                ? 'onb-slideInRight 0.3s ease both'
-                : 'onb-slideInLeft 0.3s ease both',
-          }}
+          className={direction === 'forward' ? s.slideForward : s.slideBack}
         >
           {stepRenderers[step]()}
         </div>
 
         {/* Progress dots */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: 8,
-            marginTop: 28,
-          }}
-        >
+        <div className={s.dots}>
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <span
               key={i}
-              style={{
-                width: i === step ? 10 : 8,
-                height: i === step ? 10 : 8,
-                borderRadius: '50%',
-                background:
-                  i === step
-                    ? 'var(--accent, #BFA68E)'
-                    : i < step
-                      ? 'rgba(191,166,142,0.4)'
-                      : 'var(--border, rgba(255,255,255,0.08))',
-                transition: 'all 0.25s ease',
-                display: 'block',
-              }}
+              className={`${s.dot} ${
+                i === step
+                  ? s.dotActive
+                  : i < step
+                    ? s.dotDone
+                    : s.dotPending
+              }`}
               aria-label={`Passo ${i + 1} de ${TOTAL_STEPS}`}
             />
           ))}
         </div>
       </div>
-
-      {/* ------------------------------------------------------------ */}
-      {/*  Scoped CSS animations + hover states                         */}
-      {/* ------------------------------------------------------------ */}
-      <style jsx>{`
-        @keyframes onb-fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        @keyframes onb-slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(32px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        @keyframes onb-slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-32px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
-      {/* Global hover styles — styled-jsx global block */}
-      <style jsx global>{`
-        .onb-agent-card:hover {
-          border-color: var(--accent, #BFA68E) !important;
-          background: rgba(191, 166, 142, 0.06) !important;
-        }
-        .onb-btn-primary:hover {
-          opacity: 0.88;
-        }
-        .onb-btn-ghost:hover {
-          border-color: var(--accent, #BFA68E) !important;
-        }
-        .onb-skip:hover {
-          color: var(--text-primary, #F3EEE4) !important;
-        }
-      `}</style>
     </div>
   )
 }

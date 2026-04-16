@@ -1,0 +1,147 @@
+/* ═══════════════════════════════════════════════════════════════
+   Design & Aparencia  (page.module.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Page wrapper ─────────────────────────────────────────── */
+.designPage {
+  padding-bottom: 120px;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.headerWrap {
+  margin-bottom: 28px;
+}
+
+.headerHint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.headerDesc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  max-width: 720px;
+  line-height: 1.55;
+}
+
+/* ── Two-column layout ────────────────────────────────────── */
+.designLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* ── Preview sidebar ──────────────────────────────────────── */
+.designPreview {
+  position: sticky;
+  top: 100px;
+  align-self: start;
+}
+
+/* ── Section card helper ──────────────────────────────────── */
+.sectionCardInner {
+  padding: 24px 28px;
+  margin-bottom: 20px;
+}
+
+.sectionCardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.sectionCardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.sectionCardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.sectionCardSub {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* ── Field label ──────────────────────────────────────────── */
+.fieldLabelWrap {
+  margin-bottom: 8px;
+}
+
+.fieldLabelTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.fieldLabelHint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* ── Floating action bar ──────────────────────────────────── */
+.floatingBar {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Accessibility toggle row ─────────────────────────────── */
+.toggleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.toggleLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.toggleDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .designLayout {
+    grid-template-columns: 1fr;
+  }
+  .designPreview {
+    position: static;
+  }
+}

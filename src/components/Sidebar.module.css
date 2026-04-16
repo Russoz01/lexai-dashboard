@@ -1,0 +1,135 @@
+/* Sidebar.module.css — migrated from styled-jsx */
+
+.planLabel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.planDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--stone);
+  flex-shrink: 0;
+  animation: pulsePlan 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 0 0 0 var(--stone);
+}
+
+.planDotUrgent {
+  composes: planDot;
+  background: var(--warning);
+  box-shadow: 0 0 0 0 var(--warning);
+  animation: pulsePlanUrgent 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.planWrapper :global(.sidebar-plan-badge.trial-glow) {
+  animation: badgeGlow 3.2s ease-in-out infinite;
+}
+
+.planWrapper :global(.sidebar-plan-badge.trial-urgent) {
+  animation: badgeGlowUrgent 1.6s ease-in-out infinite;
+  border-color: var(--warning) !important;
+}
+
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brandSub {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 3px;
+  opacity: 0.8;
+}
+
+.logoutBtn {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.footerMark {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.4px;
+}
+
+.footerIcon {
+  margin-right: 5px;
+  color: var(--accent);
+}
+
+.footerStrong {
+  color: var(--text-secondary);
+}
+
+@keyframes pulsePlan {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.50);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(191, 166, 142, 0);
+  }
+}
+
+@keyframes pulsePlanUrgent {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(245, 158, 11, 0);
+    transform: scale(1.15);
+  }
+}
+
+@keyframes badgeGlow {
+  0%, 100% {
+    border-color: rgba(191, 166, 142, 0.18);
+  }
+  50% {
+    border-color: rgba(191, 166, 142, 0.50);
+  }
+}
+
+@keyframes badgeGlowUrgent {
+  0%, 100% {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+  50% {
+    border-color: rgba(245, 158, 11, 0.9);
+    box-shadow: 0 0 14px 0 rgba(245, 158, 11, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planDot,
+  .planDotUrgent {
+    animation: none;
+  }
+
+  .planWrapper :global(.sidebar-plan-badge.trial-glow),
+  .planWrapper :global(.sidebar-plan-badge.trial-urgent) {
+    animation: none;
+  }
+}

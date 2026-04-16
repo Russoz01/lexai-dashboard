@@ -6,6 +6,7 @@ import { resolveUsuarioId } from '@/lib/usuario'
 import Link from 'next/link'
 import { UsagePanel } from '@/components/UsagePanel'
 import { ReferralPanel } from '@/components/ReferralPanel'
+import s from './page.module.css'
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * Dashboard — Gabinete LexAI
@@ -164,23 +165,23 @@ export default function DashboardPage() {
   )
 
   return (
-    <div className="page-content dash-atelier">
+    <div className={`page-content ${s.dashAtelier}`}>
 
       {/* ═════ HEADER EDITORIAL ═════ */}
-      <header className="dash-header">
-        <div className="dash-serial">
-          <span className="dash-serial-dot" />
+      <header className={s.dashHeader}>
+        <div className={s.dashSerial}>
+          <span className={s.dashSerialDot} />
           <span>N° 001 · GABINETE · MMXXVI</span>
         </div>
-        <h1 className="dash-atelier-h1">
+        <h1 className={s.dashAtelierH1}>
           {greeting}, <em>advogado</em>.
         </h1>
-        <p className="dash-header-sub">{todayCapitalized}</p>
-        <div className="dash-hairline" aria-hidden />
+        <p className={s.dashHeaderSub}>{todayCapitalized}</p>
+        <div className={s.dashHairline} aria-hidden />
       </header>
 
       {/* ═════ PROVAS — 4 COLUNAS EDITORIAIS ═════ */}
-      <section className="dash-provas" aria-label="Indicadores do gabinete">
+      <section className={s.dashProvas} aria-label="Indicadores do gabinete">
         <ProvaCell
           roman="I"
           value={stats.totalInteracoesSemana}
@@ -214,21 +215,21 @@ export default function DashboardPage() {
       </section>
 
       {/* ═════ PAINEL DE CONSUMO + INDICACAO ═════ */}
-      <section style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }} aria-label="Consumo e indicacao">
+      <section className={s.dashPanelsRow} aria-label="Consumo e indicacao">
         <UsagePanel />
         <ReferralPanel />
       </section>
 
       {/* ═════ GABINETE — USO + ATIVIDADE ═════ */}
-      <section className="dash-grid-usage" aria-label="Uso dos agentes e atividade recente">
+      <section className={s.dashGridUsage} aria-label="Uso dos agentes e atividade recente">
 
         {/* Uso dos Agentes — DADOS REAIS */}
-        <article className="dash-card">
-          <div className="dash-card-head">
+        <article className={s.dashCard}>
+          <div className={s.dashCardHead}>
             <div>
-              <div className="dash-card-cap">CAPITULO I · ATELIER</div>
-              <h2 className="dash-card-title">Uso dos <em>agentes</em></h2>
-              <p className="dash-card-sub">
+              <div className={s.dashCardCap}>CAPITULO I · ATELIER</div>
+              <h2 className={s.dashCardTitle}>Uso dos <em>agentes</em></h2>
+              <p className={s.dashCardSub}>
                 {dataLoading
                   ? 'Contando interacoes dos ultimos 7 dias...'
                   : stats.totalInteracoesSemana === 0
@@ -236,24 +237,24 @@ export default function DashboardPage() {
                     : `${stats.totalInteracoesSemana} interacao${stats.totalInteracoesSemana === 1 ? '' : 'oes'} nos ultimos 7 dias`}
               </p>
             </div>
-            <Link href="/dashboard/historico" className="dash-card-action">
+            <Link href="/dashboard/historico" className={s.dashCardAction}>
               Ver tudo <i className="bi bi-arrow-right" />
             </Link>
           </div>
 
-          <div className="dash-bars">
+          <div className={s.dashBars}>
             {dataLoading ? (
-              <div className="dash-empty">
-                <div className="dash-skel" />
-                <div className="dash-skel" />
-                <div className="dash-skel" />
+              <div>
+                <div className={s.dashSkel} />
+                <div className={s.dashSkel} />
+                <div className={s.dashSkel} />
               </div>
             ) : agentCounts.length === 0 ? (
-              <div className="dash-empty-state">
+              <div className={s.dashEmptyState}>
                 <i className="bi bi-bar-chart" />
-                <div className="dash-empty-title">Nenhum uso nesta semana</div>
-                <div className="dash-empty-sub">Comece pelo chat ou por um dos agentes ao lado. Seu uso aparecera aqui.</div>
-                <Link href="/dashboard/chat" className="dash-empty-cta">
+                <div className={s.dashEmptyTitle}>Nenhum uso nesta semana</div>
+                <div className={s.dashEmptySub}>Comece pelo chat ou por um dos agentes ao lado. Seu uso aparecera aqui.</div>
+                <Link href="/dashboard/chat" className={s.dashEmptyCta}>
                   Abrir chat <i className="bi bi-arrow-right" />
                 </Link>
               </div>
@@ -262,13 +263,13 @@ export default function DashboardPage() {
                 const meta = AGENT_META[a.agente] ?? { label: a.agente, href: '#', icon: 'bi-circle' }
                 const pct = (a.count / maxAgentCount) * 100
                 return (
-                  <Link key={a.agente} href={meta.href} className="dash-bar-row">
-                    <span className="dash-bar-num">{pad2(i + 1)}</span>
-                    <span className="dash-bar-label">{meta.label}</span>
-                    <div className="dash-bar-track">
-                      <div className="dash-bar-fill" style={{ width: `${pct}%` }} />
+                  <Link key={a.agente} href={meta.href} className={s.dashBarRow}>
+                    <span className={s.dashBarNum}>{pad2(i + 1)}</span>
+                    <span className={s.dashBarLabel}>{meta.label}</span>
+                    <div className={s.dashBarTrack}>
+                      <div className={s.dashBarFill} style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="dash-bar-count">{a.count}</span>
+                    <span className={s.dashBarCount}>{a.count}</span>
                   </Link>
                 )
               })
@@ -277,12 +278,12 @@ export default function DashboardPage() {
         </article>
 
         {/* Atividade Recente — DADOS REAIS */}
-        <article className="dash-card">
-          <div className="dash-card-head">
+        <article className={s.dashCard}>
+          <div className={s.dashCardHead}>
             <div>
-              <div className="dash-card-cap">CAPITULO II · DIARIO</div>
-              <h2 className="dash-card-title">Atividade <em>recente</em></h2>
-              <p className="dash-card-sub">
+              <div className={s.dashCardCap}>CAPITULO II · DIARIO</div>
+              <h2 className={s.dashCardTitle}>Atividade <em>recente</em></h2>
+              <p className={s.dashCardSub}>
                 {dataLoading
                   ? 'Carregando...'
                   : recent.length === 0
@@ -290,39 +291,39 @@ export default function DashboardPage() {
                     : 'Ultimas cinco interacoes'}
               </p>
             </div>
-            <Link href="/dashboard/historico" className="dash-card-action">
+            <Link href="/dashboard/historico" className={s.dashCardAction}>
               Historico <i className="bi bi-arrow-right" />
             </Link>
           </div>
 
-          <div className="dash-activity">
+          <div className={s.dashActivity}>
             {dataLoading ? (
               <>
-                <div className="dash-skel-row" />
-                <div className="dash-skel-row" />
-                <div className="dash-skel-row" />
+                <div className={s.dashSkelRow} />
+                <div className={s.dashSkelRow} />
+                <div className={s.dashSkelRow} />
               </>
             ) : recent.length === 0 ? (
-              <div className="dash-empty-state">
+              <div className={s.dashEmptyState}>
                 <i className="bi bi-journal" />
-                <div className="dash-empty-title">Nenhuma atividade ainda</div>
-                <div className="dash-empty-sub">Cada interacao com um agente fica registrada aqui.</div>
+                <div className={s.dashEmptyTitle}>Nenhuma atividade ainda</div>
+                <div className={s.dashEmptySub}>Cada interacao com um agente fica registrada aqui.</div>
               </div>
             ) : (
               recent.map((r, i) => {
                 const meta = AGENT_META[r.agente.toLowerCase()] ?? { label: r.agente, href: '/dashboard/historico', icon: 'bi-circle' }
                 const snippet = (r.mensagem_usuario || '').slice(0, 64)
                 return (
-                  <Link key={r.id} href={meta.href} className="dash-activity-row">
-                    <span className="dash-activity-num">{ROMAN[i] ?? (i+1)}</span>
-                    <div className="dash-activity-icon">
+                  <Link key={r.id} href={meta.href} className={s.dashActivityRow}>
+                    <span className={s.dashActivityNum}>{ROMAN[i] ?? (i+1)}</span>
+                    <div className={s.dashActivityIcon}>
                       <i className={`bi ${meta.icon}`} />
                     </div>
-                    <div className="dash-activity-info">
-                      <div className="dash-activity-name">{meta.label}</div>
-                      <div className="dash-activity-snippet">{snippet || '—'}</div>
+                    <div className={s.dashActivityInfo}>
+                      <div className={s.dashActivityName}>{meta.label}</div>
+                      <div className={s.dashActivitySnippet}>{snippet || '—'}</div>
                     </div>
-                    <span className="dash-activity-time">{relativeTime(r.created_at)}</span>
+                    <span className={s.dashActivityTime}>{relativeTime(r.created_at)}</span>
                   </Link>
                 )
               })
@@ -333,22 +334,22 @@ export default function DashboardPage() {
       </section>
 
       {/* ═════ GABINETE — AGENTES + PRAZOS/FINANCEIRO ═════ */}
-      <section className="dash-grid-main">
+      <section className={s.dashGridMain}>
 
         {/* Agentes do gabinete */}
-        <article className="dash-card">
-          <div className="dash-card-head">
+        <article className={s.dashCard}>
+          <div className={s.dashCardHead}>
             <div>
-              <div className="dash-card-cap">CAPITULO III · ATELIER</div>
-              <h2 className="dash-card-title">Doze <em>agentes</em></h2>
-              <p className="dash-card-sub">Clique para abrir o atelier do especialista</p>
+              <div className={s.dashCardCap}>CAPITULO III · ATELIER</div>
+              <h2 className={s.dashCardTitle}>Doze <em>agentes</em></h2>
+              <p className={s.dashCardSub}>Clique para abrir o atelier do especialista</p>
             </div>
-            <Link href="/dashboard/chat" className="dash-card-action">
+            <Link href="/dashboard/chat" className={s.dashCardAction}>
               Chat <i className="bi bi-arrow-right" />
             </Link>
           </div>
 
-          <div className="dash-agents-grid">
+          <div className={s.dashAgentsGrid}>
             {[
               { href: '/dashboard/chat',        icon: 'bi-chat-square-dots',         name: 'Chat',         desc: 'Orquestrador · roteia para o agente certo' },
               { href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text',        name: 'Resumidor',    desc: 'Analisa contratos, acordaos e peticoes' },
@@ -363,57 +364,57 @@ export default function DashboardPage() {
               { href: '/dashboard/rotina',      icon: 'bi-calendar-week',            name: 'Rotina',       desc: 'Agenda, compromissos, fluxos' },
               { href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet', name: 'Planilhas',    desc: 'Timesheet, controle, honorarios' },
             ].map((ag, i) => (
-              <Link key={ag.name} href={ag.href} className="dash-agent">
-                <span className="dash-agent-num">{pad2(i + 1)}</span>
-                <div className="dash-agent-icon">
+              <Link key={ag.name} href={ag.href} className={s.dashAgent}>
+                <span className={s.dashAgentNum}>{pad2(i + 1)}</span>
+                <div className={s.dashAgentIcon}>
                   <i className={`bi ${ag.icon}`} />
                 </div>
-                <div className="dash-agent-info">
-                  <div className="dash-agent-name">{ag.name}</div>
-                  <div className="dash-agent-desc">{ag.desc}</div>
+                <div className={s.dashAgentInfo}>
+                  <div className={s.dashAgentName}>{ag.name}</div>
+                  <div className={s.dashAgentDesc}>{ag.desc}</div>
                 </div>
-                <i className="bi bi-arrow-right dash-agent-arrow" />
+                <i className={`bi bi-arrow-right ${s.dashAgentArrow}`} />
               </Link>
             ))}
           </div>
         </article>
 
         {/* Coluna direita: Prazos + Financeiro */}
-        <div className="dash-side-col">
+        <div className={s.dashSideCol}>
 
           {/* Prazos */}
-          <article className="dash-card">
-            <div className="dash-card-head">
+          <article className={s.dashCard}>
+            <div className={s.dashCardHead}>
               <div>
-                <div className="dash-card-cap">CAPITULO IV · AGENDA</div>
-                <h2 className="dash-card-title">Prazos <em>proximos</em></h2>
-                <p className="dash-card-sub">Monitoramento ativo</p>
+                <div className={s.dashCardCap}>CAPITULO IV · AGENDA</div>
+                <h2 className={s.dashCardTitle}>Prazos <em>proximos</em></h2>
+                <p className={s.dashCardSub}>Monitoramento ativo</p>
               </div>
-              <Link href="/dashboard/prazos" className="dash-card-action">
+              <Link href="/dashboard/prazos" className={s.dashCardAction}>
                 Ver todos <i className="bi bi-arrow-right" />
               </Link>
             </div>
-            <div className="dash-prazos">
+            <div className={s.dashPrazos}>
               {stats.prazosList.length === 0 ? (
-                <div className="dash-empty-state compact">
+                <div className={`${s.dashEmptyState} ${s.compact}`}>
                   <i className="bi bi-clock" />
-                  <div className="dash-empty-title">Nenhum prazo</div>
-                  <div className="dash-empty-sub">Cadastre seus prazos processuais para receber alertas.</div>
+                  <div className={s.dashEmptyTitle}>Nenhum prazo</div>
+                  <div className={s.dashEmptySub}>Cadastre seus prazos processuais para receber alertas.</div>
                 </div>
               ) : (
                 stats.prazosList.map((p, i) => {
                   const dias = diasRestantes(p.data_limite)
                   const cls = barClass(dias)
                   return (
-                    <div key={p.titulo + i} className={`dash-prazo-row ${cls}`}>
-                      <span className="dash-prazo-bar" />
-                      <div className="dash-prazo-info">
-                        <div className="dash-prazo-title">{p.titulo}</div>
-                        <div className="dash-prazo-meta">
+                    <div key={p.titulo + i} className={`${s.dashPrazoRow} ${s[cls]}`}>
+                      <span className={s.dashPrazoBar} />
+                      <div className={s.dashPrazoInfo}>
+                        <div className={s.dashPrazoTitle}>{p.titulo}</div>
+                        <div className={s.dashPrazoMeta}>
                           {new Date(p.data_limite + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </div>
                       </div>
-                      <div className="dash-prazo-days">
+                      <div className={s.dashPrazoDays}>
                         {dias < 0 ? 'Vencido' : dias === 0 ? 'Hoje' : `${dias}d`}
                       </div>
                     </div>
@@ -424,19 +425,19 @@ export default function DashboardPage() {
           </article>
 
           {/* Financeiro */}
-          <article className="dash-card">
-            <div className="dash-card-head">
+          <article className={s.dashCard}>
+            <div className={s.dashCardHead}>
               <div>
-                <div className="dash-card-cap">CAPITULO V · LIVRO-CAIXA</div>
-                <h2 className="dash-card-title">Saldo <em>atual</em></h2>
-                <p className="dash-card-sub" suppressHydrationWarning>{typeof window === 'undefined' ? '' : new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
+                <div className={s.dashCardCap}>CAPITULO V · LIVRO-CAIXA</div>
+                <h2 className={s.dashCardTitle}>Saldo <em>atual</em></h2>
+                <p className={s.dashCardSub} suppressHydrationWarning>{typeof window === 'undefined' ? '' : new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
               </div>
             </div>
-            <div className="dash-finance">
-              <div className="dash-finance-value" style={{ color: stats.saldo >= 0 ? 'var(--success)' : 'var(--danger)' }}>
+            <div className={s.dashFinance}>
+              <div className={s.dashFinanceValue} style={{ color: stats.saldo >= 0 ? 'var(--success)' : 'var(--danger)' }}>
                 {fmt(stats.saldo)}
               </div>
-              <Link href="/dashboard/financeiro" className="dash-finance-cta">
+              <Link href="/dashboard/financeiro" className={s.dashFinanceCta}>
                 Ver detalhes <i className="bi bi-arrow-right" />
               </Link>
             </div>
@@ -445,573 +446,6 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* ═════ STYLES ═════ */}
-      <style jsx>{`
-        .dash-atelier {
-          position: relative;
-        }
-
-        /* ── Serial label ─────────────────────────────────── */
-        .dash-serial {
-          display: inline-flex;
-          align-items: center;
-          gap: 9px;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 2.4px;
-          text-transform: uppercase;
-          color: var(--text-muted);
-          font-variant-numeric: tabular-nums;
-        }
-        .dash-serial-dot {
-          display: inline-block;
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: var(--stone);
-          box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.5);
-          animation: dash-pulse 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        /* ── Header ──────────────────────────────────────── */
-        .dash-header {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-          margin-bottom: 40px;
-          padding-top: 4px;
-        }
-        .dash-atelier-h1 {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 44px;
-          font-weight: 500;
-          line-height: 1.08;
-          letter-spacing: -1.2px;
-          color: var(--text-primary);
-          margin: 0;
-        }
-        .dash-atelier-h1 em {
-          font-style: italic;
-          font-weight: 400;
-          color: var(--accent);
-        }
-        .dash-header-sub {
-          font-size: 14px;
-          color: var(--text-secondary);
-          margin: 0;
-          letter-spacing: 0.1px;
-        }
-        .dash-hairline {
-          height: 1px;
-          background: linear-gradient(90deg, var(--stone) 0%, var(--stone-line) 24%, transparent 100%);
-          margin-top: 10px;
-        }
-
-        /* ── Provas (4 Roman columns) ────────────────────── */
-        .dash-provas {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 0;
-          margin-top: 40px;
-          margin-bottom: 56px;
-          border: 1px solid var(--stone-line);
-          background: var(--glass);
-          backdrop-filter: blur(var(--blur)) saturate(160%);
-          -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
-          border-radius: 16px;
-          padding: 0;
-          overflow: hidden;
-          box-shadow: 0 1px 0 rgba(255,255,255,0.24) inset, 0 18px 50px rgba(19,32,37,0.06);
-        }
-
-        /* ── Grid layouts ────────────────────────────────── */
-        .dash-grid-usage {
-          display: grid;
-          grid-template-columns: 1.15fr 1fr;
-          gap: 48px;
-          margin-bottom: 56px;
-        }
-        .dash-grid-main {
-          display: grid;
-          grid-template-columns: 1.2fr 1fr;
-          gap: 48px;
-          margin-bottom: 48px;
-        }
-        .dash-side-col {
-          display: flex;
-          flex-direction: column;
-          gap: 48px;
-        }
-
-        /* ── Cards ──────────────────────────────────────── */
-        .dash-card {
-          background: var(--glass);
-          backdrop-filter: blur(var(--blur)) saturate(160%);
-          -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
-          border: 1px solid var(--stone-line);
-          border-radius: 18px;
-          padding: 28px 30px 26px;
-          position: relative;
-          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                      box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                      border-color 0.35s ease;
-          box-shadow: 0 1px 0 rgba(255,255,255,0.24) inset, 0 18px 50px rgba(19,32,37,0.06);
-        }
-        .dash-card:hover {
-          transform: translateY(-3px);
-          border-color: var(--stone);
-          box-shadow: 0 1px 0 rgba(255,255,255,0.32) inset, 0 28px 64px rgba(19,32,37,0.10);
-        }
-        .dash-card-head {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 20px;
-          margin-bottom: 22px;
-          padding-bottom: 16px;
-          border-bottom: 1px solid var(--stone-line);
-        }
-        .dash-card-cap {
-          font-size: 9px;
-          font-weight: 800;
-          letter-spacing: 2.2px;
-          text-transform: uppercase;
-          color: var(--text-muted);
-          margin-bottom: 8px;
-        }
-        .dash-card-title {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 24px;
-          font-weight: 500;
-          line-height: 1.15;
-          letter-spacing: -0.6px;
-          color: var(--text-primary);
-          margin: 0 0 6px;
-        }
-        .dash-card-title em {
-          font-style: italic;
-          font-weight: 400;
-          color: var(--accent);
-        }
-        .dash-card-sub {
-          font-size: 12.5px;
-          color: var(--text-muted);
-          margin: 0;
-          letter-spacing: 0.1px;
-        }
-        .dash-card-action {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          font-size: 11.5px;
-          font-weight: 700;
-          letter-spacing: 0.6px;
-          text-transform: uppercase;
-          color: var(--accent);
-          text-decoration: none;
-          transition: gap 0.22s ease, color 0.22s ease;
-          white-space: nowrap;
-        }
-        .dash-card-action:hover {
-          gap: 11px;
-          color: var(--text-primary);
-        }
-
-        /* ── Uso dos Agentes — bars ──────────────────────── */
-        .dash-bars {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-        .dash-bar-row {
-          display: grid;
-          grid-template-columns: 28px 100px 1fr 36px;
-          align-items: center;
-          gap: 16px;
-          padding: 8px 10px;
-          margin-inline: -10px;
-          border-radius: 8px;
-          text-decoration: none;
-          transition: background 0.22s ease;
-        }
-        .dash-bar-row:hover {
-          background: var(--hover);
-        }
-        .dash-bar-num {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 13px;
-          font-style: italic;
-          color: var(--text-muted);
-          text-align: right;
-          font-variant-numeric: tabular-nums;
-        }
-        .dash-bar-label {
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--text-primary);
-          text-align: right;
-          letter-spacing: 0.1px;
-        }
-        .dash-bar-track {
-          height: 4px;
-          border-radius: 2px;
-          background: var(--stone-soft);
-          overflow: hidden;
-          position: relative;
-        }
-        .dash-bar-fill {
-          position: absolute;
-          inset: 0 auto 0 0;
-          background: linear-gradient(90deg, var(--accent), var(--stone));
-          border-radius: 2px;
-          transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .dash-bar-count {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 18px;
-          font-style: italic;
-          color: var(--accent);
-          text-align: right;
-          font-variant-numeric: tabular-nums;
-          font-weight: 500;
-        }
-
-        /* ── Atividade recente ───────────────────────────── */
-        .dash-activity {
-          display: flex;
-          flex-direction: column;
-          gap: 0;
-        }
-        .dash-activity-row {
-          display: grid;
-          grid-template-columns: 24px 36px 1fr auto;
-          align-items: center;
-          gap: 14px;
-          padding: 14px 10px;
-          margin-inline: -10px;
-          border-bottom: 1px solid var(--stone-line);
-          text-decoration: none;
-          transition: background 0.22s ease, padding 0.22s ease;
-        }
-        .dash-activity-row:last-child {
-          border-bottom: none;
-        }
-        .dash-activity-row:hover {
-          background: var(--hover);
-          padding-left: 14px;
-        }
-        .dash-activity-num {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 13px;
-          font-style: italic;
-          color: var(--text-muted);
-          text-align: center;
-          letter-spacing: 0.3px;
-        }
-        .dash-activity-icon {
-          width: 36px;
-          height: 36px;
-          border-radius: 10px;
-          background: var(--accent-bg);
-          border: 1px solid var(--stone-line);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 14px;
-          color: var(--accent);
-          flex-shrink: 0;
-        }
-        .dash-activity-info {
-          min-width: 0;
-          overflow: hidden;
-        }
-        .dash-activity-name {
-          font-size: 13px;
-          font-weight: 700;
-          color: var(--text-primary);
-          letter-spacing: 0.1px;
-        }
-        .dash-activity-snippet {
-          font-size: 12px;
-          color: var(--text-muted);
-          margin-top: 2px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .dash-activity-time {
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--text-muted);
-          flex-shrink: 0;
-          font-variant-numeric: tabular-nums;
-        }
-
-        /* ── Agentes grid ─────────────────────────────────── */
-        .dash-agents-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 14px;
-        }
-        .dash-agent {
-          display: grid;
-          grid-template-columns: 26px 38px 1fr 16px;
-          align-items: center;
-          gap: 14px;
-          padding: 14px 16px;
-          border: 1px solid var(--stone-line);
-          border-radius: 12px;
-          text-decoration: none;
-          background: transparent;
-          transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-          position: relative;
-          overflow: hidden;
-        }
-        .dash-agent::before {
-          content: '';
-          position: absolute;
-          inset: 0 auto 0 0;
-          width: 3px;
-          background: linear-gradient(180deg, var(--accent), var(--stone));
-          opacity: 0;
-          transition: opacity 0.28s ease;
-        }
-        .dash-agent:hover {
-          background: var(--hover);
-          border-color: var(--stone);
-          transform: translateX(3px);
-        }
-        .dash-agent:hover::before {
-          opacity: 1;
-        }
-        .dash-agent-num {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 13px;
-          font-style: italic;
-          color: var(--text-muted);
-          font-variant-numeric: tabular-nums;
-          text-align: right;
-        }
-        .dash-agent-icon {
-          width: 38px;
-          height: 38px;
-          border-radius: 10px;
-          background: var(--accent-bg);
-          border: 1px solid var(--stone-line);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 15px;
-          color: var(--accent);
-          flex-shrink: 0;
-          transition: background 0.28s ease, color 0.28s ease;
-        }
-        .dash-agent:hover .dash-agent-icon {
-          background: var(--accent);
-          color: var(--bg-base);
-        }
-        .dash-agent-info {
-          min-width: 0;
-        }
-        .dash-agent-name {
-          font-size: 13.5px;
-          font-weight: 700;
-          color: var(--text-primary);
-          letter-spacing: 0.1px;
-        }
-        .dash-agent-desc {
-          font-size: 11.5px;
-          color: var(--text-muted);
-          margin-top: 2px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .dash-agent-arrow {
-          font-size: 13px;
-          color: var(--text-muted);
-          opacity: 0;
-          transform: translateX(-4px);
-          transition: opacity 0.28s ease, transform 0.28s ease, color 0.28s ease;
-        }
-        .dash-agent:hover .dash-agent-arrow {
-          opacity: 1;
-          transform: translateX(0);
-          color: var(--accent);
-        }
-
-        /* ── Prazos ──────────────────────────────────────── */
-        .dash-prazos {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-        .dash-prazo-row {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          padding: 12px 14px;
-          border: 1px solid var(--stone-line);
-          border-radius: 10px;
-          background: var(--hover);
-        }
-        .dash-prazo-bar {
-          width: 3px;
-          height: 36px;
-          border-radius: 2px;
-          background: var(--stone);
-        }
-        .dash-prazo-row.critical .dash-prazo-bar { background: var(--danger); }
-        .dash-prazo-row.warning .dash-prazo-bar { background: var(--warning); }
-        .dash-prazo-row.normal .dash-prazo-bar { background: var(--success); }
-        .dash-prazo-info { flex: 1; min-width: 0; }
-        .dash-prazo-title {
-          font-size: 13px;
-          font-weight: 700;
-          color: var(--text-primary);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .dash-prazo-meta {
-          font-size: 11px;
-          color: var(--text-muted);
-          margin-top: 2px;
-        }
-        .dash-prazo-days {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 17px;
-          font-style: italic;
-          color: var(--accent);
-          font-variant-numeric: tabular-nums;
-          font-weight: 500;
-          flex-shrink: 0;
-        }
-        .dash-prazo-row.critical .dash-prazo-days { color: var(--danger); }
-
-        /* ── Finance ─────────────────────────────────────── */
-        .dash-finance {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
-        }
-        .dash-finance-value {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 36px;
-          font-weight: 500;
-          letter-spacing: -1px;
-          font-variant-numeric: tabular-nums;
-        }
-        .dash-finance-cta {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          font-size: 11.5px;
-          font-weight: 700;
-          letter-spacing: 0.6px;
-          text-transform: uppercase;
-          color: var(--accent);
-          text-decoration: none;
-          transition: gap 0.22s ease, color 0.22s ease;
-        }
-        .dash-finance-cta:hover {
-          gap: 11px;
-          color: var(--text-primary);
-        }
-
-        /* ── Empty / skeleton states ─────────────────────── */
-        .dash-empty-state {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 38px 20px 10px;
-          text-align: center;
-          gap: 6px;
-        }
-        .dash-empty-state.compact { padding: 22px 12px 6px; }
-        .dash-empty-state i {
-          font-size: 28px;
-          color: var(--stone);
-          margin-bottom: 4px;
-        }
-        .dash-empty-title {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-style: italic;
-          font-size: 16px;
-          color: var(--text-primary);
-        }
-        .dash-empty-sub {
-          font-size: 12.5px;
-          color: var(--text-muted);
-          max-width: 280px;
-          line-height: 1.55;
-        }
-        .dash-empty-cta {
-          margin-top: 12px;
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          padding: 10px 18px;
-          background: var(--accent);
-          color: var(--bg-base);
-          border-radius: 8px;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.3px;
-          text-decoration: none;
-          transition: transform 0.22s ease, box-shadow 0.22s ease;
-        }
-        .dash-empty-cta:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 12px 28px rgba(19,32,37,0.18);
-        }
-        .dash-skel, .dash-skel-row {
-          height: 38px;
-          border-radius: 8px;
-          background: linear-gradient(90deg, var(--hover), var(--stone-soft), var(--hover));
-          background-size: 200% 100%;
-          animation: dash-shimmer 1.6s ease-in-out infinite;
-          margin-bottom: 12px;
-        }
-        .dash-skel-row:last-child { margin-bottom: 0; }
-
-        @keyframes dash-shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        @keyframes dash-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.55); }
-          50% { box-shadow: 0 0 0 6px rgba(191, 166, 142, 0); }
-        }
-
-        /* ── Responsive ──────────────────────────────────── */
-        @media (max-width: 1100px) {
-          .dash-grid-usage,
-          .dash-grid-main {
-            grid-template-columns: 1fr;
-            gap: 32px;
-          }
-          .dash-agents-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-        @media (max-width: 768px) {
-          .dash-atelier-h1 { font-size: 34px; }
-          .dash-provas {
-            grid-template-columns: 1fr 1fr;
-          }
-          .dash-card { padding: 22px 20px; }
-          .dash-card-title { font-size: 20px; }
-          .dash-bar-row {
-            grid-template-columns: 22px 80px 1fr 30px;
-            gap: 10px;
-          }
-          .dash-bar-count { font-size: 15px; }
-          .dash-finance-value { font-size: 30px; }
-        }
-      `}</style>
     </div>
   )
 }
@@ -1031,81 +465,15 @@ function ProvaCell({
   warning?: boolean
 }) {
   return (
-    <Link href={href} className="prova-cell">
-      <span className="prova-roman">{roman}</span>
+    <Link href={href} className={s.provaCell}>
+      <span className={s.provaRoman}>{roman}</span>
       {moneyValue !== undefined ? (
-        <div className="prova-value money">{moneyValue}</div>
+        <div className={s.provaValueMoney}>{moneyValue}</div>
       ) : (
-        <div className="prova-value">{value ?? 0}</div>
+        <div className={s.provaValue}>{value ?? 0}</div>
       )}
-      <div className="prova-label">{label}</div>
-      <div className={`prova-caption ${warning ? 'warn' : ''}`}>{caption}</div>
-
-      <style jsx>{`
-        .prova-cell {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0;
-          padding: 44px 44px 40px;
-          text-decoration: none;
-          border-right: 1px solid var(--stone-line);
-          transition: background 0.28s ease;
-          position: relative;
-        }
-        .prova-cell:last-child {
-          border-right: none;
-        }
-        .prova-cell:hover {
-          background: var(--hover);
-        }
-        .prova-roman {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 13px;
-          font-style: italic;
-          color: var(--text-muted);
-          letter-spacing: 1.6px;
-          margin-bottom: 20px;
-        }
-        .prova-value {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-size: 48px;
-          font-weight: 500;
-          color: var(--text-primary);
-          line-height: 1;
-          letter-spacing: -1.4px;
-          font-variant-numeric: tabular-nums;
-        }
-        .prova-value.money {
-          font-size: 28px;
-          letter-spacing: -0.6px;
-          line-height: 1.1;
-          padding-top: 6px;
-        }
-        .prova-label {
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 1.4px;
-          text-transform: uppercase;
-          color: var(--text-secondary);
-          margin-top: 20px;
-        }
-        .prova-caption {
-          font-size: 12px;
-          color: var(--text-muted);
-          margin-top: 6px;
-        }
-        .prova-caption.warn {
-          color: var(--warning);
-          font-weight: 600;
-        }
-        @media (max-width: 760px) {
-          .prova-cell { padding: 32px 28px 28px; }
-          .prova-value { font-size: 38px; }
-          .prova-value.money { font-size: 22px; }
-          .prova-cell:nth-child(2) { border-right: none; }
-        }
-      `}</style>
+      <div className={s.provaLabel}>{label}</div>
+      <div className={warning ? s.provaCaptionWarn : s.provaCaption}>{caption}</div>
     </Link>
   )
 }

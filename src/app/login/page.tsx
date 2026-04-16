@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import s from './page.module.css'
 
 /* ----------------------------------------------------------------------------
  * LexAI — Atelier Login
@@ -56,7 +57,7 @@ function scorePassword(pwd: string): { score: number; label: Strength; color: st
 
 function LexLogoMark() {
   return (
-    <div className="lx-logo-mark">
+    <div className={s.logoMark}>
       <svg viewBox="0 0 28 24" fill="none" width="22" height="19">
         <path d="M3 3 L3 21 L11 21" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M13 3 L25 21" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
@@ -81,7 +82,7 @@ function Spinner() {
   return (
     <svg
       width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-      style={{ animation: 'ax-spin 0.8s linear infinite' }}
+      className={s.spinner}
       aria-hidden="true"
     >
       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
@@ -116,12 +117,12 @@ type FieldProps = {
 
 function Field({ id, label, type, value, onChange, placeholder, autoComplete, required, trailing, ariaInvalid }: FieldProps) {
   return (
-    <div className="ax-field">
-      <label htmlFor={id} className="ax-field-label">{label}</label>
-      <div className="ax-field-wrap">
+    <div className={s.field}>
+      <label htmlFor={id} className={s.fieldLabel}>{label}</label>
+      <div className={s.fieldWrap}>
         <input
           id={id}
-          className="ax-input"
+          className={`${s.input}${trailing ? ` ${s.inputWithTrailing}` : ''}`}
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -129,9 +130,8 @@ function Field({ id, label, type, value, onChange, placeholder, autoComplete, re
           autoComplete={autoComplete}
           required={required}
           aria-invalid={ariaInvalid || undefined}
-          style={{ paddingRight: trailing ? 48 : 16 }}
         />
-        {trailing && <div className="ax-field-trail">{trailing}</div>}
+        {trailing && <div className={s.fieldTrail}>{trailing}</div>}
       </div>
     </div>
   )
@@ -249,36 +249,36 @@ export default function LoginPage() {
   const submitLabel = isSignUp ? 'Criar conta gratis' : 'Entrar'
 
   return (
-    <main className="ax-login">
-      <div className="ax-login-glow" aria-hidden />
+    <main className={s.login}>
+      <div className={s.loginGlow} aria-hidden />
 
       {/* ══════════════ LEFT — Form ══════════════ */}
-      <section className="ax-login-form-col" ref={leftRef}>
-        <div className="ax-login-cursor-glow" aria-hidden />
-        <Link href="/" className="ax-login-home">
-          <span aria-hidden className="ax-home-arrow">←</span>
+      <section className={s.formCol} ref={leftRef}>
+        <div className={s.cursorGlow} aria-hidden />
+        <Link href="/" className={s.loginHome}>
+          <span aria-hidden className={s.homeArrow}>←</span>
           <span>voltar ao site</span>
         </Link>
 
-        <div className="ax-form-wrap" style={{ maxWidth: MAX_FORM_WIDTH }}>
-          <div className="ax-login-brand">
+        <div className={s.formWrap} style={{ maxWidth: MAX_FORM_WIDTH }}>
+          <div className={s.loginBrand}>
             <LexLogoMark />
             <div>
-              <div className="ax-serial">N° 001 · LEXAI · MMXXVI</div>
-              <h1 className="ax-login-title">
-                Reservar <em className="ax-italic">acesso</em>
+              <div className={s.serial}>N° 001 · LEXAI · MMXXVI</div>
+              <h1 className={s.loginTitle}>
+                Reservar <em className={s.italic}>acesso</em>
               </h1>
             </div>
           </div>
 
-          <p className="ax-login-lede">
+          <p className={s.loginLede}>
             {isSignUp
               ? 'Crie sua conta. 7 dias gratuitos, sem cartao. Apenas um profissional por vez.'
               : 'Bem-vindo de volta ao atelier. Entre para retomar seu gabinete digital.'}
           </p>
 
           {erro && (
-            <div role="alert" className="ax-login-error">
+            <div role="alert" className={s.loginError}>
               <span>{erro}</span>
             </div>
           )}
@@ -286,7 +286,7 @@ export default function LoginPage() {
           {/* Google OAuth */}
           <button
             type="button"
-            className="ax-oauth"
+            className={s.oauth}
             onClick={signInGoogle}
             disabled={anyLoading}
           >
@@ -294,10 +294,10 @@ export default function LoginPage() {
             <span>Continuar com Google</span>
           </button>
 
-          <div className="ax-divider"><span>ou continuar com email</span></div>
+          <div className={s.divider}><span className={s.dividerText}>ou continuar com email</span></div>
 
           {/* Email form */}
-          <form onSubmit={submitEmail} noValidate className="ax-form">
+          <form onSubmit={submitEmail} noValidate className={s.form}>
             {isSignUp && (
               <Field
                 id="lx-nome"
@@ -337,7 +337,7 @@ export default function LoginPage() {
                 trailing={
                   <button
                     type="button"
-                    className="ax-eye"
+                    className={s.eye}
                     onClick={() => setShowSenha((v) => !v)}
                     tabIndex={-1}
                     aria-label={showSenha ? 'Ocultar senha' : 'Mostrar senha'}
@@ -348,34 +348,34 @@ export default function LoginPage() {
               />
 
               {isSignUp && senha.length > 0 && (
-                <div className="ax-strength">
-                  <div className="ax-strength-track">
+                <div className={s.strength}>
+                  <div className={s.strengthTrack}>
                     {[1, 2, 3].map((n) => (
                       <div
                         key={n}
-                        className="ax-strength-pip"
+                        className={s.strengthPip}
                         style={{
                           background: n <= strength.score ? strength.color : 'var(--stone-line)',
                         }}
                       />
                     ))}
                   </div>
-                  <span style={{ fontSize: 11, color: strength.color, fontWeight: 600, textTransform: 'capitalize', letterSpacing: '0.4px' }}>
+                  <span className={s.strengthLabel} style={{ color: strength.color }}>
                     {strength.label}
                   </span>
                 </div>
               )}
 
               {!isSignUp && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-                  <Link href="/login" className="ax-login-link">Esqueceu a senha?</Link>
+                <div className={s.forgotRow}>
+                  <Link href="/login" className={s.loginLink}>Esqueceu a senha?</Link>
                 </div>
               )}
             </div>
 
             <button
               type="submit"
-              className={`ax-submit ${success ? 'ax-submit--success' : ''}`}
+              className={`${s.submit}${success ? ` ${s.submitSuccess}` : ''}`}
               disabled={anyLoading}
             >
               {success ? (
@@ -394,596 +394,64 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="ax-toggle">
+          <div className={s.toggle}>
             <span>{isSignUp ? 'Ja tem conta?' : 'Ainda nao tem conta?'}</span>{' '}
-            <button type="button" onClick={toggleMode} className="ax-login-link ax-login-link--bold">
+            <button type="button" onClick={toggleMode} className={`${s.loginLink} ${s.loginLinkBold}`}>
               {isSignUp ? 'Entrar' : 'Criar conta gratis'}
             </button>
           </div>
 
-          <div className="ax-terms">
+          <div className={s.terms}>
             Ao continuar, voce concorda com os{' '}
-            <Link href="/termos" className="ax-login-link">Termos de Uso</Link>
+            <Link href="/termos" className={s.loginLink}>Termos de Uso</Link>
             {' '}e a{' '}
-            <Link href="/privacidade" className="ax-login-link">Politica de Privacidade</Link>.
+            <Link href="/privacidade" className={s.loginLink}>Politica de Privacidade</Link>.
           </div>
         </div>
       </section>
 
       {/* ══════════════ RIGHT — Manifesto (desktop only) ══════════════ */}
-      <aside className="ax-login-aside" aria-hidden="true" ref={asideRef}>
-        <div className="ax-login-cursor-glow" aria-hidden />
-        <div className="ax-aside-inner">
+      <aside className={s.aside} aria-hidden="true" ref={asideRef}>
+        <div className={s.cursorGlow} aria-hidden />
+        <div className={s.asideInner}>
           <div>
-            <div className="ax-serial">Atelier · MMXXVI</div>
-            <h2 className="ax-aside-title">
+            <div className={s.serial}>Atelier · MMXXVI</div>
+            <h2 className={s.asideTitle}>
               Um gabinete digital,
               <br />
-              <em className="ax-italic">feito a mao</em>.
+              <em className={s.italic}>feito a mao</em>.
             </h2>
-            <p className="ax-aside-lede">
+            <p className={s.asideLede}>
               Doze agentes afinados para o exercicio da advocacia no Brasil. Estrategia e
               precisao para quem trata Direito como oficio.
             </p>
           </div>
 
-          <div className="ax-values">
+          <div className={s.values}>
             {VALUE_PROPS.map((v, i) => (
-              <div key={v.title} className="ax-value" style={{ animationDelay: `${0.35 + i * 0.08}s` }}>
-                <div className="ax-value-num">{v.n}</div>
+              <div key={v.title} className={s.value} style={{ animationDelay: `${0.35 + i * 0.08}s` }}>
+                <div className={s.valueNum}>{v.n}</div>
                 <div>
-                  <div className="ax-value-title">{v.title}</div>
-                  <div className="ax-value-desc">{v.desc}</div>
+                  <div className={s.valueTitle}>{v.title}</div>
+                  <div className={s.valueDesc}>{v.desc}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          <figure className="ax-testimonial">
+          <figure className={s.testimonial}>
             <blockquote>&ldquo;{TESTIMONIAL.quote}&rdquo;</blockquote>
             <figcaption>
-              <div className="ax-test-avatar">{TESTIMONIAL.initials}</div>
+              <div className={s.testAvatar}>{TESTIMONIAL.initials}</div>
               <div>
-                <div className="ax-test-name">{TESTIMONIAL.name}</div>
-                <div className="ax-test-cargo">{TESTIMONIAL.cargo}</div>
+                <div className={s.testName}>{TESTIMONIAL.name}</div>
+                <div className={s.testCargo}>{TESTIMONIAL.cargo}</div>
               </div>
             </figcaption>
           </figure>
         </div>
       </aside>
 
-      {/* ══════════════ STYLES ══════════════ */}
-      <style>{`
-        @keyframes ax-spin { to { transform: rotate(360deg); } }
-        @keyframes ax-fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes ax-fade { from { opacity: 0; } to { opacity: 1; } }
-
-        .ax-login {
-          position: relative;
-          min-height: 100vh;
-          background: var(--bg-base);
-          color: var(--text-primary);
-          font-family: var(--font-dm-sans, 'DM Sans'), sans-serif;
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-          overflow: hidden;
-          -webkit-font-smoothing: antialiased;
-        }
-        .ax-login::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background:
-            radial-gradient(ellipse 50% 40% at 12% 10%, var(--stone-soft), transparent 68%),
-            radial-gradient(ellipse 60% 55% at 88% 100%, rgba(68,55,43,0.10), transparent 70%);
-        }
-        .ax-login-glow {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 1;
-          background: radial-gradient(circle at 50% 0%, rgba(191, 166, 142, 0.08), transparent 60%);
-          animation: ax-breathe 7s ease-in-out infinite;
-        }
-        .ax-login-cursor-glow {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background: radial-gradient(
-            circle 360px at var(--mx, 50%) var(--my, 50%),
-            rgba(191, 166, 142, 0.07),
-            transparent 55%
-          );
-          opacity: 0;
-          transition: opacity 0.5s ease;
-        }
-        .ax-login-form-col:hover .ax-login-cursor-glow,
-        .ax-login-aside:hover .ax-login-cursor-glow {
-          opacity: 1;
-        }
-        @keyframes ax-breathe {
-          0%, 100% { opacity: 1; }
-          50%      { opacity: 0.6; }
-        }
-
-        .ax-italic {
-          font-family: var(--font-playfair, 'Playfair Display'), Georgia, serif;
-          font-style: italic;
-          font-weight: 500;
-          color: var(--accent);
-          letter-spacing: -0.5px;
-        }
-        .ax-serial {
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: 2.4px;
-          text-transform: uppercase;
-          color: var(--text-muted);
-        }
-
-        /* ── Left column ────────────────────────────────── */
-        .ax-login-form-col {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 80px 48px 48px;
-          min-height: 100vh;
-          overflow: hidden;
-        }
-        .ax-login-form-col > *:not(.ax-login-cursor-glow) {
-          position: relative;
-          z-index: 2;
-        }
-        .ax-login-home {
-          position: absolute;
-          top: 32px;
-          left: 48px;
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 12px;
-          color: var(--text-muted);
-          text-decoration: none;
-          letter-spacing: 0.3px;
-          transition: color 0.3s ease, gap 0.3s ease;
-          z-index: 3;
-        }
-        .ax-login-home .ax-home-arrow {
-          display: inline-block;
-          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .ax-login-home:hover { color: var(--accent); gap: 14px; }
-        .ax-login-home:hover .ax-home-arrow { transform: translateX(-4px); }
-        .ax-form-wrap {
-          width: 100%;
-          animation: ax-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        .ax-logo-mark {
-          width: 46px;
-          height: 46px;
-          border: 1px solid var(--stone-line);
-          border-radius: 2px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: var(--stone-soft);
-          color: var(--text-primary);
-          flex-shrink: 0;
-          position: relative;
-          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
-        }
-        .ax-logo-mark::after {
-          content: '';
-          position: absolute;
-          inset: -1px;
-          border: 1px solid var(--accent);
-          border-radius: 2px;
-          opacity: 0;
-          transform: scale(1.12);
-          transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .ax-login-brand:hover .ax-logo-mark {
-          transform: rotate(-4deg);
-          border-color: var(--accent);
-        }
-        .ax-login-brand:hover .ax-logo-mark::after {
-          opacity: 1;
-          transform: scale(1);
-        }
-        .ax-login-brand {
-          display: flex;
-          align-items: center;
-          gap: 18px;
-          margin-bottom: 22px;
-        }
-        .ax-login-title {
-          font-size: 36px;
-          font-weight: 300;
-          letter-spacing: -1.4px;
-          color: var(--text-primary);
-          margin-top: 6px;
-          line-height: 1;
-        }
-        .ax-login-title .ax-italic { font-size: 1em; letter-spacing: -1.2px; }
-        .ax-login-lede {
-          font-size: 14px;
-          line-height: 1.65;
-          color: var(--text-secondary);
-          margin: 0 0 34px;
-        }
-
-        /* ── Error ──────────────────────────────────────── */
-        .ax-login-error {
-          display: flex;
-          align-items: center;
-          padding: 12px 16px;
-          margin-bottom: 22px;
-          border: 1px solid rgba(139,46,31,0.40);
-          background: rgba(139,46,31,0.08);
-          color: var(--danger);
-          font-size: 13px;
-          font-weight: 500;
-        }
-
-        /* ── OAuth ──────────────────────────────────────── */
-        .ax-oauth {
-          width: 100%;
-          height: 52px;
-          background: transparent;
-          border: 1px solid var(--stone-line);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          color: var(--text-primary);
-          font-size: 14px;
-          font-weight: 500;
-          font-family: inherit;
-          cursor: pointer;
-          letter-spacing: 0.2px;
-          transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
-          position: relative;
-          overflow: hidden;
-        }
-        .ax-oauth::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(120deg, transparent 30%, rgba(191, 166, 142, 0.12) 50%, transparent 70%);
-          transform: translateX(-100%);
-          transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .ax-oauth:hover:not(:disabled) {
-          background: var(--stone-soft);
-          border-color: var(--accent);
-          transform: translateY(-1px);
-        }
-        .ax-oauth:hover:not(:disabled)::after {
-          transform: translateX(100%);
-        }
-        .ax-oauth:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* ── Divider ────────────────────────────────────── */
-        .ax-divider {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin: 28px 0;
-        }
-        .ax-divider::before, .ax-divider::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: var(--stone-line);
-        }
-        .ax-divider span {
-          font-size: 10px;
-          color: var(--text-muted);
-          font-weight: 600;
-          letter-spacing: 1.8px;
-          text-transform: uppercase;
-        }
-
-        /* ── Form ───────────────────────────────────────── */
-        .ax-form {
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
-        }
-        .ax-field { display: flex; flex-direction: column; gap: 8px; }
-        .ax-field-label {
-          font-size: 10px;
-          font-weight: 600;
-          color: var(--text-muted);
-          letter-spacing: 1.8px;
-          text-transform: uppercase;
-        }
-        .ax-field-wrap { position: relative; }
-        .ax-input {
-          width: 100%;
-          height: 50px;
-          padding: 12px 16px;
-          background: var(--input-bg);
-          border: 1px solid var(--stone-line);
-          color: var(--text-primary);
-          font-size: 14px;
-          font-family: inherit;
-          outline: none;
-          transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-          -webkit-appearance: none;
-          border-radius: 0;
-        }
-        .ax-input::placeholder { color: var(--text-muted); opacity: 0.7; }
-        .ax-input:hover { border-color: rgba(191, 166, 142, 0.42); }
-        .ax-input:focus {
-          border-color: var(--accent);
-          box-shadow: 0 0 0 3px var(--stone-soft);
-          transform: translateY(-1px);
-        }
-        .ax-input[aria-invalid="true"] {
-          border-color: var(--danger);
-        }
-        .ax-field-trail {
-          position: absolute;
-          right: 6px;
-          top: 50%;
-          transform: translateY(-50%);
-        }
-        .ax-eye {
-          background: none;
-          border: none;
-          color: var(--text-muted);
-          font-family: inherit;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.6px;
-          text-transform: uppercase;
-          cursor: pointer;
-          padding: 8px 10px;
-          transition: color 0.2s ease;
-        }
-        .ax-eye:hover { color: var(--accent); }
-
-        /* ── Strength ───────────────────────────────────── */
-        .ax-strength {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-top: 10px;
-        }
-        .ax-strength-track { display: flex; gap: 4px; flex: 1; }
-        .ax-strength-pip {
-          flex: 1;
-          height: 3px;
-          background: var(--stone-line);
-          transition: background 0.3s ease;
-        }
-
-        /* ── Submit ─────────────────────────────────────── */
-        .ax-submit {
-          width: 100%;
-          height: 54px;
-          margin-top: 8px;
-          background: var(--text-primary);
-          color: var(--bg-base);
-          border: 1px solid var(--text-primary);
-          font-size: 14px;
-          font-weight: 500;
-          font-family: inherit;
-          letter-spacing: 0.4px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          position: relative;
-          overflow: hidden;
-          transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.4s ease;
-        }
-        .ax-submit::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(120deg, transparent 20%, rgba(191, 166, 142, 0.22) 50%, transparent 80%);
-          transform: translateX(-100%);
-          transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .ax-submit > * { position: relative; z-index: 1; }
-        .ax-submit:hover:not(:disabled) {
-          background: var(--accent);
-          border-color: var(--accent);
-          color: var(--bg-base);
-          transform: translateY(-2px);
-          box-shadow: 0 14px 42px rgba(68, 55, 43, 0.28);
-        }
-        .ax-submit:hover:not(:disabled)::before {
-          transform: translateX(100%);
-        }
-        .ax-submit:active:not(:disabled) { transform: translateY(0); }
-        .ax-submit:disabled { opacity: 0.55; cursor: not-allowed; }
-        .ax-submit--success { background: var(--success); border-color: var(--success); }
-
-        /* ── Toggle + terms ─────────────────────────────── */
-        .ax-toggle {
-          margin-top: 26px;
-          text-align: center;
-          font-size: 13px;
-          color: var(--text-secondary);
-        }
-        .ax-login-link {
-          color: var(--accent);
-          background: none;
-          border: none;
-          font: inherit;
-          cursor: pointer;
-          text-decoration: none;
-          font-size: 12px;
-          letter-spacing: 0.2px;
-          padding: 0;
-          transition: color 0.2s ease;
-        }
-        .ax-login-link:hover { color: var(--text-primary); }
-        .ax-login-link--bold { font-weight: 600; font-size: 13px; }
-
-        .ax-terms {
-          margin-top: 26px;
-          padding-top: 22px;
-          border-top: 1px solid var(--stone-line);
-          font-size: 11px;
-          color: var(--text-muted);
-          text-align: center;
-          line-height: 1.65;
-        }
-
-        /* ── Right column (manifesto) ───────────────────── */
-        .ax-login-aside {
-          position: relative;
-          z-index: 2;
-          padding: 64px 56px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          background: var(--bg-raise);
-          border-left: 1px solid var(--stone-line);
-          min-height: 100vh;
-          overflow: hidden;
-        }
-        .ax-login-aside > *:not(.ax-login-cursor-glow) {
-          position: relative;
-          z-index: 2;
-        }
-        .ax-login-aside::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background: radial-gradient(ellipse 80% 50% at 50% 0%, var(--stone-soft), transparent 70%);
-        }
-        .ax-aside-inner {
-          position: relative;
-          max-width: 520px;
-          display: flex;
-          flex-direction: column;
-          gap: 56px;
-          animation: ax-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
-        }
-        .ax-aside-title {
-          font-size: clamp(36px, 4.4vw, 56px);
-          font-weight: 300;
-          letter-spacing: -1.8px;
-          line-height: 1.05;
-          color: var(--text-primary);
-          margin: 20px 0 24px;
-        }
-        .ax-aside-title .ax-italic { font-size: 1em; letter-spacing: -1.4px; }
-        .ax-aside-lede {
-          font-size: 15px;
-          line-height: 1.7;
-          color: var(--text-secondary);
-          max-width: 440px;
-          margin: 0;
-        }
-
-        .ax-values {
-          display: flex;
-          flex-direction: column;
-          padding-top: 30px;
-          border-top: 1px solid var(--stone-line);
-        }
-        .ax-value {
-          display: flex;
-          gap: 22px;
-          padding: 22px 0;
-          border-bottom: 1px solid var(--stone-line);
-          opacity: 0;
-          transform: translateY(14px);
-          animation: ax-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-          transition: padding 0.3s ease;
-        }
-        .ax-value:hover { padding-left: 8px; }
-        .ax-value:last-child { border-bottom: none; }
-        .ax-value-num {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-style: italic;
-          font-size: 20px;
-          color: var(--accent);
-          line-height: 1.2;
-          min-width: 30px;
-        }
-        .ax-value-title {
-          font-size: 14px;
-          font-weight: 500;
-          color: var(--text-primary);
-          letter-spacing: -0.1px;
-          margin-bottom: 4px;
-        }
-        .ax-value-desc {
-          font-size: 13px;
-          color: var(--text-secondary);
-          line-height: 1.6;
-        }
-
-        .ax-testimonial {
-          padding: 28px 0 0;
-          margin: 0;
-          border-top: 1px solid var(--stone-line);
-        }
-        .ax-testimonial blockquote {
-          font-family: var(--font-playfair), Georgia, serif;
-          font-style: italic;
-          font-size: 16px;
-          line-height: 1.65;
-          color: var(--text-primary);
-          margin: 0 0 22px;
-        }
-        .ax-testimonial figcaption {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-        }
-        .ax-test-avatar {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: var(--stone-soft);
-          border: 1px solid var(--stone-line);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: var(--font-playfair), Georgia, serif;
-          font-weight: 600;
-          font-size: 13px;
-          color: var(--text-primary);
-        }
-        .ax-test-name {
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--text-primary);
-        }
-        .ax-test-cargo {
-          font-size: 11px;
-          color: var(--text-muted);
-          letter-spacing: 0.2px;
-          margin-top: 2px;
-        }
-
-        /* ── Responsive ─────────────────────────────────── */
-        @media (max-width: 980px) {
-          .ax-login { grid-template-columns: 1fr; }
-          .ax-login-aside { display: none; }
-          .ax-login-form-col { padding: 80px 32px 48px; }
-        }
-        @media (max-width: 480px) {
-          .ax-login-home { left: 24px; top: 24px; }
-          .ax-login-form-col { padding: 72px 24px 36px; }
-          .ax-login-title { font-size: 28px; }
-        }
-      `}</style>
     </main>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import s from './Toast.module.css'
 
 type ToastKind = 'success' | 'error' | 'info'
 interface ToastMsg { id: number; kind: ToastKind; text: string }
@@ -26,43 +27,25 @@ export function ToastContainer() {
     return () => { push = null }
   }, [pushInternal])
 
+  const bgClass = (kind: ToastKind) =>
+    kind === 'error' ? s.itemError
+    : kind === 'success' ? s.itemSuccess
+    : s.itemInfo
+
   return (
-    <div role="status" aria-live="polite" aria-atomic="true" style={{
-      position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
-      display: 'flex', flexDirection: 'column-reverse', gap: 10, maxWidth: 360, pointerEvents: 'none',
-    }}>
+    <div role="status" aria-live="polite" aria-atomic="true" className={s.container}>
       {items.map(t => (
-        <div key={t.id} className="toast-item" style={{
-          display: 'flex', alignItems: 'flex-start', gap: 10,
-          padding: '12px 16px', borderRadius: 12,
-          background: t.kind === 'error'
-            ? 'rgba(239,68,68,0.95)'
-            : t.kind === 'success'
-              ? 'rgba(16,185,129,0.95)'
-              : 'rgba(30,30,30,0.95)',
-          color: '#fff',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.30)',
-          backdropFilter: 'blur(16px)',
-          fontSize: 13, fontWeight: 500, lineHeight: 1.4,
-          pointerEvents: 'auto',
-          animation: 'toast-in 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}>
+        <div key={t.id} className={`${s.item} ${bgClass(t.kind)}`}>
           <i className={`bi ${
             t.kind === 'error'
               ? 'bi-exclamation-circle-fill'
               : t.kind === 'success'
                 ? 'bi-check-circle-fill'
                 : 'bi-info-circle-fill'
-          }`} style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }} />
+          } ${s.icon}`} />
           <span>{t.text}</span>
         </div>
       ))}
-      <style jsx>{`
-        @keyframes toast-in {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   )
 }

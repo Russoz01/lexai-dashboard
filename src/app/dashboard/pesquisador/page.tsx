@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import ConfidenceBadge, { PoweredByLexAI, VerifiedBadge } from '@/components/ConfidenceBadge'
 import { SkeletonResult } from '@/components/Skeleton'
+import s from './page.module.css'
 
 const TRIBUNAIS = ['Todos','STF','STJ','TST','TSE','TRF 1ª','TRF 2ª','TRF 3ª','TRF 4ª','TRF 5ª','TJSP','TJRJ','TJMG']
 const AREAS     = ['Todas','Civil','Penal','Trabalhista','Tributário','Constitucional','Administrativo','Ambiental','Consumidor']
@@ -82,16 +83,12 @@ export default function PesquisadorPage() {
   const resultados = pesquisa?.resultados ?? []
 
   return (
-    <div className="page-content" style={{ maxWidth: '100%' }}>
+    <div className={`page-content ${s.pageWrap}`}>
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 12, fontWeight: 600, color: 'var(--accent)',
-            letterSpacing: '0.5px', textTransform: 'uppercase',
-          }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
+      <div className={s.headerWrap}>
+        <div className={s.headerRow}>
+          <span className={s.agentBadge}>
+            <span className={s.agentDot} />
             Agente IA
           </span>
         </div>
@@ -101,9 +98,9 @@ export default function PesquisadorPage() {
 
       {/* Barra de busca */}
       <form onSubmit={buscar}>
-        <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
-          <div style={{ flex: 1, position: 'relative' }}>
-            <i className="bi bi-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }} />
+        <div className={s.searchRow}>
+          <div className={s.searchField}>
+            <i className={`bi bi-search ${s.searchIcon}`} />
             <input
               type="text" value={query} onChange={e => setQuery(e.target.value)}
               maxLength={2000}
@@ -118,11 +115,11 @@ export default function PesquisadorPage() {
         </div>
 
         {/* Filtros */}
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+        <div className={s.filtersWrap}>
+          <div className={s.filtersLabel}>
             Filtros avancados
           </div>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <div className={s.filtersRow}>
             <select value={tribunal} onChange={e => setTribunal(e.target.value)} className="form-input" style={{ flex: '1 1 180px', maxWidth: 220 }}>
               {TRIBUNAIS.map(t => <option key={t}>{t}</option>)}
             </select>
@@ -138,7 +135,7 @@ export default function PesquisadorPage() {
 
       {/* Erro */}
       {erro && (
-        <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className={s.errorBox}>
           <i className="bi bi-exclamation-triangle-fill" />
           {erro}
         </div>
@@ -146,23 +143,23 @@ export default function PesquisadorPage() {
 
       {/* Resultados */}
       {buscando ? (
-        <div style={{ padding: '20px 0' }}>
-          <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: 20 }}>
-            <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-primary)' }}>Pesquisando com IA...</div>
-            <div style={{ fontSize: 13 }}>Analisando jurisprudência relevante</div>
+        <div className={s.loadingWrap}>
+          <div className={s.loadingCenter}>
+            <div className={s.loadingTitle}>Pesquisando com IA...</div>
+            <div className={s.loadingSub}>Analisando jurisprudência relevante</div>
           </div>
           <SkeletonResult />
         </div>
       ) : buscou && resultados.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-          <i className="bi bi-journal-x" style={{ fontSize: 36, display: 'block', marginBottom: 12, opacity: 0.4 }} />
-          <div style={{ fontWeight: 600 }}>Nenhum resultado encontrado</div>
-          <div style={{ fontSize: 13, marginTop: 4 }}>Tente termos diferentes ou remova filtros</div>
+        <div className={s.emptyResults}>
+          <i className={`bi bi-journal-x ${s.emptyIcon}`} />
+          <div className={s.emptyTitle}>Nenhum resultado encontrado</div>
+          <div className={s.emptySub}>Tente termos diferentes ou remova filtros</div>
         </div>
       ) : resultados.length > 0 || (pesquisa?.jurisprudencia_real?.length ?? 0) > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
-            <div className="results-counter-pill">
+        <div className={s.resultsContainer}>
+          <div className={s.resultsHeader}>
+            <div className={s.resultsCounterPill}>
               <i className="bi bi-collection" />
               Mostrando <strong>{resultados.length}</strong> de <strong>{resultados.length + (pesquisa?.jurisprudencia_real?.length ?? 0)}</strong> resultados
             </div>
@@ -171,39 +168,34 @@ export default function PesquisadorPage() {
 
           {/* JusBrasil verified block — only shows when the API was configured and returned hits */}
           {pesquisa?.jurisprudencia_real && pesquisa.jurisprudencia_real.length > 0 && (
-            <div className="section-card" style={{ padding: '16px 20px', border: '1px solid #2d6a4f40', background: '#f0fdf4' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
-                  background: '#2d6a4f', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em',
-                }}>
+            <div className={`section-card ${s.jusBrasilCard}`}>
+              <div className={s.jusBrasilHeader}>
+                <span className={s.jusBrasilBadge}>
                   <i className="bi bi-patch-check-fill" /> Verificado JusBrasil
                 </span>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                <span className={s.jusBrasilCount}>
                   {pesquisa.jurisprudencia_real.length} decisão(oes) reais recuperadas da base JusBrasil
                 </span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div className={s.jusBrasilList}>
                 {pesquisa.jurisprudencia_real.map((j) => (
-                  <div key={j.id || `${j.tribunal}-${j.numero}`} style={{ padding: '12px 14px', borderRadius: 10, background: '#fff', border: '1px solid var(--border)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: '#eef2ff', color: '#4f46e5' }}>{j.tribunal || 'Tribunal'}</span>
-                      <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{j.numero}</span>
+                  <div key={j.id || `${j.tribunal}-${j.numero}`} className={s.jusBrasilItem}>
+                    <div className={s.jusBrasilItemHeader}>
+                      <span className={s.jusBrasilTribunal}>{j.tribunal || 'Tribunal'}</span>
+                      <span className={s.jusBrasilNumero}>{j.numero}</span>
                       {j.data && (
-                        <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span className={s.badgeDate}>
                           <i className="bi bi-calendar3" /> {j.data}
                         </span>
                       )}
                     </div>
                     {j.ementa && (
-                      <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 8 }}>
+                      <div className={s.jusBrasilEmenta}>
                         {j.ementa}
                       </div>
                     )}
                     {j.url && (
-                      <a href={j.url} target="_blank" rel="noopener noreferrer"
-                         style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                      <a href={j.url} target="_blank" rel="noopener noreferrer" className={s.jusBrasilLink}>
                         <i className="bi bi-box-arrow-up-right" /> Abrir no JusBrasil
                       </a>
                     )}
@@ -216,43 +208,28 @@ export default function PesquisadorPage() {
           {resultados.map((r, idx) => (
             <div
               key={idx}
-              className="section-card result-card"
+              className={`section-card result-card ${s.resultCardInner}`}
               style={{
-                padding: '16px 20px',
                 borderLeft: r.relevancia === 'alta' ? '3px solid var(--success)' : undefined,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
+              <div className={s.resultHeader}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 4 }}>{r.titulo}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: 'var(--accent-light)', color: 'var(--accent)' }}>{r.tribunal}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: 'var(--hover)', color: 'var(--text-secondary)' }}>{r.area}</span>
-                    <span style={{
-                      fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
-                      background: r.relevancia === 'alta'
-                        ? 'var(--success-light)'
-                        : r.relevancia === 'media'
-                          ? 'var(--warning-light)'
-                          : 'var(--hover)',
-                      color: r.relevancia === 'alta'
-                        ? 'var(--success)'
-                        : r.relevancia === 'media'
-                          ? 'var(--warning)'
-                          : 'var(--text-muted)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.03em',
-                    }}>
+                  <div className={s.resultTitle}>{r.titulo}</div>
+                  <div className={s.resultBadges}>
+                    <span className={s.badgeTribunal}>{r.tribunal}</span>
+                    <span className={s.badgeArea}>{r.area}</span>
+                    <span className={r.relevancia === 'alta' ? s.relevanciaAlta : r.relevancia === 'media' ? s.relevanciaMedia : s.relevanciaBaixa}>
                       {r.relevancia}
                     </span>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span className={s.badgeDate}>
                       <i className="bi bi-calendar3" /> {r.data}
                     </span>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{r.numero}</span>
+                    <span className={s.badgeNumero}>{r.numero}</span>
                     <VerifiedBadge />
                   </div>
                   {r.relator && (
-                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
+                    <div className={s.resultRelator}>
                       <i className="bi bi-person" style={{ marginRight: 4 }} />Rel. {r.relator}
                     </div>
                   )}
@@ -265,22 +242,22 @@ export default function PesquisadorPage() {
 
               {expandido === String(idx) && (
                 <>
-                  <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--input-bg)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, marginTop: 8 }}>
-                    <strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>Ementa</strong>
+                  <div className={s.ementaBox}>
+                    <strong className={s.ementaLabel}>Ementa</strong>
                     {r.ementa}
                   </div>
 
                   {r.tese_fixada && (
-                    <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--accent-light)', fontSize: 13, color: 'var(--accent)', lineHeight: 1.7, marginTop: 8, borderLeft: '3px solid var(--accent)' }}>
-                      <strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Tese Fixada</strong>
+                    <div className={s.teseBox}>
+                      <strong className={s.ementaLabel}>Tese Fixada</strong>
                       {r.tese_fixada}
                     </div>
                   )}
 
                   {r.fundamentacao && r.fundamentacao.length > 0 && (
-                    <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    <div className={s.fundamentacaoRow}>
                       {r.fundamentacao.map((f, i) => (
-                        <span key={i} style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                        <span key={i} className={s.fundamentacaoTag}>
                           {f}
                         </span>
                       ))}
@@ -289,7 +266,7 @@ export default function PesquisadorPage() {
                 </>
               )}
 
-              <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+              <div className={s.resultActions}>
                 <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5 }}
                   onClick={() => copiar(r.ementa, String(idx))}>
                   <i className={`bi ${copied === String(idx) ? 'bi-check2' : 'bi-clipboard'}`} />
@@ -301,13 +278,13 @@ export default function PesquisadorPage() {
 
           {/* Termos relacionados e legislação */}
           {pesquisa && (pesquisa.termos_relacionados?.length > 0 || pesquisa.legislacao_aplicavel?.length > 0) && (
-            <div className="section-card" style={{ padding: '16px 20px', marginTop: 4 }}>
+            <div className={`section-card ${s.relatedCard}`}>
               {pesquisa.termos_relacionados?.length > 0 && (
                 <div style={{ marginBottom: pesquisa.legislacao_aplicavel?.length > 0 ? 14 : 0 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 8 }}>
+                  <div className={s.relatedSectionLabel}>
                     Termos Relacionados
                   </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <div className={s.relatedTagsRow}>
                     {pesquisa.termos_relacionados.map((t, i) => (
                       <button key={i} onClick={() => { setQuery(t); }} className="btn-ghost" style={{ fontSize: 12, padding: '4px 10px' }}>
                         {t}
@@ -318,12 +295,12 @@ export default function PesquisadorPage() {
               )}
               {pesquisa.legislacao_aplicavel?.length > 0 && (
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 8 }}>
+                  <div className={s.relatedSectionLabel}>
                     Legislação Aplicável
                   </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <div className={s.relatedTagsRow}>
                     {pesquisa.legislacao_aplicavel.map((l, i) => (
-                      <span key={i} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 6, background: 'var(--accent-light)', color: 'var(--accent)', fontWeight: 500 }}>
+                      <span key={i} className={s.legislacaoTag}>
                         {l}
                       </span>
                     ))}
@@ -332,89 +309,19 @@ export default function PesquisadorPage() {
               )}
             </div>
           )}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+          <div className={s.poweredRow}>
             <PoweredByLexAI />
           </div>
         </div>
       ) : (
-        <div className="pesquisador-empty">
-          <div className="pesquisador-empty-icon">
+        <div className={s.pesquisadorEmpty}>
+          <div className={s.pesquisadorEmptyIcon}>
             <i className="bi bi-journal-bookmark" />
           </div>
-          <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Pesquise jurisprudência com IA</div>
-          <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Digite termos na busca e aplique filtros para encontrar decisões</div>
+          <div className={s.pesquisadorEmptyTitle}>Pesquise jurisprudência com IA</div>
+          <div className={s.pesquisadorEmptySub}>Digite termos na busca e aplique filtros para encontrar decisões</div>
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .results-counter-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          font-size: 12px;
-          font-weight: 600;
-          padding: 5px 12px;
-          border-radius: 20px;
-          background: var(--accent-light);
-          color: var(--accent);
-          border: 1px solid var(--accent-light);
-          letter-spacing: 0.01em;
-        }
-        .results-counter-pill :global(strong) {
-          font-weight: 800;
-          color: var(--text-primary);
-        }
-        .results-counter-pill :global(i) {
-          font-size: 13px;
-        }
-        :global(.result-card) {
-          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
-        }
-        :global(.result-card:hover) {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(19, 32, 37, 0.08);
-        }
-        .pesquisador-empty {
-          text-align: center;
-          padding: 60px 0;
-          color: var(--text-muted);
-        }
-        .pesquisador-empty-icon {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 72px;
-          height: 72px;
-          border-radius: 50%;
-          background: var(--accent-light);
-          color: var(--accent);
-          font-size: 32px;
-          margin-bottom: 16px;
-          animation: empty-pulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes empty-pulse {
-          0%, 100% {
-            transform: scale(1);
-            box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.22);
-          }
-          50% {
-            transform: scale(1.05);
-            box-shadow: 0 0 0 12px rgba(191, 166, 142, 0);
-          }
-        }
-        @media (max-width: 640px) {
-          .results-counter-pill {
-            font-size: 11px;
-            padding: 4px 10px;
-          }
-          .pesquisador-empty-icon {
-            width: 60px;
-            height: 60px;
-            font-size: 26px;
-          }
-        }
-      `}</style>
     </div>
   )
 }

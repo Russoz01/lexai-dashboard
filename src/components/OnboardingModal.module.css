@@ -1,0 +1,375 @@
+/* OnboardingModal.module.css — migrated from styled-jsx */
+
+/* ---- Backdrop / container ---- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: max(80px, 14vh);
+  padding-inline: 24px;
+  padding-bottom: 24px;
+  animation: onbFadeIn 0.25s ease;
+}
+
+.modal {
+  background: var(--card-bg, #11252B);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 20px;
+  max-width: 560px;
+  width: 100%;
+  padding: 40px 36px 32px;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---- Skip button ---- */
+
+.skip {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--text-secondary, #a8a8a0);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+
+.skip:hover {
+  color: var(--text-primary, #F3EEE4);
+}
+
+.skip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- Slide animations ---- */
+
+.slideForward {
+  animation: onbSlideInRight 0.3s ease both;
+}
+
+.slideBack {
+  animation: onbSlideInLeft 0.3s ease both;
+}
+
+/* ---- Step content ---- */
+
+.serial {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent, #BFA68E);
+  margin-bottom: 6px;
+}
+
+.heading {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary, #F3EEE4);
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+
+.headingSm {
+  composes: heading;
+  font-size: 26px;
+}
+
+.desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-secondary, #a8a8a0);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+.descSmGap {
+  composes: desc;
+  margin-bottom: 24px;
+}
+
+.descMdGap {
+  composes: desc;
+  margin-bottom: 28px;
+}
+
+/* ---- Agent cards (Step 0) ---- */
+
+.agentList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.agentCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.agentCard:hover {
+  border-color: var(--accent, #BFA68E);
+  background: rgba(191, 166, 142, 0.06);
+}
+
+.agentCard:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.agentIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-light, rgba(191, 166, 142, 0.12));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.agentIconI {
+  font-size: 20px;
+  color: var(--accent, #BFA68E);
+}
+
+.agentInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.agentLabel {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #F3EEE4);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.agentDesc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--text-secondary, #a8a8a0);
+  line-height: 1.45;
+  display: block;
+}
+
+.agentChevron {
+  font-size: 14px;
+  color: var(--text-secondary, #a8a8a0);
+  flex-shrink: 0;
+}
+
+/* ---- Sample card (Step 1) ---- */
+
+.sampleCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 14px;
+  padding: 20px 22px;
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.sampleTitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent, #BFA68E);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.sampleBody {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-primary, #F3EEE4);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ---- Buttons ---- */
+
+.btnRow {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btnGhost {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-secondary, #a8a8a0);
+  background: none;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.btnGhost:hover {
+  border-color: var(--accent, #BFA68E);
+}
+
+.btnGhost:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btnPrimary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bg-base, #0C1B20);
+  background: var(--accent, #BFA68E);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btnPrimary:hover {
+  opacity: 0.88;
+}
+
+.btnPrimary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btnPrimaryWide {
+  composes: btnPrimary;
+  padding: 10px 28px;
+}
+
+/* ---- Step 2 (finish) ---- */
+
+.finishIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent-light, rgba(191, 166, 142, 0.12));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.finishIconI {
+  font-size: 28px;
+  color: var(--accent, #BFA68E);
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--accent, #BFA68E);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 8px;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tagIcon {
+  font-size: 13px;
+}
+
+/* ---- Progress dots ---- */
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.dot {
+  border-radius: 50%;
+  transition: all 0.25s ease;
+  display: block;
+}
+
+.dotActive {
+  width: 10px;
+  height: 10px;
+  background: var(--accent, #BFA68E);
+}
+
+.dotDone {
+  width: 8px;
+  height: 8px;
+  background: rgba(191, 166, 142, 0.4);
+}
+
+.dotPending {
+  width: 8px;
+  height: 8px;
+  background: var(--border, rgba(255, 255, 255, 0.08));
+}
+
+/* ---- Keyframes ---- */
+
+@keyframes onbFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes onbSlideInRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes onbSlideInLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .slideForward,
+  .slideBack {
+    animation: none;
+  }
+}

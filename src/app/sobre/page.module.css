@@ -1,0 +1,325 @@
+/* ── Sobre Page · CSS Module ─────────────────────────────────────────────── */
+
+.sbRoot {
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-dm-sans, 'DM Sans'), system-ui, sans-serif;
+}
+
+/* ── Nav ─────────────────────────────────────────────────────────────────── */
+.sbNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 40px;
+  border-bottom: 1px solid var(--stone-line);
+}
+
+.sbBrand {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sbBrand:hover {
+  color: var(--accent);
+}
+
+.sbNavLinks {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.sbNavLink {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.16s ease;
+}
+
+.sbNavLink:hover {
+  color: var(--text-primary);
+}
+
+.sbNavLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.sbNavCta {
+  font-size: 13px;
+  color: var(--text-primary);
+  border: 1px solid var(--stone-line);
+  padding: 10px 20px;
+  border-radius: 2px;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: border-color 0.16s ease, background 0.16s ease, transform 0.15s ease;
+}
+
+.sbNavCta:hover {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  transform: translateY(-1px);
+}
+
+.sbNavCta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ── Shell ───────────────────────────────────────────────────────────────── */
+.sbShell {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 96px 40px 120px;
+}
+
+.sbSerial {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+.sbTitle {
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  font-size: clamp(40px, 6vw, 70px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin: 0 0 28px;
+}
+
+.sbTitle em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.sbLede {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  max-width: 720px;
+  margin: 0 0 22px;
+}
+
+.sbLede strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.sbDivider {
+  width: 48px;
+  height: 1px;
+  background: var(--stone-line);
+  margin: 64px 0;
+}
+
+.sbH2 {
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.15;
+  margin: 0 0 28px;
+  letter-spacing: -0.01em;
+}
+
+/* ── Pillars ─────────────────────────────────────────────────────────────── */
+.sbPillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.sbPillar {
+  padding-top: 18px;
+  border-top: 1px solid var(--stone-line);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sbPillar:hover {
+  transform: translateY(-2px);
+}
+
+.sbPillarN {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.sbPillarTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  letter-spacing: -0.005em;
+}
+
+.sbPillarBody {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Contact ─────────────────────────────────────────────────────────────── */
+.sbContact {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sbContactItem {
+  display: flex;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--stone-line);
+  align-items: baseline;
+}
+
+.sbContactLabel {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  min-width: 110px;
+}
+
+.sbContactLink {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.16s ease;
+}
+
+.sbContactLink:hover {
+  border-bottom-color: var(--accent);
+}
+
+.sbContactLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* ── CTA ─────────────────────────────────────────────────────────────────── */
+.sbCta {
+  margin-top: 72px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sbCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  background: var(--primary);
+  color: var(--bg-base);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: 2px;
+  transition: transform 0.16s ease, box-shadow 0.2s ease;
+}
+
+.sbCtaBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.sbCtaBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.sbCtaGhost {
+  display: inline-flex;
+  align-items: center;
+  padding: 16px 28px;
+  border: 1px solid var(--stone-line);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  border-radius: 2px;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.sbCtaGhost:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.sbCtaGhost:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.sbFooter {
+  margin-top: 96px;
+  padding-top: 24px;
+  border-top: 1px solid var(--stone-line);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.sbFooterLinks {
+  display: flex;
+  gap: 18px;
+}
+
+.sbFooterLink {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sbFooterLink:hover {
+  color: var(--text-primary);
+}
+
+.sbFooterLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sbPillars {
+    grid-template-columns: 1fr;
+  }
+
+  .sbShell {
+    padding: 64px 24px 80px;
+  }
+
+  .sbNav {
+    padding: 18px 24px;
+  }
+}

@@ -1,0 +1,731 @@
+/* ═══════════════════════════════════════════════════════════════
+   Dashboard — Gabinete LexAI  (page.module.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+.dashAtelier {
+  position: relative;
+}
+
+/* ── Serial label ─────────────────────────────────────────── */
+.dashSerial {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.dashSerialDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--stone);
+  box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.5);
+  animation: dashPulse 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.dashHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 40px;
+  padding-top: 4px;
+}
+
+.dashAtelierH1 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -1.2px;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dashAtelierH1 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.dashHeaderSub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  letter-spacing: 0.1px;
+}
+
+.dashHairline {
+  height: 1px;
+  background: linear-gradient(90deg, var(--stone) 0%, var(--stone-line) 24%, transparent 100%);
+  margin-top: 10px;
+}
+
+/* ── Provas (4 Roman columns) ─────────────────────────────── */
+.dashProvas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 40px;
+  margin-bottom: 56px;
+  border: 1px solid var(--stone-line);
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24) inset, 0 18px 50px rgba(19, 32, 37, 0.06);
+}
+
+/* ── Usage + Referral panel row ───────────────────────────── */
+.dashPanelsRow {
+  margin-bottom: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+/* ── Grid layouts ─────────────────────────────────────────── */
+.dashGridUsage {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+
+.dashGridMain {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.dashSideCol {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* ── Cards ─────────────────────────────────────────────────── */
+.dashCard {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
+  border: 1px solid var(--stone-line);
+  border-radius: 18px;
+  padding: 28px 30px 26px;
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24) inset, 0 18px 50px rgba(19, 32, 37, 0.06);
+}
+
+.dashCard:hover {
+  transform: translateY(-3px);
+  border-color: var(--stone);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.32) inset, 0 28px 64px rgba(19, 32, 37, 0.10);
+}
+
+.dashCardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--stone-line);
+}
+
+.dashCardCap {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.dashCardTitle {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.6px;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.dashCardTitle em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.dashCardSub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0;
+  letter-spacing: 0.1px;
+}
+
+.dashCardAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  transition: gap 0.22s ease, color 0.22s ease;
+  white-space: nowrap;
+}
+
+.dashCardAction:hover {
+  gap: 11px;
+  color: var(--text-primary);
+}
+
+/* ── Uso dos Agentes — bars ───────────────────────────────── */
+.dashBars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dashBarRow {
+  display: grid;
+  grid-template-columns: 28px 100px 1fr 36px;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 10px;
+  margin-inline: -10px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.22s ease;
+}
+
+.dashBarRow:hover {
+  background: var(--hover);
+}
+
+.dashBarNum {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashBarLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  letter-spacing: 0.1px;
+}
+
+.dashBarTrack {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--stone-soft);
+  overflow: hidden;
+  position: relative;
+}
+
+.dashBarFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--accent), var(--stone));
+  border-radius: 2px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashBarCount {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--accent);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* ── Atividade recente ────────────────────────────────────── */
+.dashActivity {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.dashActivityRow {
+  display: grid;
+  grid-template-columns: 24px 36px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 10px;
+  margin-inline: -10px;
+  border-bottom: 1px solid var(--stone-line);
+  text-decoration: none;
+  transition: background 0.22s ease, padding 0.22s ease;
+}
+
+.dashActivityRow:last-child {
+  border-bottom: none;
+}
+
+.dashActivityRow:hover {
+  background: var(--hover);
+  padding-left: 14px;
+}
+
+.dashActivityNum {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.dashActivityIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-bg);
+  border: 1px solid var(--stone-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.dashActivityInfo {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dashActivityName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.1px;
+}
+
+.dashActivitySnippet {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashActivityTime {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Agentes grid ─────────────────────────────────────────── */
+.dashAgentsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.dashAgent {
+  display: grid;
+  grid-template-columns: 26px 38px 1fr 16px;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--stone-line);
+  border-radius: 12px;
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashAgent::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent), var(--stone));
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.dashAgent:hover {
+  background: var(--hover);
+  border-color: var(--stone);
+  transform: translateX(3px);
+}
+
+.dashAgent:hover::before {
+  opacity: 1;
+}
+
+.dashAgentNum {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.dashAgentIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--accent-bg);
+  border: 1px solid var(--stone-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: background 0.28s ease, color 0.28s ease;
+}
+
+.dashAgent:hover .dashAgentIcon {
+  background: var(--accent);
+  color: var(--bg-base);
+}
+
+.dashAgentInfo {
+  min-width: 0;
+}
+
+.dashAgentName {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.1px;
+}
+
+.dashAgentDesc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashAgentArrow {
+  font-size: 13px;
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.28s ease, transform 0.28s ease, color 0.28s ease;
+}
+
+.dashAgent:hover .dashAgentArrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--accent);
+}
+
+/* ── Prazos ───────────────────────────────────────────────── */
+.dashPrazos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dashPrazoRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--stone-line);
+  border-radius: 10px;
+  background: var(--hover);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashPrazoRow:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(19, 32, 37, 0.06);
+}
+
+.dashPrazoBar {
+  width: 3px;
+  height: 36px;
+  border-radius: 2px;
+  background: var(--stone);
+}
+
+.critical .dashPrazoBar { background: var(--danger); }
+.warning .dashPrazoBar { background: var(--warning); }
+.normal .dashPrazoBar { background: var(--success); }
+
+.dashPrazoInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashPrazoTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashPrazoMeta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.dashPrazoDays {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 17px;
+  font-style: italic;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.critical .dashPrazoDays { color: var(--danger); }
+
+/* ── Finance ──────────────────────────────────────────────── */
+.dashFinance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.dashFinanceValue {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashFinanceCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  transition: gap 0.22s ease, color 0.22s ease;
+}
+
+.dashFinanceCta:hover {
+  gap: 11px;
+  color: var(--text-primary);
+}
+
+/* ── Empty / skeleton states ──────────────────────────────── */
+.dashEmptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 38px 20px 10px;
+  text-align: center;
+  gap: 6px;
+}
+
+.dashEmptyState.compact {
+  padding: 22px 12px 6px;
+}
+
+.dashEmptyState i {
+  font-size: 28px;
+  color: var(--stone);
+  margin-bottom: 4px;
+}
+
+.dashEmptyTitle {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.dashEmptySub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  max-width: 280px;
+  line-height: 1.55;
+}
+
+.dashEmptyCta {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  background: var(--accent);
+  color: var(--bg-base);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.dashEmptyCta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(19, 32, 37, 0.18);
+}
+
+.dashSkel,
+.dashSkelRow {
+  height: 38px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--hover), var(--stone-soft), var(--hover));
+  background-size: 200% 100%;
+  animation: dashShimmer 1.6s ease-in-out infinite;
+  margin-bottom: 12px;
+}
+
+.dashSkelRow:last-child {
+  margin-bottom: 0;
+}
+
+/* ── ProvaCell ────────────────────────────────────────────── */
+.provaCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  padding: 44px 44px 40px;
+  text-decoration: none;
+  border-right: 1px solid var(--stone-line);
+  transition: background 0.28s ease;
+  position: relative;
+}
+
+.provaCell:last-child {
+  border-right: none;
+}
+
+.provaCell:hover {
+  background: var(--hover);
+}
+
+.provaRoman {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+  letter-spacing: 1.6px;
+  margin-bottom: 20px;
+}
+
+.provaValue {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 48px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -1.4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.provaValueMoney {
+  composes: provaValue;
+  font-size: 28px;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+  padding-top: 6px;
+}
+
+.provaLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 20px;
+}
+
+.provaCaption {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.provaCaptionWarn {
+  composes: provaCaption;
+  color: var(--warning);
+  font-weight: 600;
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes dashShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes dashPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.55); }
+  50% { box-shadow: 0 0 0 6px rgba(191, 166, 142, 0); }
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .dashGridUsage,
+  .dashGridMain {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .dashAgentsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashAtelierH1 { font-size: 34px; }
+  .dashProvas {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dashCard { padding: 22px 20px; }
+  .dashCardTitle { font-size: 20px; }
+  .dashBarRow {
+    grid-template-columns: 22px 80px 1fr 30px;
+    gap: 10px;
+  }
+  .dashBarCount { font-size: 15px; }
+  .dashFinanceValue { font-size: 30px; }
+  .dashPanelsRow {
+    grid-template-columns: 1fr;
+  }
+  .provaCell { padding: 32px 28px 28px; }
+  .provaValue { font-size: 38px; }
+  .provaValueMoney { font-size: 22px; }
+  .provaCell:nth-child(2) { border-right: none; }
+}

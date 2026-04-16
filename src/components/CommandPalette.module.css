@@ -1,0 +1,223 @@
+/* CommandPalette.module.css — migrated from styled-jsx */
+
+.cpBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 15vh;
+  padding-left: 16px;
+  padding-right: 16px;
+  animation: cpFadeIn 0.15s ease-out both;
+}
+
+.cpModal {
+  width: 100%;
+  max-width: 600px;
+  background: var(--card-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  animation: cpScaleIn 0.15s ease-out both;
+  color: var(--text-primary);
+}
+
+.cpSearch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cpSearchIcon {
+  font-size: 18px;
+  color: var(--text-muted, rgba(148, 163, 184, 0.8));
+  flex-shrink: 0;
+}
+
+.cpInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.cpInput::placeholder {
+  color: var(--text-muted, rgba(148, 163, 184, 0.7));
+  font-weight: 400;
+}
+
+.cpInput:focus-visible {
+  outline: none;
+}
+
+.cpList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.cpEmpty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-muted, rgba(148, 163, 184, 0.8));
+  font-size: 14px;
+}
+
+.cpEmptyStrong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.cpItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 14px;
+  transition: background 0.08s ease, border-color 0.08s ease;
+  border-left: 3px solid transparent;
+  margin-bottom: 2px;
+}
+
+.cpItem:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.selected {
+  background: var(--accent-light);
+  border-left: 3px solid var(--accent);
+}
+
+.cpItemIcon {
+  font-size: 18px;
+  color: var(--accent);
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+.cpItemLabel {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cpItemCategory {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, rgba(148, 163, 184, 0.8));
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--hover);
+  flex-shrink: 0;
+}
+
+.cpItemKbd {
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.selected .cpItemKbd {
+  opacity: 1;
+}
+
+.cpKbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--hover);
+  color: var(--text-muted, rgba(148, 163, 184, 0.9));
+  line-height: 1.4;
+  min-width: 18px;
+  text-align: center;
+  display: inline-block;
+}
+
+.cpKbdHint {
+  composes: cpKbd;
+  flex-shrink: 0;
+}
+
+.cpFooter {
+  display: flex;
+  gap: 16px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted, rgba(148, 163, 184, 0.8));
+  background: var(--hover);
+}
+
+.cpFooterItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@keyframes cpFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cpScaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 640px) {
+  .cpBackdrop {
+    padding-top: 10vh;
+  }
+  .cpItemCategory {
+    display: none;
+  }
+  .cpFooter {
+    gap: 12px;
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cpBackdrop,
+  .cpModal {
+    animation: none;
+  }
+}

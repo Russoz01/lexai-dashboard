@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import s from './page.module.css'
 
 const PLANOS_BASE = [
   {
@@ -104,57 +105,45 @@ export default function PlanosPage() {
   const destaqueId = getDestaqueId(planoAtual)
 
   return (
-    <div className="page-content" style={{ maxWidth: 1100 }}>
+    <div className={`page-content ${s.pageWrap}`}>
       {/* Header — marketing-focused */}
-      <div style={{ marginBottom: 16, textAlign: 'center' }}>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          fontSize: 11, fontWeight: 700, color: 'var(--accent)',
-          letterSpacing: '1px', textTransform: 'uppercase',
-          padding: '5px 12px', borderRadius: 20,
-          background: 'var(--accent-light)', border: '1px solid var(--border)', marginBottom: 16,
-        }}>
+      <div className={s.headerWrap}>
+        <span className={s.launchBadge}>
           <i className="bi bi-lightning-charge-fill" />Oferta de lancamento &mdash; 7 dias gratis sem cartao
         </span>
         <h1 className="page-title" style={{ fontSize: 36, marginBottom: 8 }}>
           Trabalhe <span style={{ color: 'var(--accent)' }}>10x mais rapido</span> no Direito
         </h1>
-        <p className="page-subtitle" style={{ maxWidth: 580, margin: '8px auto 0', fontSize: 15 }}>
+        <p className={`page-subtitle ${s.headerSubtitle}`}>
           Pare de gastar horas com pesquisas manuais. Comece hoje, cancele quando quiser, sem multas nem burocracia.
         </p>
       </div>
 
       {/* Trust bar — multiple signals */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10,
-        margin: '0 auto 24px', maxWidth: 760,
-      }} className="trust-grid">
+      <div className={s.trustGrid}>
         {[
           { icon: 'bi-shield-lock-fill', label: 'LGPD compliant', sub: 'Dados criptografados' },
           { icon: 'bi-credit-card-2-back-fill', label: 'Pagamento Stripe', sub: '100% seguro' },
           { icon: 'bi-arrow-counterclockwise', label: 'Cancele quando quiser', sub: 'Sem multas' },
           { icon: 'bi-headset', label: 'Suporte em PT-BR', sub: 'Resposta rapida' },
         ].map((t, i) => (
-          <div key={i} className="section-card" style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <i className={`bi ${t.icon}`} style={{ color: 'var(--accent)', fontSize: 18, flexShrink: 0 }} />
+          <div key={i} className={`section-card ${s.trustItem}`}>
+            <i className={`bi ${t.icon} ${s.trustIcon}`} />
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{t.label}</div>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{t.sub}</div>
+              <div className={s.trustLabel}>{t.label}</div>
+              <div className={s.trustSub}>{t.sub}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Pricing model note */}
-      <div style={{
-        textAlign: 'center', marginBottom: 28, fontSize: 13,
-        color: 'var(--text-secondary)', letterSpacing: '0.2px',
-      }}>
+      <div className={s.pricingNote}>
         Cobranca <strong style={{ color: 'var(--accent)' }}>por advogado registrado</strong> · De R$ 1.399 a R$ 1.599 conforme o plano
       </div>
 
       {/* Plan cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 24 }}>
+      <div className={s.plansGrid}>
         {PLANOS_BASE.map(plano => {
           const isDestaque = plano.id === destaqueId
           const badgeLabel = getBadgeLabel(plano.id, planoAtual)
@@ -198,47 +187,36 @@ export default function PlanosPage() {
 
               <div style={{ padding: badgeLabel ? '52px 24px 28px' : '28px 24px' }}>
                 {/* Name + tagline */}
-                <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4, letterSpacing: '-0.3px' }}>{plano.nome}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>{plano.tagline}</div>
+                <div className={s.planBody}>
+                  <div className={s.planName}>{plano.nome}</div>
+                  <div className={s.planTagline}>{plano.tagline}</div>
 
                   {/* Price */}
-                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
-                    <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>R$</span>
-                    <span style={{
-                      fontSize: 44, fontWeight: 800, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums',
+                  <div className={s.priceRow}>
+                    <span className={s.priceCurrency}>R$</span>
+                    <span className={s.priceValue} style={{
                       color: isDestaque ? 'var(--accent)' : 'var(--text-primary)',
                     }}>
                       {preco.toLocaleString('pt-BR')}
                     </span>
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                  <div className={s.pricePeriod}>
                     por advogado / mes
                   </div>
                   {/* Economia real — value driver */}
-                  <div style={{
-                    marginTop: 12, padding: '8px 12px', borderRadius: 8,
-                    background: 'var(--accent-light)', border: '1px solid var(--border)',
-                    fontSize: 11, fontWeight: 600, color: 'var(--accent)',
-                    display: 'inline-flex', alignItems: 'center', gap: 6,
-                  }}>
+                  <div className={s.economiaBadge}>
                     <i className="bi bi-graph-up-arrow" />{plano.economiaReal}
                   </div>
                 </div>
 
                 {/* Features */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
+                <div className={s.featuresList}>
                   {plano.features.map((f, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13 }}>
-                      <span style={{
-                        width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 11,
-                        background: f.disponivel ? 'var(--success-light)' : 'var(--hover)',
-                        color: f.disponivel ? 'var(--success)' : 'var(--text-muted)',
-                        marginTop: 1,
-                      }}>
+                    <div key={i} className={s.featureRow}>
+                      <span className={f.disponivel ? s.featureIconActive : s.featureIconInactive}>
                         <i className={`bi ${f.disponivel ? 'bi-check' : 'bi-x'}`} />
                       </span>
-                      <span style={{ color: f.disponivel ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: f.disponivel ? 500 : 400, lineHeight: 1.4 }}>
+                      <span className={f.disponivel ? s.featureTextActive : s.featureTextInactive}>
                         {f.label}
                       </span>
                     </div>
@@ -283,22 +261,15 @@ export default function PlanosPage() {
       </div>
 
       {/* Gerenciar minha assinatura — Stripe portal */}
-      <div className="section-card animate-in" style={{
-        padding: '20px 28px', marginBottom: 20,
-        display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
-      }}>
-        <div style={{
-          width: 48, height: 48, borderRadius: 12, flexShrink: 0,
-          background: 'var(--accent-light)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
+      <div className={`section-card animate-in ${s.manageCard}`}>
+        <div className={s.manageIcon}>
           <i className="bi bi-credit-card" style={{ fontSize: 22, color: 'var(--accent)' }} />
         </div>
         <div style={{ flex: 1, minWidth: 220 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+          <div className={s.manageTitle}>
             Gerenciar pagamento e assinatura
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+          <div className={s.manageDesc}>
             Atualize cartao, baixe faturas, faca downgrade ou cancele a qualquer momento via Stripe.
           </div>
         </div>
@@ -312,26 +283,16 @@ export default function PlanosPage() {
 
       {/* Enterprise exclusive benefits (shown only when user is on Enterprise) */}
       {planoAtual === 'enterprise' && (
-        <div className="section-card animate-in" style={{
-          padding: '20px 28px', marginBottom: 40,
-          border: '1px solid rgba(201,168,76,0.25)',
-          background: 'linear-gradient(135deg, rgba(201,168,76,0.04), rgba(191,166,142,0.05))',
-        }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16,
-          }}>
+        <div className={`section-card animate-in ${s.enterpriseCard}`}>
+          <div className={s.enterpriseHeader}>
             <i className="bi bi-gem" style={{ color: 'var(--accent)', fontSize: 18 }} />
-            <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+            <span className={s.enterpriseTitle}>
               Beneficios Exclusivos Enterprise
             </span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className={s.benefitsGrid}>
             {BENEFICIOS_ENTERPRISE.map((b, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 10, fontSize: 13,
-                color: 'var(--text-secondary)', padding: '8px 12px',
-                background: 'rgba(201,168,76,0.05)', borderRadius: 8,
-              }}>
+              <div key={i} className={s.benefitItem}>
                 <i className="bi bi-star-fill" style={{ color: 'var(--accent)', fontSize: 10, flexShrink: 0 }} />
                 {b}
               </div>
@@ -346,16 +307,16 @@ export default function PlanosPage() {
       {/* Before/After comparison — classic marketing tactic */}
       <div className="section-card" style={{ padding: '28px 32px', marginBottom: 24 }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>
+          <div className={s.sectionTitle}>
             A diferenca na pratica
           </div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+          <div className={s.sectionHeading}>
             Advogado sem LexAI <span style={{ color: 'var(--text-muted)', margin: '0 8px' }}>vs</span> Advogado com LexAI
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="compare-grid">
-          <div style={{ padding: 20, borderRadius: 12, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.15)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, color: '#EF4444', fontWeight: 700, fontSize: 13 }}>
+        <div className={s.compareGrid}>
+          <div className={s.compareSideNo}>
+            <div className={s.compareSideHeader} style={{ color: '#EF4444' }}>
               <i className="bi bi-x-circle-fill" /> SEM LEXAI
             </div>
             {[
@@ -366,14 +327,14 @@ export default function PlanosPage() {
               'Risco de perder jurisprudencia relevante',
               'Custo alto de estagiarios para tarefas repetitivas',
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'var(--text-secondary)', marginBottom: 8, lineHeight: 1.5 }}>
+              <div key={i} className={s.compareItem} style={{ color: 'var(--text-secondary)' }}>
                 <i className="bi bi-dash-circle" style={{ color: '#EF4444', marginTop: 3, flexShrink: 0, fontSize: 11 }} />
                 {item}
               </div>
             ))}
           </div>
-          <div style={{ padding: 20, borderRadius: 12, background: 'var(--accent-light)', border: '1px solid rgba(201,168,76,0.25)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, color: 'var(--accent)', fontWeight: 700, fontSize: 13 }}>
+          <div className={s.compareSideYes}>
+            <div className={s.compareSideHeader} style={{ color: 'var(--accent)' }}>
               <i className="bi bi-check-circle-fill" /> COM LEXAI
             </div>
             {[
@@ -384,7 +345,7 @@ export default function PlanosPage() {
               'IA nao esquece nenhuma sumula relevante',
               'Sua equipe focada em estrategia, nao em repeticao',
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'var(--text-primary)', marginBottom: 8, lineHeight: 1.5, fontWeight: 500 }}>
+              <div key={i} className={s.compareItem} style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
                 <i className="bi bi-check-circle-fill" style={{ color: 'var(--accent)', marginTop: 3, flexShrink: 0, fontSize: 11 }} />
                 {item}
               </div>
@@ -394,16 +355,16 @@ export default function PlanosPage() {
       </div>
 
       {/* Testimonials — social proof */}
-      <div className="section-card" style={{ padding: '28px 32px', marginBottom: 24 }}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>
+      <div className={`section-card ${s.testimonialSection}`}>
+        <div className={s.testimonialHeader}>
+          <div className={s.testimonialLabel}>
             <i className="bi bi-stars" style={{ marginRight: 6 }} />Quem ja usa esta amando
           </div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+          <div className={s.testimonialHeading}>
             Resultados reais de quem testou
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="compare-grid">
+        <div className={s.testimonialGrid}>
           {[
             {
               nome: 'Mariana Castro',
@@ -430,22 +391,22 @@ export default function PlanosPage() {
               texto: 'Substituiu 2 estagiarios e ainda entrega mais rapido. O Redator gera peticoes que so precisam de pequenos ajustes. Investimento que se pagou em 1 mes.',
             },
           ].map((t, i) => (
-            <div key={i} style={{ padding: 20, borderRadius: 12, background: 'var(--card-bg)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'flex', gap: 2, color: '#F59E0B' }}>
+            <div key={i} className={s.testimonialCard}>
+              <div className={s.testimonialStars}>
                 {Array.from({ length: t.estrelas }).map((_, j) => (
                   <i key={j} className="bi bi-star-fill" style={{ fontSize: 12 }} />
                 ))}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, fontStyle: 'italic' }}>
+              <div className={s.testimonialText}>
                 &ldquo;{t.texto}&rdquo;
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 'auto', paddingTop: 8 }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: `linear-gradient(135deg, ${t.cor}, ${t.cor}aa)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
+              <div className={s.testimonialAuthor}>
+                <div className={s.testimonialAvatar} style={{ background: `linear-gradient(135deg, ${t.cor}, ${t.cor}aa)` }}>
                   {t.foto}
                 </div>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{t.nome}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.cargo}</div>
+                  <div className={s.testimonialName}>{t.nome}</div>
+                  <div className={s.testimonialRole}>{t.cargo}</div>
                 </div>
               </div>
             </div>
@@ -454,29 +415,23 @@ export default function PlanosPage() {
       </div>
 
       {/* Money-back guarantee — risk reversal */}
-      <div className="section-card" style={{
-        padding: '28px 32px',
-        marginBottom: 24,
-        background: 'linear-gradient(135deg, var(--accent-light), rgba(16,185,129,0.04))',
-        border: '1px solid rgba(16,185,129,0.20)',
-        textAlign: 'center',
-      }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '50%', background: 'rgba(16,185,129,0.12)', marginBottom: 14 }}>
+      <div className={`section-card ${s.guaranteeCard}`}>
+        <div className={s.guaranteeIcon}>
           <i className="bi bi-shield-check" style={{ fontSize: 30, color: '#10B981' }} />
         </div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.5px' }}>
+        <div className={s.guaranteeTitle}>
           Garantia de 7 dias ou seu dinheiro de volta
         </div>
-        <div style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 560, margin: '0 auto', lineHeight: 1.6 }}>
+        <div className={s.guaranteeDesc}>
           Teste todos os agentes sem risco. Se a LexAI nao economizar pelo menos 5 horas do seu trabalho na primeira semana, devolvemos 100% do valor. Sem perguntas, sem burocracia.
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 18, flexWrap: 'wrap' }}>
+        <div className={s.guaranteePoints}>
           {[
             { icon: 'bi-clock-history', text: '7 dias para testar' },
             { icon: 'bi-arrow-counterclockwise', text: 'Reembolso em 24h' },
             { icon: 'bi-emoji-smile', text: 'Sem perguntas' },
           ].map((g, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
+            <div key={i} className={s.guaranteePoint}>
               <i className={`bi ${g.icon}`} style={{ color: '#10B981', fontSize: 14 }} />
               {g.text}
             </div>
@@ -485,46 +440,32 @@ export default function PlanosPage() {
       </div>
 
       {/* Final CTA — urgency + scarcity */}
-      <div className="section-card" style={{
-        padding: '36px 32px',
-        marginBottom: 24,
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.10), rgba(191,166,142,0.10))',
-        border: '1px solid rgba(201,168,76,0.30)',
-        textAlign: 'center',
-      }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+      <div className={`section-card ${s.finalCtaCard}`}>
+        <div className={s.scarcityBadge}>
+          <span className={s.pulseDot} />
           Vagas limitadas para o lancamento
         </div>
-        <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 10, letterSpacing: '-0.8px' }}>
+        <div className={s.finalCtaTitle}>
           Pronto para acabar com as horas perdidas?
         </div>
-        <div style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 540, margin: '0 auto 24px', lineHeight: 1.6 }}>
+        <div className={s.finalCtaDesc}>
           Junte-se aos primeiros escritorios que ja transformaram sua rotina. Comece em 30 segundos &mdash; sem cartao de credito.
         </div>
         <button type="button" onClick={() => {
           const link = PLANOS_BASE.find(p => p.id === destaqueId)?.stripeLink
           if (link) window.open(link, '_blank')
-        }} style={{
-          padding: '14px 32px', borderRadius: 12, fontSize: 15, fontWeight: 700,
-          background: 'linear-gradient(135deg, #c9a84c, #d4b86a)', color: '#0f1923',
-          border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-          display: 'inline-flex', alignItems: 'center', gap: 10,
-          boxShadow: '0 8px 24px rgba(201,168,76,0.30)', transition: 'transform 0.15s',
-        }}
-          onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'}
-          onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'}>
+        }} className={s.finalCtaBtn}>
           <i className="bi bi-rocket-takeoff-fill" />
           Comecar 7 dias gratis agora
         </button>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 12 }}>
+        <div className={s.finalCtaSub}>
           Cancele a qualquer momento &middot; Sem cobranca durante o periodo gratis &middot; Suporte em portugues
         </div>
       </div>
 
       {/* FAQ */}
-      <div className="section-card" style={{ padding: '24px 28px' }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>Perguntas Frequentes</div>
+      <div className={`section-card ${s.faqSection}`}>
+        <div className={s.faqTitle}>Perguntas Frequentes</div>
         {[
           { q: 'E se eu nao gostar? Tenho como cancelar?', a: 'Sim. Voce pode cancelar com 1 clique a qualquer momento, sem multas, sem ligacao com vendedor, sem perguntas. Alem disso, oferecemos 7 dias de garantia: se nao economizar 5h na primeira semana, devolvemos 100% do valor.' },
           { q: 'Preciso ter conhecimento tecnico para usar?', a: 'Nao. A LexAI foi projetada para ser usada por advogados sem nenhum conhecimento de programacao. Voce digita em portugues e a IA responde estruturado, pronto para usar.' },
@@ -534,15 +475,15 @@ export default function PlanosPage() {
           { q: 'Quanto tempo eu economizo de verdade?', a: 'A media dos nossos usuarios e 12 a 20 horas por semana. Uma analise de contrato que levaria 3h leva 45 segundos. Uma peca que voce escreveria em 2h sai pronta em 2 minutos.' },
           { q: 'Como funciona a cobranca por advogado?', a: 'O valor por advogado varia conforme o plano: Escritorio R$ 1.399, Firma R$ 1.459 e Enterprise R$ 1.599. Quanto maior o plano, mais agentes e recursos disponiveis por usuario.' },
         ].map((item, i, arr) => (
-          <div key={i} style={{ padding: '14px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{item.q}</div>
-            <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{item.a}</div>
+          <div key={i} className={s.faqItem} style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
+            <div className={s.faqQuestion}>{item.q}</div>
+            <div className={s.faqAnswer}>{item.a}</div>
           </div>
         ))}
       </div>
 
       {/* Contact */}
-      <div style={{ textAlign: 'center', marginTop: 24, padding: '20px 0', color: 'var(--text-muted)', fontSize: 13 }}>
+      <div className={s.contactFooter}>
         Duvidas? Entre em contato: contato@vanixcorp.com
       </div>
     </div>

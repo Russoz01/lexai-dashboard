@@ -1,0 +1,953 @@
+/* ── Empresas Page · CSS Module ──────────────────────────────────────────── */
+
+/* ── Root ────────────────────────────────────────────────────────────────── */
+.empRoot {
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-dm, 'DM Sans', sans-serif);
+}
+
+/* ── Shell ───────────────────────────────────────────────────────────────── */
+.empShell {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+/* ── Nav ─────────────────────────────────────────────────────────────────── */
+.empNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 48px;
+  border-bottom: 1px solid var(--stone-line);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--bg-base) 85%, transparent);
+}
+
+.empBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: opacity 0.2s ease;
+}
+
+.empBrand:hover {
+  opacity: 0.85;
+}
+
+.empBrandMark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--bg-base), color-mix(in srgb, var(--accent) 15%, var(--bg-base)));
+  border: 1px solid var(--stone-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.empBrandMarkSm {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+  border-radius: 7px;
+}
+
+.empBrandName {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.empNavLinks {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.empNavLink {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.empNavLink:hover {
+  color: var(--text-primary);
+}
+
+.empNavLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.empNavCta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bg-base);
+  background: var(--accent);
+  padding: 9px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.empNavCta:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.empNavCta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ── Hairlines / Serial ──────────────────────────────────────────────────── */
+.empHairline {
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--stone-line) 20%, transparent 100%);
+  opacity: 0.4;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.empSerial {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+.empSerialCenter {
+  justify-content: center;
+}
+
+.empSerialDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+.empHero {
+  padding: 120px 0 96px;
+  text-align: center;
+}
+
+.empHero .empSerial {
+  justify-content: center;
+}
+
+.empHeroH1 {
+  font-family: var(--font-playfair, 'Playfair Display', Georgia, serif);
+  font-size: clamp(44px, 6vw, 72px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -2px;
+  color: var(--text-primary);
+  margin-bottom: 28px;
+}
+
+.empHeroH1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.empHeroLede {
+  font-size: 18px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 580px;
+  margin: 0 auto 44px;
+}
+
+.empHeroCtas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 80px;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.empBtnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bg-base);
+  background: var(--accent);
+  padding: 14px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.empBtnPrimary:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.empBtnPrimary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.empBtnLg {
+  font-size: 16px;
+  padding: 16px 36px;
+}
+
+.empBtnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 14px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid var(--stone-line);
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.empBtnGhost:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.empBtnGhost:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ── Stats editoriais ────────────────────────────────────────────────────── */
+.empStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--stone-line);
+  border-radius: 14px;
+  background: var(--card-bg, color-mix(in srgb, var(--bg-base) 60%, transparent));
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.empStat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 36px 36px 32px;
+  border-right: 1px solid var(--stone-line);
+  text-align: left;
+}
+
+.empStat:last-child {
+  border-right: none;
+}
+
+.empStatRoman {
+  font-family: var(--font-playfair, Georgia, serif);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-muted, var(--text-secondary));
+  letter-spacing: 1.4px;
+  margin-bottom: 16px;
+}
+
+.empStatValue {
+  font-family: var(--font-playfair, Georgia, serif);
+  font-size: 36px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.empStatLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 16px;
+  line-height: 1.4;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+.empSection {
+  padding: 112px 48px;
+}
+
+.empSectionHead {
+  max-width: 640px;
+  margin-bottom: 72px;
+}
+
+.empSectionH2 {
+  font-family: var(--font-playfair, Georgia, serif);
+  font-size: clamp(34px, 4vw, 52px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.empSectionH2 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.empSectionSub {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.empSectionLede {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Agentes grid ────────────────────────────────────────────────────────── */
+.empAgentsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  border: 1px solid var(--stone-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--stone-line);
+}
+
+.empAgentCard {
+  background: var(--bg-base);
+  padding: 28px 24px 32px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.empAgentCard:hover {
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg-base));
+  transform: translateY(-2px);
+}
+
+.empAgentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.empAgentNum {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: var(--text-muted, var(--text-secondary));
+  opacity: 0.6;
+}
+
+.empAgentIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--accent);
+}
+
+.empAgentName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  margin-bottom: 10px;
+}
+
+.empAgentDesc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Casos grid ──────────────────────────────────────────────────────────── */
+.empCasosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.empCasoCard {
+  padding: 36px 32px;
+  border-radius: 16px;
+  border: 1px solid var(--stone-line);
+  background: color-mix(in srgb, var(--accent) 3%, var(--bg-base));
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.empCasoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.empCasoIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--caso-accent, var(--accent)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--caso-accent, var(--accent)) 25%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--caso-accent, var(--accent));
+}
+
+.empCasoHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.empCasoPersona {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.empCasoSize {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.empCasoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empCasoTag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.empCasoTagPain {
+  color: #E05252;
+}
+
+.empCasoTagSol {
+  color: #6B8F71;
+}
+
+.empCasoText {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.empCasoTextBright {
+  color: var(--text-primary);
+  opacity: 0.85;
+}
+
+/* ── Planos ──────────────────────────────────────────────────────────────── */
+.empPlanosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.empPlanoCard {
+  padding: 40px 36px;
+  border-radius: 18px;
+  border: 1px solid var(--stone-line);
+  background: var(--bg-base);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  transition: border-color 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+.empPlanoCard:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.empPlanoHighlight {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg-base));
+}
+
+.empPlanoBadge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--bg-base);
+  background: var(--accent);
+  padding: 4px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.empPlanoName {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.empPlanoPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.empPlanoCurrency {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empPlanoAmount {
+  font-family: var(--font-playfair, Georgia, serif);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -2px;
+  color: var(--text-primary);
+}
+
+.empPlanoPeriod {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.empPlanoSeats {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.empPlanoHeadline {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--stone-line);
+}
+
+.empPlanoFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.empPlanoFeatures li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.empPlanoFeatures li .bi {
+  color: var(--accent);
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.empPlanoCta {
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid var(--stone-line);
+  color: var(--text-primary);
+  background: transparent;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.empPlanoCta:hover {
+  background: var(--stone-line);
+  transform: translateY(-1px);
+}
+
+.empPlanoCta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.empPlanoCtaAccent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-base);
+}
+
+.empPlanoCtaAccent:hover {
+  background: color-mix(in srgb, var(--accent) 85%, #fff);
+  border-color: color-mix(in srgb, var(--accent) 85%, #fff);
+  color: var(--bg-base);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.empPlanosNote {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* ── Comparativo tabela ──────────────────────────────────────────────────── */
+.empCompareTable {
+  margin-top: 48px;
+  border: 1px solid var(--stone-line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--card-bg);
+}
+
+.empCompareRow {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr 1.4fr;
+  gap: 0;
+  border-bottom: 1px solid var(--stone-line);
+}
+
+.empCompareRow:last-child {
+  border-bottom: none;
+}
+
+.empCompareRow > div {
+  padding: 18px 22px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.empCompareRow > div + div {
+  border-left: 1px solid var(--stone-line);
+}
+
+.empCompareHead > div {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--text-muted) 8%, transparent);
+}
+
+.empCompareHead .empCompareUs {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--text-primary);
+}
+
+.empCompareK {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empCompareThem i,
+.empCompareUs i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.empCompareThemBad i {
+  color: #b85540;
+}
+
+.empCompareUs i {
+  color: #6B8F71;
+  font-weight: 700;
+}
+
+.empCompareUs {
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+  color: var(--text-primary);
+}
+
+/* ── CTA final ───────────────────────────────────────────────────────────── */
+.empCtaSection {
+  padding-top: 0;
+}
+
+.empCtaCard {
+  border: 1px solid var(--stone-line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg-base));
+  padding: 72px 48px;
+  text-align: center;
+  transition: box-shadow 0.2s ease;
+}
+
+.empCtaCard:hover {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+}
+
+.empCtaH2 {
+  font-family: var(--font-playfair, Georgia, serif);
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.empCtaH2 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.empCtaSub {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0 auto 40px;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.empCtaActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.empCtaTrustline {
+  font-size: 13px;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.empFooter {
+  border-top: 1px solid var(--stone-line);
+  padding: 36px 0;
+  margin-top: 80px;
+}
+
+.empFooterInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.empFooterBrand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.empFooterCopy {
+  font-size: 13px;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.empFooterCopy strong {
+  color: var(--text-secondary);
+  opacity: 1;
+}
+
+.empFooterLinks {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.empFooterLinks a {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.empFooterLinks a:hover {
+  opacity: 1;
+}
+
+.empFooterLinks a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* ── Scroll reveal ───────────────────────────────────────────────────────── */
+.empRoot :global([data-reveal]) {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.empRoot :global([data-reveal].is-revealed) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .empAgentsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .empPlanosGrid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .empShell {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .empNav {
+    padding: 18px 24px;
+  }
+
+  .empSection {
+    padding: 72px 24px;
+  }
+
+  .empAgentsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .empCasosGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .empStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .empStat:nth-child(2) {
+    border-right: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .empCompareRow {
+    grid-template-columns: 1fr;
+  }
+
+  .empCompareRow > div + div {
+    border-left: none;
+    border-top: 1px solid var(--stone-line);
+  }
+}
+
+@media (max-width: 640px) {
+  .empNavLinks .empNavLink {
+    display: none;
+  }
+
+  .empHero {
+    padding: 80px 0 64px;
+  }
+
+  .empAgentsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .empStats {
+    grid-template-columns: 1fr;
+  }
+
+  .empStat {
+    border-right: none;
+    border-bottom: 1px solid var(--stone-line);
+  }
+
+  .empStat:last-child {
+    border-bottom: none;
+  }
+
+  .empCtaCard {
+    padding: 48px 24px;
+  }
+}

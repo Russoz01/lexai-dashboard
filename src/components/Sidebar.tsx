@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { usePlan } from '@/hooks/usePlan'
+import s from './Sidebar.module.css'
 
 const PLANOS: Record<string, { nome: string; preco: string }> = {
   free:       { nome: 'Demonstracao', preco: '30 min guiados' },
@@ -92,12 +93,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       {/* Brand */}
       <div className="sidebar-brand">
         <LexLogo />
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+        <div className={s.brandCol}>
           <span>LexAI</span>
-          <span style={{
-            fontSize: 9, fontWeight: 600, letterSpacing: '0.6px', textTransform: 'uppercase',
-            color: 'var(--text-muted)', marginTop: 3, opacity: 0.8,
-          }}>
+          <span className={s.brandSub}>
             by Vanix Corp
           </span>
         </div>
@@ -131,8 +129,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         <div className="sidebar-section">
           <button
             onClick={handleLogout}
-            className="sidebar-link"
-            style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+            className={`sidebar-link ${s.logoutBtn}`}
           >
             <i className="bi bi-box-arrow-right" aria-hidden="true" />
             Sair da conta
@@ -141,12 +138,12 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </nav>
 
       {/* Plan Badge */}
-      <div className="sidebar-plan">
+      <div className={`sidebar-plan ${s.planWrapper}`}>
         <div
           className={`sidebar-plan-badge${trial?.active ? ' trial-glow' : ''}${trial?.active && trial.days_left <= 1 ? ' trial-urgent' : ''}`}
         >
-          <div className="plan-label">
-            <span className={`plan-dot${trial?.active && trial.days_left <= 1 ? ' urgent' : ''}`} />
+          <div className={s.planLabel}>
+            <span className={trial?.active && trial.days_left <= 1 ? s.planDotUrgent : s.planDot} />
             {trial?.active ? 'Trial ativo' : 'Plano ativo'}
           </div>
           <div className="plan-name">{loading ? '...' : (PLANOS[plano]?.nome || 'Free Trial')}</div>
@@ -157,82 +154,11 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           </div>
         </div>
         {/* Vanix Corp footer mark */}
-        <div style={{
-          marginTop: 12, paddingTop: 12,
-          borderTop: '1px solid var(--border)',
-          fontSize: 10, color: 'var(--text-muted)',
-          textAlign: 'center', letterSpacing: '0.4px',
-        }}>
+        <div className={s.footerMark}>
           <i className="bi bi-stars" aria-hidden="true" style={{ marginRight: 5, color: 'var(--accent)' }} />
-          Uma marca <strong style={{ color: 'var(--text-secondary)' }}>Vanix Corp</strong>
+          Uma marca <strong className={s.footerStrong}>Vanix Corp</strong>
         </div>
       </div>
-
-      <style jsx>{`
-        .plan-label {
-          display: flex;
-          align-items: center;
-          gap: 7px;
-        }
-        .plan-dot {
-          display: inline-block;
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: var(--stone);
-          flex-shrink: 0;
-          animation: pulse-plan 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-          box-shadow: 0 0 0 0 var(--stone);
-        }
-        .plan-dot.urgent {
-          background: var(--warning);
-          box-shadow: 0 0 0 0 var(--warning);
-          animation: pulse-plan-urgent 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        :global(.sidebar-plan-badge.trial-glow) {
-          animation: badge-glow 3.2s ease-in-out infinite;
-        }
-        :global(.sidebar-plan-badge.trial-urgent) {
-          animation: badge-glow-urgent 1.6s ease-in-out infinite;
-          border-color: var(--warning) !important;
-        }
-        @keyframes pulse-plan {
-          0%, 100% {
-            box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.50);
-          }
-          50% {
-            box-shadow: 0 0 0 6px rgba(191, 166, 142, 0);
-          }
-        }
-        @keyframes pulse-plan-urgent {
-          0%, 100% {
-            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6);
-            transform: scale(1);
-          }
-          50% {
-            box-shadow: 0 0 0 7px rgba(245, 158, 11, 0);
-            transform: scale(1.15);
-          }
-        }
-        @keyframes badge-glow {
-          0%, 100% {
-            border-color: rgba(191, 166, 142, 0.18);
-          }
-          50% {
-            border-color: rgba(191, 166, 142, 0.50);
-          }
-        }
-        @keyframes badge-glow-urgent {
-          0%, 100% {
-            border-color: rgba(245, 158, 11, 0.4);
-            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
-          }
-          50% {
-            border-color: rgba(245, 158, 11, 0.9);
-            box-shadow: 0 0 14px 0 rgba(245, 158, 11, 0.25);
-          }
-        }
-      `}</style>
     </aside>
   )
 }

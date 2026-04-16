@@ -1,0 +1,410 @@
+/* ── ROI Calculator Page · CSS Module ────────────────────────────────────── */
+
+.roiRoot {
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-dm-sans, 'DM Sans'), system-ui, sans-serif;
+}
+
+/* ── Nav ─────────────────────────────────────────────────────────────────── */
+.roiNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 40px;
+  border-bottom: 1px solid var(--stone-line);
+}
+
+.roiBrand {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.roiBrand:hover {
+  color: var(--accent);
+}
+
+.roiNavCta {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  border: 1px solid var(--stone-line);
+  padding: 10px 20px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: border-color 0.16s ease, background 0.16s ease, transform 0.15s ease;
+}
+
+.roiNavCta:hover {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  transform: translateY(-1px);
+}
+
+.roiNavCta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ── Shell ───────────────────────────────────────────────────────────────── */
+.roiShell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 80px 40px 120px;
+}
+
+.roiSerial {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+.roiTitle {
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  font-size: clamp(38px, 5.5vw, 62px);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  margin: 0 0 20px;
+  max-width: 820px;
+}
+
+.roiTitle em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.roiLede {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 620px;
+  margin: 0 0 40px;
+}
+
+.roiDivider {
+  width: 48px;
+  height: 1px;
+  background: var(--stone-line);
+  margin-bottom: 48px;
+}
+
+/* ── Grid ────────────────────────────────────────────────────────────────── */
+.roiGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────────── */
+.roiCard {
+  background: var(--card-bg);
+  border: 1px solid var(--stone-line);
+  border-radius: 4px;
+  padding: 36px 36px 32px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.roiCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.roiCardHero {
+  background: var(--primary);
+  color: var(--bg-base);
+  border-color: var(--primary);
+}
+
+.roiCardHero:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Inputs ──────────────────────────────────────────────────────────────── */
+.roiInputRow {
+  margin-bottom: 28px;
+}
+
+.roiInputRow label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+
+.roiHint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+
+.roiInputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--stone-line);
+  border-radius: 2px;
+  background: var(--input-bg);
+  transition: border-color 0.16s ease, box-shadow 0.2s ease;
+}
+
+.roiInputWrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.roiInputWrap input {
+  flex: 1;
+  padding: 13px 14px;
+  font-size: 17px;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  width: 100%;
+  font-family: inherit;
+}
+
+.roiUnit {
+  padding-right: 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.roiUnitLeft {
+  padding: 0 0 0 14px;
+  padding-right: 2px;
+}
+
+.roiRange {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--stone-line);
+  margin-top: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.roiRange:hover {
+  background: color-mix(in srgb, var(--accent) 30%, var(--stone-line));
+}
+
+.roiRange:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.roiRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg-base);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.roiRange::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.roiRange::-webkit-slider-thumb:active {
+  transform: scale(1.25);
+}
+
+.roiRange::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg-base);
+}
+
+.roiAssumption {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-bg);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* ── Result card ─────────────────────────────────────────────────────────── */
+.roiResultLabel {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(245, 239, 230, 0.6);
+  margin-bottom: 10px;
+}
+
+.roiResultMain {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(42px, 5vw, 64px);
+  line-height: 1.0;
+  letter-spacing: -0.015em;
+  margin: 0 0 10px;
+}
+
+.roiResultSub {
+  font-size: 15px;
+  margin-bottom: 32px;
+  color: rgba(245, 239, 230, 0.78);
+}
+
+.roiResultSub strong {
+  color: var(--bg-base);
+}
+
+.roiBreakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(245, 239, 230, 0.14);
+  margin-bottom: 32px;
+}
+
+.roiBreakdown > div {
+  min-width: 0;
+}
+
+.roiBreakdown dt {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  color: rgba(245, 239, 230, 0.78);
+}
+
+.roiBreakdown dd {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--bg-base);
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────────── */
+.roiActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.roiBtnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  background: var(--bg-base);
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.roiBtnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+.roiBtnPrimary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.roiBtnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 24px;
+  background: transparent;
+  color: var(--bg-base);
+  border: 1px solid rgba(245, 239, 230, 0.24);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.16s ease, transform 0.15s ease;
+}
+
+.roiBtnGhost:hover {
+  border-color: var(--bg-base);
+  transform: translateY(-1px);
+}
+
+.roiBtnGhost:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ── Microfooter ─────────────────────────────────────────────────────────── */
+.roiMicrofooter {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--stone-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.roiMicrofooter a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.16s ease;
+}
+
+.roiMicrofooter a:hover {
+  color: var(--text-primary);
+}
+
+.roiMicrofooter a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .roiGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .roiShell {
+    padding: 48px 24px 80px;
+  }
+
+  .roiNav {
+    padding: 18px 24px;
+  }
+}

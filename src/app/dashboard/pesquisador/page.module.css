@@ -1,0 +1,515 @@
+/* ═══════════════════════════════════════════════════════════════
+   Pesquisador Juridico  (page.module.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Page wrapper ─────────────────────────────────────────── */
+.pageWrap {
+  max-width: 100%;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.headerWrap {
+  margin-bottom: 24px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.agentBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.agentDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+
+/* ── Search bar ───────────────────────────────────────────── */
+.searchRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.searchField {
+  flex: 1;
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ── Filters ──────────────────────────────────────────────── */
+.filtersWrap {
+  margin-bottom: 32px;
+}
+
+.filtersLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+.filtersRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Error ────────────────────────────────────────────────── */
+.errorBox {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--danger-light);
+  color: var(--danger);
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Loading state ────────────────────────────────────────── */
+.loadingWrap {
+  padding: 20px 0;
+}
+
+.loadingCenter {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.loadingTitle {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.loadingSub {
+  font-size: 13px;
+}
+
+/* ── Empty results ────────────────────────────────────────── */
+.emptyResults {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+}
+
+.emptyIcon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.emptyTitle {
+  font-weight: 600;
+}
+
+.emptySub {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* ── Results container ────────────────────────────────────── */
+.resultsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resultsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+/* ── Counter pill ─────────────────────────────────────────── */
+.resultsCounterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent-light);
+  letter-spacing: 0.01em;
+}
+
+.resultsCounterPill strong {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.resultsCounterPill i {
+  font-size: 13px;
+}
+
+/* ── Result card ──────────────────────────────────────────── */
+.resultCardInner {
+  padding: 16px 20px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.resultCardInner:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(19, 32, 37, 0.08);
+}
+
+.resultHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.resultTitle {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.resultBadges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.badgeTribunal {
+  composes: badge;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.badgeArea {
+  composes: badge;
+  background: var(--hover);
+  color: var(--text-secondary);
+}
+
+.badgeDate {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badgeNumero {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.resultRelator {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ── Expandable sections ──────────────────────────────────── */
+.ementaBox {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--input-bg);
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-top: 8px;
+}
+
+.ementaLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.teseBox {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--accent-light);
+  font-size: 13px;
+  color: var(--accent);
+  line-height: 1.7;
+  margin-top: 8px;
+  border-left: 3px solid var(--accent);
+}
+
+.fundamentacaoRow {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fundamentacaoTag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--hover);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.resultActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* ── JusBrasil verified block ─────────────────────────────── */
+.jusBrasilCard {
+  padding: 16px 20px;
+  border: 1px solid #2d6a4f40;
+  background: #f0fdf4;
+}
+
+.jusBrasilHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.jusBrasilBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #2d6a4f;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.jusBrasilCount {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.jusBrasilList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jusBrasilItem {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+.jusBrasilItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.jusBrasilTribunal {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.jusBrasilNumero {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.jusBrasilEmenta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.jusBrasilLink {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: gap 0.15s ease;
+}
+
+.jusBrasilLink:hover {
+  gap: 8px;
+}
+
+/* ── Related terms & legislation ──────────────────────────── */
+.relatedCard {
+  padding: 16px 20px;
+  margin-top: 4px;
+}
+
+.relatedSectionLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.relatedTagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.legislacaoTag {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.poweredRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+.pesquisadorEmpty {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+}
+
+.pesquisadorEmptyIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 32px;
+  margin-bottom: 16px;
+  animation: emptyPulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.pesquisadorEmptyTitle {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.pesquisadorEmptySub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Relevance badges ─────────────────────────────────────── */
+.relevanciaAlta {
+  composes: badge;
+  background: var(--success-light);
+  color: var(--success);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.relevanciaMedia {
+  composes: badge;
+  background: var(--warning-light);
+  color: var(--warning);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.relevanciaBaixa {
+  composes: badge;
+  background: var(--hover);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes emptyPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.22);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 12px rgba(191, 166, 142, 0);
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .resultsCounterPill {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+  .pesquisadorEmptyIcon {
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
+  }
+}

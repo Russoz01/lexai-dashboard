@@ -1,0 +1,158 @@
+/* ExitIntent.module.css — migrated from styled-jsx global */
+
+.exitBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 32, 37, 0.64);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: exitFade 0.18s ease-out;
+}
+
+.exitModal {
+  position: relative;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  border: 1px solid var(--stone-line);
+  border-radius: 8px;
+  padding: 48px 40px 40px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.28);
+  animation: exitRise 0.22s ease-out;
+}
+
+.exitModalReduced {
+  composes: exitModal;
+  animation: none;
+}
+
+.exitClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.exitClose:hover {
+  background: var(--hover);
+  color: var(--text-primary);
+}
+
+.exitClose:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.exitSerial {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.exitTitle {
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  font-size: clamp(28px, 3.4vw, 36px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+}
+
+.exitTitleEm {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.exitBody {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+}
+
+.exitActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exitBtnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: var(--primary);
+  color: var(--bg-base);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: 2px;
+  transition: transform 0.16s ease;
+}
+
+.exitBtnPrimary:hover {
+  transform: translateY(-1px);
+}
+
+.exitBtnPrimary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.exitBtnGhost {
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  transition: color 0.16s ease;
+}
+
+.exitBtnGhost:hover {
+  color: var(--text-primary);
+}
+
+.exitBtnGhost:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@keyframes exitFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes exitRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exitBackdrop,
+  .exitModal {
+    animation: none;
+  }
+}

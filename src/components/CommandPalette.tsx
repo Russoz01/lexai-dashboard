@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import s from './CommandPalette.module.css'
 
 interface NavItem {
   href: string
@@ -150,7 +151,7 @@ export default function CommandPalette() {
 
   return (
     <div
-      className="cp-backdrop"
+      className={s.cpBackdrop}
       role="dialog"
       aria-modal="true"
       aria-label="Command palette"
@@ -159,10 +160,10 @@ export default function CommandPalette() {
         if (e.target === e.currentTarget) close()
       }}
     >
-      <div className="cp-modal" onMouseDown={(e) => e.stopPropagation()}>
+      <div className={s.cpModal} onMouseDown={(e) => e.stopPropagation()}>
         {/* Search input */}
-        <div className="cp-search">
-          <i className="bi bi-search cp-search-icon" aria-hidden="true" />
+        <div className={s.cpSearch}>
+          <i className={`bi bi-search ${s.cpSearchIcon}`} aria-hidden="true" />
           <input
             ref={inputRef}
             type="text"
@@ -170,18 +171,18 @@ export default function CommandPalette() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onInputKeyDown}
             placeholder="Buscar paginas, agentes, configuracoes..."
-            className="cp-input"
+            className={s.cpInput}
             autoComplete="off"
             spellCheck={false}
           />
-          <kbd className="cp-kbd cp-kbd-hint">Esc</kbd>
+          <kbd className={s.cpKbdHint}>Esc</kbd>
         </div>
 
         {/* Results list */}
-        <div ref={listRef} className="cp-list" role="listbox">
+        <div ref={listRef} className={s.cpList} role="listbox">
           {filtered.length === 0 ? (
-            <div className="cp-empty">
-              Nenhum resultado para <strong>&ldquo;{query}&rdquo;</strong>
+            <div className={s.cpEmpty}>
+              Nenhum resultado para <strong className={s.cpEmptyStrong}>&ldquo;{query}&rdquo;</strong>
             </div>
           ) : (
             filtered.map((item, idx) => {
@@ -193,14 +194,14 @@ export default function CommandPalette() {
                   data-cp-index={idx}
                   role="option"
                   aria-selected={isSelected}
-                  className={`cp-item ${isSelected ? 'selected' : ''}`}
+                  className={`${s.cpItem} ${isSelected ? s.selected : ''}`}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   onClick={() => handleSelect(item)}
                 >
-                  <i className={`bi ${item.icon} cp-item-icon`} aria-hidden="true" />
-                  <span className="cp-item-label">{item.label}</span>
-                  <span className="cp-item-category">{item.category}</span>
-                  <kbd className="cp-kbd cp-item-kbd">
+                  <i className={`bi ${item.icon} ${s.cpItemIcon}`} aria-hidden="true" />
+                  <span className={s.cpItemLabel}>{item.label}</span>
+                  <span className={s.cpItemCategory}>{item.category}</span>
+                  <kbd className={`${s.cpKbd} ${s.cpItemKbd}`}>
                     {shortcutMod}+K
                   </kbd>
                 </button>
@@ -210,229 +211,22 @@ export default function CommandPalette() {
         </div>
 
         {/* Footer hints */}
-        <div className="cp-footer">
-          <div className="cp-footer-item">
-            <kbd className="cp-kbd">↑</kbd>
-            <kbd className="cp-kbd">↓</kbd>
+        <div className={s.cpFooter}>
+          <div className={s.cpFooterItem}>
+            <kbd className={s.cpKbd}>↑</kbd>
+            <kbd className={s.cpKbd}>↓</kbd>
             <span>Navegar</span>
           </div>
-          <div className="cp-footer-item">
-            <kbd className="cp-kbd">↵</kbd>
+          <div className={s.cpFooterItem}>
+            <kbd className={s.cpKbd}>↵</kbd>
             <span>Selecionar</span>
           </div>
-          <div className="cp-footer-item">
-            <kbd className="cp-kbd">Esc</kbd>
+          <div className={s.cpFooterItem}>
+            <kbd className={s.cpKbd}>Esc</kbd>
             <span>Fechar</span>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .cp-backdrop {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.55);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          z-index: 9999;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-          padding-top: 15vh;
-          padding-left: 16px;
-          padding-right: 16px;
-          animation: cp-fade-in 0.15s ease-out both;
-        }
-
-        .cp-modal {
-          width: 100%;
-          max-width: 600px;
-          background: var(--card-bg);
-          backdrop-filter: blur(24px) saturate(180%);
-          -webkit-backdrop-filter: blur(24px) saturate(180%);
-          border: 1px solid var(--border);
-          border-radius: 16px;
-          box-shadow:
-            0 24px 60px rgba(0, 0, 0, 0.45),
-            0 2px 8px rgba(0, 0, 0, 0.25);
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          max-height: 70vh;
-          animation: cp-scale-in 0.15s ease-out both;
-          color: var(--text-primary);
-        }
-
-        .cp-search {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 16px 20px;
-          border-bottom: 1px solid var(--border);
-        }
-
-        .cp-search-icon {
-          font-size: 18px;
-          color: var(--text-muted, rgba(148, 163, 184, 0.8));
-          flex-shrink: 0;
-        }
-
-        .cp-input {
-          flex: 1;
-          background: transparent;
-          border: none;
-          outline: none;
-          color: var(--text-primary);
-          font-size: 15px;
-          font-weight: 500;
-          font-family: inherit;
-          min-width: 0;
-        }
-
-        .cp-input::placeholder {
-          color: var(--text-muted, rgba(148, 163, 184, 0.7));
-          font-weight: 400;
-        }
-
-        .cp-list {
-          flex: 1;
-          overflow-y: auto;
-          padding: 8px;
-        }
-
-        .cp-empty {
-          padding: 32px 16px;
-          text-align: center;
-          color: var(--text-muted, rgba(148, 163, 184, 0.8));
-          font-size: 14px;
-        }
-
-        .cp-empty strong {
-          color: var(--text-primary);
-          font-weight: 600;
-        }
-
-        .cp-item {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 16px;
-          border-radius: 10px;
-          border: none;
-          background: transparent;
-          color: var(--text-primary);
-          cursor: pointer;
-          text-align: left;
-          font-family: inherit;
-          font-size: 14px;
-          transition: background 0.08s ease, border-color 0.08s ease;
-          border-left: 3px solid transparent;
-          margin-bottom: 2px;
-        }
-
-        .cp-item.selected {
-          background: var(--accent-light);
-          border-left: 3px solid var(--accent);
-        }
-
-        .cp-item-icon {
-          font-size: 18px;
-          color: var(--accent);
-          flex-shrink: 0;
-          width: 22px;
-          text-align: center;
-        }
-
-        .cp-item-label {
-          flex: 1;
-          font-weight: 600;
-          color: var(--text-primary);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .cp-item-category {
-          font-size: 11px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          color: var(--text-muted, rgba(148, 163, 184, 0.8));
-          padding: 3px 8px;
-          border-radius: 999px;
-          border: 1px solid var(--border);
-          background: var(--hover);
-          flex-shrink: 0;
-        }
-
-        .cp-item-kbd {
-          opacity: 0;
-          transition: opacity 0.1s ease;
-        }
-
-        .cp-item.selected .cp-item-kbd {
-          opacity: 1;
-        }
-
-        .cp-kbd {
-          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-          font-size: 11px;
-          font-weight: 600;
-          padding: 2px 6px;
-          border-radius: 5px;
-          border: 1px solid var(--border);
-          background: var(--hover);
-          color: var(--text-muted, rgba(148, 163, 184, 0.9));
-          line-height: 1.4;
-          min-width: 18px;
-          text-align: center;
-          display: inline-block;
-        }
-
-        .cp-kbd-hint {
-          flex-shrink: 0;
-        }
-
-        .cp-footer {
-          display: flex;
-          gap: 16px;
-          padding: 10px 20px;
-          border-top: 1px solid var(--border);
-          font-size: 12px;
-          color: var(--text-muted, rgba(148, 163, 184, 0.8));
-          background: var(--hover);
-        }
-
-        .cp-footer-item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        @keyframes cp-fade-in {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-
-        @keyframes cp-scale-in {
-          from { opacity: 0; transform: scale(0.96); }
-          to   { opacity: 1; transform: scale(1);    }
-        }
-
-        @media (max-width: 640px) {
-          .cp-backdrop {
-            padding-top: 10vh;
-          }
-          .cp-item-category {
-            display: none;
-          }
-          .cp-footer {
-            gap: 12px;
-            font-size: 11px;
-          }
-        }
-      `}</style>
     </div>
   )
 }

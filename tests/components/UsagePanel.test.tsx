@@ -9,6 +9,12 @@ vi.mock('next/link', () => ({
   ),
 }))
 
+// Mock CSS module — vitest returns empty object by default for .module.css,
+// so classNames become undefined. Return an identity proxy so s.foo === 'foo'.
+vi.mock('@/components/UsagePanel.module.css', () => ({
+  default: new Proxy({}, { get: (_t: unknown, prop: string) => String(prop) }),
+}))
+
 import { UsagePanel } from '@/components/UsagePanel'
 
 const mockUsage = (overrides: Record<string, unknown> = {}) => ({
@@ -49,7 +55,7 @@ describe('UsagePanel', () => {
   it('shows loading state initially', () => {
     global.fetch = vi.fn().mockReturnValue(new Promise(() => {})) as any
     const { container } = render(<UsagePanel />)
-    const panel = container.querySelector('.usage-loading')
+    const panel = container.querySelector('[aria-busy="true"]')
     expect(panel).toBeInTheDocument()
   })
 
@@ -65,8 +71,8 @@ describe('UsagePanel', () => {
     expect(screen.getByText('42')).toBeInTheDocument()
     expect(screen.getByText(/\/ 200/)).toBeInTheDocument()
 
-    // Progress bar fill should exist
-    expect(document.querySelector('.usage-fill')).toBeInTheDocument()
+    // Progress bar fill should exist (class is CSS Module camelCase)
+    expect(document.querySelector('.usageFill')).toBeInTheDocument()
   })
 
   it('shows "Fazer upgrade" link when usage >= 80%', async () => {
@@ -101,10 +107,10 @@ describe('UsagePanel', () => {
 
     await waitFor(() => {
       // After error, loading is done and component returns null
-      expect(container.querySelector('.usage-loading')).not.toBeInTheDocument()
+      expect(container.querySelector('[aria-busy="true"]')).not.toBeInTheDocument()
     })
 
-    expect(container.querySelector('.usage-panel')).not.toBeInTheDocument()
+    expect(container.querySelector('.usagePanel')).not.toBeInTheDocument()
   })
 
   it('shows trial tag when isTrialing is true', async () => {

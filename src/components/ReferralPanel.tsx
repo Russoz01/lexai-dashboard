@@ -9,6 +9,7 @@
 
 import { useEffect, useState } from 'react'
 import { toast } from './Toast'
+import s from './ReferralPanel.module.css'
 
 interface ReferralData {
   code: string
@@ -51,8 +52,8 @@ export function ReferralPanel() {
 
   if (loading) {
     return (
-      <div className="ref-panel ref-loading" aria-busy="true">
-        <div className="ref-skel" />
+      <div className={`${s.refPanel} ${s.refLoading}`} aria-busy="true">
+        <div className={s.refSkel} />
       </div>
     )
   }
@@ -60,172 +61,56 @@ export function ReferralPanel() {
   if (!data) return null
 
   return (
-    <div className="ref-panel">
-      <div className="ref-header">
+    <div className={s.refPanel}>
+      <div className={s.refHeader}>
         <div>
-          <div className="ref-serial">Programa de indicacao</div>
-          <div className="ref-title">
-            Indique um colega, <strong>ganhe 15 dias</strong>
+          <div className={s.refSerial}>Programa de indicacao</div>
+          <div className={s.refTitle}>
+            Indique um colega, <strong className={s.refTitleStrong}>ganhe 15 dias</strong>
           </div>
         </div>
-        <div className="ref-badge">
+        <div className={s.refBadge}>
           <i className="bi bi-gift" />
         </div>
       </div>
 
-      <div className="ref-body">
-        <p className="ref-desc">
+      <div>
+        <p className={s.refDesc}>
           Compartilhe seu link. Quando seu colega criar a conta, voce ganha 15 dias
           adicionais no seu plano atual. Sem limite de indicacoes.
         </p>
 
-        <div className="ref-link-row">
+        <div className={s.refLinkRow}>
           <input
             type="text"
             readOnly
             value={data.shareUrl}
-            className="ref-input"
+            className={s.refInput}
             onClick={(e) => (e.target as HTMLInputElement).select()}
           />
-          <button className="ref-copy" onClick={copyLink}>
+          <button className={s.refCopy} onClick={copyLink}>
             <i className={`bi ${copied ? 'bi-check-lg' : 'bi-clipboard'}`} />
             {copied ? 'Copiado' : 'Copiar'}
           </button>
         </div>
 
         {(data.stats.completed > 0 || data.stats.pending > 0) && (
-          <div className="ref-stats">
-            <div className="ref-stat">
-              <div className="ref-stat-n">{data.stats.completed}</div>
-              <div className="ref-stat-label">Concluidas</div>
+          <div className={s.refStats}>
+            <div>
+              <div className={s.refStatN}>{data.stats.completed}</div>
+              <div className={s.refStatLabel}>Concluidas</div>
             </div>
-            <div className="ref-stat">
-              <div className="ref-stat-n">{data.stats.pending}</div>
-              <div className="ref-stat-label">Pendentes</div>
+            <div>
+              <div className={s.refStatN}>{data.stats.pending}</div>
+              <div className={s.refStatLabel}>Pendentes</div>
             </div>
-            <div className="ref-stat">
-              <div className="ref-stat-n">+{data.stats.totalDaysEarned}d</div>
-              <div className="ref-stat-label">Bonus ganho</div>
+            <div>
+              <div className={s.refStatN}>+{data.stats.totalDaysEarned}d</div>
+              <div className={s.refStatLabel}>Bonus ganho</div>
             </div>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        .ref-panel {
-          background: var(--card-bg);
-          border: 1px solid var(--border);
-          border-radius: 8px;
-          padding: 20px 22px;
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-        .ref-loading { min-height: 100px; opacity: 0.5; }
-        .ref-skel {
-          height: 20px;
-          border-radius: 4px;
-          background: var(--hover);
-          animation: ref-pulse 1.2s ease-in-out infinite;
-        }
-        @keyframes ref-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.7; } }
-        .ref-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-        }
-        .ref-serial {
-          font-size: 10px;
-          letter-spacing: 0.22em;
-          text-transform: uppercase;
-          color: var(--text-muted);
-          margin-bottom: 4px;
-        }
-        .ref-title {
-          font-size: 14px;
-          color: var(--text-secondary);
-        }
-        .ref-title strong {
-          color: var(--accent);
-          font-weight: 700;
-        }
-        .ref-badge {
-          width: 36px;
-          height: 36px;
-          border-radius: 9px;
-          background: color-mix(in srgb, var(--accent, #BFA68E) 12%, transparent);
-          border: 1px solid color-mix(in srgb, var(--accent, #BFA68E) 25%, transparent);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 16px;
-          color: var(--accent);
-        }
-        .ref-desc {
-          font-size: 12px;
-          color: var(--text-muted);
-          line-height: 1.6;
-          margin: 0;
-        }
-        .ref-link-row {
-          display: flex;
-          gap: 8px;
-          margin-top: 8px;
-        }
-        .ref-input {
-          flex: 1;
-          font-family: inherit;
-          font-size: 12px;
-          padding: 8px 12px;
-          background: var(--hover);
-          border: 1px solid var(--border);
-          border-radius: 4px;
-          color: var(--text-primary);
-          cursor: text;
-          min-width: 0;
-        }
-        .ref-input:focus {
-          outline: none;
-          border-color: var(--accent);
-        }
-        .ref-copy {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 14px;
-          background: var(--accent);
-          color: var(--bg-base);
-          border: none;
-          border-radius: 4px;
-          font-family: inherit;
-          font-size: 12px;
-          font-weight: 600;
-          cursor: pointer;
-          white-space: nowrap;
-          transition: opacity 0.16s ease;
-        }
-        .ref-copy:hover { opacity: 0.9; }
-        .ref-stats {
-          display: flex;
-          gap: 20px;
-          margin-top: 12px;
-          padding-top: 12px;
-          border-top: 1px solid var(--border);
-        }
-        .ref-stat-n {
-          font-family: var(--font-playfair, Georgia), serif;
-          font-size: 20px;
-          font-weight: 700;
-          color: var(--text-primary);
-          line-height: 1;
-        }
-        .ref-stat-label {
-          font-size: 10px;
-          color: var(--text-muted);
-          letter-spacing: 0.06em;
-          margin-top: 3px;
-        }
-      `}</style>
     </div>
   )
 }
