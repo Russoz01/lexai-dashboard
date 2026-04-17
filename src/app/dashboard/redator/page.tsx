@@ -1,6 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ComponentType, type SVGProps } from 'react'
+import {
+  FileText, RotateCcw, ShieldCheck, BookOpen, Scroll, Mail,
+  Users, AlignLeft, BookMarked, ListChecks, Folder, CreditCard, Pencil,
+  Box, Settings, MailWarning, HelpCircle, ClipboardList,
+  CheckCircle2, Clock, Search, ArrowRight, AlertTriangle, Sparkles, Wand2, Info,
+  ArrowLeft, FileType2, RefreshCcw, X, Inbox, Trash2,
+} from 'lucide-react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { generateDocx, downloadBlob } from '@/lib/word-export'
