@@ -1,6 +1,23 @@
 'use client'
 
 import { useState } from 'react'
+import {
+  FileText,
+  Zap,
+  ArrowRight,
+  AlertTriangle,
+  Clipboard,
+  Check,
+  RotateCcw,
+  Info,
+  Bookmark,
+  ListChecks,
+  HelpCircle,
+  BookOpen,
+  Book,
+  Building2,
+  CheckCircle2,
+} from 'lucide-react'
 
 interface Parecer {
   ementa: string
@@ -17,7 +34,7 @@ const AREAS_DIREITO = [
   'Civil',
   'Penal',
   'Trabalhista',
-  'Tributario',
+  'Tributário',
   'Empresarial',
   'Ambiental',
   'Digital',
@@ -31,13 +48,13 @@ const TIPOS_PARECER = [
   { value: 'Consultivo', label: 'Consultivo' },
   { value: 'Contencioso', label: 'Contencioso' },
   { value: 'Preventivo', label: 'Preventivo' },
-  { value: 'Regulatorio', label: 'Regulatorio' },
+  { value: 'Regulatorio', label: 'Regulatório' },
 ]
 
 const EXEMPLOS = [
-  { tema: 'Responsabilidade civil por vazamento de dados', area: 'Digital', contexto: 'Empresa de tecnologia sofreu incidente de seguranca que expôs dados pessoais de 5.000 clientes. A empresa notificou a ANPD em 48h, mas nao comunicou os titulares afetados. Um grupo de clientes acionou o Procon e ameaca acao coletiva.' },
-  { tema: 'Rescisao indireta por assedio moral', area: 'Trabalhista', contexto: 'Funcionario com 8 anos de empresa relata situacoes reiteradas de humilhacao pelo superior hierarquico, incluindo exposicao publica de erros, ameacas veladas de demissao e isolamento da equipe. Possui prints de mensagens e duas testemunhas.' },
-  { tema: 'Exclusao de socio minoritario', area: 'Empresarial', contexto: 'Sociedade limitada com 3 socios. Socio minoritario (15%) descobriu que os majoritarios desviaram R$ 400 mil em contratos simulados com empresa de fachada. O contrato social preve clausula de arbitragem, mas nao ha clausula especifica sobre exclusao.' },
+  { tema: 'Responsabilidade civil por vazamento de dados', area: 'Digital', contexto: 'Empresa de tecnologia sofreu incidente de segurança que expôs dados pessoais de 5.000 clientes. A empresa notificou a ANPD em 48h, mas não comunicou os titulares afetados. Um grupo de clientes acionou o Procon e ameaça ação coletiva.' },
+  { tema: 'Rescisão indireta por assédio moral', area: 'Trabalhista', contexto: 'Funcionário com 8 anos de empresa relata situações reiteradas de humilhação pelo superior hierárquico, incluindo exposição pública de erros, ameaças veladas de demissão e isolamento da equipe. Possui prints de mensagens e duas testemunhas.' },
+  { tema: 'Exclusão de sócio minoritário', area: 'Empresarial', contexto: 'Sociedade limitada com 3 sócios. Sócio minoritário (15%) descobriu que os majoritários desviaram R$ 400 mil em contratos simulados com empresa de fachada. O contrato social prevê cláusula de arbitragem, mas não há cláusula específica sobre exclusão.' },
 ]
 
 export default function PareceristaPage() {
@@ -70,7 +87,7 @@ export default function PareceristaPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       if (!data.parecer) {
-        throw new Error('O parecer nao foi gerado corretamente. Tente novamente.')
+        throw new Error('O parecer não foi gerado corretamente. Tente novamente.')
       }
       setParecer(data.parecer)
     } catch (e: unknown) {
@@ -103,7 +120,7 @@ export default function PareceristaPage() {
   function copiarParecerCompleto() {
     if (!parecer) return
     const texto = [
-      '=== PARECER JURIDICO ===',
+      '=== PARECER JURÍDICO ===',
       '',
       'EMENTA',
       parecer.ementa,
@@ -111,19 +128,19 @@ export default function PareceristaPage() {
       'FATOS',
       parecer.fatos,
       '',
-      'QUESTAO JURIDICA',
+      'QUESTÃO JURÍDICA',
       parecer.questao_juridica,
       '',
-      'FUNDAMENTACAO LEGAL',
+      'FUNDAMENTAÇÃO LEGAL',
       parecer.fundamentacao_legal,
       '',
-      'DOUTRINA APLICAVEL',
+      'DOUTRINA APLICÁVEL',
       parecer.doutrina_aplicavel,
       '',
-      'JURISPRUDENCIA RELEVANTE',
+      'JURISPRUDÊNCIA RELEVANTE',
       parecer.jurisprudencia_relevante,
       '',
-      'CONCLUSAO E RECOMENDACAO',
+      'CONCLUSÃO E RECOMENDAÇÃO',
       parecer.conclusao_recomendacao,
       '',
       '---',
@@ -133,13 +150,13 @@ export default function PareceristaPage() {
   }
 
   const secoesParecer = parecer ? [
-    { id: 'ementa', titulo: 'Ementa', conteudo: parecer.ementa, icone: 'bi-bookmark' },
-    { id: 'fatos', titulo: 'Fatos', conteudo: parecer.fatos, icone: 'bi-list-check' },
-    { id: 'questao', titulo: 'Questao juridica', conteudo: parecer.questao_juridica, icone: 'bi-question-circle' },
-    { id: 'fundamentacao', titulo: 'Fundamentacao legal', conteudo: parecer.fundamentacao_legal, icone: 'bi-journal-text' },
-    { id: 'doutrina', titulo: 'Doutrina aplicavel', conteudo: parecer.doutrina_aplicavel, icone: 'bi-book' },
-    { id: 'jurisprudencia', titulo: 'Jurisprudencia relevante', conteudo: parecer.jurisprudencia_relevante, icone: 'bi-building' },
-    { id: 'conclusao', titulo: 'Conclusao e recomendacao', conteudo: parecer.conclusao_recomendacao, icone: 'bi-check-circle' },
+    { id: 'ementa', titulo: 'Ementa', conteudo: parecer.ementa, Icon: Bookmark },
+    { id: 'fatos', titulo: 'Fatos', conteudo: parecer.fatos, Icon: ListChecks },
+    { id: 'questao', titulo: 'Questão jurídica', conteudo: parecer.questao_juridica, Icon: HelpCircle },
+    { id: 'fundamentacao', titulo: 'Fundamentação legal', conteudo: parecer.fundamentacao_legal, Icon: BookOpen },
+    { id: 'doutrina', titulo: 'Doutrina aplicável', conteudo: parecer.doutrina_aplicavel, Icon: Book },
+    { id: 'jurisprudencia', titulo: 'Jurisprudência relevante', conteudo: parecer.jurisprudencia_relevante, Icon: Building2 },
+    { id: 'conclusao', titulo: 'Conclusão e recomendação', conteudo: parecer.conclusao_recomendacao, Icon: CheckCircle2 },
   ] : []
 
   return (
@@ -154,7 +171,7 @@ export default function PareceristaPage() {
         </div>
         <h1 className="page-title">Parecerista</h1>
         <p className="page-subtitle" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 16, color: 'var(--text-muted)' }}>
-          Pareceres juridicos estruturados
+          Pareceres jurídicos estruturados
         </p>
       </div>
 
@@ -162,15 +179,15 @@ export default function PareceristaPage() {
       {!parecer && !loading && (
         <>
           <div className="section-card" style={{ padding: '24px 28px', marginBottom: 32 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 20 }}>
-              <i className="bi bi-file-earmark-text" style={{ marginRight: 6 }} />Configurar parecer
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <FileText size={13} strokeWidth={1.75} aria-hidden />Configurar parecer
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }} className="parecer-form-grid">
               {/* Area do Direito */}
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-                  Area do Direito
+                  Área do Direito
                 </label>
                 <select
                   value={area}
@@ -228,7 +245,7 @@ export default function PareceristaPage() {
                 onChange={e => setContexto(e.target.value)}
                 maxLength={5000}
                 rows={6}
-                placeholder="Descreva a situacao fatica, as partes envolvidas, e os fatos relevantes para a analise juridica..."
+                placeholder="Descreva a situação fática, as partes envolvidas, e os fatos relevantes para a análise jurídica..."
                 className="form-input"
                 style={{ width: '100%', resize: 'vertical', minHeight: 120, lineHeight: 1.6 }}
               />
@@ -241,17 +258,17 @@ export default function PareceristaPage() {
               onClick={gerarParecer}
               disabled={loading || !tema.trim() || !contexto.trim()}
               className="btn-primary"
-              style={{ width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 600, opacity: (!tema.trim() || !contexto.trim()) ? 0.5 : 1 }}
+              style={{ width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 600, opacity: (!tema.trim() || !contexto.trim()) ? 0.5 : 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
             >
-              <i className="bi bi-file-earmark-text" style={{ marginRight: 8 }} />
+              <FileText size={16} strokeWidth={1.75} aria-hidden />
               Gerar Parecer
             </button>
           </div>
 
           {/* Exemplos rapidos */}
           <div className="section-card" style={{ padding: '20px 24px', marginBottom: 32 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 14 }}>
-              <i className="bi bi-lightning" style={{ marginRight: 6 }} />Exemplos rapidos
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Zap size={13} strokeWidth={1.75} aria-hidden />Exemplos rápidos
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {EXEMPLOS.map((ex, idx) => (
@@ -284,7 +301,7 @@ export default function PareceristaPage() {
                       Direito {ex.area}
                     </div>
                   </div>
-                  <i className="bi bi-arrow-right" style={{ color: 'var(--text-muted)', fontSize: 14, marginTop: 6 }} />
+                  <ArrowRight size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)', marginTop: 6 }} />
                 </button>
               ))}
             </div>
@@ -295,7 +312,7 @@ export default function PareceristaPage() {
       {/* Erro */}
       {erro && (
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden /> {erro}
         </div>
       )}
 
@@ -304,7 +321,7 @@ export default function PareceristaPage() {
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
           <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
           <div style={{ fontWeight: 600, marginBottom: 6 }}>Elaborando parecer...</div>
-          <div style={{ fontSize: 13 }}>Analisando {tema} na area de Direito {area}</div>
+          <div style={{ fontSize: 13 }}>Analisando {tema} na área de Direito {area}</div>
         </div>
       )}
 
@@ -315,7 +332,7 @@ export default function PareceristaPage() {
           <div className="section-card" style={{ padding: '16px 20px', marginBottom: 32, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className="bi bi-file-earmark-text" style={{ fontSize: 18, color: 'var(--accent)' }} />
+                <FileText size={18} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
               </div>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{tema}</div>
@@ -329,49 +346,56 @@ export default function PareceristaPage() {
                 type="button"
                 onClick={copiarParecerCompleto}
                 className="btn-secondary"
-                style={{ fontSize: 12, padding: '8px 16px' }}
+                style={{ fontSize: 12, padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
-                <i className={`bi ${copied === 'completo' ? 'bi-check2' : 'bi-clipboard'}`} style={{ marginRight: 6 }} />
+                {copied === 'completo'
+                  ? <Check size={13} strokeWidth={1.75} aria-hidden />
+                  : <Clipboard size={13} strokeWidth={1.75} aria-hidden />}
                 {copied === 'completo' ? 'Copiado' : 'Copiar tudo'}
               </button>
-              <button type="button" onClick={novoParecer} className="btn-secondary" style={{ fontSize: 12, padding: '8px 16px' }}>
-                <i className="bi bi-arrow-counterclockwise" style={{ marginRight: 6 }} />Novo parecer
+              <button type="button" onClick={novoParecer} className="btn-secondary" style={{ fontSize: 12, padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <RotateCcw size={13} strokeWidth={1.75} aria-hidden />Novo parecer
               </button>
             </div>
           </div>
 
           {/* Secoes do parecer */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-            {secoesParecer.map((secao) => (
-              <div key={secao.id} className="section-card" style={{ padding: '20px 24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{
-                      width: 28, height: 28, borderRadius: 7, flexShrink: 0,
-                      background: 'var(--accent-light)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <i className={`bi ${secao.icone}`} style={{ fontSize: 13, color: 'var(--accent)' }} />
+            {secoesParecer.map((secao) => {
+              const SecaoIcon = secao.Icon
+              return (
+                <div key={secao.id} className="section-card" style={{ padding: '20px 24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 7, flexShrink: 0,
+                        background: 'var(--accent-light)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        <SecaoIcon size={13} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
+                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+                        {secao.titulo}
+                      </div>
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-                      {secao.titulo}
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => copiarSecao(secao.conteudo, secao.id)}
+                      className="btn-ghost"
+                      style={{ fontSize: 11, padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 4 }}
+                    >
+                      {copied === secao.id
+                        ? <Check size={12} strokeWidth={1.75} aria-hidden />
+                        : <Clipboard size={12} strokeWidth={1.75} aria-hidden />}
+                      {copied === secao.id ? 'Copiado' : 'Copiar'}
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => copiarSecao(secao.conteudo, secao.id)}
-                    className="btn-ghost"
-                    style={{ fontSize: 11, padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 4 }}
-                  >
-                    <i className={`bi ${copied === secao.id ? 'bi-check2' : 'bi-clipboard'}`} />
-                    {copied === secao.id ? 'Copiado' : 'Copiar'}
-                  </button>
+                  <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+                    {secao.conteudo}
+                  </div>
                 </div>
-                <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
-                  {secao.conteudo}
-                </div>
-              </div>
-            ))}
+              )
+            })}
 
             {/* Disclaimer */}
             {parecer.disclaimer && (
@@ -381,7 +405,7 @@ export default function PareceristaPage() {
                 borderLeft: '3px solid var(--accent)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                  <i className="bi bi-info-circle" style={{ fontSize: 13, color: 'var(--accent)' }} />
+                  <Info size={13} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                   <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)' }}>
                     Aviso importante
                   </span>
@@ -395,8 +419,8 @@ export default function PareceristaPage() {
 
           {/* Botao final */}
           <div style={{ textAlign: 'center', marginTop: 32 }}>
-            <button type="button" onClick={novoParecer} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13 }}>
-              <i className="bi bi-arrow-counterclockwise" style={{ marginRight: 8 }} />
+            <button type="button" onClick={novoParecer} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <RotateCcw size={14} strokeWidth={1.75} aria-hidden />
               Gerar novo parecer
             </button>
           </div>
@@ -410,12 +434,12 @@ export default function PareceristaPage() {
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 72, height: 72, borderRadius: '50%',
             background: 'var(--accent-light)', color: 'var(--accent)',
-            fontSize: 32, marginBottom: 16,
+            marginBottom: 16,
           }}>
-            <i className="bi bi-file-earmark-text" />
+            <FileText size={32} strokeWidth={1.75} aria-hidden />
           </div>
-          <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Gere pareceres juridicos estruturados</div>
-          <div style={{ fontSize: 13 }}>Preencha a area, o tema e o contexto acima para gerar seu parecer</div>
+          <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Gere pareceres jurídicos estruturados</div>
+          <div style={{ fontSize: 13 }}>Preencha a área, o tema e o contexto acima para gerar seu parecer</div>
         </div>
       )}
 

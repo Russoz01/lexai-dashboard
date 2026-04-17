@@ -1,6 +1,25 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import {
+  Sparkles,
+  RotateCcw,
+  Plus,
+  CheckCircle2,
+  Info,
+  AlertTriangle,
+  CalendarPlus,
+  CalendarDays,
+  CalendarHeart,
+  Calendar,
+  Sun,
+  MapPin,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Check,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
 const DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
@@ -201,7 +220,7 @@ export default function RotinaPage() {
     if (status === 'connected') {
       setGcalToast({ tipo: 'ok', texto: 'Google Calendar conectado com sucesso.' })
     } else if (status === 'not_configured') {
-      setGcalToast({ tipo: 'info', texto: 'Google Calendar nao configurado pelo admin.' })
+      setGcalToast({ tipo: 'info', texto: 'Google Calendar não configurado pelo admin.' })
     } else {
       setGcalToast({ tipo: 'err', texto: 'Falha ao conectar Google Calendar. Tente novamente.' })
     }
@@ -222,11 +241,11 @@ export default function RotinaPage() {
       const res = await fetch('/api/google/auth', { method: 'GET' })
       const data = await res.json().catch(() => ({}))
       if (res.status === 503) {
-        setGcalToast({ tipo: 'info', texto: data?.error || 'Google Calendar nao configurado pelo admin.' })
+        setGcalToast({ tipo: 'info', texto: data?.error || 'Google Calendar não configurado pelo admin.' })
         return
       }
       if (!res.ok || !data?.url) {
-        setGcalToast({ tipo: 'err', texto: data?.error || 'Nao foi possivel iniciar a autenticacao.' })
+        setGcalToast({ tipo: 'err', texto: data?.error || 'Não foi possível iniciar a autenticação.' })
         return
       }
       window.location.href = data.url
@@ -436,7 +455,7 @@ export default function RotinaPage() {
     <div className="page-content" style={{ maxWidth: '100%' }}>
       {/* Banner */}
       <div className="agent-banner">
-        <i className="bi bi-stars" />
+        <Sparkles size={16} strokeWidth={1.75} aria-hidden />
         Organize seus compromissos da semana e planejamentos futuros. Tudo salvo automaticamente.
       </div>
 
@@ -449,15 +468,15 @@ export default function RotinaPage() {
         <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
           {sincronizando && (
             <span style={{ fontSize:12, color:'var(--text-muted)', display:'flex', alignItems:'center', gap:6 }}>
-              <i className="bi bi-arrow-repeat" style={{ animation:'spin 1s linear infinite', display:'inline-block' }} />
+              <RotateCcw size={14} strokeWidth={1.75} aria-hidden style={{ animation:'spin 1s linear infinite', display:'inline-block' }} />
               Sincronizando...
             </span>
           )}
           <button className="btn-ghost" onClick={conectarGoogleCalendar} disabled={googleConnecting} type="button">
-            <i className="bi bi-google" /> {googleConnecting ? 'Conectando...' : 'Conectar Google Calendar'}
+            <Calendar size={16} strokeWidth={1.75} aria-hidden /> {googleConnecting ? 'Conectando...' : 'Conectar Google Calendar'}
           </button>
           <button className="btn-primary" onClick={() => setModal(true)}>
-            <i className="bi bi-plus-lg" /> Novo Compromisso
+            <Plus size={16} strokeWidth={1.75} aria-hidden /> Novo Compromisso
           </button>
         </div>
       </div>
@@ -469,7 +488,11 @@ export default function RotinaPage() {
           color: gcalToast.tipo === 'ok' ? '#2d6a4f' : gcalToast.tipo === 'info' ? 'var(--text-secondary)' : 'var(--danger)',
           display:'flex', alignItems:'center', gap:8,
         }}>
-          <i className={`bi ${gcalToast.tipo === 'ok' ? 'bi-check-circle-fill' : gcalToast.tipo === 'info' ? 'bi-info-circle' : 'bi-exclamation-triangle-fill'}`} />
+          {gcalToast.tipo === 'ok'
+            ? <CheckCircle2 size={16} strokeWidth={1.75} aria-hidden />
+            : gcalToast.tipo === 'info'
+              ? <Info size={16} strokeWidth={1.75} aria-hidden />
+              : <AlertTriangle size={16} strokeWidth={1.75} aria-hidden />}
           {gcalToast.texto}
         </div>
       )}
@@ -541,18 +564,18 @@ export default function RotinaPage() {
             background: 'var(--accent-light)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <i className="bi bi-calendar-plus" style={{ fontSize: 26, color: 'var(--accent)' }} />
+            <CalendarPlus size={26} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
           </div>
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
               Seu primeiro compromisso
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', maxWidth: 360, lineHeight: 1.5 }}>
-              Organize sua agenda semanal em segundos. Aulas, estagios, audiencias &mdash; tudo num so lugar.
+              Organize sua agenda semanal em segundos. Aulas, estágios, audiências &mdash; tudo num só lugar.
             </div>
           </div>
           <button className="btn-primary" onClick={() => setModal(true)} style={{ marginTop: 4 }}>
-            <i className="bi bi-plus-lg" /> Adicionar agora
+            <Plus size={16} strokeWidth={1.75} aria-hidden /> Adicionar agora
           </button>
         </div>
       )}
@@ -560,14 +583,14 @@ export default function RotinaPage() {
       {/* Agenda de hoje */}
       <div className="section-card" style={{ padding:'18px 20px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
-          <i className="bi bi-calendar-day" style={{ color:'var(--accent)', fontSize:16 }} />
+          <CalendarDays size={16} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} />
           <span style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)' }}>
             Hoje — {DIAS[diaHoje]}, {hoje.getDate()} de {MESES[hoje.getMonth()]}
           </span>
         </div>
         {compHoje.length === 0 ? (
           <div style={{ textAlign:'center', padding:'30px 0', color:'var(--text-muted)', fontSize:13 }}>
-            <i className="bi bi-sun" style={{ fontSize:24, display:'block', marginBottom:8, opacity:0.4 }} />
+            <Sun size={24} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 8px', opacity:0.4 }} />
             Nenhum compromisso hoje
           </div>
         ) : (
@@ -581,14 +604,14 @@ export default function RotinaPage() {
                 <div style={{ flex:1 }}>
                   <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)', marginBottom:2 }}>{c.titulo}</div>
                   <div style={{ fontSize:12, color:'var(--text-muted)', display:'flex', alignItems:'center', gap:8 }}>
-                    <span><i className="bi bi-geo-alt" style={{ marginRight:3 }}/>{c.local}</span>
+                    <span style={{ display:'inline-flex', alignItems:'center', gap:3 }}><MapPin size={12} strokeWidth={1.75} aria-hidden />{c.local}</span>
                     <span style={{ padding:'1px 7px', borderRadius:20, background:`${c.cor}20`, color:c.cor, fontSize:11, fontWeight:600 }}>{c.disciplina}</span>
                   </div>
                 </div>
                 <button type="button" onClick={() => remover(c.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:14, padding:'4px 6px', borderRadius:6 }}
                   onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color='var(--danger)'}
                   onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color='var(--text-muted)'}>
-                  <i className="bi bi-trash3" />
+                  <Trash2 size={14} strokeWidth={1.75} aria-hidden />
                 </button>
               </div>
             ))}
@@ -599,7 +622,7 @@ export default function RotinaPage() {
       {/* Planejamento Mensal */}
       <div className="section-card" style={{ padding:'18px 20px', marginTop:32 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
-          <i className="bi bi-calendar3" style={{ color:'var(--accent)', fontSize:16 }} />
+          <Calendar size={16} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} />
           <span style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)' }}>
             Planejamento Mensal
           </span>
@@ -615,7 +638,7 @@ export default function RotinaPage() {
             onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background='var(--hover)'}
             onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background='transparent'}
             aria-label="Mês anterior">
-            <i className="bi bi-chevron-left" />
+            <ChevronLeft size={16} strokeWidth={1.75} aria-hidden />
           </button>
 
           <div style={{ display:'flex', alignItems:'center', gap:12, flex:1, justifyContent:'center' }}>
@@ -641,7 +664,7 @@ export default function RotinaPage() {
             onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background='var(--hover)'}
             onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background='transparent'}
             aria-label="Próximo mês">
-            <i className="bi bi-chevron-right" />
+            <ChevronRight size={16} strokeWidth={1.75} aria-hidden />
           </button>
         </div>
 
@@ -720,7 +743,7 @@ export default function RotinaPage() {
           })}
         </div>
 
-        {/* Empty state do calendario mensal */}
+        {/* Empty state do calendário mensal */}
         {!sincronizando && planosFuturos.filter(p => p.data >= hojeISO).length === 0 && !dataSelecionada && (
           <div style={{
             marginTop: 18,
@@ -739,14 +762,14 @@ export default function RotinaPage() {
               background: 'var(--accent-light)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <i className="bi bi-calendar-heart" style={{ fontSize: 22, color: 'var(--accent)' }} />
+              <CalendarHeart size={22} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
             </div>
             <div>
               <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
                 Seu primeiro compromisso
               </div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', maxWidth: 340, lineHeight: 1.5 }}>
-                Planeje audiencias, provas e reunioes futuras. Clique em qualquer dia para comecar.
+                Planeje audiências, provas e reuniões futuras. Clique em qualquer dia para começar.
               </div>
             </div>
             <button
@@ -759,7 +782,7 @@ export default function RotinaPage() {
               }}
               style={{ marginTop: 4 }}
             >
-              <i className="bi bi-plus-lg" /> Adicionar agora
+              <Plus size={16} strokeWidth={1.75} aria-hidden /> Adicionar agora
             </button>
           </div>
         )}
@@ -770,8 +793,8 @@ export default function RotinaPage() {
             marginTop:16, padding:'14px 16px', borderRadius:10,
             background:'var(--hover)', border:'1px solid var(--border)',
           }}>
-            <div style={{ fontSize:13, fontWeight:700, color:'var(--text-primary)', marginBottom:12 }}>
-              <i className="bi bi-calendar-event" style={{ marginRight:6, color:'var(--accent)' }} />
+            <div style={{ fontSize:13, fontWeight:700, color:'var(--text-primary)', marginBottom:12, display:'flex', alignItems:'center', gap:6 }}>
+              <Calendar size={14} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} />
               {(() => {
                 const [y, m, d] = dataSelecionada.split('-').map(Number)
                 const dt = new Date(y, m - 1, d)
@@ -803,7 +826,7 @@ export default function RotinaPage() {
                       onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color='var(--danger)'}
                       onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color='var(--text-muted)'}
                       aria-label="Remover plano">
-                      <i className="bi bi-x-lg" />
+                      <X size={14} strokeWidth={1.75} aria-hidden />
                     </button>
                   </div>
                 ))}
@@ -848,7 +871,7 @@ export default function RotinaPage() {
                   disabled={!planoForm.titulo}
                   onClick={salvarPlano}
                   style={{ flex:1, justifyContent:'center' }}>
-                  <i className="bi bi-plus-lg" /> Adicionar plano
+                  <Plus size={16} strokeWidth={1.75} aria-hidden /> Adicionar plano
                 </button>
               </div>
             </div>
@@ -862,7 +885,7 @@ export default function RotinaPage() {
           <div className="modal">
             <div className="modal-header">
               <span className="modal-title">Novo Compromisso</span>
-              <button className="modal-close" onClick={() => setModal(false)}><i className="bi bi-x" /></button>
+              <button className="modal-close" onClick={() => setModal(false)}><X size={16} strokeWidth={1.75} aria-hidden /></button>
             </div>
             <div className="modal-body">
               <div>
@@ -911,7 +934,7 @@ export default function RotinaPage() {
                 <button type="button" className="btn-ghost" style={{ flex:1 }} onClick={() => setModal(false)}>Cancelar</button>
                 <button type="button" disabled={!form.titulo || !form.horario} onClick={salvar}
                   className="btn-primary" style={{ flex:1, justifyContent:'center' }}>
-                  <i className="bi bi-check2" /> Adicionar
+                  <Check size={16} strokeWidth={1.75} aria-hidden /> Adicionar
                 </button>
               </div>
             </div>

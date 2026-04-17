@@ -1,6 +1,23 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import {
+  Sun,
+  Moon,
+  CircleDot,
+  Palette,
+  RotateCcw,
+  Type,
+  SlidersHorizontal,
+  LayoutGrid,
+  Square,
+  Accessibility,
+  LayoutPanelTop,
+  Droplet,
+  Eye,
+  CheckCircle2,
+  Settings,
+} from 'lucide-react'
 import s from './page.module.css'
 
 /* ─────────────────────────────────────────────────────────────────
@@ -40,12 +57,12 @@ const DEFAULT_COLORS: Colors = {
 }
 
 const COLOR_LABELS: Record<ColorKey, { label: string; tip: string }> = {
-  primary:   { label: 'Primaria',   tip: 'Cor principal da marca. Usada em botoes, links, destaques e barras ativas do menu.' },
-  secondary: { label: 'Secundaria', tip: 'Cor neutra de apoio. Usada em textos secundarios e elementos menos importantes.' },
-  success:   { label: 'Sucesso',    tip: 'Indica acoes concluidas, confirmacoes e mensagens positivas.' },
-  warning:   { label: 'Aviso',      tip: 'Indica alertas, prazos proximos e informacoes que merecem atencao.' },
-  info:      { label: 'Informacao', tip: 'Usada em badges informativos, dicas e estados neutros.' },
-  danger:    { label: 'Erro',       tip: 'Indica erros, exclusoes e acoes destrutivas.' },
+  primary:   { label: 'Primária',   tip: 'Cor principal da marca. Usada em botões, links, destaques e barras ativas do menu.' },
+  secondary: { label: 'Secundária', tip: 'Cor neutra de apoio. Usada em textos secundários e elementos menos importantes.' },
+  success:   { label: 'Sucesso',    tip: 'Indica ações concluídas, confirmações e mensagens positivas.' },
+  warning:   { label: 'Aviso',      tip: 'Indica alertas, prazos próximos e informações que merecem atenção.' },
+  info:      { label: 'Informação', tip: 'Usada em badges informativos, dicas e estados neutros.' },
+  danger:    { label: 'Erro',       tip: 'Indica erros, exclusões e ações destrutivas.' },
 }
 
 const HEADING_FONTS = ['Inter SemiBold', 'Playfair Display', 'DM Sans', 'Roboto', 'Poppins', 'Montserrat']
@@ -53,18 +70,18 @@ const BODY_FONTS = ['Inter Regular', 'DM Sans', 'Roboto', 'Source Sans Pro', 'Op
 
 const PALETTES: Record<string, { name: string; description: string; colors: Colors }> = {
   padrao: {
-    name: 'Padrao',
+    name: 'Padrão',
     description: 'A paleta original do LexAI: equilibrada e profissional.',
     colors: { primary: '#2563EB', secondary: '#475569', success: '#10B981', warning: '#F59E0B', info: '#06B6D4', danger: '#EF4444' },
   },
   profissional: {
     name: 'Profissional',
-    description: 'Tons sobrios e formais, ideais para escritorios tradicionais.',
+    description: 'Tons sóbrios e formais, ideais para escritórios tradicionais.',
     colors: { primary: '#1E3A8A', secondary: '#334155', success: '#15803D', warning: '#B45309', info: '#0E7490', danger: '#B91C1C' },
   },
   vibrante: {
     name: 'Vibrante',
-    description: 'Cores marcantes e modernas para um visual energetico.',
+    description: 'Cores marcantes e modernas para um visual energético.',
     colors: { primary: '#7C3AED', secondary: '#64748B', success: '#22C55E', warning: '#F97316', info: '#3B82F6', danger: '#EC4899' },
   },
   minimalista: {
@@ -74,7 +91,7 @@ const PALETTES: Record<string, { name: string; description: string; colors: Colo
   },
   elegante: {
     name: 'Elegante',
-    description: 'Tons quentes e luxuosos, com toque de sofisticacao.',
+    description: 'Tons quentes e luxuosos, com toque de sofisticação.',
     colors: { primary: '#92400E', secondary: '#57534E', success: '#4D7C0F', warning: '#CA8A04', info: '#0F766E', danger: '#9F1239' },
   },
 }
@@ -159,12 +176,12 @@ function applyThemeMode(mode: ThemeMode) {
 
 function SectionCard({
   title, subtitle, icon, children,
-}: { title: string; subtitle: string; icon: string; children: React.ReactNode }) {
+}: { title: string; subtitle: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className={`section-card ${s.sectionCardInner}`}>
       <div className={s.sectionCardHeader}>
         <div className={s.sectionCardIcon}>
-          <i className={`bi ${icon}`} style={{ fontSize: 18 }} />
+          {icon}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className={s.sectionCardTitle}>
@@ -276,14 +293,14 @@ export default function DesignPage() {
       {/* Header */}
       <div className={s.headerWrap}>
         <div className={s.headerHint}>
-          Personalize a aparencia do seu painel
+          Personalize a aparência do seu painel
         </div>
         <h1 className="page-title" style={{ fontSize: 30, fontWeight: 700 }}>
-          Design & Aparencia
+          Design & Aparência
         </h1>
         <div className={s.headerDesc}>
-          Personalize cores, tipografia, espacamento e acessibilidade do seu painel.
-          Todas as alteracoes sao aplicadas em tempo real e podem ser salvas para uso futuro.
+          Personalize cores, tipografia, espaçamento e acessibilidade do seu painel.
+          Todas as alterações são aplicadas em tempo real e podem ser salvas para uso futuro.
         </div>
       </div>
 
@@ -295,16 +312,16 @@ export default function DesignPage() {
           {/* SECAO 1: TEMA (LIGHT/DARK/AUTO) */}
           <SectionCard
             title="Tema do painel"
-            subtitle="Escolha entre o modo claro, escuro ou siga automaticamente as preferencias do seu sistema operacional."
-            icon="bi-sun-fill"
+            subtitle="Escolha entre o modo claro, escuro ou siga automaticamente as preferências do seu sistema operacional."
+            icon={<Sun size={18} strokeWidth={1.75} aria-hidden />}
           >
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
               {(['light', 'dark', 'auto'] as ThemeMode[]).map(mode => {
                 const isActive = prefs.themeMode === mode
-                const labels: Record<ThemeMode, { title: string; desc: string; icon: string }> = {
-                  light: { title: 'Claro',     desc: 'Visual claro e arejado', icon: 'bi-sun' },
-                  dark:  { title: 'Escuro',    desc: 'Reduz o cansaco visual', icon: 'bi-moon-stars' },
-                  auto:  { title: 'Automatico',desc: 'Segue o seu sistema',    icon: 'bi-circle-half' },
+                const labels: Record<ThemeMode, { title: string; desc: string; icon: React.ReactNode }> = {
+                  light: { title: 'Claro',      desc: 'Visual claro e arejado', icon: <Sun size={26} strokeWidth={1.75} aria-hidden /> },
+                  dark:  { title: 'Escuro',     desc: 'Reduz o cansaço visual', icon: <Moon size={26} strokeWidth={1.75} aria-hidden /> },
+                  auto:  { title: 'Automático', desc: 'Segue o seu sistema',    icon: <CircleDot size={26} strokeWidth={1.75} aria-hidden /> },
                 }
                 const info = labels[mode]
                 const previewBg = mode === 'light' ? 'linear-gradient(135deg,#f8fafc,#e2e8f0)'
@@ -332,8 +349,9 @@ export default function DesignPage() {
                       height: 70, background: previewBg,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       borderBottom: '1px solid var(--border)',
+                      color: previewText,
                     }}>
-                      <i className={`bi ${info.icon}`} style={{ fontSize: 26, color: previewText }} />
+                      {info.icon}
                     </div>
                     <div style={{ padding: '12px 14px' }}>
                       <div style={{
@@ -354,13 +372,13 @@ export default function DesignPage() {
           {/* SECAO 2: CORES */}
           <SectionCard
             title="Cores"
-            subtitle="Escolha as cores que serao usadas em todo o painel. Voce pode comecar com uma paleta pronta ou personalizar cada cor individualmente."
-            icon="bi-palette-fill"
+            subtitle="Escolha as cores que serão usadas em todo o painel. Você pode começar com uma paleta pronta ou personalizar cada cor individualmente."
+            icon={<Palette size={18} strokeWidth={1.75} aria-hidden />}
           >
             {/* Paletas pre-prontas */}
             <div style={{ marginBottom: 24 }}>
               <FieldLabel
-                title="Paletas pre-prontas"
+                title="Paletas pré-prontas"
                 hint="Aplicam todas as 6 cores de uma vez, prontas para usar."
               />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
@@ -438,8 +456,9 @@ export default function DesignPage() {
                         background: '#fff', border: '1px solid rgba(0,0,0,0.1)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                        color: '#475569',
                       }}>
-                        <i className="bi bi-pencil-fill" style={{ fontSize: 9, color: '#475569' }} />
+                        <SlidersHorizontal size={9} strokeWidth={1.75} aria-hidden />
                       </div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
@@ -461,9 +480,9 @@ export default function DesignPage() {
                           padding: '2px 6px', borderRadius: 6,
                           display: 'flex', alignItems: 'center', gap: 3,
                         }}
-                        title="Restaurar cor padrao"
+                        title="Restaurar cor padrão"
                       >
-                        <i className="bi bi-arrow-counterclockwise" /> Resetar
+                        <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Resetar
                       </button>
                     )}
                   </div>
@@ -475,14 +494,14 @@ export default function DesignPage() {
           {/* SECAO 3: TIPOGRAFIA */}
           <SectionCard
             title="Tipografia"
-            subtitle="Defina as fontes usadas em titulos e textos do painel, alem do tamanho base de leitura."
-            icon="bi-fonts"
+            subtitle="Defina as fontes usadas em títulos e textos do painel, além do tamanho base de leitura."
+            icon={<Type size={18} strokeWidth={1.75} aria-hidden />}
           >
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div>
                 <FieldLabel
-                  title="Fonte dos titulos"
-                  hint="Aplicada em headings, titulos de pagina e cards."
+                  title="Fonte dos títulos"
+                  hint="Aplicada em headings, títulos de página e cards."
                 />
                 <select
                   value={prefs.headingFont}
@@ -497,7 +516,7 @@ export default function DesignPage() {
               <div>
                 <FieldLabel
                   title="Fonte do corpo"
-                  hint="Aplicada em paragrafos, listas e descricoes."
+                  hint="Aplicada em parágrafos, listas e descrições."
                 />
                 <select
                   value={prefs.bodyFont}
@@ -513,7 +532,7 @@ export default function DesignPage() {
             <div style={{ marginBottom: 16 }}>
               <FieldLabel
                 title={`Tamanho base do texto: ${prefs.fontSize}px`}
-                hint="Ajusta o tamanho geral de todo o conteudo. Util para melhor leitura."
+                hint="Ajusta o tamanho geral de todo o conteúdo. Útil para melhor leitura."
               />
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', minWidth: 30 }}>12px</span>
@@ -541,7 +560,7 @@ export default function DesignPage() {
                 marginBottom: 6,
                 fontFamily: `'${prefs.headingFont}', sans-serif`,
               }}>
-                Titulo de exemplo
+                Título de exemplo
               </div>
               <div style={{
                 fontSize: prefs.fontSize,
@@ -549,22 +568,22 @@ export default function DesignPage() {
                 lineHeight: 1.55,
                 fontFamily: `'${prefs.bodyFont}', sans-serif`,
               }}>
-                Este e um texto de exemplo para visualizar como ficarao os paragrafos com as fontes e o tamanho escolhidos.
+                Este é um texto de exemplo para visualizar como ficarão os parágrafos com as fontes e o tamanho escolhidos.
               </div>
             </div>
           </SectionCard>
 
           {/* SECAO 4: LAYOUT & ESPACAMENTO */}
           <SectionCard
-            title="Layout & Espacamento"
-            subtitle="Controle o arredondamento dos cantos, a intensidade das sombras e o espacamento entre elementos do painel."
-            icon="bi-bounding-box"
+            title="Layout & Espaçamento"
+            subtitle="Controle o arredondamento dos cantos, a intensidade das sombras e o espaçamento entre elementos do painel."
+            icon={<Settings size={18} strokeWidth={1.75} aria-hidden />}
           >
             {/* Border radius */}
             <div style={{ marginBottom: 22 }}>
               <FieldLabel
                 title={`Arredondamento dos cantos: ${prefs.radius}px`}
-                hint="Quanto maior, mais arredondados ficam botoes, cards e inputs."
+                hint="Quanto maior, mais arredondados ficam botões, cards e inputs."
               />
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', minWidth: 36 }}>Reto</span>
@@ -581,7 +600,7 @@ export default function DesignPage() {
                 <button style={{
                   padding: '8px 18px', borderRadius: prefs.radius, background: colors.primary,
                   color: '#fff', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'default',
-                }}>Botao</button>
+                }}>Botão</button>
                 <input readOnly value="Input" style={{
                   padding: '8px 14px', borderRadius: prefs.radius, border: '1.5px solid var(--border)',
                   fontSize: 13, background: 'var(--input-bg)', outline: 'none', width: 90,
@@ -616,17 +635,17 @@ export default function DesignPage() {
             {/* Spacing density */}
             <div style={{ marginBottom: 22 }}>
               <FieldLabel
-                title="Espacamento geral"
-                hint="Define o espaco em volta dos elementos. Compacto economiza espaco; relaxado fica mais arejado."
+                title="Espaçamento geral"
+                hint="Define o espaço em volta dos elementos. Compacto economiza espaço; relaxado fica mais arejado."
               />
               <div style={{ display: 'flex', gap: 8 }}>
-                {(['compact', 'standard', 'relaxed'] as Spacing[]).map(s => {
-                  const labels: Record<Spacing, string> = { compact: 'Compacto', standard: 'Padrao', relaxed: 'Relaxado' }
-                  const isActive = prefs.spacing === s
+                {(['compact', 'standard', 'relaxed'] as Spacing[]).map(sp => {
+                  const labels: Record<Spacing, string> = { compact: 'Compacto', standard: 'Padrão', relaxed: 'Relaxado' }
+                  const isActive = prefs.spacing === sp
                   return (
                     <button
-                      key={s}
-                      onClick={() => update('spacing', s)}
+                      key={sp}
+                      onClick={() => update('spacing', sp)}
                       style={{
                         flex: 1, padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 600,
                         border: isActive ? `2px solid ${colors.primary}` : '1.5px solid var(--border)',
@@ -636,7 +655,7 @@ export default function DesignPage() {
                         transition: 'all 0.18s',
                       }}
                     >
-                      {labels[s]}
+                      {labels[sp]}
                     </button>
                   )
                 })}
@@ -646,15 +665,15 @@ export default function DesignPage() {
             {/* Density */}
             <div>
               <FieldLabel
-                title="Densidade da informacao"
-                hint="Controla quanta informacao aparece em cada tela. Compacta mostra mais dados; espacosa prioriza clareza."
+                title="Densidade da informação"
+                hint="Controla quanta informação aparece em cada tela. Compacta mostra mais dados; espaçosa prioriza clareza."
               />
               <div style={{ display: 'flex', gap: 8 }}>
                 {(['compact', 'normal', 'spacious'] as Density[]).map(d => {
-                  const labels: Record<Density, { title: string; icon: string }> = {
-                    compact:  { title: 'Compacta',  icon: 'bi-grid-3x3-gap-fill' },
-                    normal:   { title: 'Normal',    icon: 'bi-grid' },
-                    spacious: { title: 'Espacosa',  icon: 'bi-square' },
+                  const labels: Record<Density, { title: string; icon: React.ReactNode }> = {
+                    compact:  { title: 'Compacta',  icon: <LayoutGrid size={14} strokeWidth={1.75} aria-hidden /> },
+                    normal:   { title: 'Normal',    icon: <LayoutGrid size={14} strokeWidth={1.75} aria-hidden /> },
+                    spacious: { title: 'Espaçosa',  icon: <Square size={14} strokeWidth={1.75} aria-hidden /> },
                   }
                   const isActive = prefs.density === d
                   return (
@@ -671,7 +690,7 @@ export default function DesignPage() {
                         transition: 'all 0.18s',
                       }}
                     >
-                      <i className={`bi ${labels[d].icon}`} /> {labels[d].title}
+                      {labels[d].icon} {labels[d].title}
                     </button>
                   )
                 })}
@@ -683,7 +702,7 @@ export default function DesignPage() {
           <SectionCard
             title="Acessibilidade"
             subtitle="Ajustes para melhorar a usabilidade do painel para diferentes necessidades visuais e motoras."
-            icon="bi-universal-access-circle"
+            icon={<Accessibility size={18} strokeWidth={1.75} aria-hidden />}
           >
             {/* High contrast */}
             <div className={s.toggleRow}>
@@ -720,10 +739,10 @@ export default function DesignPage() {
             <div className={s.toggleRow}>
               <div style={{ flex: 1, paddingRight: 16 }}>
                 <div className={s.toggleLabel}>
-                  Reduzir animacoes
+                  Reduzir animações
                 </div>
                 <div className={s.toggleDesc}>
-                  Diminui ou desativa animacoes e transicoes na interface, util para sensibilidade ao movimento.
+                  Diminui ou desativa animações e transições na interface, útil para sensibilidade ao movimento.
                 </div>
               </div>
               <button
@@ -750,8 +769,8 @@ export default function DesignPage() {
             {/* Button scale (touch targets) */}
             <div style={{ paddingTop: 16 }}>
               <FieldLabel
-                title={`Tamanho dos botoes: ${prefs.buttonScale}%`}
-                hint="Aumenta a area de toque dos botoes. Util para uso em telas sensiveis ao toque ou problemas de motricidade."
+                title={`Tamanho dos botões: ${prefs.buttonScale}%`}
+                hint="Aumenta a área de toque dos botões. Útil para uso em telas sensíveis ao toque ou problemas de motricidade."
               />
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', minWidth: 36 }}>100%</span>
@@ -772,7 +791,7 @@ export default function DesignPage() {
                   fontSize: 13 * (prefs.buttonScale / 100), fontWeight: 600, cursor: 'default',
                   transition: 'all 0.2s',
                 }}>
-                  Botao de exemplo
+                  Botão de exemplo
                 </button>
               </div>
             </div>
@@ -781,15 +800,15 @@ export default function DesignPage() {
           {/* SECAO 6: CANTOS DO DASHBOARD */}
           <SectionCard
             title="Cantos do dashboard"
-            subtitle="Atalhos para alternar rapidamente entre estilos completos de layout do painel. Cada um aplica um conjunto pre-definido de configuracoes visuais."
-            icon="bi-layout-wtf"
+            subtitle="Atalhos para alternar rapidamente entre estilos completos de layout do painel. Cada um aplica um conjunto pré-definido de configurações visuais."
+            icon={<LayoutPanelTop size={18} strokeWidth={1.75} aria-hidden />}
           >
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
               {(['glass', 'minimal', 'bold'] as DashboardLayout[]).map(layout => {
-                const info: Record<DashboardLayout, { title: string; desc: string; icon: string }> = {
-                  glass:   { title: 'Glass',   desc: 'Visual atual com vidro e desfoque',  icon: 'bi-droplet-half' },
-                  minimal: { title: 'Minimal', desc: 'Linhas limpas, sem sombras pesadas', icon: 'bi-square' },
-                  bold:    { title: 'Bold',    desc: 'Cores fortes e contornos marcantes', icon: 'bi-square-fill' },
+                const info: Record<DashboardLayout, { title: string; desc: string; icon: React.ReactNode }> = {
+                  glass:   { title: 'Glass',   desc: 'Visual atual com vidro e desfoque',  icon: <Droplet size={22} strokeWidth={1.75} aria-hidden /> },
+                  minimal: { title: 'Minimal', desc: 'Linhas limpas, sem sombras pesadas', icon: <Square size={22} strokeWidth={1.75} aria-hidden /> },
+                  bold:    { title: 'Bold',    desc: 'Cores fortes e contornos marcantes', icon: <Square size={22} strokeWidth={1.75} aria-hidden /> },
                 }
                 const isActive = prefs.dashboardLayout === layout
                 return (
@@ -825,11 +844,9 @@ export default function DesignPage() {
                       background: isActive ? colors.primary : 'var(--input-bg)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.2s',
+                      color: isActive ? '#fff' : 'var(--text-secondary)',
                     }}>
-                      <i className={`bi ${info[layout].icon}`} style={{
-                        fontSize: 22,
-                        color: isActive ? '#fff' : 'var(--text-secondary)',
-                      }} />
+                      {info[layout].icon}
                     </div>
                     <div>
                       <div style={{
@@ -852,10 +869,10 @@ export default function DesignPage() {
         {/* ───────────── PREVIEW STICKY ───────────── */}
         <aside className={s.designPreview}>
           <div className="section-card" style={{ padding: 22 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-              <i className="bi bi-eye-fill" style={{ color: colors.primary, fontSize: 18 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, color: colors.primary }}>
+              <Eye size={18} strokeWidth={1.75} aria-hidden />
               <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
-                Pre-visualizacao
+                Pré-visualização
               </div>
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18, lineHeight: 1.4 }}>
@@ -888,7 +905,7 @@ export default function DesignPage() {
                 marginBottom: 12,
                 fontFamily: `'${prefs.bodyFont}', sans-serif`,
               }}>
-                Este card mostra como o painel ficara com suas configuracoes.
+                Este card mostra como o painel ficará com suas configurações.
               </div>
 
               <input
@@ -957,7 +974,7 @@ export default function DesignPage() {
             display: 'flex', alignItems: 'center', gap: 6,
           }}
         >
-          <i className="bi bi-arrow-counterclockwise" /> Resetar
+          <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Resetar
         </button>
         <button
           onClick={savePrefs}
@@ -969,8 +986,8 @@ export default function DesignPage() {
             display: 'flex', alignItems: 'center', gap: 6,
           }}
         >
-          <i className={`bi ${saved ? 'bi-check-circle-fill' : 'bi-save-fill'}`} />
-          {saved ? 'Salvo!' : 'Salvar alteracoes'}
+          {saved ? <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden /> : <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden />}
+          {saved ? 'Salvo!' : 'Salvar alterações'}
         </button>
       </div>
 
