@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { ShieldCheck, Zap, ArrowRight, AlertTriangle, Info, Clipboard, Check, RotateCcw } from 'lucide-react'
 
 interface ComplianceResult {
   exposicoes: string
@@ -14,18 +15,18 @@ interface ComplianceResult {
 
 const AREAS = [
   'Financeiro',
-  'Saude',
+  'Saúde',
   'Tecnologia',
   'Varejo',
-  'Industria',
-  'Servicos',
-  'Juridico',
+  'Indústria',
+  'Serviços',
+  'Jurídico',
   'Outro',
 ]
 
 const TIPOS = [
   'Conformidade LGPD',
-  'Risco Anticorrupcao',
+  'Risco Anticorrupção',
   'Compliance Setorial',
   'Due Diligence',
 ]
@@ -54,10 +55,10 @@ const EXEMPLOS = [
 type TabKey = 'exposicoes' | 'lgpd' | 'anticorrupcao' | 'acoes' | 'score'
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'exposicoes', label: 'Exposicoes' },
+  { key: 'exposicoes', label: 'Exposições' },
   { key: 'lgpd', label: 'Risco LGPD' },
-  { key: 'anticorrupcao', label: 'Anticorrupcao' },
-  { key: 'acoes', label: 'Acoes Recomendadas' },
+  { key: 'anticorrupcao', label: 'Anticorrupção' },
+  { key: 'acoes', label: 'Ações Recomendadas' },
   { key: 'score', label: 'Score de Risco' },
 ]
 
@@ -98,7 +99,7 @@ export default function CompliancePage() {
       setResultado(data.parecer as ComplianceResult)
       setActiveTab('exposicoes')
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro ao gerar analise')
+      setErro(e instanceof Error ? e.message : 'Erro ao gerar análise')
     } finally {
       setLoading(false)
     }
@@ -120,21 +121,21 @@ export default function CompliancePage() {
   function copiarResultado() {
     if (!resultado) return
     const texto = [
-      '=== ANALISE DE COMPLIANCE ===',
+      '=== ANÁLISE DE COMPLIANCE ===',
       '',
-      'AREA: ' + area,
+      'ÁREA: ' + area,
       'TIPO: ' + tipo,
       '',
-      'EXPOSICOES REGULATORIAS',
+      'EXPOSIÇÕES REGULATÓRIAS',
       resultado.exposicoes,
       '',
       'RISCO LGPD',
       resultado.lgpd,
       '',
-      'ANTICORRUPCAO',
+      'ANTICORRUPÇÃO',
       resultado.anticorrupcao,
       '',
-      'ACOES RECOMENDADAS',
+      'AÇÕES RECOMENDADAS',
       resultado.acoes,
       '',
       'SCORE DE RISCO: ' + resultado.score,
@@ -168,7 +169,7 @@ export default function CompliancePage() {
         </div>
         <h1 className="page-title">Compliance</h1>
         <p className="page-subtitle" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 16, color: 'var(--text-muted)' }}>
-          Mapeamento de risco regulatorio, LGPD e anticorrupcao
+          Mapeamento de risco regulatório, LGPD e anticorrupção
         </p>
       </div>
 
@@ -176,15 +177,15 @@ export default function CompliancePage() {
       {!resultado && !loading && (
         <>
           <div className="section-card" style={{ padding: '24px 28px', marginBottom: 32 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 20 }}>
-              <i className="bi bi-shield-check" style={{ marginRight: 6 }} />Configurar analise
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 20, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <ShieldCheck size={14} strokeWidth={1.75} aria-hidden />Configurar análise
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }} className="compliance-form-grid">
               {/* Area de atuacao */}
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-                  Area de atuacao
+                  Área de atuação
                 </label>
                 <select
                   value={area}
@@ -201,7 +202,7 @@ export default function CompliancePage() {
               {/* Tipo de analise */}
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-                  Tipo de analise
+                  Tipo de análise
                 </label>
                 <select
                   value={tipo}
@@ -219,14 +220,14 @@ export default function CompliancePage() {
             {/* Descricao */}
             <div style={{ marginBottom: 20 }}>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-                Descreva a operacao ou atividade
+                Descreva a operação ou atividade
               </label>
               <textarea
                 value={descricao}
                 onChange={e => setDescricao(e.target.value)}
                 maxLength={5000}
                 rows={6}
-                placeholder="Ex: empresa coletando dados de clientes para fins de marketing direto, com transferencia internacional para servidores nos EUA..."
+                placeholder="Ex: empresa coletando dados de clientes para fins de marketing direto, com transferência internacional para servidores nos EUA..."
                 className="form-input"
                 style={{ width: '100%', resize: 'vertical', minHeight: 120, lineHeight: 1.6 }}
               />
@@ -239,17 +240,17 @@ export default function CompliancePage() {
               onClick={analisar}
               disabled={loading || !descricao.trim()}
               className="btn-primary"
-              style={{ width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 600, opacity: !descricao.trim() ? 0.5 : 1 }}
+              style={{ width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 600, opacity: !descricao.trim() ? 0.5 : 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
             >
-              <i className="bi bi-shield-check" style={{ marginRight: 8 }} />
+              <ShieldCheck size={14} strokeWidth={1.75} aria-hidden />
               Analisar compliance
             </button>
           </div>
 
           {/* Exemplos rapidos */}
           <div className="section-card" style={{ padding: '20px 24px', marginBottom: 32 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 14 }}>
-              <i className="bi bi-lightning" style={{ marginRight: 6 }} />Exemplos rapidos
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Zap size={14} strokeWidth={1.75} aria-hidden />Exemplos rápidos
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {EXEMPLOS.map((ex, idx) => (
@@ -282,7 +283,7 @@ export default function CompliancePage() {
                       {ex.area} · {ex.tipo}
                     </div>
                   </div>
-                  <i className="bi bi-arrow-right" style={{ color: 'var(--text-muted)', fontSize: 14, marginTop: 6 }} />
+                  <ArrowRight size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)', marginTop: 6 }} />
                 </button>
               ))}
             </div>
@@ -293,7 +294,7 @@ export default function CompliancePage() {
       {/* Erro */}
       {erro && (
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden /> {erro}
         </div>
       )}
 
@@ -302,7 +303,7 @@ export default function CompliancePage() {
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
           <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
           <div style={{ fontWeight: 600, marginBottom: 6 }}>Analisando compliance...</div>
-          <div style={{ fontSize: 13 }}>Mapeando riscos regulatorios para a area de {area}</div>
+          <div style={{ fontSize: 13 }}>Mapeando riscos regulatórios para a área de {area}</div>
         </div>
       )}
 
@@ -313,12 +314,12 @@ export default function CompliancePage() {
           <div className="section-card" style={{ padding: '16px 20px', marginBottom: 32, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className="bi bi-shield-check" style={{ fontSize: 18, color: 'var(--accent)' }} />
+                <ShieldCheck size={18} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
               </div>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{tipo}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                  Area: {area}
+                  Área: {area}
                 </div>
               </div>
             </div>
@@ -327,13 +328,13 @@ export default function CompliancePage() {
                 type="button"
                 onClick={copiarResultado}
                 className="btn-secondary"
-                style={{ fontSize: 12, padding: '8px 16px' }}
+                style={{ fontSize: 12, padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
-                <i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'}`} style={{ marginRight: 6 }} />
+                {copied ? <Check size={14} strokeWidth={1.75} aria-hidden /> : <Clipboard size={14} strokeWidth={1.75} aria-hidden />}
                 {copied ? 'Copiado' : 'Copiar tudo'}
               </button>
-              <button type="button" onClick={novaAnalise} className="btn-secondary" style={{ fontSize: 12, padding: '8px 16px' }}>
-                <i className="bi bi-arrow-counterclockwise" style={{ marginRight: 6 }} />Nova analise
+              <button type="button" onClick={novaAnalise} className="btn-secondary" style={{ fontSize: 12, padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <RotateCcw size={14} strokeWidth={1.75} aria-hidden />Nova análise
               </button>
             </div>
           </div>
@@ -390,13 +391,13 @@ export default function CompliancePage() {
                   )}
                   {resultado.confianca != null && (
                     <div style={{ marginTop: 16, fontSize: 12, color: 'var(--text-muted)' }}>
-                      Confianca da analise: {Math.round(resultado.confianca * 100)}%
+                      Confiança da análise: {Math.round(resultado.confianca * 100)}%
                     </div>
                   )}
                 </div>
               ) : (
                 <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
-                  {getTabContent() || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Nenhuma informacao disponivel para esta secao.</span>}
+                  {getTabContent() || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Nenhuma informação disponível para esta seção.</span>}
                 </div>
               )}
             </div>
@@ -410,21 +411,21 @@ export default function CompliancePage() {
             marginBottom: 32,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-              <i className="bi bi-info-circle" style={{ fontSize: 13, color: 'var(--accent)' }} />
+              <Info size={13} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
               <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)' }}>
                 Aviso importante
               </span>
             </div>
             <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-              Esta analise foi gerada por inteligencia artificial e possui carater meramente informativo e orientativo. Nao substitui a consultoria de advogado ou especialista em compliance habilitado. As referencias a legislacao devem ser verificadas junto as fontes primarias antes de qualquer utilizacao profissional.
+              Esta análise foi gerada por inteligência artificial e possui caráter meramente informativo e orientativo. Não substitui a consultoria de advogado ou especialista em compliance habilitado. As referências à legislação devem ser verificadas junto às fontes primárias antes de qualquer utilização profissional.
             </p>
           </div>
 
           {/* Botao final */}
           <div style={{ textAlign: 'center', marginTop: 8 }}>
-            <button type="button" onClick={novaAnalise} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13 }}>
-              <i className="bi bi-arrow-counterclockwise" style={{ marginRight: 8 }} />
-              Nova analise
+            <button type="button" onClick={novaAnalise} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <RotateCcw size={14} strokeWidth={1.75} aria-hidden />
+              Nova análise
             </button>
           </div>
         </>
@@ -437,12 +438,12 @@ export default function CompliancePage() {
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 72, height: 72, borderRadius: '50%',
             background: 'var(--accent-light)', color: 'var(--accent)',
-            fontSize: 32, marginBottom: 16,
+            marginBottom: 16,
           }}>
-            <i className="bi bi-shield-check" />
+            <ShieldCheck size={32} strokeWidth={1.75} aria-hidden />
           </div>
-          <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Mapeie riscos regulatorios com precisao</div>
-          <div style={{ fontSize: 13 }}>Preencha a area, o tipo e descreva a operacao acima para iniciar a analise</div>
+          <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Mapeie riscos regulatórios com precisão</div>
+          <div style={{ fontSize: 13 }}>Preencha a área, o tipo e descreva a operação acima para iniciar a análise</div>
         </div>
       )}
 

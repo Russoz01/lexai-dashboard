@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { AlertTriangle, Calendar, Check, Clock, Hourglass, Plus, Trash2, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 
@@ -46,7 +47,7 @@ export default function PrazosPage() {
     const usuarioId = await resolveUsuarioId()
     if (!usuarioId) { setLoading(false); return }
     const { data, error } = await supabase.from('prazos').select('*').eq('usuario_id', usuarioId).order('data_limite')
-    if (error) { setErro('Nao foi possivel carregar prazos. Tente novamente.'); setLoading(false); return }
+    if (error) { setErro('Não foi possível carregar prazos. Tente novamente.'); setLoading(false); return }
     setPrazos(data ?? []); setLoading(false)
   }, [supabase])
 
@@ -57,7 +58,7 @@ export default function PrazosPage() {
     if (!form.titulo || !form.data_limite) return
     setSalvando(true); setErro('')
     const usuarioId = await resolveUsuarioId()
-    if (!usuarioId) { setErro('Nao foi possivel identificar o usuario.'); setSalvando(false); return }
+    if (!usuarioId) { setErro('Não foi possível identificar o usuário.'); setSalvando(false); return }
     const { error } = await supabase.from('prazos').insert({ usuario_id: usuarioId, ...form })
     if (error) { setErro(error.message); setSalvando(false); return }
     setModal(false); setForm(EMPTY_FORM); await carregar(); setSalvando(false)
@@ -85,14 +86,14 @@ export default function PrazosPage() {
           <p className="page-subtitle">Controle seus prazos processuais e acadêmicos</p>
         </div>
         <button className="btn-primary" onClick={() => setModal(true)}>
-          <i className="bi bi-plus-lg" /> Novo Prazo
+          <Plus size={14} strokeWidth={1.75} aria-hidden /> Novo Prazo
         </button>
       </div>
 
       {/* Alerta urgentes */}
       {urgentes.length > 0 && (
         <div style={{ padding:'14px 16px', borderRadius:10, background:'#fef5e7', borderLeft:'3px solid #e67e22', marginBottom:20, display:'flex', alignItems:'flex-start', gap:10 }}>
-          <i className="bi bi-exclamation-triangle-fill" style={{ color:'#e67e22', marginTop:1 }} />
+          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden style={{ color:'#e67e22', marginTop:1 }} />
           <div style={{ fontSize:13, color:'#b7611a' }}>
             <strong>{urgentes.length} prazo(s)</strong> vencem em até 7 dias:{' '}
             {urgentes.map(p => p.titulo).join(', ')}
@@ -118,19 +119,19 @@ export default function PrazosPage() {
       {/* Inline error */}
       {erro && !modal && (
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden /> {erro}
         </div>
       )}
 
       {/* Lista */}
       {loading ? (
         <div style={{ textAlign:'center', padding:'60px 0', color:'var(--text-muted)' }}>
-          <i className="bi bi-hourglass-split" style={{ fontSize:28, display:'block', marginBottom:8 }} />
+          <Hourglass size={28} strokeWidth={1.75} aria-hidden style={{ display:'block', marginBottom:8, marginLeft:'auto', marginRight:'auto' }} />
           Carregando...
         </div>
       ) : lista.length === 0 ? (
         <div style={{ textAlign:'center', padding:'60px 0', color:'var(--text-muted)' }}>
-          <i className="bi bi-clock" style={{ fontSize:36, display:'block', marginBottom:12, opacity:0.4 }} />
+          <Clock size={36} strokeWidth={1.75} aria-hidden style={{ display:'block', marginBottom:12, opacity:0.4, marginLeft:'auto', marginRight:'auto' }} />
           <div style={{ fontWeight:600, marginBottom:6 }}>Nenhum prazo encontrado</div>
           <button className="btn-ghost" style={{ fontSize:13, padding:'8px 16px' }} onClick={() => setModal(true)}>
             Adicionar primeiro prazo
@@ -154,7 +155,7 @@ export default function PrazosPage() {
                       cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center',
                       transition:'all 0.15s', color:'#fff', fontSize:11,
                     }}>
-                      {prazo.status === 'concluido' && <i className="bi bi-check" />}
+                      {prazo.status === 'concluido' && <Check size={11} strokeWidth={1.75} aria-hidden />}
                     </button>
                     {/* Content */}
                     <div style={{ flex:1, minWidth:0 }}>
@@ -172,7 +173,7 @@ export default function PrazosPage() {
                       {prazo.descricao && <div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:6 }}>{prazo.descricao}</div>}
                       <div style={{ display:'flex', alignItems:'center', gap:16, fontSize:12 }}>
                         <span style={{ color:'var(--text-secondary)', display:'flex', alignItems:'center', gap:4 }}>
-                          <i className="bi bi-calendar3" /> {fmtData(prazo.data_limite)}
+                          <Calendar size={12} strokeWidth={1.75} aria-hidden /> {fmtData(prazo.data_limite)}
                         </span>
                         {prazo.status === 'pendente' && (
                           <span style={{ fontWeight:600, color: d<0 ? '#c0392b' : d===0 ? '#c0392b' : d<=3 ? '#e67e22' : 'var(--text-muted)' }}>
@@ -186,7 +187,7 @@ export default function PrazosPage() {
                       onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color='var(--danger)'}
                       onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color='var(--text-muted)'}
                     >
-                      <i className="bi bi-trash3" />
+                      <Trash2 size={14} strokeWidth={1.75} aria-hidden />
                     </button>
                   </div>
                 </div>
@@ -202,7 +203,7 @@ export default function PrazosPage() {
           <div className="modal">
             <div className="modal-header">
               <span className="modal-title">Novo Prazo</span>
-              <button className="modal-close" onClick={() => setModal(false)}><i className="bi bi-x" /></button>
+              <button className="modal-close" onClick={() => setModal(false)}><X size={14} strokeWidth={1.75} aria-hidden /></button>
             </div>
             <form onSubmit={salvar}>
               <div className="modal-body">
@@ -248,7 +249,7 @@ export default function PrazosPage() {
                 <div className="modal-footer">
                   <button type="button" className="btn-ghost" style={{ flex:1 }} onClick={() => setModal(false)}>Cancelar</button>
                   <button type="submit" disabled={salvando} className="btn-primary" style={{ flex:1, justifyContent:'center' }}>
-                    {salvando ? 'Salvando...' : <><i className="bi bi-check2" /> Adicionar Prazo</>}
+                    {salvando ? 'Salvando...' : <><Check size={14} strokeWidth={1.75} aria-hidden /> Adicionar Prazo</>}
                   </button>
                 </div>
               </div>

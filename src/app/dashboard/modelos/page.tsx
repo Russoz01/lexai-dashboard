@@ -24,6 +24,7 @@ import {
   type TemplateAgent,
 } from '@/lib/templates'
 import { toast } from '@/components/Toast'
+import { Library, Search, XCircle, Clock, Bot, ArrowRight, X, Clipboard } from 'lucide-react'
 
 type AreaFilter = 'all' | TemplateArea
 type AgentFilter = 'all' | TemplateAgent
@@ -69,20 +70,20 @@ export default function ModelosPage() {
       {/* Cabecalho */}
       <div className={s.headerWrap}>
         <div className={s.headerSerial}>
-          <i className="bi bi-collection" aria-hidden />
+          <Library size={14} strokeWidth={1.75} aria-hidden />
           MMXXVI &middot; Biblioteca de modelos
         </div>
         <h1 className="page-title">Modelos</h1>
         <p className="page-subtitle">
           Pontos de partida para petições, pareceres, cálculos e propostas —
-          cada prompt ja vem calibrado para o agente certo.
+          cada prompt já vem calibrado para o agente certo.
         </p>
       </div>
 
       {/* Filtros */}
       <div className={s.modToolbar}>
         <div className={s.modSearch}>
-          <i className={`bi bi-search ${s.modSearchIcon}`} aria-hidden />
+          <Search size={14} strokeWidth={1.75} aria-hidden className={s.modSearchIcon} />
           <input
             type="text"
             value={query}
@@ -93,7 +94,7 @@ export default function ModelosPage() {
           />
           {query && (
             <button type="button" onClick={() => setQuery('')} aria-label="Limpar busca" className={s.modSearchClear}>
-              <i className="bi bi-x-circle-fill" />
+              <XCircle size={14} strokeWidth={1.75} aria-hidden />
             </button>
           )}
         </div>
@@ -102,9 +103,9 @@ export default function ModelosPage() {
           value={area}
           onChange={e => setArea(e.target.value as AreaFilter)}
           className={s.modSelect}
-          aria-label="Filtrar por area"
+          aria-label="Filtrar por área"
         >
-          <option value="all">Todas as areas</option>
+          <option value="all">Todas as áreas</option>
           {AREA_ORDER.filter(a => AVAILABLE_AREAS.has(a)).map(a => (
             <option key={a} value={a}>{AREA_LABELS[a]}</option>
           ))}
@@ -133,7 +134,7 @@ export default function ModelosPage() {
       {/* Grid */}
       {filtered.length === 0 ? (
         <div className={s.modEmpty}>
-          <i className={`bi bi-search ${s.modEmptyIcon}`} aria-hidden />
+          <Search size={14} strokeWidth={1.75} aria-hidden className={s.modEmptyIcon} />
           <h3 className={s.modEmptyH3}>Nenhum modelo encontrado</h3>
           <p className={s.modEmptyP}>Tente ampliar o filtro ou limpar a busca.</p>
           <button
@@ -157,7 +158,7 @@ export default function ModelosPage() {
               <div className={s.modCardTop}>
                 <span className={s.modBadgeArea}>{AREA_LABELS[t.area]}</span>
                 <span className={s.modBadgeTime}>
-                  <i className="bi bi-clock" aria-hidden />
+                  <Clock size={14} strokeWidth={1.75} aria-hidden />
                   {t.estimatedMinutes}min
                 </span>
               </div>
@@ -165,11 +166,11 @@ export default function ModelosPage() {
               <p className={s.modCardSub}>{t.subtitle}</p>
               <div className={s.modCardFooter}>
                 <span className={s.modCardAgent}>
-                  <i className="bi bi-robot" aria-hidden />
+                  <Bot size={14} strokeWidth={1.75} aria-hidden />
                   {AGENT_LABELS[t.agent]}
                 </span>
                 <span className={s.modCardCta}>
-                  Abrir <i className="bi bi-arrow-right" aria-hidden />
+                  Abrir <ArrowRight size={14} strokeWidth={1.75} aria-hidden />
                 </span>
               </div>
             </button>
@@ -203,7 +204,7 @@ function TemplateModal({ template, onClose }: { template: Template; onClose: () 
       await navigator.clipboard.writeText(template.prompt)
       toast('success', 'Prompt copiado. Cole no agente aberto.')
     } catch {
-      toast('error', 'Nao foi possivel copiar. Copie manualmente da caixa abaixo.')
+      toast('error', 'Não foi possível copiar. Copie manualmente da caixa abaixo.')
     }
     setCopying(false)
   }
@@ -211,7 +212,7 @@ function TemplateModal({ template, onClose }: { template: Template; onClose: () 
   async function copyOnly() {
     try {
       await navigator.clipboard.writeText(template.prompt)
-      toast('success', 'Prompt copiado para a area de transferencia.')
+      toast('success', 'Prompt copiado para a área de transferência.')
     } catch {
       toast('error', 'Falha ao copiar.')
     }
@@ -232,7 +233,7 @@ function TemplateModal({ template, onClose }: { template: Template; onClose: () 
           className={s.modClose}
           aria-label="Fechar"
         >
-          <i className="bi bi-x-lg" aria-hidden />
+          <X size={14} strokeWidth={1.75} aria-hidden />
         </button>
 
         <div className={s.modSerial}>
@@ -259,10 +260,10 @@ function TemplateModal({ template, onClose }: { template: Template; onClose: () 
             className={s.modBtnPrimary}
           >
             {copying ? 'Copiando...' : `Copiar e abrir ${AGENT_LABELS[template.agent]}`}
-            <i className="bi bi-arrow-right" aria-hidden />
+            <ArrowRight size={14} strokeWidth={1.75} aria-hidden />
           </Link>
           <button type="button" onClick={copyOnly} className={s.modBtnGhost}>
-            <i className="bi bi-clipboard" aria-hidden /> Apenas copiar prompt
+            <Clipboard size={14} strokeWidth={1.75} aria-hidden /> Apenas copiar prompt
           </button>
         </div>
       </div>

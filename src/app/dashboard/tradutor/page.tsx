@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Languages, Zap, ArrowRight, AlertTriangle, Clipboard, Check, RotateCcw, Info } from 'lucide-react'
 
 interface TradutorResult {
   traducao: string
@@ -16,8 +17,8 @@ const IDIOMAS_DESTINO = ['Português (PT)', 'Inglês (EN)', 'Espanhol (ES)', 'Fr
 const TIPOS_DOC = [
   'Contrato internacional',
   'Tratado',
-  'Procuracao',
-  'Decisao judicial estrangeira',
+  'Procuração',
+  'Decisão judicial estrangeira',
   'Parecer',
   'Outro',
 ]
@@ -49,9 +50,9 @@ const EXEMPLOS = [
 type TabKey = 'traducao' | 'notas' | 'alertas'
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'traducao', label: 'Traducao' },
-  { key: 'notas', label: 'Notas Terminologicas' },
-  { key: 'alertas', label: 'Alertas Juridicos' },
+  { key: 'traducao', label: 'Tradução' },
+  { key: 'notas', label: 'Notas Terminológicas' },
+  { key: 'alertas', label: 'Alertas Jurídicos' },
 ]
 
 export default function TradutorPage() {
@@ -108,17 +109,17 @@ export default function TradutorPage() {
   function copiarResultado() {
     if (!resultado) return
     const conteudo = [
-      '=== TRADUCAO JURIDICA ===',
+      '=== TRADUÇÃO JURÍDICA ===',
       '',
       `${origem} → ${destino} | ${tipo}`,
       '',
-      'TRADUCAO',
+      'TRADUÇÃO',
       resultado.traducao,
       '',
-      'NOTAS TERMINOLOGICAS',
+      'NOTAS TERMINOLÓGICAS',
       resultado.notas,
       '',
-      'ALERTAS JURIDICOS',
+      'ALERTAS JURÍDICOS',
       resultado.alertas,
     ].join('\n')
     navigator.clipboard.writeText(conteudo)
@@ -144,9 +145,9 @@ export default function TradutorPage() {
             Agente IA
           </span>
         </div>
-        <h1 className="page-title">Tradutor Juridico</h1>
+        <h1 className="page-title">Tradutor Jurídico</h1>
         <p className="page-subtitle" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 16, color: 'var(--text-muted)' }}>
-          Traducao tecnica de contratos, tratados e documentos internacionais
+          Tradução técnica de contratos, tratados e documentos internacionais
         </p>
       </div>
 
@@ -154,8 +155,8 @@ export default function TradutorPage() {
       {!resultado && !loading && (
         <>
           <div className="section-card" style={{ padding: '24px 28px', marginBottom: 32 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 20 }}>
-              <i className="bi bi-translate" style={{ marginRight: 6 }} />Configurar traducao
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 20, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Languages size={14} strokeWidth={1.75} aria-hidden />Configurar tradução
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }} className="tradutor-form-grid">
@@ -221,7 +222,7 @@ export default function TradutorPage() {
                 onChange={e => setTexto(e.target.value)}
                 maxLength={8000}
                 rows={8}
-                placeholder="Cole aqui o trecho ou documento juridico que deseja traduzir..."
+                placeholder="Cole aqui o trecho ou documento jurídico que deseja traduzir..."
                 className="form-input"
                 style={{ width: '100%', resize: 'vertical', minHeight: 180, lineHeight: 1.6 }}
               />
@@ -234,17 +235,17 @@ export default function TradutorPage() {
               onClick={traduzir}
               disabled={loading || !texto.trim()}
               className="btn-primary"
-              style={{ width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 600, opacity: !texto.trim() ? 0.5 : 1 }}
+              style={{ width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 600, opacity: !texto.trim() ? 0.5 : 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
             >
-              <i className="bi bi-translate" style={{ marginRight: 8 }} />
+              <Languages size={14} strokeWidth={1.75} aria-hidden />
               Traduzir documento
             </button>
           </div>
 
           {/* Exemplos rapidos */}
           <div className="section-card" style={{ padding: '20px 24px', marginBottom: 32 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 14 }}>
-              <i className="bi bi-lightning" style={{ marginRight: 6 }} />Exemplos rapidos
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Zap size={14} strokeWidth={1.75} aria-hidden />Exemplos rápidos
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {EXEMPLOS.map((ex, idx) => (
@@ -277,7 +278,7 @@ export default function TradutorPage() {
                       {ex.origem} → {ex.destino} · {ex.tipo}
                     </div>
                   </div>
-                  <i className="bi bi-arrow-right" style={{ color: 'var(--text-muted)', fontSize: 14, marginTop: 6 }} />
+                  <ArrowRight size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)', marginTop: 6 }} />
                 </button>
               ))}
             </div>
@@ -288,7 +289,7 @@ export default function TradutorPage() {
       {/* Erro */}
       {erro && (
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden /> {erro}
         </div>
       )}
 
@@ -308,7 +309,7 @@ export default function TradutorPage() {
           <div className="section-card" style={{ padding: '16px 20px', marginBottom: 32, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className="bi bi-translate" style={{ fontSize: 18, color: 'var(--accent)' }} />
+                <Languages size={18} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
               </div>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{tipo}</div>
@@ -322,13 +323,13 @@ export default function TradutorPage() {
                 type="button"
                 onClick={copiarResultado}
                 className="btn-secondary"
-                style={{ fontSize: 12, padding: '8px 16px' }}
+                style={{ fontSize: 12, padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
-                <i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'}`} style={{ marginRight: 6 }} />
+                {copied ? <Check size={14} strokeWidth={1.75} aria-hidden /> : <Clipboard size={14} strokeWidth={1.75} aria-hidden />}
                 {copied ? 'Copiado' : 'Copiar tudo'}
               </button>
-              <button type="button" onClick={novaTraducao} className="btn-secondary" style={{ fontSize: 12, padding: '8px 16px' }}>
-                <i className="bi bi-arrow-counterclockwise" style={{ marginRight: 6 }} />Nova traducao
+              <button type="button" onClick={novaTraducao} className="btn-secondary" style={{ fontSize: 12, padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <RotateCcw size={14} strokeWidth={1.75} aria-hidden />Nova tradução
               </button>
             </div>
           </div>
@@ -361,11 +362,11 @@ export default function TradutorPage() {
             {/* Tab content */}
             <div style={{ padding: '24px 28px' }}>
               <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
-                {getTabContent() || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Nenhuma informacao disponivel para esta secao.</span>}
+                {getTabContent() || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Nenhuma informação disponível para esta seção.</span>}
               </div>
               {activeTab === 'traducao' && resultado.confianca != null && (
                 <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border)', fontSize: 12, color: 'var(--text-muted)' }}>
-                  Confianca da traducao: {Math.round(resultado.confianca * 100)}%
+                  Confiança da tradução: {Math.round(resultado.confianca * 100)}%
                 </div>
               )}
             </div>
@@ -379,21 +380,21 @@ export default function TradutorPage() {
             marginBottom: 32,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-              <i className="bi bi-info-circle" style={{ fontSize: 13, color: 'var(--accent)' }} />
+              <Info size={13} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
               <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)' }}>
                 Aviso importante
               </span>
             </div>
             <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-              Esta traducao foi gerada por inteligencia artificial para fins informativos. Documentos juridicos com efeitos legais devem ser revisados por tradutor juridico juramentado ou advogado habilitado nas jurisdicoes pertinentes.
+              Esta tradução foi gerada por inteligência artificial para fins informativos. Documentos jurídicos com efeitos legais devem ser revisados por tradutor jurídico juramentado ou advogado habilitado nas jurisdições pertinentes.
             </p>
           </div>
 
           {/* Botao final */}
           <div style={{ textAlign: 'center', marginTop: 8 }}>
-            <button type="button" onClick={novaTraducao} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13 }}>
-              <i className="bi bi-arrow-counterclockwise" style={{ marginRight: 8 }} />
-              Nova traducao
+            <button type="button" onClick={novaTraducao} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <RotateCcw size={14} strokeWidth={1.75} aria-hidden />
+              Nova tradução
             </button>
           </div>
         </>
@@ -406,11 +407,11 @@ export default function TradutorPage() {
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 72, height: 72, borderRadius: '50%',
             background: 'var(--accent-light)', color: 'var(--accent)',
-            fontSize: 32, marginBottom: 16,
+            marginBottom: 16,
           }}>
-            <i className="bi bi-translate" />
+            <Languages size={32} strokeWidth={1.75} aria-hidden />
           </div>
-          <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Traduza documentos juridicos com precisao tecnica</div>
+          <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Traduza documentos jurídicos com precisão técnica</div>
           <div style={{ fontSize: 13 }}>Selecione os idiomas, o tipo de documento e cole o texto acima</div>
         </div>
       )}
