@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ExitIntent } from '@/components/ExitIntent'
+import { LexPricing } from '@/components/ui/lex-pricing'
 import s from './page.module.css'
 
 /* ----------------------------------------------------------------------------
@@ -32,7 +33,7 @@ const agentes = [
 ]
 
 const provas = [
-  { n: 'I',   metric: '12',       label: 'Agentes especializados' },
+  { n: 'I',   metric: '22',       label: 'Agentes especializados' },
   { n: 'II',  metric: '9',        label: 'Areas do Direito cobertas' },
   { n: 'III', metric: '4 min',    label: 'Por analise de documento',   nota: '(media do beta fechado)' },
   { n: 'IV',  metric: '+R$1.600', label: 'Economizados por consulta',  nota: '(estimativa por consulta)' },
@@ -50,31 +51,6 @@ const depoimentos = [
     name: 'Mariana Castro',
     cargo: 'Advogada Civil · SP',
     quote: 'Em duas semanas economizei mais de vinte horas de pesquisa. O Pesquisador encontra acordaos que eu nem sabia que existiam.',
-  },
-]
-
-const planos = [
-  {
-    name: 'Escritorio',
-    price: '1.399',
-    seats: '1–5 advogados',
-    headline: '5 agentes · 200 documentos / mes',
-    features: ['Resumidor, Pesquisador, Redator, Calculador, Monitor Legislativo', 'Historico de 45 dias', 'Suporte por email em 24h'],
-  },
-  {
-    name: 'Firma',
-    price: '1.459',
-    seats: '6–15 advogados',
-    headline: '12 agentes · documentos ilimitados',
-    popular: true,
-    features: ['Todos os agentes especializados', 'Exportacao em PDF', 'Suporte prioritario em 3h', 'Historico de 90 dias', 'Sessao de onboarding dedicada', 'Compra avulsa de tokens'],
-  },
-  {
-    name: 'Enterprise',
-    price: '1.599',
-    seats: '16+ advogados',
-    headline: 'Ilimitado · agentes customizados',
-    features: ['Agentes customizados para o escritorio', 'API privada + SLA de uptime', 'Gerente de conta dedicado', 'Historico ilimitado', 'Opcao on-premise', 'DPA incluso'],
   },
 ]
 
@@ -266,7 +242,7 @@ export default function LandingPage() {
               </span>
             </h1>
             <p className={`${s.heroLede} ${s.line}`} style={{ '--d': '420ms' } as React.CSSProperties}>
-              Doze agentes treinados no ordenamento juridico brasileiro. Cada um afinado como
+              Vinte e dois agentes treinados no ordenamento juridico brasileiro. Cada um afinado como
               uma ferramenta de precisao — documentos, jurisprudencia, calculos, pecas
               processuais. Cada prompt afinado. Cada resposta revisada. Nenhum prazo perdido.
             </p>
@@ -294,7 +270,7 @@ export default function LandingPage() {
                 <span className={s.serial}>MMXXVI</span>
               </div>
               <div>
-                <div className={s.heroCardMetric}>12</div>
+                <div className={s.heroCardMetric}>22</div>
                 <div className={s.heroCardMetricLabel}>agentes</div>
                 <Rule />
                 <p className={s.heroCardQuote}>
@@ -350,7 +326,7 @@ export default function LandingPage() {
         <div className={s.sectionHead} data-reveal>
           <SerialLabel>Capitulo I</SerialLabel>
           <h2 className={s.sectionTitle}>
-            Doze agentes. <em className={s.italic}>Um unico gabinete.</em>
+            Vinte e dois agentes. <em className={s.italic}>Um unico gabinete.</em>
           </h2>
           <p className={s.sectionSub}>
             Nao e um assistente generico. Cada agente foi afinado para uma funcao especifica do
@@ -606,46 +582,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── PRICING ────────────────────────────────────────────────────── */}
-      <section id="planos" className={s.planosSection}>
-        <div className={s.sectionHead} data-reveal>
-          <SerialLabel>Capitulo VI · Acesso</SerialLabel>
-          <h2 className={s.sectionTitle}>
-            Planos <em className={s.italic}>transparentes</em>.
-          </h2>
-          <p className={s.sectionSub}>
-            Demonstracao guiada de 30 minutos · Sem compromisso.
-          </p>
-        </div>
-        <Rule />
-
-        <div className={s.plans} data-reveal>
-          {planos.map((p, i) => (
-            <div key={p.name} className={`${s.plan}${p.popular ? ` ${s.planPopular}` : ''}`} style={{ '--reveal-delay': `${i * 130}ms` } as React.CSSProperties}>
-              {p.popular && <div className={s.planBadge}>Mais escolhido</div>}
-              <div className={s.planName}>{p.name}</div>
-              <div className={s.planSeats}>{p.seats}</div>
-              <div className={s.planPrice}>
-                <span className={s.planCurrency}>R$</span>
-                <span className={s.planValue}>{p.price}</span>
-              </div>
-              <div className={s.planPerSeat}>por advogado / mes</div>
-              <div className={s.planHeadline}>{p.headline}</div>
-              <ul className={s.planFeatures}>
-                {p.features.map((f) => (
-                  <li key={f}>
-                    <span aria-hidden className={s.planDot} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/login" className={`${s.planCta}${p.popular ? ` ${s.planCtaSolid}` : ''}`}>
-                {i === 0 ? 'Comecar 7 dias gratis' : 'Agendar demonstracao'}
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── PRICING — usa LexPricing com toggle mensal/anual ──────────── */}
+      <LexPricing />
 
       {/* ── CLOSING MARK ───────────────────────────────────────────────── */}
       <section className={s.closingSection}>
