@@ -2,11 +2,10 @@
 
 import { useState, useEffect, type ComponentType, type SVGProps } from 'react'
 import {
-  FileText, RotateCcw, ShieldCheck, BookOpen, Scroll, Mail,
-  Users, AlignLeft, BookMarked, ListChecks, Folder, CreditCard, Pencil,
-  Box, Settings, MailWarning, HelpCircle, ClipboardList,
-  CheckCircle2, Clock, Search, ArrowRight, AlertTriangle, Sparkles, Wand2, Info,
-  ArrowLeft, FileType2, RefreshCcw, X, Inbox, Trash2,
+  FileText, FileSignature, ShieldCheck, Mail, BookText, ScrollText,
+  Users, UserSquare, Folder, Package, Settings, MailWarning, HelpCircle, ClipboardList,
+  Clock, Search, ArrowRight, ArrowLeft, AlertTriangle, Sparkles, Wand2, Info,
+  CheckCircle2, Check, Clipboard, RotateCcw, Pencil, PenSquare, Trash2, X, Inbox,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
@@ -15,15 +14,17 @@ import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 import { SkeletonResult } from '@/components/Skeleton'
 import { toast } from '@/components/Toast'
 
+type IconType = ComponentType<SVGProps<SVGSVGElement> & { size?: number | string }>
+
 const LEGAL_TEMPLATES_WITH_CNPJ = new Set(['peticao', 'contestacao', 'contrato', 'notificacao', 'recurso', 'parecer'])
 
-const TEMPLATES = [
-  { id: 'peticao',      label: 'Petição Inicial',  icon: 'bi-file-earmark-text',  desc: 'Petição inicial para distribuição de ação' },
-  { id: 'recurso',      label: 'Recurso',           icon: 'bi-arrow-counterclockwise', desc: 'Apelação, Agravo ou Recurso Especial' },
-  { id: 'contestacao',  label: 'Contestação',       icon: 'bi-shield-check',       desc: 'Defesa do réu em resposta à petição' },
-  { id: 'parecer',      label: 'Parecer Jurídico',  icon: 'bi-journal-text',       desc: 'Análise técnica de questão jurídica' },
-  { id: 'contrato',     label: 'Contrato',          icon: 'bi-file-earmark-ruled', desc: 'Minutas e modelos contratuais' },
-  { id: 'notificacao',  label: 'Notificação',       icon: 'bi-envelope-paper',     desc: 'Notificação extrajudicial' },
+const TEMPLATES: Array<{ id: string; label: string; Icon: IconType; desc: string }> = [
+  { id: 'peticao',      label: 'Petição Inicial',  Icon: FileText,      desc: 'Petição inicial para distribuição de ação' },
+  { id: 'recurso',      label: 'Recurso',           Icon: RotateCcw,     desc: 'Apelação, Agravo ou Recurso Especial' },
+  { id: 'contestacao',  label: 'Contestação',       Icon: ShieldCheck,   desc: 'Defesa do réu em resposta à petição' },
+  { id: 'parecer',      label: 'Parecer Jurídico',  Icon: BookText,      desc: 'Análise técnica de questão jurídica' },
+  { id: 'contrato',     label: 'Contrato',          Icon: ScrollText,    desc: 'Minutas e modelos contratuais' },
+  { id: 'notificacao',  label: 'Notificação',       Icon: Mail,          desc: 'Notificação extrajudicial' },
 ]
 
 interface WizardField {
@@ -38,81 +39,81 @@ interface WizardField {
 
 interface WizardSection {
   titulo: string
-  icone: string
+  Icon: IconType
   fields: WizardField[]
 }
 
 const WIZARD_FIELDS: Record<string, WizardSection[]> = {
   peticao: [
     {
-      titulo: 'Partes', icone: 'bi-people-fill',
+      titulo: 'Partes', Icon: Users,
       fields: [
-        { key: 'autor_nome', label: 'Nome do autor', placeholder: 'Ex: Joao Silva', type: 'text', required: true },
-        { key: 'autor_qualificacao', label: 'Qualificacao do autor', placeholder: 'Ex: brasileiro, casado, engenheiro, CPF 123.456.789-00, residente...', type: 'textarea', required: true },
-        { key: 'reu_nome', label: 'Nome do reu', placeholder: 'Ex: Empresa XYZ Ltda', type: 'text', required: true },
-        { key: 'reu_qualificacao', label: 'Qualificacao do reu', placeholder: 'Ex: CNPJ 00.000.000/0000-00, sede em...', type: 'textarea', required: true, hint: 'Voce pode usar o widget de consulta CNPJ acima para preencher automaticamente' },
+        { key: 'autor_nome', label: 'Nome do autor', placeholder: 'Ex: João Silva', type: 'text', required: true },
+        { key: 'autor_qualificacao', label: 'Qualificação do autor', placeholder: 'Ex: brasileiro, casado, engenheiro, CPF 123.456.789-00, residente...', type: 'textarea', required: true },
+        { key: 'reu_nome', label: 'Nome do réu', placeholder: 'Ex: Empresa XYZ Ltda', type: 'text', required: true },
+        { key: 'reu_qualificacao', label: 'Qualificação do réu', placeholder: 'Ex: CNPJ 00.000.000/0000-00, sede em...', type: 'textarea', required: true, hint: 'Você pode usar o widget de consulta CNPJ acima para preencher automaticamente' },
       ],
     },
     {
-      titulo: 'Fatos', icone: 'bi-card-text',
+      titulo: 'Fatos', Icon: FileText,
       fields: [
-        { key: 'fatos', label: 'Narrativa dos fatos', placeholder: 'Descreva em ordem cronologica o que aconteceu, com datas, valores, documentos...', type: 'textarea', required: true },
+        { key: 'fatos', label: 'Narrativa dos fatos', placeholder: 'Descreva em ordem cronológica o que aconteceu, com datas, valores, documentos...', type: 'textarea', required: true },
       ],
     },
     {
-      titulo: 'Direito', icone: 'bi-book',
+      titulo: 'Direito', Icon: BookText,
       fields: [
-        { key: 'area', label: 'Area do Direito', placeholder: '', type: 'select', options: ['Civil', 'Consumidor', 'Trabalhista', 'Tributario', 'Administrativo', 'Empresarial', 'Outro'], required: true },
+        { key: 'area', label: 'Área do Direito', placeholder: '', type: 'select', options: ['Civil', 'Consumidor', 'Trabalhista', 'Tributário', 'Administrativo', 'Empresarial', 'Outro'], required: true },
         { key: 'valor_causa', label: 'Valor da causa', placeholder: '10.000,00', type: 'money', required: true },
       ],
     },
     {
-      titulo: 'Pedidos', icone: 'bi-list-check',
+      titulo: 'Pedidos', Icon: ClipboardList,
       fields: [
-        { key: 'pedidos', label: 'Pedidos (um por linha)', placeholder: '1. Condenacao ao pagamento de R$...\n2. Danos morais...\n3. Honorarios advocaticios...', type: 'textarea', required: true },
+        { key: 'pedidos', label: 'Pedidos (um por linha)', placeholder: '1. Condenação ao pagamento de R$...\n2. Danos morais...\n3. Honorários advocatícios...', type: 'textarea', required: true },
       ],
     },
   ],
 
   contestacao: [
     {
-      titulo: 'Processo', icone: 'bi-folder',
+      titulo: 'Processo', Icon: Folder,
       fields: [
-        { key: 'numero_processo', label: 'Numero do processo', placeholder: '0000000-00.0000.0.00.0000', type: 'text', required: true },
-        { key: 'vara', label: 'Vara/Comarca', placeholder: 'Ex: 3a Vara Civel de Uberlandia/MG', type: 'text', required: true },
+        { key: 'numero_processo', label: 'Número do processo', placeholder: '0000000-00.0000.0.00.0000', type: 'text', required: true },
+        { key: 'vara', label: 'Vara/Comarca', placeholder: 'Ex: 3ª Vara Cível de Uberlândia/MG', type: 'text', required: true },
       ],
     },
     {
-      titulo: 'Reu (seu cliente)', icone: 'bi-person-badge',
+      titulo: 'Réu (seu cliente)', Icon: UserSquare,
       fields: [
         { key: 'reu_nome', label: 'Nome', placeholder: '', type: 'text', required: true },
-        { key: 'reu_qualificacao', label: 'Qualificacao', placeholder: '', type: 'textarea', required: true },
+        { key: 'reu_qualificacao', label: 'Qualificação', placeholder: '', type: 'textarea', required: true },
       ],
     },
     {
-      titulo: 'Tese de defesa', icone: 'bi-shield-check',
+      titulo: 'Tese de defesa', Icon: ShieldCheck,
       fields: [
-        { key: 'preliminares', label: 'Preliminares (opcional)', placeholder: 'Ex: ilegitimidade passiva, prescricao, incompetencia...', type: 'textarea' },
-        { key: 'merito', label: 'Razoes de merito', placeholder: 'Por que o pedido do autor deve ser rejeitado?', type: 'textarea', required: true },
-        { key: 'provas', label: 'Provas que pretende produzir', placeholder: 'Ex: depoimento pessoal, testemunhas, pericia...', type: 'textarea' },
+        { key: 'preliminares', label: 'Preliminares (opcional)', placeholder: 'Ex: ilegitimidade passiva, prescrição, incompetência...', type: 'textarea' },
+        { key: 'merito', label: 'Razões de mérito', placeholder: 'Por que o pedido do autor deve ser rejeitado?', type: 'textarea', required: true },
+        { key: 'provas', label: 'Provas que pretende produzir', placeholder: 'Ex: depoimento pessoal, testemunhas, perícia...', type: 'textarea' },
       ],
     },
   ],
 
   recurso: [
     {
-      titulo: 'Decisao recorrida', icone: 'bi-file-earmark',
+      titulo: 'Decisão recorrida', Icon: FileText,
       fields: [
-        { key: 'tipo_recurso', label: 'Tipo de recurso', placeholder: '', type: 'select', options: ['Apelacao', 'Agravo de Instrumento', 'Recurso Especial', 'Recurso Extraordinario', 'Embargos de Declaracao'], required: true },
-        { key: 'numero_processo', label: 'Numero do processo', placeholder: '0000000-00.0000.0.00.0000', type: 'text', required: true },
-        { key: 'data_decisao', label: 'Data da decisao', placeholder: '', type: 'date', required: true },
-        { key: 'resumo_decisao', label: 'Resumo da decisao recorrida', placeholder: 'O que foi decidido?', type: 'textarea', required: true },
+        { key: 'tipo_recurso', label: 'Tipo de recurso', placeholder: '', type: 'select', options: ['Apelação', 'Agravo de Instrumento', 'Recurso Especial', 'Recurso Extraordinário', 'Embargos de Declaração'], required: true },
+        { key: 'numero_processo', label: 'Número do processo', placeholder: '0000000-00.0000.0.00.0000', type: 'text', required: true },
+        { key: 'data_decisao', label: 'Data da decisão', placeholder: '', type: 'date', required: true },
+        { key: 'resumo_decisao', label: 'Resumo da decisão recorrida', placeholder: 'O que foi decidido?', type: 'textarea', required: true },
       ],
     },
     {
-      titulo: 'Razoes do recurso', icone: 'bi-pencil-square',
+      titulo: 'Razões do recurso', Icon: PenSquare,
       fields: [
-        { key: 'erros_decisao', label: 'Onde a decisao errou?', placeholder: 'Aponte os pontos especificos em que a sentenca/acordao se equivocou', type: 'textarea', required: true },
+        { key: 'erros_decisao', label: 'Onde a decisão errou?', placeholder: 'Aponte os pontos específicos em que a sentença/acórdão se equivocou', type: 'textarea', required: true },
         { key: 'pedidos_recurso', label: 'O que pede no recurso?', placeholder: 'Reformar? Anular? Qual o provimento desejado?', type: 'textarea', required: true },
       ],
     },
@@ -120,69 +121,69 @@ const WIZARD_FIELDS: Record<string, WizardSection[]> = {
 
   contrato: [
     {
-      titulo: 'Tipo de contrato', icone: 'bi-file-earmark-ruled',
+      titulo: 'Tipo de contrato', Icon: ScrollText,
       fields: [
-        { key: 'tipo_contrato', label: 'Tipo', placeholder: '', type: 'select', options: ['Prestacao de servicos', 'Compra e venda', 'Locacao', 'Representacao comercial', 'Confidencialidade (NDA)', 'Outro'], required: true },
+        { key: 'tipo_contrato', label: 'Tipo', placeholder: '', type: 'select', options: ['Prestação de serviços', 'Compra e venda', 'Locação', 'Representação comercial', 'Confidencialidade (NDA)', 'Outro'], required: true },
       ],
     },
     {
-      titulo: 'Partes', icone: 'bi-people',
+      titulo: 'Partes', Icon: Users,
       fields: [
-        { key: 'contratante', label: 'Contratante (quem contrata)', placeholder: 'Nome completo + qualificacao + CPF/CNPJ + endereco', type: 'textarea', required: true },
-        { key: 'contratado', label: 'Contratado (quem executa)', placeholder: 'Nome completo + qualificacao + CPF/CNPJ + endereco', type: 'textarea', required: true },
+        { key: 'contratante', label: 'Contratante (quem contrata)', placeholder: 'Nome completo + qualificação + CPF/CNPJ + endereço', type: 'textarea', required: true },
+        { key: 'contratado', label: 'Contratado (quem executa)', placeholder: 'Nome completo + qualificação + CPF/CNPJ + endereço', type: 'textarea', required: true },
       ],
     },
     {
-      titulo: 'Objeto e condicoes', icone: 'bi-box',
+      titulo: 'Objeto e condições', Icon: Package,
       fields: [
-        { key: 'objeto', label: 'Objeto do contrato', placeholder: 'O que sera prestado/vendido/alugado?', type: 'textarea', required: true },
+        { key: 'objeto', label: 'Objeto do contrato', placeholder: 'O que será prestado/vendido/alugado?', type: 'textarea', required: true },
         { key: 'valor', label: 'Valor', placeholder: '10.000,00', type: 'money', required: true },
-        { key: 'forma_pagamento', label: 'Forma e prazo de pagamento', placeholder: 'Ex: a vista via Pix, parcelado em 12x no cartao...', type: 'textarea', required: true },
-        { key: 'prazo_vigencia', label: 'Prazo de vigencia', placeholder: 'Ex: 12 meses, ate 31/12/2026, indeterminado...', type: 'text', required: true },
+        { key: 'forma_pagamento', label: 'Forma e prazo de pagamento', placeholder: 'Ex: à vista via Pix, parcelado em 12x no cartão...', type: 'textarea', required: true },
+        { key: 'prazo_vigencia', label: 'Prazo de vigência', placeholder: 'Ex: 12 meses, até 31/12/2026, indeterminado...', type: 'text', required: true },
       ],
     },
     {
-      titulo: 'Condicoes especiais', icone: 'bi-gear',
+      titulo: 'Condições especiais', Icon: Settings,
       fields: [
-        { key: 'multa_rescisoria', label: 'Multa rescisoria (%)', placeholder: 'Ex: 10% do valor restante', type: 'text' },
-        { key: 'foro', label: 'Foro eleito', placeholder: 'Ex: Uberlandia/MG', type: 'text', required: true },
-        { key: 'observacoes', label: 'Observacoes adicionais', placeholder: 'Clausulas extras que voce quer incluir', type: 'textarea' },
+        { key: 'multa_rescisoria', label: 'Multa rescisória (%)', placeholder: 'Ex: 10% do valor restante', type: 'text' },
+        { key: 'foro', label: 'Foro eleito', placeholder: 'Ex: Uberlândia/MG', type: 'text', required: true },
+        { key: 'observacoes', label: 'Observações adicionais', placeholder: 'Cláusulas extras que você quer incluir', type: 'textarea' },
       ],
     },
   ],
 
   notificacao: [
     {
-      titulo: 'Partes', icone: 'bi-people',
+      titulo: 'Partes', Icon: Users,
       fields: [
-        { key: 'notificante', label: 'Notificante (quem envia)', placeholder: 'Nome + qualificacao + CPF/CNPJ', type: 'textarea', required: true },
-        { key: 'notificado', label: 'Notificado (quem recebe)', placeholder: 'Nome + qualificacao + endereco completo', type: 'textarea', required: true },
+        { key: 'notificante', label: 'Notificante (quem envia)', placeholder: 'Nome + qualificação + CPF/CNPJ', type: 'textarea', required: true },
+        { key: 'notificado', label: 'Notificado (quem recebe)', placeholder: 'Nome + qualificação + endereço completo', type: 'textarea', required: true },
       ],
     },
     {
-      titulo: 'Notificacao', icone: 'bi-envelope-exclamation',
+      titulo: 'Notificação', Icon: MailWarning,
       fields: [
-        { key: 'motivo', label: 'Motivo da notificacao', placeholder: 'Ex: cobranca de divida, exigencia de cumprimento de contrato, denuncia de locacao...', type: 'textarea', required: true },
+        { key: 'motivo', label: 'Motivo da notificação', placeholder: 'Ex: cobrança de dívida, exigência de cumprimento de contrato, denúncia de locação...', type: 'textarea', required: true },
         { key: 'exigencia', label: 'O que exige do notificado?', placeholder: 'Ex: pagamento do valor X em 10 dias, entrega de documento...', type: 'textarea', required: true },
         { key: 'prazo', label: 'Prazo concedido', placeholder: 'Ex: 10 dias a partir do recebimento', type: 'text', required: true },
-        { key: 'consequencia', label: 'Consequencia do descumprimento', placeholder: 'Ex: acao judicial com pedido de multa, rescisao contratual...', type: 'textarea', required: true },
+        { key: 'consequencia', label: 'Consequência do descumprimento', placeholder: 'Ex: ação judicial com pedido de multa, rescisão contratual...', type: 'textarea', required: true },
       ],
     },
   ],
 
   parecer: [
     {
-      titulo: 'Consulta', icone: 'bi-question-circle',
+      titulo: 'Consulta', Icon: HelpCircle,
       fields: [
         { key: 'consulente', label: 'Consulente', placeholder: 'Quem pediu o parecer', type: 'text', required: true },
-        { key: 'questao', label: 'Questao juridica', placeholder: 'Qual e a duvida juridica a ser respondida?', type: 'textarea', required: true },
+        { key: 'questao', label: 'Questão jurídica', placeholder: 'Qual é a dúvida jurídica a ser respondida?', type: 'textarea', required: true },
       ],
     },
     {
-      titulo: 'Contexto fatico', icone: 'bi-clipboard-data',
+      titulo: 'Contexto fático', Icon: ClipboardList,
       fields: [
         { key: 'fatos', label: 'Fatos relevantes', placeholder: 'Descreva o contexto factual', type: 'textarea', required: true },
-        { key: 'documentos', label: 'Documentos analisados', placeholder: 'Contratos, decisoes, pareceres anteriores...', type: 'textarea' },
+        { key: 'documentos', label: 'Documentos analisados', placeholder: 'Contratos, decisões, pareceres anteriores...', type: 'textarea' },
       ],
     },
   ],
@@ -283,7 +284,7 @@ export default function RedatorPage() {
       clearDraft('lexai-draft-redator')
 
       // Fire-and-forget: save draft without blocking UI
-      saveDraft('redator', data.peca?.titulo || 'Peca sem titulo', data.peca)
+      saveDraft('redator', data.peca?.titulo || 'Peça sem título', data.peca)
         .then(row => {
           if (row) {
             setCurrentDraftId(row.id)
@@ -315,7 +316,7 @@ export default function RedatorPage() {
     if (!template) return
     const missing = wizardRequiredMissing()
     if (missing.length > 0) {
-      setErro(`Preencha os campos obrigatorios: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '...' : ''}`)
+      setErro(`Preencha os campos obrigatórios: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '...' : ''}`)
       return
     }
     const built = wizardValuesToInstrucoes(template, wizardValues)
@@ -329,7 +330,7 @@ export default function RedatorPage() {
       setShowDraftsModal(false)
       setErro('')
     } catch {
-      setErro('Nao foi possivel carregar o rascunho')
+      setErro('Não foi possível carregar o rascunho')
     }
   }
 
@@ -362,7 +363,7 @@ export default function RedatorPage() {
     try {
       const paragraphs = peca.documento.split(/\n\n+/).filter(p => p.trim())
       const sections = [{ paragraphs }]
-      const blob = await generateDocx(peca.titulo || 'Peca Juridica', sections)
+      const blob = await generateDocx(peca.titulo || 'Peça Jurídica', sections)
       const safeTitle = (peca.titulo || 'peca').replace(/[^\w\s-]/g, '').trim().slice(0, 60) || 'peca'
       downloadBlob(blob, `${safeTitle}.docx`)
     } catch (e: unknown) {
@@ -378,20 +379,20 @@ export default function RedatorPage() {
     try {
       const { lookupCNPJ, isValidCnpj, formatCnpj } = await import('@/lib/brasil-api')
       if (!isValidCnpj(cnpjLookup)) {
-        setCnpjError('CNPJ invalido')
+        setCnpjError('CNPJ inválido')
         setCnpjLoading(false)
         return
       }
       const data = await lookupCNPJ(cnpjLookup)
       if (!data) {
-        setCnpjError('CNPJ nao encontrado')
+        setCnpjError('CNPJ não encontrado')
         setCnpjLoading(false)
         return
       }
       const qualificacao = `${data.razao_social}${data.nome_fantasia ? ` (${data.nome_fantasia})` : ''}, CNPJ ${formatCnpj(data.cnpj)}, com sede em ${data.logradouro}, ${data.numero}${data.complemento ? `, ${data.complemento}` : ''}, ${data.bairro}, ${data.municipio}/${data.uf}, CEP ${data.cep}`
       setInstrucoes(prev => prev ? `${prev}\n\n${qualificacao}` : qualificacao)
       setCnpjLookup('')
-      toast('success', `${data.razao_social} adicionado as instrucoes`)
+      toast('success', `${data.razao_social} adicionado às instruções`)
     } catch {
       setCnpjError('Erro ao consultar CNPJ. Tente novamente.')
     } finally {
@@ -425,7 +426,7 @@ export default function RedatorPage() {
               borderRadius: 20, background: 'var(--success-light)', color: 'var(--success)',
               border: '1px solid var(--success)',
             }}>
-              <i className="bi bi-check-circle-fill" /> Salvo como rascunho
+              <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden /> Salvo como rascunho
             </span>
           )}
           <button
@@ -434,7 +435,7 @@ export default function RedatorPage() {
             className="btn-ghost"
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: '8px 14px' }}
           >
-            <i className="bi bi-clock-history" /> Meus rascunhos
+            <Clock size={14} strokeWidth={1.75} aria-hidden /> Meus rascunhos
           </button>
         </div>
       </div>
@@ -460,9 +461,10 @@ export default function RedatorPage() {
                     boxShadow: modo === 'livre' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
                     fontFamily: "'DM Sans', sans-serif",
                     transition: 'all 0.15s ease',
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
                   }}
                 >
-                  <i className="bi bi-pencil" style={{ marginRight: 6 }} />Modo livre
+                  <Pencil size={14} strokeWidth={1.75} aria-hidden />Modo livre
                 </button>
                 <button
                   type="button"
@@ -475,15 +477,17 @@ export default function RedatorPage() {
                     boxShadow: modo === 'guiado' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
                     fontFamily: "'DM Sans', sans-serif",
                     transition: 'all 0.15s ease',
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
                   }}
                 >
-                  <i className="bi bi-stars" style={{ marginRight: 6 }} />Modo guiado
+                  <Sparkles size={14} strokeWidth={1.75} aria-hidden />Modo guiado
                 </button>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {TEMPLATES.map(t => {
                 const isActive = template === t.id
+                const TIcon = t.Icon
                 return (
                   <button
                     key={t.id}
@@ -491,10 +495,19 @@ export default function RedatorPage() {
                     className={`template-card${isActive ? ' is-active' : ''}`}
                   >
                     {isActive && (
-                      <i className="bi bi-check-circle-fill template-card-check" />
+                      <CheckCircle2
+                        size={15}
+                        strokeWidth={1.75}
+                        aria-hidden
+                        className="template-card-check"
+                        style={{ color: 'var(--accent)' }}
+                      />
                     )}
-                    <i
-                      className={`bi ${t.icon} template-card-icon`}
+                    <TIcon
+                      size={16}
+                      strokeWidth={1.75}
+                      aria-hidden
+                      className="template-card-icon"
                       style={{ color: isActive ? 'var(--accent)' : 'var(--text-muted)' }}
                     />
                     <div
@@ -515,11 +528,11 @@ export default function RedatorPage() {
           <div className="section-card" style={{ padding: '18px 20px', flex: 1 }}>
             <label className="form-label">Instruções e Fatos</label>
 
-            {/* CNPJ lookup helper — visivel apenas para templates juridicos */}
+            {/* CNPJ lookup helper — visível apenas para templates jurídicos */}
             {LEGAL_TEMPLATES_WITH_CNPJ.has(template) && (
               <div style={{ marginBottom: 12, padding: '10px 12px', background: 'var(--accent-light)', border: '1px solid var(--border)', borderRadius: 8 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                  <i className="bi bi-search" style={{ marginRight: 5 }} />Consultar CNPJ na Receita Federal
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                  <Search size={12} strokeWidth={1.75} aria-hidden />Consultar CNPJ na Receita Federal
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <input
@@ -536,9 +549,9 @@ export default function RedatorPage() {
                     onClick={handleCnpjLookup}
                     disabled={cnpjLoading}
                     className="btn-ghost"
-                    style={{ whiteSpace: 'nowrap', fontSize: 13 }}
+                    style={{ whiteSpace: 'nowrap', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 5 }}
                   >
-                    {cnpjLoading ? 'Buscando...' : <><i className="bi bi-arrow-right" /> Buscar</>}
+                    {cnpjLoading ? 'Buscando...' : <><ArrowRight size={14} strokeWidth={1.75} aria-hidden /> Buscar</>}
                   </button>
                 </div>
                 {cnpjError && <div style={{ fontSize: 12, color: 'var(--danger)', marginTop: 6 }}>{cnpjError}</div>}
@@ -559,7 +572,7 @@ export default function RedatorPage() {
             {/* Erro */}
             {erro && (
               <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <i className="bi bi-exclamation-triangle-fill" /> {erro}
+                <AlertTriangle size={14} strokeWidth={1.75} aria-hidden /> {erro}
               </div>
             )}
 
@@ -567,11 +580,11 @@ export default function RedatorPage() {
               onClick={() => gerar()}
               disabled={!template || !instrucoes.trim() || gerando}
               className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}
+              style={{ width: '100%', justifyContent: 'center', marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 8 }}
             >
               {gerando
                 ? <><svg width="17" height="17" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}><circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" /></svg> Gerando peça com IA...</>
-                : <><i className="bi bi-magic" /> Gerar Peça</>
+                : <><Wand2 size={14} strokeWidth={1.75} aria-hidden /> Gerar Peça</>
               }
             </button>
           </div>
@@ -582,13 +595,13 @@ export default function RedatorPage() {
           <div className="section-card" style={{ padding: '18px 20px', flex: 1 }}>
             {!template ? (
               <div style={{ padding: '36px 14px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                <i className="bi bi-stars" style={{ fontSize: 32, opacity: 0.35, display: 'block', marginBottom: 10 }} />
-                <div style={{ fontSize: 13 }}>Selecione um tipo de peca acima para comecar.</div>
+                <Sparkles size={32} strokeWidth={1.75} aria-hidden style={{ opacity: 0.35, display: 'block', margin: '0 auto 10px' }} />
+                <div style={{ fontSize: 13 }}>Selecione um tipo de peça acima para começar.</div>
                 <div style={{ fontSize: 12, marginTop: 4 }}>O modo guiado vai te ajudar a preencher os campos passo a passo.</div>
               </div>
             ) : wizardSections.length === 0 ? (
               <div style={{ padding: '24px 14px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
-                Este template nao tem campos guiados. Use o modo livre.
+                Este template não tem campos guiados. Use o modo livre.
               </div>
             ) : (
               <>
@@ -602,11 +615,11 @@ export default function RedatorPage() {
                   </div>
                 </div>
 
-                {/* CNPJ lookup helper (visivel em todas as etapas que possam precisar) */}
+                {/* CNPJ lookup helper (visível em todas as etapas que possam precisar) */}
                 {LEGAL_TEMPLATES_WITH_CNPJ.has(template) && (
                   <div style={{ marginBottom: 14, padding: '10px 12px', background: 'var(--accent-light)', border: '1px solid var(--border)', borderRadius: 8 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                      <i className="bi bi-search" style={{ marginRight: 5 }} />Consultar CNPJ na Receita Federal
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                      <Search size={12} strokeWidth={1.75} aria-hidden />Consultar CNPJ na Receita Federal
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <input
@@ -623,9 +636,9 @@ export default function RedatorPage() {
                         onClick={handleCnpjLookup}
                         disabled={cnpjLoading}
                         className="btn-ghost"
-                        style={{ whiteSpace: 'nowrap', fontSize: 13 }}
+                        style={{ whiteSpace: 'nowrap', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 5 }}
                       >
-                        {cnpjLoading ? 'Buscando...' : <><i className="bi bi-arrow-right" /> Buscar</>}
+                        {cnpjLoading ? 'Buscando...' : <><ArrowRight size={14} strokeWidth={1.75} aria-hidden /> Buscar</>}
                       </button>
                     </div>
                     {cnpjError && <div style={{ fontSize: 12, color: 'var(--danger)', marginTop: 6 }}>{cnpjError}</div>}
@@ -633,12 +646,17 @@ export default function RedatorPage() {
                 )}
 
                 {/* Current section fields */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                  <i className={`bi ${wizardSections[currentStep].icone}`} style={{ fontSize: 20, color: 'var(--accent)' }} />
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                    {wizardSections[currentStep].titulo}
-                  </h3>
-                </div>
+                {(() => {
+                  const SectionIcon = wizardSections[currentStep].Icon
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                      <SectionIcon size={20} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                        {wizardSections[currentStep].titulo}
+                      </h3>
+                    </div>
+                  )
+                })()}
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   {wizardSections[currentStep].fields.map(field => {
@@ -712,8 +730,8 @@ export default function RedatorPage() {
                           </div>
                         )}
                         {field.hint && (
-                          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 5, fontStyle: 'italic' }}>
-                            <i className="bi bi-info-circle" style={{ marginRight: 4 }} />{field.hint}
+                          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 5, fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <Info size={11} strokeWidth={1.75} aria-hidden />{field.hint}
                           </div>
                         )}
                       </div>
@@ -724,7 +742,7 @@ export default function RedatorPage() {
                 {/* Erro */}
                 {erro && (
                   <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <i className="bi bi-exclamation-triangle-fill" /> {erro}
+                    <AlertTriangle size={14} strokeWidth={1.75} aria-hidden /> {erro}
                   </div>
                 )}
 
@@ -735,9 +753,9 @@ export default function RedatorPage() {
                     onClick={() => setCurrentStep(s => Math.max(0, s - 1))}
                     disabled={currentStep === 0}
                     className="btn-ghost"
-                    style={{ fontSize: 13, opacity: currentStep === 0 ? 0.5 : 1 }}
+                    style={{ fontSize: 13, opacity: currentStep === 0 ? 0.5 : 1, display: 'inline-flex', alignItems: 'center', gap: 6 }}
                   >
-                    <i className="bi bi-arrow-left" /> Anterior
+                    <ArrowLeft size={14} strokeWidth={1.75} aria-hidden /> Anterior
                   </button>
 
                   {currentStep < wizardSections.length - 1 ? (
@@ -745,9 +763,9 @@ export default function RedatorPage() {
                       type="button"
                       onClick={() => setCurrentStep(s => s + 1)}
                       className="btn-primary"
-                      style={{ fontSize: 13 }}
+                      style={{ fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6 }}
                     >
-                      Proximo <i className="bi bi-arrow-right" />
+                      Próximo <ArrowRight size={14} strokeWidth={1.75} aria-hidden />
                     </button>
                   ) : (
                     <button
@@ -755,11 +773,11 @@ export default function RedatorPage() {
                       onClick={gerarComWizard}
                       disabled={gerando}
                       className="btn-primary"
-                      style={{ fontSize: 13 }}
+                      style={{ fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6 }}
                     >
                       {gerando
                         ? <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}><circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" /></svg> Gerando...</>
-                        : <><i className="bi bi-magic" /> Gerar peca</>
+                        : <><Wand2 size={14} strokeWidth={1.75} aria-hidden /> Gerar peça</>
                       }
                     </button>
                   )}
@@ -782,20 +800,20 @@ export default function RedatorPage() {
             {peca && (
               <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5 }}
                 onClick={copiarDocumento}>
-                <i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'}`} /> {copied ? 'Copiado' : 'Copiar'}
+                {copied ? <Check size={14} strokeWidth={1.75} aria-hidden /> : <Clipboard size={14} strokeWidth={1.75} aria-hidden />} {copied ? 'Copiado' : 'Copiar'}
               </button>
             )}
             {peca && (
               <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5, opacity: exportandoWord ? 0.7 : 1, cursor: exportandoWord ? 'default' : 'pointer' }}
                 disabled={exportandoWord}
                 onClick={handleExportarWord}>
-                <i className="bi bi-file-word" /> {exportandoWord ? 'Exportando...' : 'Exportar Word'}
+                <FileText size={14} strokeWidth={1.75} aria-hidden /> {exportandoWord ? 'Exportando...' : 'Exportar Word'}
               </button>
             )}
             {peca && (
               <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5 }}
                 onClick={() => window.print()}>
-                <i className="bi bi-file-pdf" /> PDF
+                <FileText size={14} strokeWidth={1.75} aria-hidden /> PDF
               </button>
             )}
           </div>
@@ -860,7 +878,7 @@ export default function RedatorPage() {
                   fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s ease',
                 }}
               >
-                <i className="bi bi-arrow-counterclockwise" /> Nova peça
+                <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Nova peça
               </button>
 
               <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -869,7 +887,7 @@ export default function RedatorPage() {
             </div>
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)', minHeight: 300 }}>
-              <i className="bi bi-file-earmark-text" style={{ fontSize: 40, opacity: 0.3 }} />
+              <FileText size={40} strokeWidth={1.75} aria-hidden style={{ opacity: 0.3 }} />
               <span style={{ fontSize: 13, textAlign: 'center' }}>
                 Selecione um template, informe os detalhes<br />e clique em &quot;Gerar Peça&quot;
               </span>
@@ -884,7 +902,7 @@ export default function RedatorPage() {
           <div className="modal" style={{ maxWidth: 640 }}>
             <div className="modal-header">
               <span className="modal-title">Meus rascunhos</span>
-              <button className="modal-close" onClick={() => setShowDraftsModal(false)}><i className="bi bi-x" /></button>
+              <button className="modal-close" onClick={() => setShowDraftsModal(false)}><X size={16} strokeWidth={1.75} aria-hidden /></button>
             </div>
             <div className="modal-body">
               {loadingDrafts ? (
@@ -896,9 +914,9 @@ export default function RedatorPage() {
                 </div>
               ) : draftsList.length === 0 ? (
                 <div style={{ padding: '32px 14px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  <i className="bi bi-inbox" style={{ fontSize: 40, opacity: 0.4, display: 'block', marginBottom: 10 }} />
+                  <Inbox size={40} strokeWidth={1.75} aria-hidden style={{ opacity: 0.4, display: 'block', margin: '0 auto 10px' }} />
                   <div style={{ fontSize: 13 }}>Nenhum rascunho salvo ainda.</div>
-                  <div style={{ fontSize: 12, marginTop: 4 }}>Gere uma peca para salvar automaticamente.</div>
+                  <div style={{ fontSize: 12, marginTop: 4 }}>Gere uma peça para salvar automaticamente.</div>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 460, overflowY: 'auto' }}>
@@ -919,15 +937,15 @@ export default function RedatorPage() {
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
-                            {d.titulo || 'Sem titulo'}
+                            {d.titulo || 'Sem título'}
                           </span>
                           <span style={{
                             fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 12,
                             background: 'var(--accent-light)', color: 'var(--accent)',
                           }}>v{d.versao}</span>
                         </div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                          <i className="bi bi-clock" style={{ marginRight: 4 }} />
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                          <Clock size={11} strokeWidth={1.75} aria-hidden />
                           {fmtDate(d.created_at)}
                         </div>
                       </button>
@@ -953,7 +971,7 @@ export default function RedatorPage() {
                           e.currentTarget.style.borderColor = 'var(--border)'
                         }}
                       >
-                        <i className="bi bi-trash" />
+                        <Trash2 size={14} strokeWidth={1.75} aria-hidden />
                       </button>
                     </div>
                   ))}
@@ -1003,12 +1021,10 @@ export default function RedatorPage() {
           position: absolute;
           top: 8px;
           right: 10px;
-          font-size: 15px;
           color: var(--accent);
           line-height: 1;
         }
         .template-card-icon {
-          font-size: 16px;
           display: block;
           margin-bottom: 6px;
           line-height: 1;
@@ -1026,7 +1042,7 @@ export default function RedatorPage() {
         @media (max-width: 640px) {
           .template-card { padding: 10px 12px; }
           .template-card.is-active { padding: 8px 10px; }
-          .template-card-check { font-size: 13px; top: 6px; right: 8px; }
+          .template-card-check { top: 6px; right: 8px; }
         }
       `}</style>
     </div>

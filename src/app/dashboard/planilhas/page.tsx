@@ -2,6 +2,35 @@
 
 import { useMemo, useRef, useState } from 'react'
 import * as Papa from 'papaparse'
+import {
+  FileSpreadsheet,
+  Clipboard,
+  UploadCloud,
+  XCircle,
+  AlertTriangle,
+  Cpu,
+  RotateCcw,
+  Text as TextIcon,
+  Grid3x3,
+  ListOrdered,
+  Columns3,
+  Lightbulb,
+  Sparkles,
+  Calculator,
+  Wand2,
+  Check,
+  Download,
+  ArrowLeftRight,
+  Eye,
+  EyeOff,
+  PencilLine,
+  PlusCircle,
+  MinusCircle,
+  OctagonAlert,
+  Info,
+  Circle,
+  ArrowRight,
+} from 'lucide-react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
@@ -109,19 +138,30 @@ async function parseFile(file: File): Promise<string> {
   const buffer = await file.arrayBuffer()
   const wb = XLSX.read(buffer, { type: 'array' })
   const firstSheetName = wb.SheetNames[0]
-  if (!firstSheetName) throw new Error('Arquivo nao contem nenhuma planilha legivel.')
+  if (!firstSheetName) throw new Error('Arquivo não contém nenhuma planilha legível.')
   const firstSheet = wb.Sheets[firstSheetName]
   return XLSX.utils.sheet_to_csv(firstSheet)
 }
 
 // ── Severity styling ─────────────────────────────────────────────────────────
-function severityStyle(sev: string): { bg: string; color: string; border: string; label: string; icon: string } {
+type SeverityIcon = 'octagon' | 'triangle' | 'info' | 'circle' | 'dash'
+
+function severityStyle(sev: string): { bg: string; color: string; border: string; label: string; icon: SeverityIcon } {
   const s = (sev || '').toLowerCase()
-  if (s === 'critico') return { bg: 'rgba(220,38,38,0.1)', color: '#dc2626', border: 'rgba(220,38,38,0.3)', label: 'CRITICO', icon: 'bi-exclamation-octagon-fill' }
-  if (s === 'alto')    return { bg: 'rgba(234,88,12,0.1)', color: '#ea580c', border: 'rgba(234,88,12,0.3)', label: 'ALTO', icon: 'bi-exclamation-triangle-fill' }
-  if (s === 'medio')   return { bg: 'rgba(202,138,4,0.1)', color: '#ca8a04', border: 'rgba(202,138,4,0.3)', label: 'MEDIO', icon: 'bi-info-circle-fill' }
-  if (s === 'baixo')   return { bg: 'rgba(100,116,139,0.1)', color: '#64748b', border: 'rgba(100,116,139,0.3)', label: 'BAIXO', icon: 'bi-circle-fill' }
-  return { bg: 'var(--hover)', color: 'var(--text-muted)', border: 'var(--border)', label: (sev || 'INFO').toUpperCase(), icon: 'bi-dash-circle' }
+  if (s === 'critico') return { bg: 'rgba(220,38,38,0.1)', color: '#dc2626', border: 'rgba(220,38,38,0.3)', label: 'CRITICO', icon: 'octagon' }
+  if (s === 'alto')    return { bg: 'rgba(234,88,12,0.1)', color: '#ea580c', border: 'rgba(234,88,12,0.3)', label: 'ALTO', icon: 'triangle' }
+  if (s === 'medio')   return { bg: 'rgba(202,138,4,0.1)', color: '#ca8a04', border: 'rgba(202,138,4,0.3)', label: 'MEDIO', icon: 'info' }
+  if (s === 'baixo')   return { bg: 'rgba(100,116,139,0.1)', color: '#64748b', border: 'rgba(100,116,139,0.3)', label: 'BAIXO', icon: 'circle' }
+  return { bg: 'var(--hover)', color: 'var(--text-muted)', border: 'var(--border)', label: (sev || 'INFO').toUpperCase(), icon: 'dash' }
+}
+
+function SeverityIconEl({ name, size = 11, color }: { name: SeverityIcon; size?: number; color?: string }) {
+  const common = { size, strokeWidth: 1.75, 'aria-hidden': true as const, style: { color } }
+  if (name === 'octagon') return <OctagonAlert {...common} />
+  if (name === 'triangle') return <AlertTriangle {...common} />
+  if (name === 'info') return <Info {...common} />
+  if (name === 'circle') return <Circle {...common} />
+  return <MinusCircle {...common} />
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -154,7 +194,7 @@ export default function PlanilhasPage() {
   async function handleFile(file: File | null | undefined) {
     if (!file) return
     if (file.size > 5 * 1024 * 1024) {
-      toast('error', 'Arquivo muito grande. O limite e 5 MB.')
+      toast('error', 'Arquivo muito grande. O limite é 5 MB.')
       return
     }
     setParsing(true)
@@ -162,14 +202,14 @@ export default function PlanilhasPage() {
     try {
       const text = await parseFile(file)
       if (text.length > 1_000_000) {
-        toast('error', 'Conteudo da planilha excede 1 MB. Reduza o numero de linhas/colunas.')
+        toast('error', 'Conteúdo da planilha excede 1 MB. Reduza o número de linhas/colunas.')
         return
       }
       setCsvText(text)
       setFilename(file.name)
       toast('success', `Arquivo "${file.name}" carregado`)
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Nao foi possivel ler o arquivo.'
+      const msg = e instanceof Error ? e.message : 'Não foi possível ler o arquivo.'
       setErro(msg)
       toast('error', msg)
     } finally {
@@ -211,7 +251,7 @@ export default function PlanilhasPage() {
     navigator.clipboard.writeText(analise.versao_melhorada)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-    toast('info', 'Versao melhorada copiada para a area de transferencia')
+    toast('info', 'Versão melhorada copiada para a área de transferência')
   }
 
   function handleDownloadMelhorada() {
@@ -282,7 +322,7 @@ export default function PlanilhasPage() {
               <div className="section-header">
                 <div>
                   <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <i className="bi bi-file-earmark-spreadsheet" style={{ color: 'var(--accent)', fontSize: 15 }} />
+                    <FileSpreadsheet size={15} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                     Carregar planilha
                   </div>
                   <div className="section-subtitle">Arraste um arquivo CSV ou Excel</div>
@@ -324,7 +364,7 @@ export default function PlanilhasPage() {
                     </div>
                   ) : filename ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                      <i className="bi bi-file-earmark-spreadsheet-fill" style={{ fontSize: 32, color: 'var(--accent)' }} />
+                      <FileSpreadsheet size={32} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                       <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{filename}</div>
                       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                         {charCount.toLocaleString('pt-BR')} caracteres &middot; clique para trocar
@@ -332,12 +372,12 @@ export default function PlanilhasPage() {
                     </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                      <i className="bi bi-cloud-upload" style={{ fontSize: 32, color: 'var(--text-muted)' }} />
+                      <UploadCloud size={32} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)' }} />
                       <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
                         Clique ou arraste seu arquivo aqui
                       </div>
                       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                        CSV, XLSX ou XLS &middot; ate 5 MB
+                        CSV, XLSX ou XLS &middot; até 5 MB
                       </div>
                     </div>
                   )}
@@ -350,10 +390,10 @@ export default function PlanilhasPage() {
               <div className="section-header">
                 <div>
                   <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <i className="bi bi-clipboard" style={{ color: 'var(--accent)', fontSize: 15 }} />
+                    <Clipboard size={15} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                     Ou cole o CSV manualmente
                   </div>
-                  <div className="section-subtitle">Util quando voce ja copiou de outra ferramenta</div>
+                  <div className="section-subtitle">Útil quando você já copiou de outra ferramenta</div>
                 </div>
               </div>
 
@@ -384,13 +424,13 @@ export default function PlanilhasPage() {
                         display: 'flex', alignItems: 'center', gap: 4,
                       }}
                     >
-                      <i className="bi bi-x-circle" /> Limpar
+                      <XCircle size={14} strokeWidth={1.75} aria-hidden /> Limpar
                     </button>
                   )}
                 </div>
 
                 <div>
-                  <label className="form-label">Instrucao especifica (opcional)</label>
+                  <label className="form-label">Instrução específica (opcional)</label>
                   <textarea
                     value={instruction}
                     onChange={e => setInstruction(e.target.value)}
@@ -409,7 +449,7 @@ export default function PlanilhasPage() {
                     background: 'var(--danger-light)', color: 'var(--danger)',
                     fontSize: 13, display: 'flex', alignItems: 'flex-start', gap: 8,
                   }}>
-                    <i className="bi bi-exclamation-triangle-fill" style={{ marginTop: 1, flexShrink: 0 }} />
+                    <AlertTriangle size={14} strokeWidth={1.75} aria-hidden style={{ marginTop: 1, flexShrink: 0 }} />
                     {erro}
                   </div>
                 )}
@@ -431,7 +471,7 @@ export default function PlanilhasPage() {
                 >
                   {loading
                     ? <><Spinner size={17} color="var(--text-muted)" /> Analisando planilha...</>
-                    : <><i className="bi bi-cpu" /> Analisar planilha</>
+                    : <><Cpu size={14} strokeWidth={1.75} aria-hidden /> Analisar planilha</>
                   }
                 </button>
               </div>
@@ -447,9 +487,9 @@ export default function PlanilhasPage() {
                 alignItems: 'center', justifyContent: 'center',
                 padding: '56px 24px', textAlign: 'center', minHeight: 320,
               }}>
-                <i className="bi bi-file-earmark-spreadsheet" style={{ fontSize: 56, opacity: 0.18, color: 'var(--accent)', marginBottom: 18 }} />
+                <FileSpreadsheet size={56} strokeWidth={1.75} aria-hidden style={{ opacity: 0.18, color: 'var(--accent)', marginBottom: 18 }} />
                 <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                  A analise aparecera aqui
+                  A análise aparecerá aqui
                 </p>
                 <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 6, maxWidth: 280, lineHeight: 1.5 }}>
                   Carregue um arquivo CSV/Excel ou cole os dados ao lado e clique em Analisar
@@ -475,7 +515,7 @@ export default function PlanilhasPage() {
                 </p>
 
                 <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 280 }}>
-                  {['Lendo estrutura', 'Detectando duplicatas e valores ausentes', 'Calculando insights', 'Gerando formulas e versao melhorada'].map((step, i) => (
+                  {['Lendo estrutura', 'Detectando duplicatas e valores ausentes', 'Calculando insights', 'Gerando fórmulas e versão melhorada'].map((step, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--text-muted)' }}>
                       <span style={{
                         width: 6, height: 6, borderRadius: '50%',
@@ -503,7 +543,7 @@ export default function PlanilhasPage() {
                         padding: '4px 12px', borderRadius: 20,
                         border: '1px solid rgba(45,106,79,0.2)',
                       }}>
-                        <i className="bi bi-file-earmark-spreadsheet" />
+                        <FileSpreadsheet size={14} strokeWidth={1.75} aria-hidden />
                         {filename || 'Planilha analisada'}
                       </span>
                       <ConfidenceBadge confianca={analise.confianca} />
@@ -519,7 +559,7 @@ export default function PlanilhasPage() {
                         fontFamily: "'DM Sans', sans-serif",
                       }}
                     >
-                      <i className="bi bi-arrow-counterclockwise" /> Nova analise
+                      <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Nova análise
                     </button>
                   </div>
                 </div>
@@ -529,10 +569,10 @@ export default function PlanilhasPage() {
                   <div className="section-header">
                     <div>
                       <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <i className="bi bi-text-paragraph" style={{ color: 'var(--accent)' }} />
-                        Sumario executivo
+                        <TextIcon size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
+                        Sumário executivo
                       </div>
-                      <div className="section-subtitle">Visao geral gerada pela IA</div>
+                      <div className="section-subtitle">Visão geral gerada pela IA</div>
                     </div>
                   </div>
                   <div style={{ padding: '18px 20px' }}>
@@ -540,7 +580,7 @@ export default function PlanilhasPage() {
                       fontSize: 14, color: 'var(--text-primary)',
                       lineHeight: 1.75, whiteSpace: 'pre-wrap',
                     }}>
-                      {analise.sumario || 'Analise concluida.'}
+                      {analise.sumario || 'Análise concluída.'}
                     </p>
                   </div>
                 </div>
@@ -550,10 +590,10 @@ export default function PlanilhasPage() {
                   <div className="section-header">
                     <div>
                       <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <i className="bi bi-grid-3x3" style={{ color: 'var(--accent)' }} />
+                        <Grid3x3 size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                         Estrutura detectada
                       </div>
-                      <div className="section-subtitle">Dimensoes e cabecalhos</div>
+                      <div className="section-subtitle">Dimensões e cabeçalhos</div>
                     </div>
                   </div>
                   <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -562,21 +602,23 @@ export default function PlanilhasPage() {
                         fontSize: 12, fontWeight: 600,
                         padding: '5px 12px', borderRadius: 20,
                         background: 'var(--accent-light)', color: 'var(--accent)',
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
                       }}>
-                        <i className="bi bi-list-ol" /> {analise.estrutura?.linhas ?? 0} linhas
+                        <ListOrdered size={13} strokeWidth={1.75} aria-hidden /> {analise.estrutura?.linhas ?? 0} linhas
                       </span>
                       <span style={{
                         fontSize: 12, fontWeight: 600,
                         padding: '5px 12px', borderRadius: 20,
                         background: '#eef2ff', color: '#4f46e5',
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
                       }}>
-                        <i className="bi bi-layout-three-columns" /> {analise.estrutura?.colunas ?? 0} colunas
+                        <Columns3 size={13} strokeWidth={1.75} aria-hidden /> {analise.estrutura?.colunas ?? 0} colunas
                       </span>
                     </div>
                     {Array.isArray(analise.estrutura?.headers) && analise.estrutura.headers.length > 0 && (
                       <div>
                         <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-                          Cabecalhos
+                          Cabeçalhos
                         </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                           {analise.estrutura.headers.map((h, i) => (
@@ -601,7 +643,7 @@ export default function PlanilhasPage() {
                     <div className="section-header">
                       <div>
                         <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <i className="bi bi-lightbulb-fill" style={{ color: '#e67e22' }} />
+                          <Lightbulb size={14} strokeWidth={1.75} aria-hidden style={{ color: '#e67e22' }} />
                           Insights
                         </div>
                         <div className="section-subtitle">{analise.insights.length} descobertas</div>
@@ -615,7 +657,7 @@ export default function PlanilhasPage() {
                           background: '#fef5e7', color: '#9a5d00',
                           fontSize: 13, lineHeight: 1.5,
                         }}>
-                          <i className="bi bi-lightbulb" style={{ marginTop: 2, flexShrink: 0 }} />
+                          <Lightbulb size={14} strokeWidth={1.75} aria-hidden style={{ marginTop: 2, flexShrink: 0 }} />
                           <span>{ins}</span>
                         </li>
                       ))}
@@ -629,10 +671,10 @@ export default function PlanilhasPage() {
                     <div className="section-header">
                       <div>
                         <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <i className="bi bi-exclamation-triangle-fill" style={{ color: 'var(--warning)' }} />
+                          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--warning)' }} />
                           Problemas encontrados
                         </div>
-                        <div className="section-subtitle">{analise.problemas.length} questao(oes) detectada(s)</div>
+                        <div className="section-subtitle">{analise.problemas.length} questão(ões) detectada(s)</div>
                       </div>
                     </div>
                     <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -653,7 +695,7 @@ export default function PlanilhasPage() {
                                 letterSpacing: '0.04em',
                                 display: 'inline-flex', alignItems: 'center', gap: 5,
                               }}>
-                                <i className={`bi ${sev.icon}`} style={{ fontSize: 11 }} />
+                                <SeverityIconEl name={sev.icon} size={11} color={sev.color} />
                                 {sev.label}
                               </span>
                               {p.tipo && (
@@ -671,8 +713,8 @@ export default function PlanilhasPage() {
                                 lineHeight: 1.5, paddingTop: 4,
                                 borderTop: '1px dashed var(--border)',
                               }}>
-                                <span style={{ fontWeight: 600, color: sev.color }}>
-                                  <i className="bi bi-arrow-right-short" /> Sugestao:
+                                <span style={{ fontWeight: 600, color: sev.color, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                  <ArrowRight size={13} strokeWidth={1.75} aria-hidden /> Sugestão:
                                 </span>{' '}
                                 {p.sugestao}
                               </div>
@@ -690,8 +732,8 @@ export default function PlanilhasPage() {
                     <div className="section-header">
                       <div>
                         <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <i className="bi bi-stars" style={{ color: 'var(--accent)' }} />
-                          Sugestoes de melhoria
+                          <Sparkles size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
+                          Sugestões de melhoria
                         </div>
                         <div className="section-subtitle">{analise.melhorias.length} ideia(s)</div>
                       </div>
@@ -740,10 +782,10 @@ export default function PlanilhasPage() {
                     <div className="section-header">
                       <div>
                         <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <i className="bi bi-calculator" style={{ color: 'var(--accent)' }} />
-                          Formulas sugeridas
+                          <Calculator size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
+                          Fórmulas sugeridas
                         </div>
-                        <div className="section-subtitle">{analise.formulas_sugeridas.length} formula(s) prontas para colar</div>
+                        <div className="section-subtitle">{analise.formulas_sugeridas.length} fórmula(s) prontas para colar</div>
                       </div>
                     </div>
                     <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -764,7 +806,7 @@ export default function PlanilhasPage() {
                               {f.celula || '—'}
                             </span>
                             <button
-                              onClick={() => { navigator.clipboard.writeText(f.formula); toast('info', 'Formula copiada') }}
+                              onClick={() => { navigator.clipboard.writeText(f.formula); toast('info', 'Fórmula copiada') }}
                               style={{
                                 marginLeft: 'auto',
                                 background: 'none', border: '1px solid var(--border)',
@@ -774,7 +816,7 @@ export default function PlanilhasPage() {
                                 fontFamily: "'DM Sans', sans-serif",
                               }}
                             >
-                              <i className="bi bi-clipboard" /> Copiar
+                              <Clipboard size={12} strokeWidth={1.75} aria-hidden /> Copiar
                             </button>
                           </div>
                           <code style={{
@@ -803,10 +845,10 @@ export default function PlanilhasPage() {
                     <div className="section-header">
                       <div>
                         <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <i className="bi bi-magic" style={{ color: 'var(--accent)' }} />
-                          Versao melhorada
+                          <Wand2 size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
+                          Versão melhorada
                         </div>
-                        <div className="section-subtitle">CSV com correcoes nao destrutivas aplicadas</div>
+                        <div className="section-subtitle">CSV com correções não destrutivas aplicadas</div>
                       </div>
                     </div>
                     <div style={{ padding: '16px 20px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -834,7 +876,7 @@ export default function PlanilhasPage() {
                             fontFamily: "'DM Sans', sans-serif",
                           }}
                         >
-                          <i className={`bi bi-${copied ? 'check2' : 'clipboard'}`} />
+                          {copied ? <Check size={14} strokeWidth={1.75} aria-hidden /> : <Clipboard size={14} strokeWidth={1.75} aria-hidden />}
                           {copied ? 'Copiado' : 'Copiar CSV'}
                         </button>
                         <button
@@ -847,7 +889,7 @@ export default function PlanilhasPage() {
                             fontFamily: "'DM Sans', sans-serif",
                           }}
                         >
-                          <i className="bi bi-download" /> Baixar CSV
+                          <Download size={14} strokeWidth={1.75} aria-hidden /> Baixar CSV
                         </button>
                       </div>
                     </div>
@@ -860,10 +902,10 @@ export default function PlanilhasPage() {
                     <div className="section-header">
                       <div>
                         <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <i className="bi bi-arrow-left-right" style={{ color: 'var(--accent)' }} />
+                          <ArrowLeftRight size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                           Diff visual
                         </div>
-                        <div className="section-subtitle">Compare a planilha original com a versao melhorada</div>
+                        <div className="section-subtitle">Compare a planilha original com a versão melhorada</div>
                       </div>
                       <button
                         onClick={() => setShowDiff(s => !s)}
@@ -877,7 +919,7 @@ export default function PlanilhasPage() {
                           fontFamily: "'DM Sans', sans-serif",
                         }}
                       >
-                        <i className={`bi bi-${showDiff ? 'eye-slash' : 'eye'}`} />
+                        {showDiff ? <EyeOff size={13} strokeWidth={1.75} aria-hidden /> : <Eye size={13} strokeWidth={1.75} aria-hidden />}
                         {showDiff ? 'Ocultar diff' : 'Mostrar diff'}
                       </button>
                     </div>
@@ -887,22 +929,25 @@ export default function PlanilhasPage() {
                         fontSize: 11, fontWeight: 600,
                         padding: '4px 10px', borderRadius: 12,
                         background: 'var(--warning-light)', color: 'var(--warning)',
+                        display: 'inline-flex', alignItems: 'center', gap: 5,
                       }}>
-                        <i className="bi bi-pencil-square" /> {diffData.stats.celulasModificadas} celula(s) modificada(s)
+                        <PencilLine size={12} strokeWidth={1.75} aria-hidden /> {diffData.stats.celulasModificadas} célula(s) modificada(s)
                       </span>
                       <span style={{
                         fontSize: 11, fontWeight: 600,
                         padding: '4px 10px', borderRadius: 12,
                         background: 'var(--success-light)', color: 'var(--success)',
+                        display: 'inline-flex', alignItems: 'center', gap: 5,
                       }}>
-                        <i className="bi bi-plus-circle" /> {diffData.stats.linhasAdicionadas} linha(s) adicionada(s)
+                        <PlusCircle size={12} strokeWidth={1.75} aria-hidden /> {diffData.stats.linhasAdicionadas} linha(s) adicionada(s)
                       </span>
                       <span style={{
                         fontSize: 11, fontWeight: 600,
                         padding: '4px 10px', borderRadius: 12,
                         background: 'var(--danger-light)', color: 'var(--danger)',
+                        display: 'inline-flex', alignItems: 'center', gap: 5,
                       }}>
-                        <i className="bi bi-dash-circle" /> {diffData.stats.linhasRemovidas} linha(s) removida(s)
+                        <MinusCircle size={12} strokeWidth={1.75} aria-hidden /> {diffData.stats.linhasRemovidas} linha(s) removida(s)
                       </span>
                     </div>
 
@@ -1064,7 +1109,7 @@ export default function PlanilhasPage() {
                                   fontSize: 11, color: 'var(--text-muted)',
                                   textAlign: 'center',
                                 }}>
-                                  + {hidden} linha(s) adicional(is) nao exibida(s) (mostrando primeiras {DIFF_MAX_ROWS}).
+                                  + {hidden} linha(s) adicional(is) não exibida(s) (mostrando primeiras {DIFF_MAX_ROWS}).
                                 </div>
                               )}
                             </>

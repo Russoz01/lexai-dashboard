@@ -1,6 +1,12 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import {
+  ChevronDown, ChevronUp, FileText, Files, Lock, XCircle, AlertTriangle,
+  Cpu, Check, Clipboard, CheckCircle2, Save, Link2, Clock, AlignLeft,
+  Users, Calendar, Hourglass, CalendarPlus, BookOpen, Lightbulb,
+  RotateCcw, ArrowDownUp, Network,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
@@ -104,8 +110,10 @@ function ResultSection({
         }}>
           {items.length}
         </span>
-        <i className={`bi bi-chevron-${open ? 'up' : 'down'}`}
-          style={{ fontSize: '12px', color: 'var(--text-muted)' }} />
+        {open
+          ? <ChevronUp size={12} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)' }} />
+          : <ChevronDown size={12} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)' }} />
+        }
       </button>
 
       {open && (
@@ -187,7 +195,7 @@ export default function ResumidorPage() {
       toast('success', `PDF carregado: ${numPages} ${numPages === 1 ? 'pagina' : 'paginas'}`)
     } catch (e) {
       console.error('PDF parse error:', e)
-      toast('error', 'Nao foi possivel ler o PDF')
+      toast('error', 'Não foi possível ler o PDF')
     } finally {
       setCarregandoPdf(null)
     }
@@ -296,7 +304,7 @@ export default function ResumidorPage() {
       const [a, b] = await Promise.all([callResumirApi(textoA), callResumirApi(textoB)])
       setAnaliseA(a)
       setAnaliseB(b)
-      toast('success', 'Comparacao concluida')
+      toast('success', 'Comparação concluída')
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Erro ao comparar documentos'
       setErro(msg)
@@ -354,7 +362,7 @@ export default function ResumidorPage() {
     const usuarioId = await resolveUsuarioId()
     if (!usuarioId) {
       setSalvando(false)
-      toast('error', 'Nao foi possivel identificar o usuario')
+      toast('error', 'Não foi possível identificar o usuário')
       return
     }
 
@@ -488,7 +496,7 @@ export default function ResumidorPage() {
     navigator.clipboard.writeText(texto)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-    toast('info', 'Analise copiada para a area de transferencia')
+    toast('info', 'Análise copiada para a área de transferência')
   }
 
   async function handleCompartilhar() {
@@ -577,7 +585,7 @@ export default function ResumidorPage() {
                 transition: 'all 0.15s ease',
               }}
             >
-              <i className="bi bi-file-earmark-text" />
+              <FileText size={14} strokeWidth={1.75} aria-hidden />
               Documento único
             </button>
             <button
@@ -597,7 +605,7 @@ export default function ResumidorPage() {
                 transition: 'all 0.15s ease',
               }}
             >
-              <i className="bi bi-files" />
+              <Files size={14} strokeWidth={1.75} aria-hidden />
               Comparar 2 documentos
             </button>
           </div>
@@ -620,7 +628,7 @@ export default function ResumidorPage() {
             <div className="section-header">
               <div>
                 <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i className="bi bi-file-earmark-text" style={{ color: 'var(--accent)', fontSize: '15px' }} />
+                  <FileText size={15} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                   Documento
                 </div>
                 <div className="section-subtitle">Cole o texto completo abaixo</div>
@@ -657,7 +665,7 @@ export default function ResumidorPage() {
                         background: '#eef2ff', color: '#4f46e5',
                         border: '1px solid rgba(79,70,229,0.2)',
                       }}>
-                        <i className="bi bi-shield-lock-fill" />
+                        <Lock size={14} strokeWidth={1.75} aria-hidden />
                         {mascarados} dado{mascarados === 1 ? '' : 's'} mascarado{mascarados === 1 ? '' : 's'}
                       </span>
                     )}
@@ -678,7 +686,7 @@ export default function ResumidorPage() {
                     >
                       {carregandoPdf === 'single'
                         ? <><Spinner size={12} color="var(--text-muted)" /> Carregando PDF...</>
-                        : <><i className="bi bi-file-earmark-pdf" /> Carregar PDF</>
+                        : <><FileText size={14} strokeWidth={1.75} aria-hidden /> Carregar PDF</>
                       }
                     </button>
                     <input
@@ -756,13 +764,13 @@ export default function ResumidorPage() {
                         display: 'flex', alignItems: 'center', gap: '4px',
                       }}
                     >
-                      <i className="bi bi-x-circle" /> Limpar
+                      <XCircle size={14} strokeWidth={1.75} aria-hidden /> Limpar
                     </button>
                   )}
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
                   <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
-                  {['Contrato de prestacao de servicos', 'Peticao inicial indenizacao', 'Acordao do STJ'].map((ex, i) => (
+                  {['Contrato de prestação de serviços', 'Petição inicial indenização', 'Acórdão do STJ'].map((ex, i) => (
                     <button key={i} type="button" onClick={() => setTexto(ex)}
                       style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
                       {ex}
@@ -778,7 +786,7 @@ export default function ResumidorPage() {
                   background: 'var(--danger-light)', color: 'var(--danger)',
                   fontSize: '13px', display: 'flex', alignItems: 'flex-start', gap: '8px',
                 }}>
-                  <i className="bi bi-exclamation-triangle-fill" style={{ marginTop: '1px', flexShrink: 0 }} />
+                  <AlertTriangle size={14} strokeWidth={1.75} aria-hidden style={{ marginTop: '1px', flexShrink: 0 }} />
                   {erro}
                 </div>
               )}
@@ -800,7 +808,7 @@ export default function ResumidorPage() {
               >
                 {loading
                   ? <><Spinner size={17} color="var(--text-muted)" /> Analisando documento...</>
-                  : <><i className="bi bi-cpu" /> Analisar Documento</>
+                  : <><Cpu size={14} strokeWidth={1.75} aria-hidden /> Analisar Documento</>
                 }
               </button>
 
@@ -881,7 +889,10 @@ export default function ResumidorPage() {
                             transition: 'all 0.15s ease',
                           }}
                         >
-                          <i className={`bi bi-${copied ? 'check2' : 'clipboard'}`} />
+                          {copied
+                            ? <Check size={14} strokeWidth={1.75} aria-hidden />
+                            : <Clipboard size={14} strokeWidth={1.75} aria-hidden />
+                          }
                           {copied ? 'Copiado' : 'Copiar'}
                         </button>
                         <button
@@ -900,10 +911,10 @@ export default function ResumidorPage() {
                           }}
                         >
                           {salvo
-                            ? <><i className="bi bi-check-circle-fill" /> Salvo</>
+                            ? <><CheckCircle2 size={14} strokeWidth={1.75} aria-hidden /> Salvo</>
                             : salvando
                             ? <><Spinner size={14} color="var(--accent)" /> Salvando...</>
-                            : <><i className="bi bi-floppy" /> Salvar</>
+                            : <><Save size={14} strokeWidth={1.75} aria-hidden /> Salvar</>
                           }
                         </button>
                         <button
@@ -917,7 +928,7 @@ export default function ResumidorPage() {
                             fontFamily: "'DM Sans', sans-serif",
                           }}
                         >
-                          <i className="bi bi-file-pdf" /> Exportar PDF
+                          <FileText size={14} strokeWidth={1.75} aria-hidden /> Exportar PDF
                         </button>
                         <button
                           onClick={handleExportarWord}
@@ -935,7 +946,7 @@ export default function ResumidorPage() {
                         >
                           {exportandoWord
                             ? <><Spinner size={14} color="var(--text-muted)" /> Exportando...</>
-                            : <><i className="bi bi-file-word" /> Exportar Word</>
+                            : <><FileText size={14} strokeWidth={1.75} aria-hidden /> Exportar Word</>
                           }
                         </button>
                         <button
@@ -954,7 +965,7 @@ export default function ResumidorPage() {
                         >
                           {compartilhando
                             ? <><Spinner size={14} color="var(--text-muted)" /> Gerando link...</>
-                            : <><i className="bi bi-link-45deg" /> Compartilhar link</>
+                            : <><Link2 size={14} strokeWidth={1.75} aria-hidden /> Compartilhar link</>
                           }
                         </button>
                       </div>
@@ -969,11 +980,11 @@ export default function ResumidorPage() {
                   return (
                     <div className="urgent-deadline" style={{ marginBottom: 0 }}>
                       <div className="deadline-label">
-                        <i className="bi bi-clock-history" />
+                        <Clock size={14} strokeWidth={1.75} aria-hidden />
                         {prazos.length} prazo(s) detectado(s) automaticamente
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                        A LexAI extraiu prazos importantes deste documento. Verifique a sessao &quot;Prazos Identificados&quot; abaixo e considere adicionar ao seu calendario para nao perder datas criticas.
+                        A LexAI extraiu prazos importantes deste documento. Verifique a seção &quot;Prazos Identificados&quot; abaixo e considere adicionar ao seu calendário para não perder datas críticas.
                       </div>
                     </div>
                   )
@@ -984,7 +995,7 @@ export default function ResumidorPage() {
                   <div className="section-header">
                     <div>
                       <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <i className="bi bi-text-paragraph" style={{ color: 'var(--accent)' }} />
+                        <AlignLeft size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                         Resumo Executivo
                       </div>
                       <div className="section-subtitle">Síntese gerada pela IA</div>
@@ -995,7 +1006,7 @@ export default function ResumidorPage() {
                       fontSize: '14px', color: 'var(--text-primary)',
                       lineHeight: '1.75', whiteSpace: 'pre-wrap',
                     }}>
-                      {analise.objeto || analise.resumo || analise.conclusao || 'Analise concluida'}
+                      {analise.objeto || analise.resumo || analise.conclusao || 'Análise concluída'}
                     </p>
                   </div>
                 </div>
@@ -1003,7 +1014,7 @@ export default function ResumidorPage() {
                 {/* Pontos Principais */}
                 <ResultSection
                   title="Pontos Principais"
-                  icon={<i className="bi bi-check-circle-fill" style={{ color: '#2d6a4f', fontSize: '14px' }} />}
+                  icon={<CheckCircle2 size={14} strokeWidth={1.75} aria-hidden style={{ color: '#2d6a4f' }} />}
                   items={analise.pontos_principais || analise.pontos_chave || []}
                   accent={{ bg: 'var(--accent-light)', text: 'var(--accent)', dot: 'var(--accent)' }}
                   defaultOpen
@@ -1012,7 +1023,7 @@ export default function ResumidorPage() {
                 {/* Riscos e Cláusulas */}
                 <ResultSection
                   title="Riscos e Cláusulas Importantes"
-                  icon={<i className="bi bi-exclamation-triangle-fill" style={{ color: 'var(--warning)', fontSize: '14px' }} />}
+                  icon={<AlertTriangle size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--warning)' }} />}
                   items={(analise.riscos || []).map((r: any) => typeof r === 'string' ? r : `[${(r.gravidade || 'INFO').toUpperCase()}] ${r.descricao || r}${r.mitigacao ? ` — ${r.mitigacao}` : ''}`)}
                   accent={{ bg: 'var(--warning-light)', text: 'var(--warning)', dot: 'var(--warning)' }}
                   defaultOpen
@@ -1021,7 +1032,7 @@ export default function ResumidorPage() {
                 {/* Partes Envolvidas */}
                 <ResultSection
                   title="Partes Envolvidas"
-                  icon={<i className="bi bi-people-fill" style={{ color: '#4f46e5', fontSize: '14px' }} />}
+                  icon={<Users size={14} strokeWidth={1.75} aria-hidden style={{ color: '#4f46e5' }} />}
                   items={(analise.partes_envolvidas || analise.partes || []).map((p: any) => typeof p === 'string' ? p : `${p.nome || p} — ${p.qualificacao || p.documento || ''}`)}
                   accent={{ bg: '#eef2ff', text: '#4f46e5', dot: '#4f46e5' }}
                   defaultOpen={false}
@@ -1030,7 +1041,7 @@ export default function ResumidorPage() {
                 {/* Prazos Identificados — sempre aberto por importancia */}
                 <ResultSection
                   title="Prazos Identificados"
-                  icon={<i className="bi bi-calendar-event-fill" style={{ color: 'var(--danger)', fontSize: '14px' }} />}
+                  icon={<Calendar size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--danger)' }} />}
                   items={(analise.prazos_identificados || analise.prazos || []).map((p: any) => typeof p === 'string' ? p : `${p.prazo || p.evento || p} (${p.data || ''})${p.base_legal || p.clausula ? ` — ${p.base_legal || p.clausula}` : ''}${p.consequencia ? ` | Consequencia: ${p.consequencia}` : ''}`)}
                   accent={{ bg: 'var(--danger-light)', text: 'var(--danger)', dot: 'var(--danger)' }}
                   defaultOpen
@@ -1055,7 +1066,7 @@ export default function ResumidorPage() {
                         }
                       } catch (e) {
                         console.error('[prazo-importer]', e)
-                        toast('error', 'Nao foi possivel importar os prazos')
+                        toast('error', 'Não foi possível importar os prazos')
                       } finally {
                         setImportingPrazos(false)
                       }
@@ -1071,8 +1082,11 @@ export default function ResumidorPage() {
                       fontFamily: "'DM Sans', sans-serif",
                     }}
                   >
-                    <i className={`bi ${importingPrazos ? 'bi-hourglass-split' : 'bi-calendar-plus'}`} />
-                    {importingPrazos ? 'Adicionando...' : `Adicionar ${analise.prazos.length} prazo(s) ao meu calendario`}
+                    {importingPrazos
+                      ? <Hourglass size={14} strokeWidth={1.75} aria-hidden />
+                      : <CalendarPlus size={14} strokeWidth={1.75} aria-hidden />
+                    }
+                    {importingPrazos ? 'Adicionando...' : `Adicionar ${analise.prazos.length} prazo(s) ao meu calendário`}
                   </button>
                 )}
 
@@ -1080,7 +1094,7 @@ export default function ResumidorPage() {
                 {(analise.fundamentacao_legal || analise.fundamentacao || [])?.length > 0 && (
                   <ResultSection
                     title="Fundamentação Legal"
-                    icon={<i className="bi bi-book-fill" style={{ color: '#2d6a4f', fontSize: '14px' }} />}
+                    icon={<BookOpen size={14} strokeWidth={1.75} aria-hidden style={{ color: '#2d6a4f' }} />}
                     items={analise.fundamentacao_legal || analise.fundamentacao || []}
                     accent={{ bg: 'var(--accent-light)', text: 'var(--accent)', dot: 'var(--accent)' }}
                     defaultOpen={false}
@@ -1091,7 +1105,7 @@ export default function ResumidorPage() {
                 {analise.sugestoes?.length > 0 && (
                   <ResultSection
                     title="Sugestões e Recomendações"
-                    icon={<i className="bi bi-lightbulb-fill" style={{ color: '#e67e22', fontSize: '14px' }} />}
+                    icon={<Lightbulb size={14} strokeWidth={1.75} aria-hidden style={{ color: '#e67e22' }} />}
                     items={analise.sugestoes}
                     accent={{ bg: '#fef5e7', text: '#e67e22', dot: '#e67e22' }}
                     defaultOpen={false}
@@ -1113,7 +1127,7 @@ export default function ResumidorPage() {
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--accent)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)' }}
                 >
-                  <i className="bi bi-arrow-counterclockwise" /> Nova análise
+                  <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Nova análise
                 </button>
 
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
@@ -1144,7 +1158,7 @@ export default function ResumidorPage() {
                 <div className="section-header">
                   <div>
                     <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <i className="bi bi-file-earmark-text" style={{ color: 'var(--accent)', fontSize: '15px' }} />
+                      <FileText size={15} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                       Documento A
                     </div>
                     <div className="section-subtitle">Cole o primeiro texto</div>
@@ -1169,7 +1183,7 @@ export default function ResumidorPage() {
                     >
                       {carregandoPdf === 'A'
                         ? <><Spinner size={12} color="var(--text-muted)" /> Carregando PDF...</>
-                        : <><i className="bi bi-file-earmark-pdf" /> Carregar PDF</>
+                        : <><FileText size={14} strokeWidth={1.75} aria-hidden /> Carregar PDF</>
                       }
                     </button>
                     <input
@@ -1208,7 +1222,7 @@ export default function ResumidorPage() {
                 <div className="section-header">
                   <div>
                     <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <i className="bi bi-file-earmark-text" style={{ color: 'var(--accent)', fontSize: '15px' }} />
+                      <FileText size={15} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
                       Documento B
                     </div>
                     <div className="section-subtitle">Cole o segundo texto</div>
@@ -1233,7 +1247,7 @@ export default function ResumidorPage() {
                     >
                       {carregandoPdf === 'B'
                         ? <><Spinner size={12} color="var(--text-muted)" /> Carregando PDF...</>
-                        : <><i className="bi bi-file-earmark-pdf" /> Carregar PDF</>
+                        : <><FileText size={14} strokeWidth={1.75} aria-hidden /> Carregar PDF</>
                       }
                     </button>
                     <input
@@ -1284,7 +1298,7 @@ export default function ResumidorPage() {
                   <strong style={{ color: 'var(--text-primary)' }}>Anonimizar dados pessoais (LGPD)</strong>
                   <br />
                   <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                    CPF, CNPJ, e-mail, telefone e CEP serao mascarados nos dois documentos antes de enviar para a IA
+                    CPF, CNPJ, e-mail, telefone e CEP serão mascarados nos dois documentos antes de enviar para a IA
                   </span>
                 </span>
               </label>
@@ -1297,7 +1311,7 @@ export default function ResumidorPage() {
                 background: 'var(--danger-light)', color: 'var(--danger)',
                 fontSize: '13px', display: 'flex', alignItems: 'flex-start', gap: '8px',
               }}>
-                <i className="bi bi-exclamation-triangle-fill" style={{ marginTop: '1px', flexShrink: 0 }} />
+                <AlertTriangle size={14} strokeWidth={1.75} aria-hidden style={{ marginTop: '1px', flexShrink: 0 }} />
                 {erro}
               </div>
             )}
@@ -1320,7 +1334,7 @@ export default function ResumidorPage() {
             >
               {comparando
                 ? <><Spinner size={17} color="var(--text-muted)" /> Comparando documentos...</>
-                : <><i className="bi bi-arrows-collapse-vertical" /> Comparar</>
+                : <><ArrowDownUp size={14} strokeWidth={1.75} aria-hidden /> Comparar</>
               }
             </button>
 
@@ -1354,7 +1368,7 @@ export default function ResumidorPage() {
                       background: '#eef2ff', color: '#4f46e5',
                       border: '1px solid rgba(79,70,229,0.2)',
                     }}>
-                      <i className="bi bi-shield-lock-fill" />
+                      <Lock size={14} strokeWidth={1.75} aria-hidden />
                       {mascarados} dado{mascarados === 1 ? '' : 's'} mascarado{mascarados === 1 ? '' : 's'}
                     </div>
                   )}
@@ -1364,10 +1378,10 @@ export default function ResumidorPage() {
                     <div className="section-header">
                       <div>
                         <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <i className="bi bi-diagram-2-fill" style={{ color: 'var(--accent)' }} />
-                          Diferencas detectadas
+                          <Network size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
+                          Diferenças detectadas
                         </div>
-                        <div className="section-subtitle">Comparacao automatica entre os documentos</div>
+                        <div className="section-subtitle">Comparação automática entre os documentos</div>
                       </div>
                     </div>
                     <div style={{ padding: '18px 20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
@@ -1378,7 +1392,7 @@ export default function ResumidorPage() {
                         border: '1px solid rgba(234,179,8,0.2)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: 'var(--warning)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          <i className="bi bi-exclamation-triangle-fill" />
+                          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
                           Riscos exclusivos de A
                           <span style={{ marginLeft: 'auto', background: 'rgba(234,179,8,0.15)', borderRadius: '10px', padding: '1px 8px' }}>{diff.exclusivosA.length}</span>
                         </div>
@@ -1402,7 +1416,7 @@ export default function ResumidorPage() {
                         border: '1px solid rgba(220,38,38,0.18)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: 'var(--danger)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          <i className="bi bi-exclamation-triangle-fill" />
+                          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
                           Riscos exclusivos de B
                           <span style={{ marginLeft: 'auto', background: 'rgba(220,38,38,0.15)', borderRadius: '10px', padding: '1px 8px' }}>{diff.exclusivosB.length}</span>
                         </div>
@@ -1426,7 +1440,7 @@ export default function ResumidorPage() {
                         border: '1px solid rgba(45,106,79,0.2)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: 'var(--accent)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          <i className="bi bi-check-circle-fill" />
+                          <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden />
                           Pontos em comum
                           <span style={{ marginLeft: 'auto', background: 'rgba(45,106,79,0.15)', borderRadius: '10px', padding: '1px 8px' }}>{diff.comuns.length}</span>
                         </div>
@@ -1484,7 +1498,7 @@ export default function ResumidorPage() {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CompareAnalysisCard({ label, analise }: { label: string; analise: any }) {
   const tipoDoc = analise.classificacao?.tipo || analise.tipo_documento || 'Documento'
-  const objeto  = analise.objeto || analise.resumo || analise.conclusao || 'Analise concluida'
+  const objeto  = analise.objeto || analise.resumo || analise.conclusao || 'Análise concluída'
   const pontos  = analise.pontos_principais || analise.pontos_chave || []
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const riscos  = (analise.riscos || []).map((r: any) =>
@@ -1521,7 +1535,7 @@ function CompareAnalysisCard({ label, analise }: { label: string; analise: any }
         <div className="section-header">
           <div>
             <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <i className="bi bi-text-paragraph" style={{ color: 'var(--accent)' }} />
+              <AlignLeft size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
               Resumo Executivo
             </div>
           </div>
@@ -1535,14 +1549,14 @@ function CompareAnalysisCard({ label, analise }: { label: string; analise: any }
 
       <ResultSection
         title="Pontos Principais"
-        icon={<i className="bi bi-check-circle-fill" style={{ color: '#2d6a4f', fontSize: '14px' }} />}
+        icon={<CheckCircle2 size={14} strokeWidth={1.75} aria-hidden style={{ color: '#2d6a4f' }} />}
         items={pontos}
         accent={{ bg: 'var(--accent-light)', text: 'var(--accent)', dot: 'var(--accent)' }}
         defaultOpen
       />
       <ResultSection
         title="Riscos e Cláusulas Importantes"
-        icon={<i className="bi bi-exclamation-triangle-fill" style={{ color: 'var(--warning)', fontSize: '14px' }} />}
+        icon={<AlertTriangle size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--warning)' }} />}
         items={riscos}
         accent={{ bg: 'var(--warning-light)', text: 'var(--warning)', dot: 'var(--warning)' }}
         defaultOpen
