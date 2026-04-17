@@ -2,42 +2,58 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import {
+  CalendarCheck, Folder, Gem, History, LayoutDashboard, Lock,
+  Palette, Search, Settings, Wallet, type LucideIcon,
+} from 'lucide-react'
+import { usePlan } from '@/hooks/usePlan'
+import { CATALOG, isUnlocked, type Plan } from '@/lib/catalog'
 import s from './CommandPalette.module.css'
+
+/* ═════════════════════════════════════════════════════════════
+ * CommandPalette — Cmd/Ctrl+K
+ * ─────────────────────────────────────────────────────────────
+ * Fonte única: CATALOG (agents + modules) + itens fixos de conta
+ * e infra (dashboard, histórico, prazos, financeiro, planos…).
+ * Itens locked ainda aparecem no palette mas levam a /dashboard/planos;
+ * implemented:false vai para /dashboard/em-breve?feature=<slug>.
+ * ═════════════════════════════════════════════════════════════ */
 
 interface NavItem {
   href: string
-  icon: string
+  Icon: LucideIcon
   label: string
   category: string
+  locked?: boolean
+  slug?: string
+  implemented?: boolean
 }
 
-const NAV_ITEMS: NavItem[] = [
-  // Principal
-  { href: '/dashboard',             icon: 'bi-grid-1x2',          label: 'Dashboard',   category: 'Principal' },
-  { href: '/dashboard/historico',   icon: 'bi-clock-history',     label: 'Historico',   category: 'Principal' },
-  { href: '/dashboard/prazos',      icon: 'bi-calendar-check',    label: 'Prazos',      category: 'Principal' },
-  { href: '/dashboard/financeiro',  icon: 'bi-wallet2',           label: 'Financeiro',  category: 'Principal' },
-  { href: '/dashboard/rotina',      icon: 'bi-calendar-week',     label: 'Rotina',      category: 'Principal' },
-  // Agentes
-  { href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text', label: 'Resumidor',   category: 'Agentes'  },
-  { href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark',  label: 'Pesquisador', category: 'Agentes'  },
-  { href: '/dashboard/redator',     icon: 'bi-pencil-square',     label: 'Redator',     category: 'Agentes'  },
-  { href: '/dashboard/negociador',  icon: 'bi-lightning',         label: 'Negociador',  category: 'Agentes'  },
-  { href: '/dashboard/professor',   icon: 'bi-bell',              label: 'Monitor Legislativo', category: 'Agentes'  },
-  { href: '/dashboard/calculador',  icon: 'bi-calculator',        label: 'Calculador',  category: 'Agentes'  },
-  { href: '/dashboard/legislacao',  icon: 'bi-book',              label: 'Legislacao',  category: 'Agentes'  },
-  { href: '/dashboard/simulado',   icon: 'bi-file-earmark-check', label: 'Parecerista', category: 'Agentes'  },
-  { href: '/dashboard/consultor',  icon: 'bi-shield-check',       label: 'Estrategista', category: 'Agentes'  },
-  { href: '/dashboard/compliance', icon: 'bi-shield-check',       label: 'Compliance',  category: 'Agentes'  },
-  { href: '/dashboard/tradutor',   icon: 'bi-translate',          label: 'Tradutor Juridico', category: 'Agentes'  },
-  // Conta
-  { href: '/dashboard/planos',        icon: 'bi-gem',     label: 'Planos',        category: 'Conta' },
-  { href: '/dashboard/configuracoes', icon: 'bi-gear',    label: 'Configuracoes', category: 'Conta' },
-  { href: '/dashboard/design',        icon: 'bi-palette', label: 'Design',        category: 'Conta' },
+const FIXED_PRINCIPAL: NavItem[] = [
+  { href: '/dashboard',            Icon: LayoutDashboard, label: 'Dashboard',  category: 'Principal' },
+  { href: '/dashboard/modelos',    Icon: Folder,          label: 'Modelos',    category: 'Principal' },
+  { href: '/dashboard/historico',  Icon: History,         label: 'Histórico',  category: 'Principal' },
+  { href: '/dashboard/prazos',     Icon: CalendarCheck,   label: 'Prazos',     category: 'Principal' },
+  { href: '/dashboard/financeiro', Icon: Wallet,          label: 'Financeiro', category: 'Principal' },
 ]
+
+const FIXED_CONTA: NavItem[] = [
+  { href: '/dashboard/planos',        Icon: Gem,      label: 'Planos',        category: 'Conta' },
+  { href: '/dashboard/design',        Icon: Palette,  label: 'Design',        category: 'Conta' },
+  { href: '/dashboard/configuracoes', Icon: Settings, label: 'Configurações', category: 'Conta' },
+]
+
+function resolveHref(item: NavItem): string {
+  if (item.locked) return '/dashboard/planos'
+  if (item.slug && item.implemented === false) return `/dashboard/em-breve?feature=${item.slug}`
+  return item.href
+}
 
 export default function CommandPalette() {
   const router = useRouter()
+  const { plano } = usePlan()
+  const userPlan = (plano || 'free') as Plan
+
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -45,55 +61,60 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  // Detect platform
   useEffect(() => {
     if (typeof navigator !== 'undefined') {
       setIsMac(/Mac|iPod|iPhone|iPad/.test(navigator.platform))
     }
   }, [])
 
-  // Filter items
+  const navItems = useMemo<NavItem[]>(() => {
+    const catItems: NavItem[] = CATALOG.map(item => ({
+      href: item.href,
+      Icon: item.Icon,
+      label: item.label,
+      category: item.kind === 'agent' ? 'Agentes' : 'Módulos',
+      locked: !isUnlocked(item, userPlan),
+      slug: item.slug,
+      implemented: item.implemented,
+    }))
+    return [...FIXED_PRINCIPAL, ...catItems, ...FIXED_CONTA]
+  }, [userPlan])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return NAV_ITEMS
-    return NAV_ITEMS.filter(
+    if (!q) return navItems
+    return navItems.filter(
       item =>
         item.label.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q)
+        item.category.toLowerCase().includes(q),
     )
-  }, [query])
+  }, [navItems, query])
 
-  // Reset selection when query changes
   useEffect(() => {
     setSelectedIndex(0)
   }, [query])
 
-  // Close palette
   const close = useCallback(() => {
     setOpen(false)
     setQuery('')
     setSelectedIndex(0)
   }, [])
 
-  // Navigate to selected item
   const handleSelect = useCallback(
     (item: NavItem) => {
-      router.push(item.href)
+      router.push(resolveHref(item))
       close()
     },
-    [router, close]
+    [router, close],
   )
 
-  // Global keyboard listener for Cmd+K / Ctrl+K / Esc
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      // Cmd+K (Mac) or Ctrl+K (others) toggles
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         setOpen(prev => !prev)
         return
       }
-      // Esc closes
       if (e.key === 'Escape' && open) {
         e.preventDefault()
         close()
@@ -103,15 +124,12 @@ export default function CommandPalette() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [open, close])
 
-  // Autofocus input when opened
   useEffect(() => {
     if (open) {
-      // Delay to ensure modal is mounted
       requestAnimationFrame(() => inputRef.current?.focus())
     }
   }, [open])
 
-  // Arrow key navigation inside the list
   function onInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
@@ -119,7 +137,7 @@ export default function CommandPalette() {
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
       setSelectedIndex(i =>
-        filtered.length === 0 ? 0 : (i - 1 + filtered.length) % filtered.length
+        filtered.length === 0 ? 0 : (i - 1 + filtered.length) % filtered.length,
       )
     } else if (e.key === 'Enter') {
       e.preventDefault()
@@ -134,11 +152,10 @@ export default function CommandPalette() {
     }
   }
 
-  // Scroll selected item into view
   useEffect(() => {
     if (!open || !listRef.current) return
     const el = listRef.current.querySelector<HTMLElement>(
-      `[data-cp-index="${selectedIndex}"]`
+      `[data-cp-index="${selectedIndex}"]`,
     )
     if (el) {
       el.scrollIntoView({ block: 'nearest' })
@@ -156,21 +173,19 @@ export default function CommandPalette() {
       aria-modal="true"
       aria-label="Command palette"
       onMouseDown={(e) => {
-        // Close when clicking backdrop (not modal)
         if (e.target === e.currentTarget) close()
       }}
     >
       <div className={s.cpModal} onMouseDown={(e) => e.stopPropagation()}>
-        {/* Search input */}
         <div className={s.cpSearch}>
-          <i className={`bi bi-search ${s.cpSearchIcon}`} aria-hidden="true" />
+          <Search size={16} strokeWidth={1.75} className={s.cpSearchIcon} aria-hidden />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onInputKeyDown}
-            placeholder="Buscar paginas, agentes, configuracoes..."
+            placeholder="Buscar páginas, agentes, configurações..."
             className={s.cpInput}
             autoComplete="off"
             spellCheck={false}
@@ -178,7 +193,6 @@ export default function CommandPalette() {
           <kbd className={s.cpKbdHint}>Esc</kbd>
         </div>
 
-        {/* Results list */}
         <div ref={listRef} className={s.cpList} role="listbox">
           {filtered.length === 0 ? (
             <div className={s.cpEmpty}>
@@ -187,9 +201,10 @@ export default function CommandPalette() {
           ) : (
             filtered.map((item, idx) => {
               const isSelected = idx === selectedIndex
+              const Icon = item.Icon
               return (
                 <button
-                  key={item.href}
+                  key={`${item.category}:${item.href}`}
                   type="button"
                   data-cp-index={idx}
                   role="option"
@@ -198,9 +213,12 @@ export default function CommandPalette() {
                   onMouseEnter={() => setSelectedIndex(idx)}
                   onClick={() => handleSelect(item)}
                 >
-                  <i className={`bi ${item.icon} ${s.cpItemIcon}`} aria-hidden="true" />
+                  <Icon size={16} strokeWidth={1.75} className={s.cpItemIcon} aria-hidden />
                   <span className={s.cpItemLabel}>{item.label}</span>
                   <span className={s.cpItemCategory}>{item.category}</span>
+                  {item.locked && (
+                    <Lock size={12} strokeWidth={2} className={s.cpItemLock} aria-hidden />
+                  )}
                   <kbd className={`${s.cpKbd} ${s.cpItemKbd}`}>
                     {shortcutMod}+K
                   </kbd>
@@ -210,7 +228,6 @@ export default function CommandPalette() {
           )}
         </div>
 
-        {/* Footer hints */}
         <div className={s.cpFooter}>
           <div className={s.cpFooterItem}>
             <kbd className={s.cpKbd}>↑</kbd>
