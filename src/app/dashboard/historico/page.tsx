@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { AlertTriangle, ChevronDown, ChevronUp, MessageSquare, Search, XCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 
@@ -38,7 +39,7 @@ export default function HistoricoPage() {
     setErro('')
     const usuarioId = await resolveUsuarioId()
     if (!usuarioId) {
-      setErro('Sessao expirada. Faca login novamente.')
+      setErro('Sessão expirada. Faça login novamente.')
       setLoading(false)
       return
     }
@@ -51,7 +52,7 @@ export default function HistoricoPage() {
       .limit(100)
 
     if (dataErr) {
-      setErro('Nao foi possivel carregar o historico. Tente novamente.')
+      setErro('Não foi possível carregar o histórico. Tente novamente.')
       setLoading(false)
       return
     }
@@ -95,7 +96,7 @@ export default function HistoricoPage() {
             fontSize: 12, fontWeight: 600, color: '#059669',
             letterSpacing: '0.5px', textTransform: 'uppercase',
           }}>
-            <i className="bi bi-chat-square-text" style={{ fontSize: 13 }} />
+            <MessageSquare size={13} strokeWidth={1.75} aria-hidden />
             Registro de Atividades
           </span>
         </div>
@@ -107,12 +108,12 @@ export default function HistoricoPage() {
       {!loading && historico.length > 0 && (
         <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 240px', position: 'relative', minWidth: 240 }}>
-            <i className="bi bi-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }} />
+            <Search size={14} strokeWidth={1.75} aria-hidden style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input
               type="text"
               value={filtro}
               onChange={e => setFiltro(e.target.value)}
-              placeholder="Buscar no historico..."
+              placeholder="Buscar no histórico..."
               className="form-input"
               style={{ paddingLeft: 40, width: '100%' }}
             />
@@ -120,9 +121,9 @@ export default function HistoricoPage() {
               <button type="button" onClick={() => setFiltro('')} style={{
                 position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
                 background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)',
-                fontSize: 14, padding: 4,
+                display: 'inline-flex', alignItems: 'center', padding: 4,
               }} aria-label="Limpar busca">
-                <i className="bi bi-x-circle-fill" />
+                <XCircle size={14} strokeWidth={1.75} aria-hidden />
               </button>
             )}
           </div>
@@ -138,7 +139,7 @@ export default function HistoricoPage() {
 
       {erro ? (
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+          <AlertTriangle size={14} strokeWidth={2} aria-hidden /> {erro}
         </div>
       ) : loading ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
@@ -152,7 +153,7 @@ export default function HistoricoPage() {
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           padding: '56px 24px', textAlign: 'center', border: '1px dashed var(--border)',
         }}>
-          <i className="bi bi-chat-square-text" style={{ fontSize: 36, color: 'var(--text-muted)', opacity: 0.4, marginBottom: 12 }} />
+          <MessageSquare size={36} strokeWidth={1.5} aria-hidden style={{ color: 'var(--text-muted)', opacity: 0.4, marginBottom: 12 }} />
           <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>Nenhuma interação registrada ainda</p>
         </div>
       ) : historicoFiltrado.length === 0 ? (
@@ -160,7 +161,7 @@ export default function HistoricoPage() {
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           padding: '40px 24px', textAlign: 'center', border: '1px dashed var(--border)',
         }}>
-          <i className="bi bi-search" style={{ fontSize: 28, color: 'var(--text-muted)', opacity: 0.4, marginBottom: 10 }} />
+          <Search size={28} strokeWidth={1.5} aria-hidden style={{ color: 'var(--text-muted)', opacity: 0.4, marginBottom: 10 }} />
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Nenhum resultado para os filtros aplicados</p>
         </div>
       ) : (
@@ -194,8 +195,9 @@ export default function HistoricoPage() {
                       {item.mensagem_usuario}
                     </p>
                   </div>
-                  <i className={`bi bi-chevron-${expandido === item.id ? 'up' : 'down'}`}
-                    style={{ fontSize: 12, color: 'var(--text-muted)', flexShrink: 0, marginTop: 2 }} />
+                  {expandido === item.id
+                    ? <ChevronUp size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)', flexShrink: 0, marginTop: 2 }} />
+                    : <ChevronDown size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)', flexShrink: 0, marginTop: 2 }} />}
                 </button>
 
                 {expandido === item.id && item.resposta_agente && (
