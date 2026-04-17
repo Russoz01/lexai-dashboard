@@ -4,77 +4,73 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { usePlan } from '@/hooks/usePlan'
+import { agents, modules, isUnlocked, type CatalogItem, type Plan } from '@/lib/catalog'
+import {
+  LayoutDashboard, Folder, History, CalendarCheck, Wallet,
+  Gem, Palette, Settings, LogOut, Sparkles, Lock,
+} from 'lucide-react'
 import s from './Sidebar.module.css'
 
+/* ═════════════════════════════════════════════════════════════
+ * Sidebar — wire com catálogo central (migrado em 2026-04-17)
+ * ─────────────────────────────────────────────────────────────
+ * Consome agents() + modules() + isUnlocked() de @/lib/catalog.
+ * - Item implemented:false   → /dashboard/em-breve?feature=<slug>
+ * - Item !isUnlocked         → /dashboard/planos
+ * - Caso contrário           → item.href normal
+ *
+ * Mantém classes globais (.sidebar, .sidebar-link, etc) do layout
+ * pra não quebrar o margin-left:240px do main-content. Apenas
+ * ícones Bootstrap foram trocados por lucide-react.
+ * ═════════════════════════════════════════════════════════════ */
+
 const PLANOS: Record<string, { nome: string; preco: string }> = {
-  free:       { nome: 'Demonstracao', preco: '30 min guiados' },
-  starter:    { nome: 'Escritorio',   preco: 'R$ 1.399 / advogado' },
+  free:       { nome: 'Demonstração', preco: '30 min guiados' },
+  starter:    { nome: 'Escritório',   preco: 'R$ 1.399 / advogado' },
   pro:        { nome: 'Firma',        preco: 'R$ 1.459 / advogado' },
   enterprise: { nome: 'Enterprise',   preco: 'R$ 1.599 / advogado' },
 }
 
-interface NavItem { href: string; icon: string; label: string; badge?: number; badgeWarn?: boolean }
+/** Links fixos fora do catálogo — módulos de conta/infra */
+const PRINCIPAL = [
+  { href: '/dashboard',            Icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/dashboard/modelos',    Icon: Folder,          label: 'Modelos' },
+  { href: '/dashboard/historico',  Icon: History,         label: 'Histórico' },
+  { href: '/dashboard/prazos',     Icon: CalendarCheck,   label: 'Prazos' },
+  { href: '/dashboard/financeiro', Icon: Wallet,          label: 'Financeiro' },
+] as const
 
-const nav: { title: string; items: NavItem[] }[] = [
-  {
-    title: 'Principal',
-    items: [
-      { href: '/dashboard',             icon: 'bi-grid-1x2',          label: 'Dashboard'   },
-      { href: '/dashboard/modelos',     icon: 'bi-collection',        label: 'Modelos'     },
-      { href: '/dashboard/historico',   icon: 'bi-clock-history',     label: 'Histórico'   },
-      { href: '/dashboard/prazos',      icon: 'bi-calendar-check',    label: 'Prazos'      },
-      { href: '/dashboard/financeiro',  icon: 'bi-wallet2',           label: 'Financeiro'  },
-    ],
-  },
-  {
-    title: 'Agentes IA',
-    items: [
-      { href: '/dashboard/chat',        icon: 'bi-chat-square-dots',  label: 'Chat'        },
-      { href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text', label: 'Resumidor'   },
-      { href: '/dashboard/redator',     icon: 'bi-pencil-square',     label: 'Redator'     },
-      { href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark',  label: 'Pesquisador' },
-      { href: '/dashboard/negociador',  icon: 'bi-lightning',         label: 'Negociador'  },
-      { href: '/dashboard/professor',   icon: 'bi-bell',              label: 'Monitor Legislativo' },
-      { href: '/dashboard/rotina',      icon: 'bi-calendar-week',     label: 'Rotina'      },
-      { href: '/dashboard/calculador', icon: 'bi-calculator',        label: 'Calculador'  },
-      { href: '/dashboard/legislacao', icon: 'bi-book',              label: 'Legislacao'  },
-      { href: '/dashboard/simulado',  icon: 'bi-file-earmark-check', label: 'Parecerista' },
-      { href: '/dashboard/consultor', icon: 'bi-shield-check',       label: 'Estrategista' },
-      { href: '/dashboard/compliance', icon: 'bi-shield-check',      label: 'Compliance'   },
-      { href: '/dashboard/tradutor',  icon: 'bi-translate',          label: 'Tradutor Juridico' },
-      { href: '/dashboard/planilhas',  icon: 'bi-file-earmark-spreadsheet', label: 'Planilhas' },
-    ],
-  },
-  {
-    title: 'Conta',
-    items: [
-      { href: '/dashboard/planos',        icon: 'bi-gem',     label: 'Planos'        },
-      { href: '/dashboard/design',        icon: 'bi-palette', label: 'Design'        },
-      { href: '/dashboard/configuracoes', icon: 'bi-gear',    label: 'Configurações' },
-    ],
-  },
-]
+const CONTA = [
+  { href: '/dashboard/planos',        Icon: Gem,      label: 'Planos' },
+  { href: '/dashboard/design',        Icon: Palette,  label: 'Design' },
+  { href: '/dashboard/configuracoes', Icon: Settings, label: 'Configurações' },
+] as const
 
-/* ── Monograma LX ─────────────────────────────────────────── */
 function LexLogo() {
   return (
     <div className="logo">
       <svg viewBox="0 0 28 24" fill="none" width="22" height="19" xmlns="http://www.w3.org/2000/svg">
-        {/* L */}
-        <path d="M3 3 L3 21 L11 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
-        {/* X */}
-        <path d="M13 3 L25 21" stroke="white" strokeWidth="2.4" strokeLinecap="round"/>
-        <path d="M25 3 L13 21" stroke="white" strokeWidth="2.4" strokeLinecap="round"/>
+        <path d="M3 3 L3 21 L11 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M13 3 L25 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
+        <path d="M25 3 L13 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
       </svg>
     </div>
   )
 }
 
+/** Resolve href conforme estado do item no catálogo */
+function resolveHref(item: CatalogItem, userPlan: Plan): string {
+  if (!isUnlocked(item, userPlan)) return '/dashboard/planos'
+  if (!item.implemented) return `/dashboard/em-breve?feature=${item.slug}`
+  return item.href
+}
+
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
-  const router   = useRouter()
+  const router = useRouter()
   const supabase = createClient()
   const { plano, trial, loading } = usePlan()
+  const userPlan = (plano || 'free') as Plan
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -85,77 +81,110 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
   function isActive(href: string) {
     if (href === '/dashboard') return pathname === '/dashboard'
-    return pathname.startsWith(href)
+    return pathname.startsWith(href.split('?')[0])
+  }
+
+  const renderLink = (item: CatalogItem) => {
+    const href = resolveHref(item, userPlan)
+    const locked = !isUnlocked(item, userPlan)
+    const active = isActive(item.href)
+    const Icon = item.Icon
+    return (
+      <Link
+        key={item.slug}
+        href={href}
+        onClick={onClose}
+        className={`sidebar-link ${active ? 'active' : ''}`}
+        aria-disabled={locked || undefined}
+        title={locked ? `Disponível no plano ${item.minPlan}` : item.desc}
+      >
+        <Icon size={15} strokeWidth={1.75} className={s.navIcon} aria-hidden />
+        <span className={locked ? s.linkLocked : ''}>{item.label}</span>
+        {locked && <Lock size={11} strokeWidth={2} className={s.lockIcon} aria-hidden />}
+        {!item.implemented && !locked && (
+          <span className={s.soonPill} aria-hidden>
+            em breve
+          </span>
+        )}
+      </Link>
+    )
   }
 
   return (
     <aside className="sidebar" id="sidebar">
-      {/* Brand */}
       <div className="sidebar-brand">
         <LexLogo />
         <div className={s.brandCol}>
           <span>LexAI</span>
-          <span className={s.brandSub}>
-            by Vanix Corp
-          </span>
+          <span className={s.brandSub}>by Vanix Corp</span>
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="sidebar-nav">
-        {nav.map(section => (
-          <div key={section.title} className="sidebar-section">
-            <div className="sidebar-section-title">{section.title}</div>
-            {section.items.map((item, i) => (
-              <Link
-                key={i}
-                href={item.href}
-                onClick={onClose}
-                className={`sidebar-link ${isActive(item.href) ? 'active' : ''}`}
-              >
-                <i className={`bi ${item.icon}`} aria-hidden="true" />
-                {item.label}
-                {item.badge != null && (
-                  <span className={`badge-count ${item.badgeWarn ? 'warn' : ''}`}>
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
-          </div>
-        ))}
-
-        {/* Logout */}
         <div className="sidebar-section">
-          <button
-            onClick={handleLogout}
-            className={`sidebar-link ${s.logoutBtn}`}
-          >
-            <i className="bi bi-box-arrow-right" aria-hidden="true" />
+          <div className="sidebar-section-title">Principal</div>
+          {PRINCIPAL.map(({ href, Icon, label }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={onClose}
+              className={`sidebar-link ${isActive(href) ? 'active' : ''}`}
+            >
+              <Icon size={15} strokeWidth={1.75} className={s.navIcon} aria-hidden />
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="sidebar-section">
+          <div className="sidebar-section-title">Agentes IA</div>
+          {agents().map(renderLink)}
+        </div>
+
+        <div className="sidebar-section">
+          <div className="sidebar-section-title">Módulos</div>
+          {modules().map(renderLink)}
+        </div>
+
+        <div className="sidebar-section">
+          <div className="sidebar-section-title">Conta</div>
+          {CONTA.map(({ href, Icon, label }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={onClose}
+              className={`sidebar-link ${isActive(href) ? 'active' : ''}`}
+            >
+              <Icon size={15} strokeWidth={1.75} className={s.navIcon} aria-hidden />
+              {label}
+            </Link>
+          ))}
+          <button onClick={handleLogout} className={`sidebar-link ${s.logoutBtn}`}>
+            <LogOut size={15} strokeWidth={1.75} className={s.navIcon} aria-hidden />
             Sair da conta
           </button>
         </div>
       </nav>
 
-      {/* Plan Badge */}
       <div className={`sidebar-plan ${s.planWrapper}`}>
         <div
-          className={`sidebar-plan-badge${trial?.active ? ' trial-glow' : ''}${trial?.active && trial.days_left <= 1 ? ' trial-urgent' : ''}`}
+          className={`sidebar-plan-badge${trial?.active ? ' trial-glow' : ''}${
+            trial?.active && trial.days_left <= 1 ? ' trial-urgent' : ''
+          }`}
         >
           <div className={s.planLabel}>
             <span className={trial?.active && trial.days_left <= 1 ? s.planDotUrgent : s.planDot} />
             {trial?.active ? 'Trial ativo' : 'Plano ativo'}
           </div>
-          <div className="plan-name">{loading ? '...' : (PLANOS[plano]?.nome || 'Free Trial')}</div>
+          <div className="plan-name">{loading ? '...' : PLANOS[plano]?.nome || 'Free Trial'}</div>
           <div className="plan-price">
             {trial?.active
               ? `${trial.days_left} dia${trial.days_left === 1 ? '' : 's'} restante${trial.days_left === 1 ? '' : 's'}`
-              : (PLANOS[plano]?.preco || '')}
+              : PLANOS[plano]?.preco || ''}
           </div>
         </div>
-        {/* Vanix Corp footer mark */}
         <div className={s.footerMark}>
-          <i className="bi bi-stars" aria-hidden="true" style={{ marginRight: 5, color: 'var(--accent)' }} />
+          <Sparkles size={11} strokeWidth={1.75} className={s.footerSpark} aria-hidden />
           Uma marca <strong className={s.footerStrong}>Vanix Corp</strong>
         </div>
       </div>

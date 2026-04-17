@@ -78,8 +78,45 @@
   color: var(--accent);
 }
 
+.footerSpark {
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: -2px;
+  color: var(--accent);
+}
+
 .footerStrong {
   color: var(--text-secondary);
+}
+
+/* ── novos ícones/badges quando wire com catalog ── */
+.navIcon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.linkLocked {
+  opacity: 0.55;
+}
+
+.lockIcon {
+  margin-left: auto;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.soonPill {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(191, 166, 142, 0.25);
+  color: var(--accent);
+  background: rgba(191, 166, 142, 0.06);
+  white-space: nowrap;
 }
 
 @keyframes pulsePlan {
