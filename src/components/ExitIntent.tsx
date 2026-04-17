@@ -2,21 +2,18 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import s from './ExitIntent.module.css'
+import { X } from 'lucide-react'
 
-/**
- * Exit-intent modal.
+/* ═════════════════════════════════════════════════════════════
+ * ExitIntent — modal "Antes de sair" (migrado para Tailwind em 2026-04-17)
+ * ─────────────────────────────────────────────────────────────
+ * Dispara 1x por sessão quando o cursor sai pelo topo (desktop)
+ * ou 45s + 50% scroll (mobile). Oferece ROI calc como iscariato
+ * de menor compromisso que o plano pago.
  *
- * Fires once per session when the user's mouse leaves the top of the viewport
- * (classic desktop exit signal). On mobile — where there's no top-escape
- * gesture — it fires after 45s on page + 50% scroll depth as a substitute.
- *
- * The modal pushes the ROI calculator (a lower-commitment lead magnet) instead
- * of the paid plan. Philosophy: capture intent before losing the visitor.
- *
- * Honors prefers-reduced-motion (instant instead of fading), and uses a
- * localStorage flag so we don't annoy returning visitors.
- */
+ * Respeita prefers-reduced-motion e usa localStorage pra não
+ * aparecer de novo por 30 dias.
+ * ═════════════════════════════════════════════════════════════ */
 
 const SEEN_KEY = 'lexai-exit-seen-v1'
 const SESSION_KEY = 'lexai-exit-fired-session'
@@ -26,7 +23,6 @@ export function ExitIntent() {
   const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
-    // Don't show if user has seen it in last 30 days
     try {
       const seen = localStorage.getItem(SEEN_KEY)
       if (seen) {
@@ -52,7 +48,7 @@ export function ExitIntent() {
     }
 
     const onMouseLeave = (e: MouseEvent) => {
-      if (e.clientY > 0) return // only when the pointer leaves via the TOP
+      if (e.clientY > 0) return
       if (e.relatedTarget) return
       fire()
     }
@@ -71,7 +67,6 @@ export function ExitIntent() {
     if (window.innerWidth >= 900) {
       document.addEventListener('mouseleave', onMouseLeave)
     } else {
-      // mobile fallback: 45s on page
       mobileTimer = setTimeout(fire, 45000)
       window.addEventListener('scroll', onScroll, { passive: true })
     }
@@ -90,7 +85,6 @@ export function ExitIntent() {
     } catch {}
   }
 
-  // Escape key
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -107,33 +101,53 @@ export function ExitIntent() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="exit-title"
-      className={s.exitBackdrop}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && dismiss()}
     >
-      <div className={reducedMotion ? s.exitModalReduced : s.exitModal}>
+      <div
+        className={`relative w-full max-w-md rounded-2xl border border-white/10 bg-neutral-950 p-8 text-white shadow-[0_30px_100px_-20px_rgba(0,0,0,0.8)] ${
+          reducedMotion ? '' : 'animate-in fade-in zoom-in-95 duration-300'
+        }`}
+      >
         <button
           type="button"
           onClick={dismiss}
-          className={s.exitClose}
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-white/60 transition hover:bg-white/10 hover:text-white"
           aria-label="Fechar"
         >
-          <i className="bi bi-x-lg" aria-hidden />
+          <X size={18} aria-hidden />
         </button>
 
-        <div className={s.exitSerial}>Antes de sair</div>
-        <h2 id="exit-title" className={s.exitTitle}>
-          Ja calculou <em className={s.exitTitleEm}>quanto</em> seu escritorio economizaria?
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+          <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+          Antes de sair
+        </div>
+
+        <h2 id="exit-title" className="mb-3 text-balance text-2xl font-medium leading-tight">
+          Já calculou{' '}
+          <span className="italic text-[#bfa68e]">quanto</span>{' '}
+          seu escritório economizaria?
         </h2>
-        <p className={s.exitBody}>
-          Nossa calculadora gratuita mostra ROI, payback e plano ideal para
-          seu numero de advogados. Trinta segundos, sem cadastro.
+
+        <p className="mb-6 text-sm leading-relaxed text-white/60">
+          Nossa calculadora gratuita mostra ROI, payback e plano ideal para seu
+          número de advogados. Trinta segundos, sem cadastro.
         </p>
-        <div className={s.exitActions}>
-          <Link href="/roi" className={s.exitBtnPrimary} onClick={dismiss}>
-            Ver calculo do meu escritorio &rarr;
+
+        <div className="space-y-2">
+          <Link
+            href="/roi"
+            onClick={dismiss}
+            className="flex w-full items-center justify-center rounded-lg bg-white px-4 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+          >
+            Ver cálculo do meu escritório &rarr;
           </Link>
-          <button type="button" onClick={dismiss} className={s.exitBtnGhost}>
-            Nao obrigado
+          <button
+            type="button"
+            onClick={dismiss}
+            className="w-full rounded-lg px-4 py-2.5 text-xs text-white/50 transition hover:bg-white/5 hover:text-white/80"
+          >
+            Não obrigado
           </button>
         </div>
       </div>
