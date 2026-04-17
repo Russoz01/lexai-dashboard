@@ -2,131 +2,199 @@
 
 import Link from 'next/link'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
-import s from './page.module.css'
+import { ArrowRight } from 'lucide-react'
+
+/* ═════════════════════════════════════════════════════════════
+ * /sobre — página institucional (migrado para Tailwind em 2026-04-17)
+ * ─────────────────────────────────────────────────────────────
+ * Parte do Pass 1 da migração CSS Modules → Tailwind.
+ * Paleta Noir Atelier: #bfa68e champagne + neutral-950 + white/10 borders.
+ * Sem scroll reveal complexo — página curta, conteúdo estático.
+ * ═════════════════════════════════════════════════════════════ */
 
 const pillars = [
   {
     n: 'I',
-    title: 'Precisao acima de viralidade',
-    body: 'A LexAI nunca inventa jurisprudencia. Cada citacao tem origem rastreavel. Em producao juridica, uma alucinacao nao e bug: e risco de sancao.',
+    title: 'Precisão acima de viralidade',
+    body: 'A LexAI nunca inventa jurisprudência. Cada citação tem origem rastreável. Em produção jurídica, uma alucinação não é bug: é risco de sanção.',
   },
   {
     n: 'II',
-    title: 'Construido por quem vive o caso',
-    body: 'Prompt, interface e fluxo sao desenhados com advogados militantes. Testamos cada agente em varas reais antes de liberar para o mercado.',
+    title: 'Construído por quem vive o caso',
+    body: 'Prompt, interface e fluxo são desenhados com advogados militantes. Testamos cada agente em varas reais antes de liberar para o mercado.',
   },
   {
     n: 'III',
     title: 'LGPD sem asterisco',
-    body: 'Processamos no Brasil quando possivel. Nenhum dado do cliente treina modelo publico. Retencao e direitos do titular atendem Art. 18 \u2014 exportacao e exclusao em minutos.',
+    body: 'Processamos no Brasil quando possível. Nenhum dado do cliente treina modelo público. Retenção e direitos do titular atendem Art. 18 — exportação e exclusão em minutos.',
   },
   {
     n: 'IV',
-    title: 'O escritorio e o cliente',
-    body: 'Nao vendemos para departamentos juridicos de banco. Nao servimos tech bros. Servimos quem bate ponto em forum, quem perde almoco por peca e quem ainda cobra honorario de sucesso.',
+    title: 'O escritório é o cliente',
+    body: 'Não vendemos para departamentos jurídicos de banco. Não servimos tech bros. Servimos quem bate ponto em fórum, quem perde almoço por peça e quem ainda cobra honorário de sucesso.',
   },
 ]
 
 export default function SobrePage() {
   return (
-    <div className={s.sbRoot}>
-      <header className={s.sbNav}>
-        <Link href="/" className={s.sbBrand}>LexAI</Link>
-        <nav className={s.sbNavLinks}>
-          <Link href="/empresas" className={s.sbNavLink}>Empresas</Link>
-          <Link href="/roi" className={s.sbNavLink}>Calculadora</Link>
-          <Link href="/login" className={s.sbNavCta}>Entrar</Link>
+    <div className="min-h-screen bg-black text-white antialiased">
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur-md md:px-10">
+        <Link href="/" className="font-mono text-sm uppercase tracking-[0.3em] text-white">
+          LexAI
+        </Link>
+        <nav className="flex items-center gap-5 text-sm">
+          <Link href="/empresas" className="text-white/60 transition hover:text-white">
+            Empresas
+          </Link>
+          <Link href="/roi" className="hidden text-white/60 transition hover:text-white sm:inline">
+            Calculadora
+          </Link>
+          <Link
+            href="/login"
+            className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-white transition hover:border-[#bfa68e]/40 hover:bg-white/10"
+          >
+            Entrar
+          </Link>
         </nav>
       </header>
 
-      <main id="main-content" className={s.sbShell}>
-        <div className={s.sbSerial}>Nº 005 · SOBRE · MMXXVI</div>
+      <main id="main-content" className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+        <div className="mb-6 font-mono text-[0.65rem] uppercase tracking-[0.28em] text-[#bfa68e]">
+          Nº 005 · Sobre · MMXXVI
+        </div>
 
-        <h1 className={s.sbTitle}>
-          Construido por quem <em>escreve pecas</em> de verdade.
+        <h1 className="text-balance text-4xl font-light leading-[1.08] tracking-tight text-white sm:text-5xl md:text-[3.5rem]">
+          Construído por quem{' '}
+          <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
+            escreve peças
+          </em>{' '}
+          de verdade.
         </h1>
-        <p className={s.sbLede}>
-          A LexAI nasceu dentro da Vanix Corp em 2026 com uma premissa desconfortavel
-          para a industria de IA generalista: um modelo nao treinado no Direito brasileiro
-          nao serve para advogado brasileiro. Nao adianta empacotar Claude em uma
-          interface bonita se o advogado precisa conferir cada citacao.
+
+        <p className="mt-8 text-base leading-relaxed text-white/70 md:text-lg">
+          A LexAI nasceu dentro da Vanix Corp em 2026 com uma premissa desconfortável
+          para a indústria de IA generalista: um modelo não treinado no Direito brasileiro
+          não serve para advogado brasileiro. Não adianta empacotar Claude em uma
+          interface bonita se o advogado precisa conferir cada citação.
         </p>
-        <p className={s.sbLede}>
-          Nos escolhemos o caminho mais dificil: curar o corpus, calibrar o modelo,
-          rastrear origem, e negar a resposta quando ela nao puder ser sustentada.
-          Temos cliente com medo de IA virando erro na OAB. Nosso trabalho e fazer
+        <p className="mt-5 text-base leading-relaxed text-white/70 md:text-lg">
+          Nós escolhemos o caminho mais difícil: curar o corpus, calibrar o modelo,
+          rastrear origem, e negar a resposta quando ela não puder ser sustentada.
+          Temos cliente com medo de IA virando erro na OAB. Nosso trabalho é fazer
           a IA pedir socorro antes de mentir.
         </p>
 
-        <div className={s.sbDivider} aria-hidden />
+        <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-        <h2 className={s.sbH2}>Quatro pilares nao-negociaveis</h2>
-        <div className={s.sbPillars}>
+        <h2 className="mb-8 text-2xl font-medium tracking-tight text-white md:text-3xl">
+          Quatro pilares não-negociáveis
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2">
           {pillars.map((p) => (
-            <article key={p.n} className={s.sbPillar}>
-              <div className={s.sbPillarN}>{p.n}</div>
-              <h3 className={s.sbPillarTitle}>{p.title}</h3>
-              <p className={s.sbPillarBody}>{p.body}</p>
+            <article
+              key={p.n}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-6 transition hover:border-[#bfa68e]/30"
+            >
+              <div className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-[#bfa68e]/80">
+                {p.n}
+              </div>
+              <h3 className="mb-2 text-lg font-medium text-white">{p.title}</h3>
+              <p className="text-sm leading-relaxed text-white/60">{p.body}</p>
             </article>
           ))}
         </div>
 
-        <div className={s.sbDivider} aria-hidden />
+        <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-        <h2 className={s.sbH2}>O time</h2>
-        <p className={s.sbLede}>
-          A LexAI e um produto da <strong>Vanix Corp</strong>, estudio de software
-          do interior de Minas. Trabalhamos em celulas pequenas: dois engenheiros,
-          um designer, um operador juridico em residencia, uma diretora de
+        <h2 className="mb-6 text-2xl font-medium tracking-tight text-white md:text-3xl">
+          O time
+        </h2>
+        <p className="text-base leading-relaxed text-white/70 md:text-lg">
+          A LexAI é um produto da <strong className="text-white">Vanix Corp</strong>, estúdio de software
+          do interior de Minas. Trabalhamos em células pequenas: dois engenheiros,
+          um designer, um operador jurídico em residência, uma diretora de
           conformidade. Sem vendedor, sem gerente de produto. Quem escreve a feature
           fala com quem usa.
         </p>
-        <p className={s.sbLede}>
-          Nosso compromisso com o escritorio medio: suporte por WhatsApp em menos
-          de 4 horas uteis, resposta de bug critico em 24h, e roadmap publico que
-          voce ajuda a votar.
+        <p className="mt-5 text-base leading-relaxed text-white/70 md:text-lg">
+          Nosso compromisso com o escritório médio: suporte por WhatsApp em menos
+          de 4 horas úteis, resposta de bug crítico em 24h, e roadmap público que
+          você ajuda a votar.
         </p>
 
-        <div className={s.sbDivider} aria-hidden />
+        <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-        <h2 className={s.sbH2}>Como chegar na gente</h2>
-        <ul className={s.sbContact}>
-          <li className={s.sbContactItem}>
-            <span className={s.sbContactLabel}>Comercial</span>
-            <a href="https://wa.me/5534993026456" target="_blank" rel="noopener noreferrer" className={s.sbContactLink}>
+        <h2 className="mb-6 text-2xl font-medium tracking-tight text-white md:text-3xl">
+          Como chegar na gente
+        </h2>
+        <ul className="divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]">
+          <li className="flex items-center justify-between px-5 py-4">
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
+              Comercial
+            </span>
+            <a
+              href="https://wa.me/5534993026456"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-white transition hover:text-[#bfa68e]"
+            >
               +55 34 99302-6456
             </a>
           </li>
-          <li className={s.sbContactItem}>
-            <span className={s.sbContactLabel}>E-mail</span>
-            <a href="mailto:contato@vanixcorp.com" className={s.sbContactLink}>contato@vanixcorp.com</a>
+          <li className="flex items-center justify-between px-5 py-4">
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
+              E-mail
+            </span>
+            <a
+              href="mailto:contato@vanixcorp.com"
+              className="text-sm text-white transition hover:text-[#bfa68e]"
+            >
+              contato@vanixcorp.com
+            </a>
           </li>
-          <li className={s.sbContactItem}>
-            <span className={s.sbContactLabel}>Imprensa</span>
-            <a href="mailto:imprensa@vanixcorp.com" className={s.sbContactLink}>imprensa@vanixcorp.com</a>
+          <li className="flex items-center justify-between px-5 py-4">
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
+              Imprensa
+            </span>
+            <a
+              href="mailto:imprensa@vanixcorp.com"
+              className="text-sm text-white transition hover:text-[#bfa68e]"
+            >
+              imprensa@vanixcorp.com
+            </a>
           </li>
         </ul>
 
-        <div className={s.sbCta}>
-          <Link href="/empresas" className={s.sbCtaBtn}>
-            Agendar demonstracao
-            <span aria-hidden>&rarr;</span>
+        <div className="mt-12 flex flex-wrap gap-3">
+          <Link
+            href="/empresas"
+            className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-5 py-2.5 text-sm font-medium text-[#0a0807] shadow-[0_0_28px_rgba(191,166,142,0.25)] transition hover:shadow-[0_0_40px_rgba(191,166,142,0.5)]"
+          >
+            Agendar demonstração
+            <ArrowRight size={14} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
           </Link>
-          <Link href="/roi" className={s.sbCtaGhost}>
+          <Link
+            href="/roi"
+            className="inline-flex items-center rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm text-white/80 backdrop-blur transition hover:border-[#bfa68e]/40 hover:text-white"
+          >
             Calcular ROI
           </Link>
         </div>
 
-        <footer className={s.sbFooter}>
+        <footer className="mt-20 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-white/40 sm:flex-row sm:items-center">
           <span>© MMXXVI Vanix Corp · LexAI</span>
-          <div className={s.sbFooterLinks}>
-            <Link href="/privacidade" className={s.sbFooterLink}>Privacidade</Link>
-            <Link href="/termos" className={s.sbFooterLink}>Termos</Link>
+          <div className="flex gap-4">
+            <Link href="/privacidade" className="transition hover:text-white">
+              Privacidade
+            </Link>
+            <Link href="/termos" className="transition hover:text-white">
+              Termos
+            </Link>
           </div>
         </footer>
       </main>
 
-      <WhatsAppFloat message="Ola! Conheci a LexAI pela pagina Sobre e gostaria de saber mais." />
+      <WhatsAppFloat message="Olá! Conheci a LexAI pela página Sobre e gostaria de saber mais." />
     </div>
   )
 }
