@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ExitIntent } from '@/components/ExitIntent'
-import { LexPricing } from '@/components/ui/lex-pricing'
 import s from './page.module.css'
 
 /* ----------------------------------------------------------------------------
@@ -581,9 +580,6 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
-
-      {/* ── PRICING — usa LexPricing com toggle mensal/anual ──────────── */}
-      <LexPricing />
 
       {/* ── CLOSING MARK ───────────────────────────────────────────────── */}
       <section className={s.closingSection}>
