@@ -8,6 +8,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { Check, Clipboard, Gift } from 'lucide-react'
 import { toast } from './Toast'
 import s from './ReferralPanel.module.css'
 
@@ -70,7 +71,7 @@ export function ReferralPanel() {
           </div>
         </div>
         <div className={s.refBadge}>
-          <i className="bi bi-gift" />
+          <Gift size={18} strokeWidth={1.75} aria-hidden />
         </div>
       </div>
 
@@ -89,7 +90,9 @@ export function ReferralPanel() {
             onClick={(e) => (e.target as HTMLInputElement).select()}
           />
           <button className={s.refCopy} onClick={copyLink}>
-            <i className={`bi ${copied ? 'bi-check-lg' : 'bi-clipboard'}`} />
+            {copied
+              ? <Check size={14} strokeWidth={2} aria-hidden />
+              : <Clipboard size={14} strokeWidth={1.75} aria-hidden />}
             {copied ? 'Copiado' : 'Copiar'}
           </button>
         </div>

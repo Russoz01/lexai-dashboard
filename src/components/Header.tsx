@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/context/ThemeContext'
 import { useState, useEffect } from 'react'
+import { Bell, HelpCircle, Menu, Moon, Sun } from 'lucide-react'
 import OnboardingModal from './OnboardingModal'
 
 interface HeaderProps {
@@ -43,8 +44,8 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
   return (
     <header className="top-header">
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <button className="mobile-toggle" onClick={onToggleSidebar}>
-          <i className="bi bi-list" />
+        <button className="mobile-toggle" onClick={onToggleSidebar} aria-label="Abrir menu">
+          <Menu size={18} strokeWidth={1.75} aria-hidden />
         </button>
         <div className="header-status">
           <span className="dot" />
@@ -57,18 +58,20 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
 
       <div className="header-user">
         <button className="notif-bell" title="Ajuda e tour do LexAI" onClick={() => setShowHelp(true)}>
-          <i className="bi bi-question-circle" />
+          <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
         </button>
 
-        <button className="notif-bell" title="Notificacoes" onClick={() => window.location.href='/dashboard/prazos'}>
-          <i className="bi bi-bell" />
+        <button className="notif-bell" title="Notificações" onClick={() => window.location.href='/dashboard/prazos'}>
+          <Bell size={16} strokeWidth={1.75} aria-hidden />
           <span className="notif-dot" />
         </button>
 
         <button className="header-theme-toggle" onClick={toggleTheme}
           suppressHydrationWarning
           title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}>
-          <i suppressHydrationWarning className={`bi ${mounted && theme === 'light' ? 'bi-moon' : 'bi-sun'}`} />
+          {mounted && theme === 'light'
+            ? <Moon size={16} strokeWidth={1.75} aria-hidden />
+            : <Sun size={16} strokeWidth={1.75} aria-hidden />}
         </button>
 
         <div className="header-user-info">

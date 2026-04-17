@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { ShieldCheck } from 'lucide-react'
 
 const STORAGE_KEY = 'lexai-cookie-consent'
 
@@ -80,7 +81,7 @@ export function CookieConsent() {
               justifyContent: 'center',
             }}
           >
-            <i className="bi bi-shield-lock" style={{ color: '#bfa68e', fontSize: 18 }} />
+            <ShieldCheck size={18} strokeWidth={1.75} style={{ color: '#bfa68e' }} aria-hidden />
           </div>
         </div>
 

@@ -1,14 +1,16 @@
 'use client'
 
+import { BadgeCheck, Zap } from 'lucide-react'
+
 interface ConfidenceBadgeProps {
   confianca?: { nivel?: string; nota?: string } | null
   compact?: boolean
 }
 
 const LABELS: Record<string, string> = {
-  alta: 'Confianca alta',
-  media: 'Confianca media',
-  baixa: 'Confianca baixa',
+  alta: 'Confiança alta',
+  media: 'Confiança média',
+  baixa: 'Confiança baixa',
 }
 
 export default function ConfidenceBadge({ confianca, compact = false }: ConfidenceBadgeProps) {
@@ -31,7 +33,7 @@ export default function ConfidenceBadge({ confianca, compact = false }: Confiden
 export function VerifiedBadge() {
   return (
     <span className="verified-badge">
-      <i className="bi bi-patch-check-fill" />
+      <BadgeCheck size={12} strokeWidth={2} aria-hidden />
       Verificado
     </span>
   )
@@ -46,7 +48,7 @@ export function PoweredByLexAI() {
       padding: '5px 12px', borderRadius: 12,
       background: 'var(--hover)', border: '1px solid var(--border)',
     }}>
-      <i className="bi bi-lightning-charge-fill" style={{ color: 'var(--accent)', fontSize: 11 }} />
+      <Zap size={11} strokeWidth={2} style={{ color: 'var(--accent)' }} aria-hidden />
       LexAI
       <span style={{
         display: 'inline-block', width: 1, height: 10,
