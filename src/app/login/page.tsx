@@ -4,60 +4,49 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import s from './page.module.css'
+import { ArrowLeft, Check, Eye, EyeOff, Loader2 } from 'lucide-react'
 
-/* ----------------------------------------------------------------------------
- * LexAI — Atelier Login
- *
- * Editorial split-screen. Right side is a warm-stone manifesto, left side is
- * the form. No gradients, no glow — just type, whitespace and the Looera
- * palette. Works in both dark and light themes via CSS custom properties.
- * -------------------------------------------------------------------------- */
-
-const MAX_FORM_WIDTH = 440
+/* ═════════════════════════════════════════════════════════════
+ * /login — Atelier Login (migrado para Tailwind em 2026-04-17)
+ * ─────────────────────────────────────────────────────────────
+ * Split-screen editorial: esquerda form, direita manifesto.
+ * Mantém Google OAuth + email/senha + toggle signup/login.
+ * Paleta Noir Atelier (#bfa68e champagne + neutral-950).
+ * Cursor-follow glow via CSS custom property (--mx/--my).
+ * ═════════════════════════════════════════════════════════════ */
 
 const VALUE_PROPS = [
-  { n: 'I',   title: 'Doze agentes afinados',    desc: 'Treinados especificamente para o ordenamento juridico brasileiro.' },
-  { n: 'II',  title: '7 dias gratis',             desc: 'Experimente sem cartao, cancele em um clique, sem fidelidade.' },
-  { n: 'III', title: 'Seguranca e LGPD',        desc: 'Dados criptografados em transito e em repouso. Nunca utilizados em treinamento.' },
-  { n: 'IV',  title: 'Feito a mao',             desc: 'Nao somos mais um SaaS generico. Somos um atelier.' },
+  { n: 'I', title: 'Vinte e dois agentes afinados', desc: 'Treinados especificamente para o ordenamento jurídico brasileiro.' },
+  { n: 'II', title: '7 dias grátis', desc: 'Experimente sem cartão, cancele em um clique, sem fidelidade.' },
+  { n: 'III', title: 'Segurança e LGPD', desc: 'Dados criptografados em trânsito e em repouso. Nunca utilizados em treinamento.' },
+  { n: 'IV', title: 'Feito à mão', desc: 'Não somos mais um SaaS genérico. Somos um atelier.' },
 ]
 
 const TESTIMONIAL = {
   initials: 'MC',
   name: 'Mariana Castro',
   cargo: 'Advogada Civil · OAB/SP',
-  quote: 'Em duas semanas economizei mais de vinte horas de pesquisa. O Pesquisador encontra acordaos que eu nem sabia que existiam.',
+  quote: 'Em duas semanas economizei mais de vinte horas de pesquisa. O Pesquisador encontra acórdãos que eu nem sabia que existiam.',
 }
-
-/* --------------------------------------------------------------------------
- * Password strength — three tiers.
- * ------------------------------------------------------------------------ */
 
 type Strength = 'fraca' | 'media' | 'forte'
 
 function scorePassword(pwd: string): { score: number; label: Strength; color: string } {
-  if (!pwd) return { score: 0, label: 'fraca', color: 'var(--border)' }
-
+  if (!pwd) return { score: 0, label: 'fraca', color: 'rgba(255,255,255,0.15)' }
   let score = 0
   if (pwd.length >= 8) score++
   if (pwd.length >= 12) score++
   if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) score++
   if (/\d/.test(pwd)) score++
   if (/[^A-Za-z0-9]/.test(pwd)) score++
-
-  if (score <= 2) return { score: 1, label: 'fraca', color: 'var(--danger)' }
-  if (score <= 3) return { score: 2, label: 'media', color: 'var(--warning)' }
-  return { score: 3, label: 'forte', color: 'var(--success)' }
+  if (score <= 2) return { score: 1, label: 'fraca', color: '#ef4444' }
+  if (score <= 3) return { score: 2, label: 'media', color: '#eab308' }
+  return { score: 3, label: 'forte', color: '#22c55e' }
 }
-
-/* --------------------------------------------------------------------------
- * Inline primitives — zero extra imports.
- * ------------------------------------------------------------------------ */
 
 function LexLogoMark() {
   return (
-    <div className={s.logoMark}>
+    <div className="flex size-10 items-center justify-center rounded-lg border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black text-[#bfa68e] shadow-[0_0_16px_rgba(191,166,142,0.2)]">
       <svg viewBox="0 0 28 24" fill="none" width="22" height="19">
         <path d="M3 3 L3 21 L11 21" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M13 3 L25 21" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
@@ -78,30 +67,6 @@ function GoogleLogo() {
   )
 }
 
-function Spinner() {
-  return (
-    <svg
-      width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-      className={s.spinner}
-      aria-hidden="true"
-    >
-      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-    </svg>
-  )
-}
-
-function CheckMark() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  )
-}
-
-/* --------------------------------------------------------------------------
- * Field primitive
- * ------------------------------------------------------------------------ */
-
 type FieldProps = {
   id: string
   label: string
@@ -117,12 +82,13 @@ type FieldProps = {
 
 function Field({ id, label, type, value, onChange, placeholder, autoComplete, required, trailing, ariaInvalid }: FieldProps) {
   return (
-    <div className={s.field}>
-      <label htmlFor={id} className={s.fieldLabel}>{label}</label>
-      <div className={s.fieldWrap}>
+    <div>
+      <label htmlFor={id} className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em] text-white/50">
+        {label}
+      </label>
+      <div className="relative">
         <input
           id={id}
-          className={`${s.input}${trailing ? ` ${s.inputWithTrailing}` : ''}`}
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -130,16 +96,15 @@ function Field({ id, label, type, value, onChange, placeholder, autoComplete, re
           autoComplete={autoComplete}
           required={required}
           aria-invalid={ariaInvalid || undefined}
+          className={`w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#bfa68e]/50 focus:bg-white/[0.06] aria-[invalid=true]:border-red-500/50 ${
+            trailing ? 'pr-20' : ''
+          }`}
         />
-        {trailing && <div className={s.fieldTrail}>{trailing}</div>}
+        {trailing && <div className="absolute inset-y-0 right-2 flex items-center">{trailing}</div>}
       </div>
     </div>
   )
 }
-
-/* --------------------------------------------------------------------------
- * Page
- * ------------------------------------------------------------------------ */
 
 export default function LoginPage() {
   const router = useRouter()
@@ -161,7 +126,6 @@ export default function LoginPage() {
   const anyLoading = oauthLoading !== null || emailLoading || success
   const strength = useMemo(() => scorePassword(senha), [senha])
 
-  // Cursor-follow glow nos dois paineis
   const leftRef = useRef<HTMLDivElement>(null)
   const asideRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -224,7 +188,7 @@ export default function LoginPage() {
       if (error) {
         setErro(
           error.message === 'User already registered'
-            ? 'Este email ja esta cadastrado. Faca login.'
+            ? 'Este email já está cadastrado. Faça login.'
             : error.message,
         )
         setEmailLoading(false)
@@ -246,58 +210,87 @@ export default function LoginPage() {
     setTimeout(() => router.push('/dashboard'), 450)
   }
 
-  const submitLabel = isSignUp ? 'Criar conta gratis' : 'Entrar'
+  const submitLabel = isSignUp ? 'Criar conta grátis' : 'Entrar'
 
   return (
-    <main className={s.login}>
-      <div className={s.loginGlow} aria-hidden />
+    <main className="relative min-h-screen grid-cols-1 bg-black text-white antialiased lg:grid lg:grid-cols-2">
+      {/* ══════ LEFT — Form ══════ */}
+      <section
+        ref={leftRef}
+        className="relative flex min-h-screen flex-col px-6 py-10 md:px-12 lg:py-16"
+        style={{ '--mx': '50%', '--my': '30%' } as React.CSSProperties}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-60"
+          style={{
+            background:
+              'radial-gradient(520px circle at var(--mx) var(--my), rgba(191,166,142,0.10), transparent 60%)',
+          }}
+        />
 
-      {/* ══════════════ LEFT — Form ══════════════ */}
-      <section className={s.formCol} ref={leftRef}>
-        <div className={s.cursorGlow} aria-hidden />
-        <Link href="/" className={s.loginHome}>
-          <span aria-hidden className={s.homeArrow}>←</span>
-          <span>voltar ao site</span>
+        <Link
+          href="/"
+          className="group relative z-10 mb-10 inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-[0.22em] text-white/50 transition hover:text-white"
+        >
+          <ArrowLeft size={12} strokeWidth={1.75} className="transition-transform group-hover:-translate-x-0.5" />
+          voltar ao site
         </Link>
 
-        <div className={s.formWrap} style={{ maxWidth: MAX_FORM_WIDTH }}>
-          <div className={s.loginBrand}>
+        <div className="relative z-10 mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center">
+          <div className="mb-7 flex items-center gap-3">
             <LexLogoMark />
             <div>
-              <div className={s.serial}>N° 001 · LEXAI · MMXXVI</div>
-              <h1 className={s.loginTitle}>
-                Reservar <em className={s.italic}>acesso</em>
+              <div className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[#bfa68e]">
+                Nº 001 · LexAI · MMXXVI
+              </div>
+              <h1 className="mt-1 text-3xl font-light leading-tight tracking-tight md:text-4xl">
+                Reservar{' '}
+                <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
+                  acesso
+                </em>
               </h1>
             </div>
           </div>
 
-          <p className={s.loginLede}>
+          <p className="mb-7 text-sm leading-relaxed text-white/60">
             {isSignUp
-              ? 'Crie sua conta. 7 dias gratuitos, sem cartao. Apenas um profissional por vez.'
+              ? 'Crie sua conta. 7 dias gratuitos, sem cartão. Apenas um profissional por vez.'
               : 'Bem-vindo de volta ao atelier. Entre para retomar seu gabinete digital.'}
           </p>
 
           {erro && (
-            <div role="alert" className={s.loginError}>
-              <span>{erro}</span>
+            <div
+              role="alert"
+              className="mb-5 rounded-lg border border-red-500/30 bg-red-500/[0.08] px-4 py-3 text-sm text-red-200"
+            >
+              {erro}
             </div>
           )}
 
-          {/* Google OAuth */}
           <button
             type="button"
-            className={s.oauth}
             onClick={signInGoogle}
             disabled={anyLoading}
+            className="mb-5 flex w-full items-center justify-center gap-3 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-3 text-sm font-medium text-white transition hover:border-[#bfa68e]/40 hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {oauthLoading === 'google' ? <Spinner /> : <GoogleLogo />}
-            <span>Continuar com Google</span>
+            {oauthLoading === 'google' ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <GoogleLogo />
+            )}
+            Continuar com Google
           </button>
 
-          <div className={s.divider}><span className={s.dividerText}>ou continuar com email</span></div>
+          <div className="mb-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-white/10" />
+            <span className="font-mono text-[0.6rem] uppercase tracking-[0.25em] text-white/40">
+              ou continuar com email
+            </span>
+            <div className="h-px flex-1 bg-white/10" />
+          </div>
 
-          {/* Email form */}
-          <form onSubmit={submitEmail} noValidate className={s.form}>
+          <form onSubmit={submitEmail} noValidate className="space-y-4">
             {isSignUp && (
               <Field
                 id="lx-nome"
@@ -330,63 +323,72 @@ export default function LoginPage() {
                 type={showSenha ? 'text' : 'password'}
                 value={senha}
                 onChange={setSenha}
-                placeholder={isSignUp ? 'Minimo 8 caracteres' : 'Sua senha'}
+                placeholder={isSignUp ? 'Mínimo 8 caracteres' : 'Sua senha'}
                 autoComplete={isSignUp ? 'new-password' : 'current-password'}
                 required
                 ariaInvalid={!!erro}
                 trailing={
                   <button
                     type="button"
-                    className={s.eye}
                     onClick={() => setShowSenha((v) => !v)}
                     tabIndex={-1}
                     aria-label={showSenha ? 'Ocultar senha' : 'Mostrar senha'}
+                    className="mr-1 rounded p-2 text-white/50 transition hover:bg-white/5 hover:text-white"
                   >
-                    {showSenha ? 'Ocultar' : 'Mostrar'}
+                    {showSenha ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 }
               />
 
               {isSignUp && senha.length > 0 && (
-                <div className={s.strength}>
-                  <div className={s.strengthTrack}>
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex flex-1 gap-1">
                     {[1, 2, 3].map((n) => (
                       <div
                         key={n}
-                        className={s.strengthPip}
+                        className="h-1 flex-1 rounded-full transition-colors"
                         style={{
-                          background: n <= strength.score ? strength.color : 'var(--stone-line)',
+                          background: n <= strength.score ? strength.color : 'rgba(255,255,255,0.1)',
                         }}
                       />
                     ))}
                   </div>
-                  <span className={s.strengthLabel} style={{ color: strength.color }}>
+                  <span
+                    className="font-mono text-[0.65rem] uppercase tracking-wider"
+                    style={{ color: strength.color }}
+                  >
                     {strength.label}
                   </span>
                 </div>
               )}
 
               {!isSignUp && (
-                <div className={s.forgotRow}>
-                  <Link href="/login" className={s.loginLink}>Esqueceu a senha?</Link>
+                <div className="mt-2 flex justify-end">
+                  <Link href="/login" className="text-xs text-white/50 transition hover:text-[#bfa68e]">
+                    Esqueceu a senha?
+                  </Link>
                 </div>
               )}
             </div>
 
             <button
               type="submit"
-              className={`${s.submit}${success ? ` ${s.submitSuccess}` : ''}`}
               disabled={anyLoading}
+              className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-70 ${
+                success
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] text-[#0a0807] shadow-[0_0_28px_rgba(191,166,142,0.25)] hover:shadow-[0_0_40px_rgba(191,166,142,0.5)]'
+              }`}
             >
               {success ? (
                 <>
-                  <CheckMark />
-                  <span>Entrando</span>
+                  <Check size={16} strokeWidth={2.5} />
+                  Entrando
                 </>
               ) : emailLoading ? (
                 <>
-                  <Spinner />
-                  <span>{isSignUp ? 'Criando conta' : 'Entrando'}</span>
+                  <Loader2 size={16} className="animate-spin" />
+                  {isSignUp ? 'Criando conta' : 'Entrando'}
                 </>
               ) : (
                 submitLabel
@@ -394,64 +396,96 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className={s.toggle}>
-            <span>{isSignUp ? 'Ja tem conta?' : 'Ainda nao tem conta?'}</span>{' '}
-            <button type="button" onClick={toggleMode} className={`${s.loginLink} ${s.loginLinkBold}`}>
-              {isSignUp ? 'Entrar' : 'Criar conta gratis'}
+          <div className="mt-6 text-center text-sm text-white/60">
+            {isSignUp ? 'Já tem conta?' : 'Ainda não tem conta?'}{' '}
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="font-medium text-[#bfa68e] transition hover:text-[#e6d4bd]"
+            >
+              {isSignUp ? 'Entrar' : 'Criar conta grátis'}
             </button>
           </div>
 
-          <div className={s.terms}>
-            Ao continuar, voce concorda com os{' '}
-            <Link href="/termos" className={s.loginLink}>Termos de Uso</Link>
-            {' '}e a{' '}
-            <Link href="/privacidade" className={s.loginLink}>Politica de Privacidade</Link>.
+          <div className="mt-6 text-center text-[0.7rem] leading-relaxed text-white/40">
+            Ao continuar, você concorda com os{' '}
+            <Link href="/termos" className="underline decoration-white/20 underline-offset-2 hover:text-white">
+              Termos de Uso
+            </Link>{' '}
+            e a{' '}
+            <Link href="/privacidade" className="underline decoration-white/20 underline-offset-2 hover:text-white">
+              Política de Privacidade
+            </Link>
+            .
           </div>
         </div>
       </section>
 
-      {/* ══════════════ RIGHT — Manifesto (desktop only) ══════════════ */}
-      <aside className={s.aside} aria-hidden="true" ref={asideRef}>
-        <div className={s.cursorGlow} aria-hidden />
-        <div className={s.asideInner}>
+      {/* ══════ RIGHT — Manifesto ══════ */}
+      <aside
+        ref={asideRef}
+        aria-hidden="true"
+        className="relative hidden min-h-screen overflow-hidden border-l border-white/10 bg-gradient-to-br from-[#0f0b08] via-[#0a0807] to-black lg:block"
+        style={{ '--mx': '60%', '--my': '40%' } as React.CSSProperties}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(600px circle at var(--mx) var(--my), rgba(191,166,142,0.15), transparent 60%)',
+          }}
+        />
+
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff04_1px,transparent_1px)] bg-[size:80px_80px]" />
+
+        <div className="relative flex h-full min-h-screen flex-col justify-between gap-12 px-12 py-16 xl:px-20">
           <div>
-            <div className={s.serial}>Atelier · MMXXVI</div>
-            <h2 className={s.asideTitle}>
+            <div className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[#bfa68e]">
+              Atelier · MMXXVI
+            </div>
+            <h2 className="mt-4 text-balance text-4xl font-light leading-[1.08] tracking-tight text-white xl:text-5xl">
               Um gabinete digital,
               <br />
-              <em className={s.italic}>feito a mao</em>.
+              <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
+                feito à mão
+              </em>
+              .
             </h2>
-            <p className={s.asideLede}>
-              Doze agentes afinados para o exercicio da advocacia no Brasil. Estrategia e
-              precisao para quem trata Direito como oficio.
+            <p className="mt-5 max-w-md text-base leading-relaxed text-white/60">
+              Vinte e dois agentes afinados para o exercício da advocacia no Brasil.
+              Estratégia e precisão para quem trata Direito como ofício.
             </p>
           </div>
 
-          <div className={s.values}>
-            {VALUE_PROPS.map((v, i) => (
-              <div key={v.title} className={s.value} style={{ animationDelay: `${0.35 + i * 0.08}s` }}>
-                <div className={s.valueNum}>{v.n}</div>
-                <div>
-                  <div className={s.valueTitle}>{v.title}</div>
-                  <div className={s.valueDesc}>{v.desc}</div>
+          <div className="grid grid-cols-2 gap-5">
+            {VALUE_PROPS.map((v) => (
+              <div key={v.title} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                <div className="mb-2 font-mono text-xs tracking-[0.22em] text-[#bfa68e]/80">
+                  {v.n}
                 </div>
+                <div className="mb-1 text-sm font-medium text-white">{v.title}</div>
+                <div className="text-xs leading-relaxed text-white/55">{v.desc}</div>
               </div>
             ))}
           </div>
 
-          <figure className={s.testimonial}>
-            <blockquote>&ldquo;{TESTIMONIAL.quote}&rdquo;</blockquote>
-            <figcaption>
-              <div className={s.testAvatar}>{TESTIMONIAL.initials}</div>
+          <figure className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-6">
+            <blockquote className="text-sm italic leading-relaxed text-white/75">
+              &ldquo;{TESTIMONIAL.quote}&rdquo;
+            </blockquote>
+            <figcaption className="mt-4 flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-xs tracking-wider text-[#bfa68e]">
+                {TESTIMONIAL.initials}
+              </div>
               <div>
-                <div className={s.testName}>{TESTIMONIAL.name}</div>
-                <div className={s.testCargo}>{TESTIMONIAL.cargo}</div>
+                <div className="text-sm font-medium text-white">{TESTIMONIAL.name}</div>
+                <div className="text-xs text-white/50">{TESTIMONIAL.cargo}</div>
               </div>
             </figcaption>
           </figure>
         </div>
       </aside>
-
     </main>
   )
 }
