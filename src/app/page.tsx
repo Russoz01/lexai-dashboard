@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ExitIntent } from '@/components/ExitIntent'
+import { LexAgentsBento } from '@/components/ui/lex-agents-bento'
+import { LexAreasMarquee } from '@/components/ui/lex-areas-marquee'
+import { LexFaq } from '@/components/ui/lex-faq'
 import s from './page.module.css'
 
 /* ----------------------------------------------------------------------------
@@ -16,23 +19,8 @@ import s from './page.module.css'
  * editorial no corte entre secoes. Zero dependencias externas.
  * -------------------------------------------------------------------------- */
 
-const agentes = [
-  { n: '01', name: 'Resumidor',          desc: 'Cole qualquer documento — contrato, acordao, peticao — e receba uma analise estruturada com riscos, clausulas criticas e prazos em segundos.' },
-  { n: '02', name: 'Redator',            desc: 'Peticoes iniciais, recursos, contestacoes e notificacoes extrajudiciais com fundamentacao doutrinaria e jurisprudencial completa.' },
-  { n: '03', name: 'Pesquisador',        desc: 'Busca inteligente em jurisprudencia do STF, STJ, TRFs e TJs estaduais. Cada resultado com ementa, tribunal e data de julgamento.' },
-  { n: '04', name: 'Negociador',         desc: 'Melhor alternativa sem acordo, margem viavel de negociacao e tres cenarios calculados antes da audiencia. Estrategia com fundamentacao e pontos de pressao.' },
-  { n: '05', name: 'Monitor Legislativo', desc: 'Mudancas normativas e novos precedentes na sua area de atuacao, entregues automaticamente. Nunca seja surpreendido por alteracao legislativa que afeta seus casos.' },
-  { n: '06', name: 'Calculador',         desc: 'Prazos processuais com feriados, correcao monetaria (INPC, IGPM, IPCA), juros de mora e custas judiciais por estado.' },
-  { n: '07', name: 'Legislacao',         desc: 'Qualquer artigo de lei explicado em linguagem acessivel, com doutrina majoritaria e jurisprudencia aplicada ao caso concreto.' },
-  { n: '08', name: 'Rotina',             desc: 'Gestao de audiencias, prazos processuais, compromissos e fluxos de trabalho do escritorio organizados por prioridade.' },
-  { n: '09', name: 'Parecerista',        desc: 'Pareceres juridicos estruturados com fundamentacao legal, doutrina majoritaria, argumentos pro e contra e recomendacao conclusiva. Pronto para revisao e assinatura.' },
-  { n: '10', name: 'Estrategista',       desc: 'Analise estrategica de risco processual, mapeamento de precedentes favoraveis e desfavoraveis, e recomendacao de linha de atuacao antes de qualquer decisao.' },
-  { n: '11', name: 'Tradutor Juridico',  desc: 'Contratos, tratados e documentos internacionais traduzidos com preservacao do vocabulario tecnico juridico. Ingles, espanhol e frances — essencial para advocacia internacional e contratos cross-border.' },
-  { n: '12', name: 'Compliance',         desc: 'Analise de conformidade regulatoria, mapeamento de riscos de LGPD, anticorrupcao e setorial. Identifica exposicoes antes que virem passivos.' },
-]
-
 const provas = [
-  { n: 'I',   metric: '22',       label: 'Agentes especializados' },
+  { n: 'I',   metric: '23',       label: 'Agentes + CRM juridico' },
   { n: 'II',  metric: '9',        label: 'Areas do Direito cobertas' },
   { n: 'III', metric: '4 min',    label: 'Por analise de documento',   nota: '(media do beta fechado)' },
   { n: 'IV',  metric: '+R$1.600', label: 'Economizados por consulta',  nota: '(estimativa por consulta)' },
@@ -65,9 +53,9 @@ const planos = [
     name: 'Firma',
     price: '1.459',
     seats: '6–15 advogados',
-    headline: '22 agentes · documentos ilimitados',
+    headline: '23 agentes · CRM · documentos ilimitados',
     popular: true,
-    features: ['Todos os 22 agentes especializados', 'Exportacao em PDF', 'Suporte prioritario em 3h', 'Historico de 90 dias', 'Sessao de onboarding dedicada', 'Compra avulsa de tokens'],
+    features: ['Todos os 23 agentes + CRM juridico integrado', 'Exportacao em PDF', 'Suporte prioritario em 3h', 'Historico de 90 dias', 'Sessao de onboarding dedicada', 'Compra avulsa de tokens'],
   },
   {
     name: 'Enterprise',
@@ -266,9 +254,9 @@ export default function LandingPage() {
               </span>
             </h1>
             <p className={`${s.heroLede} ${s.line}`} style={{ '--d': '420ms' } as React.CSSProperties}>
-              Vinte e dois agentes treinados no ordenamento juridico brasileiro. Cada um afinado como
-              uma ferramenta de precisao — documentos, jurisprudencia, calculos, pecas
-              processuais. Cada prompt afinado. Cada resposta revisada. Nenhum prazo perdido.
+              Vinte e tres agentes treinados no ordenamento juridico brasileiro, CRM juridico integrado,
+              qualificacao automatica de leads e jurimetria. Cada um afinado como uma ferramenta
+              de precisao. Cada prompt afinado. Cada resposta revisada. Nenhum prazo perdido.
             </p>
             <div className={`${s.heroCtaRow} ${s.line}`} style={{ '--d': '560ms' } as React.CSSProperties}>
               <Link href="/login" className={`${s.ctaPrimary} ${s.ctaLarge}`}>
@@ -294,8 +282,8 @@ export default function LandingPage() {
                 <span className={s.serial}>MMXXVI</span>
               </div>
               <div>
-                <div className={s.heroCardMetric}>22</div>
-                <div className={s.heroCardMetricLabel}>agentes</div>
+                <div className={s.heroCardMetric}>23</div>
+                <div className={s.heroCardMetricLabel}>agentes + CRM</div>
                 <Rule />
                 <p className={s.heroCardQuote}>
                   &ldquo;Estrategia e precisao para quem trata Direito como <em className={s.italic}>oficio</em>.&rdquo;
@@ -345,90 +333,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── AGENTES ────────────────────────────────────────────────────── */}
-      <section id="agentes" className={s.agentesSection}>
-        <div className={s.sectionHead} data-reveal>
-          <SerialLabel>Capitulo I</SerialLabel>
-          <h2 className={s.sectionTitle}>
-            Vinte e dois agentes. <em className={s.italic}>Um unico gabinete.</em>
-          </h2>
-          <p className={s.sectionSub}>
-            Nao e um assistente generico. Cada agente foi afinado para uma funcao especifica do
-            exercicio da advocacia no Brasil — e responde na lingua do processo.
-          </p>
-        </div>
+      {/* ── AGENTES — bento 23-card com CRM Juridico ─────────────────────── */}
+      <LexAgentsBento />
 
-        <Rule />
-
-        <div className={s.agents} data-reveal>
-          {/* ── Documentos ──────────────────────────────── */}
-          <div className={`${s.catHead} ${s.catHeadFirst}`}>Documentos</div>
-          {agentes.filter(a => ['Resumidor', 'Redator', 'Parecerista'].includes(a.name)).map((a, i) => (
-            <div key={a.name} className={s.agent} style={{ '--reveal-delay': `${i * 70}ms` } as React.CSSProperties}>
-              <div className={s.agentNum}>{a.n}</div>
-              <div className={s.agentBody}>
-                <h3 className={s.agentName}>{a.name}</h3>
-                <div className={s.agentDesc}>{a.desc}</div>
-              </div>
-              <div className={s.agentArrow} aria-hidden>→</div>
-            </div>
-          ))}
-          <div className={s.agentGhost} aria-hidden />
-
-          {/* ── Pesquisa & Legislação ────────────────────── */}
-          <div className={s.catHead}>Pesquisa &amp; Legislação</div>
-          {agentes.filter(a => ['Pesquisador', 'Monitor Legislativo', 'Legislacao'].includes(a.name)).map((a, i) => (
-            <div key={a.name} className={s.agent} style={{ '--reveal-delay': `${(i + 3) * 70}ms` } as React.CSSProperties}>
-              <div className={s.agentNum}>{a.n}</div>
-              <div className={s.agentBody}>
-                <h3 className={s.agentName}>{a.name}</h3>
-                <div className={s.agentDesc}>{a.desc}</div>
-              </div>
-              <div className={s.agentArrow} aria-hidden>→</div>
-            </div>
-          ))}
-          <div className={s.agentGhost} aria-hidden />
-
-          {/* ── Estratégia ───────────────────────────────── */}
-          <div className={s.catHead}>Estratégia</div>
-          {agentes.filter(a => ['Negociador', 'Estrategista'].includes(a.name)).map((a, i) => (
-            <div key={a.name} className={s.agent} style={{ '--reveal-delay': `${(i + 6) * 70}ms` } as React.CSSProperties}>
-              <div className={s.agentNum}>{a.n}</div>
-              <div className={s.agentBody}>
-                <h3 className={s.agentName}>{a.name}</h3>
-                <div className={s.agentDesc}>{a.desc}</div>
-              </div>
-              <div className={s.agentArrow} aria-hidden>→</div>
-            </div>
-          ))}
-
-          {/* ── Gestão ───────────────────────────────────── */}
-          <div className={s.catHead}>Gestão</div>
-          {agentes.filter(a => ['Calculador', 'Rotina'].includes(a.name)).map((a, i) => (
-            <div key={a.name} className={s.agent} style={{ '--reveal-delay': `${(i + 8) * 70}ms` } as React.CSSProperties}>
-              <div className={s.agentNum}>{a.n}</div>
-              <div className={s.agentBody}>
-                <h3 className={s.agentName}>{a.name}</h3>
-                <div className={s.agentDesc}>{a.desc}</div>
-              </div>
-              <div className={s.agentArrow} aria-hidden>→</div>
-            </div>
-          ))}
-
-          {/* ── Internacional & Conformidade ─────────────── */}
-          <div className={s.catHead}>Internacional &amp; Conformidade</div>
-          {agentes.filter(a => ['Tradutor Juridico', 'Compliance'].includes(a.name)).map((a, i) => (
-            <div key={a.name} className={s.agent} style={{ '--reveal-delay': `${(i + 10) * 70}ms` } as React.CSSProperties}>
-              <div className={s.agentNum}>{a.n}</div>
-              <div className={s.agentBody}>
-                <h3 className={s.agentName}>{a.name}</h3>
-                <div className={s.agentDesc}>{a.desc}</div>
-              </div>
-              <div className={s.agentArrow} aria-hidden>→</div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── AREAS DO DIREITO — marquee ──────────────────────────────────── */}
+      <LexAreasMarquee />
 
       {/* ── ATELIER (philosophy strip) ─────────────────────────────────── */}
       <section id="atelier" className={s.atelierSection}>
@@ -646,6 +555,9 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* ── FAQ — acordeao dark ────────────────────────────────────────── */}
+      <LexFaq />
 
       {/* ── CLOSING MARK ───────────────────────────────────────────────── */}
       <section className={s.closingSection}>

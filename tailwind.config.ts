@@ -26,6 +26,30 @@ const config: Config = {
           900: '#0d2a1e',
         },
       },
+      keyframes: {
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to:   { transform: 'translateX(calc(-100% - 3rem))' },
+        },
+        'marquee-reverse': {
+          from: { transform: 'translateX(calc(-100% - 3rem))' },
+          to:   { transform: 'translateX(0)' },
+        },
+        grid: {
+          '0%':   { transform: 'translateY(-50%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        shimmer: {
+          '0%':   { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+      },
+      animation: {
+        marquee: 'marquee var(--duration, 40s) linear infinite',
+        'marquee-reverse': 'marquee-reverse var(--duration, 40s) linear infinite',
+        grid: 'grid 15s linear infinite',
+        shimmer: 'shimmer 2.5s linear infinite',
+      },
     },
   },
   plugins: [],
