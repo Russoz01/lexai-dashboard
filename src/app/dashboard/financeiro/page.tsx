@@ -2,6 +2,38 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import {
+  Landmark,
+  Plus,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus,
+  PieChart,
+  Clock,
+  Info,
+  Lightbulb,
+  CheckCircle2,
+  ArrowRight,
+  PiggyBank,
+  Hourglass,
+  AlertTriangle,
+  RotateCcw,
+  Trash2,
+  X,
+  Check,
+  Download,
+  ExternalLink,
+  Briefcase,
+  GraduationCap,
+  BookOpen,
+  Pencil,
+  Building2,
+  BadgeCheck,
+  MoreHorizontal,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 
@@ -18,10 +50,15 @@ interface Lancamento {
   recorrencia_fim?: string | null
 }
 
-const CAT_ICON: Record<string, string> = {
-  honorarios: 'bi-briefcase', mensalidade: 'bi-mortarboard', livro: 'bi-book',
-  material: 'bi-pencil', aluguel: 'bi-building', salario: 'bi-person-badge',
-  imposto: 'bi-bank', outro: 'bi-three-dots',
+const CAT_ICON: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number; style?: React.CSSProperties; 'aria-hidden'?: boolean }>> = {
+  honorarios: Briefcase,
+  mensalidade: GraduationCap,
+  livro: BookOpen,
+  material: Pencil,
+  aluguel: Building2,
+  salario: BadgeCheck,
+  imposto: Landmark,
+  outro: MoreHorizontal,
 }
 
 const EMPTY = {
@@ -103,30 +140,30 @@ function getInvestmentSuggestions(saldo: number): InvestmentSuggestion[] {
   if (saldo < 500) {
     return [
       {
-        nome: 'Reserva de Emergencia — Tesouro Selic',
-        descricao: 'Comece construindo sua reserva de emergencia com liquidez diaria. Ideal para quem esta iniciando.',
+        nome: 'Reserva de Emergência — Tesouro Selic',
+        descricao: 'Comece construindo sua reserva de emergência com liquidez diária. Ideal para quem está iniciando.',
         rendimento: '~10,5% a.a.',
         risco: 'Baixo',
-        tempo: 'Liquidez diaria',
+        tempo: 'Liquidez diária',
       },
       {
-        nome: 'Poupanca Digital',
-        descricao: 'Alternativa simples e acessivel enquanto voce junta mais capital para investir.',
+        nome: 'Poupança Digital',
+        descricao: 'Alternativa simples e acessível enquanto você junta mais capital para investir.',
         rendimento: '~6,5% a.a.',
         risco: 'Baixo',
-        tempo: 'Liquidez diaria',
+        tempo: 'Liquidez diária',
       },
       {
         nome: 'Conta Remunerada (Nubank, Inter)',
-        descricao: 'Rendimento automatico ate mesmo com pouco dinheiro, sem taxas.',
+        descricao: 'Rendimento automático até mesmo com pouco dinheiro, sem taxas.',
         rendimento: '~100% CDI',
         risco: 'Baixo',
-        tempo: 'Liquidez diaria',
+        tempo: 'Liquidez diária',
       },
       {
-        nome: 'Educacao Financeira',
-        descricao: 'Antes de investir mais, invista em conhecimento: livros e cursos gratuitos sobre financas.',
-        rendimento: 'Incalculavel',
+        nome: 'Educação Financeira',
+        descricao: 'Antes de investir mais, invista em conhecimento: livros e cursos gratuitos sobre finanças.',
+        rendimento: 'Incalculável',
         risco: 'Baixo',
         tempo: 'Contínuo',
       },
@@ -136,28 +173,28 @@ function getInvestmentSuggestions(saldo: number): InvestmentSuggestion[] {
     return [
       {
         nome: 'CDB 110% CDI (Banco Inter)',
-        descricao: 'Rende mais que a poupanca e possui garantia do FGC ate R$ 250 mil. Ideal para iniciantes.',
+        descricao: 'Rende mais que a poupança e possui garantia do FGC até R$ 250 mil. Ideal para iniciantes.',
         rendimento: '~11,5% a.a.',
         risco: 'Baixo',
         tempo: '6 a 12 meses',
       },
       {
         nome: 'Tesouro Selic',
-        descricao: 'Titulo publico federal com liquidez diaria. O investimento mais seguro do Brasil.',
+        descricao: 'Título público federal com liquidez diária. O investimento mais seguro do Brasil.',
         rendimento: '~10,5% a.a.',
         risco: 'Baixo',
-        tempo: 'Liquidez diaria',
+        tempo: 'Liquidez diária',
       },
       {
         nome: 'LCI/LCA',
-        descricao: 'Isentas de Imposto de Renda, com garantia do FGC. Excelente para medio prazo.',
-        rendimento: '~95% CDI liquido',
+        descricao: 'Isentas de Imposto de Renda, com garantia do FGC. Excelente para médio prazo.',
+        rendimento: '~95% CDI líquido',
         risco: 'Baixo',
         tempo: '1 a 2 anos',
       },
       {
         nome: 'Fundos DI',
-        descricao: 'Diversificacao automatica com taxa de administracao baixa. Boa porta de entrada.',
+        descricao: 'Diversificação automática com taxa de administração baixa. Boa porta de entrada.',
         rendimento: '~95% CDI',
         risco: 'Baixo',
         tempo: '6+ meses',
@@ -168,29 +205,29 @@ function getInvestmentSuggestions(saldo: number): InvestmentSuggestion[] {
     return [
       {
         nome: 'Tesouro IPCA+ 2029',
-        descricao: 'Protege seu dinheiro da inflacao com rentabilidade real garantida ate o vencimento.',
+        descricao: 'Protege seu dinheiro da inflação com rentabilidade real garantida até o vencimento.',
         rendimento: 'IPCA + 6,0% a.a.',
         risco: 'Baixo',
         tempo: '4 a 5 anos',
       },
       {
         nome: 'CDB Prefixado 13% a.a.',
-        descricao: 'Trava uma taxa alta antes de possiveis cortes da Selic. Com garantia do FGC.',
+        descricao: 'Trava uma taxa alta antes de possíveis cortes da Selic. Com garantia do FGC.',
         rendimento: '~13,0% a.a.',
         risco: 'Baixo',
         tempo: '2 a 3 anos',
       },
       {
-        nome: 'Fundos Imobiliarios (HGLG11)',
-        descricao: 'Renda mensal isenta de IR via dividendos. Diversificacao em imoveis corporativos.',
-        rendimento: '~9% a.a. + valorizacao',
+        nome: 'Fundos Imobiliários (HGLG11)',
+        descricao: 'Renda mensal isenta de IR via dividendos. Diversificação em imóveis corporativos.',
+        rendimento: '~9% a.a. + valorização',
         risco: 'Medio',
         tempo: '2+ anos',
       },
       {
         nome: 'ETF BOVA11',
-        descricao: 'Exposicao diversificada ao Ibovespa com baixo custo. Ideal para comecar em acoes.',
-        rendimento: 'Variavel (~12% a.a. hist.)',
+        descricao: 'Exposição diversificada ao Ibovespa com baixo custo. Ideal para começar em ações.',
+        rendimento: 'Variável (~12% a.a. hist.)',
         risco: 'Medio',
         tempo: '5+ anos',
       },
@@ -199,28 +236,28 @@ function getInvestmentSuggestions(saldo: number): InvestmentSuggestion[] {
   return [
     {
       nome: 'Carteira Diversificada Equilibrada',
-      descricao: '50% Tesouro IPCA+ para protecao, 30% ETF IVVB11 para exposicao global e 20% FIIs (HGLG11, KNRI11) para renda passiva.',
+      descricao: '50% Tesouro IPCA+ para proteção, 30% ETF IVVB11 para exposição global e 20% FIIs (HGLG11, KNRI11) para renda passiva.',
       rendimento: '~11% a.a. estimado',
       risco: 'Medio',
       tempo: '5+ anos',
     },
     {
       nome: 'ETF IVVB11 (S&P 500)',
-      descricao: 'Exposicao dolarizada as 500 maiores empresas americanas. Protecao cambial e diversificacao internacional.',
+      descricao: 'Exposição dolarizada às 500 maiores empresas americanas. Proteção cambial e diversificação internacional.',
       rendimento: '~10% a.a. hist.',
       risco: 'Medio',
       tempo: '5+ anos',
     },
     {
       nome: 'FIIs de Tijolo (KNRI11, HGLG11)',
-      descricao: 'Portfolio de imoveis corporativos premium com distribuicao mensal de dividendos isentos de IR.',
-      rendimento: '~8-9% a.a. + valorizacao',
+      descricao: 'Portfólio de imóveis corporativos premium com distribuição mensal de dividendos isentos de IR.',
+      rendimento: '~8-9% a.a. + valorização',
       risco: 'Medio',
       tempo: '3+ anos',
     },
     {
-      nome: 'Previdencia Privada PGBL',
-      descricao: 'Beneficio fiscal de ate 12% da renda bruta anual. Ideal para quem faz declaracao completa do IR.',
+      nome: 'Previdência Privada PGBL',
+      descricao: 'Benefício fiscal de até 12% da renda bruta anual. Ideal para quem faz declaração completa do IR.',
       rendimento: '~10% a.a.',
       risco: 'Baixo',
       tempo: '10+ anos',
@@ -231,19 +268,19 @@ function getInvestmentSuggestions(saldo: number): InvestmentSuggestion[] {
 function getCheaperAlternative(descricao: string, valor: number): { alt: string; economia: number } | null {
   const d = descricao.toLowerCase()
   if ((d.includes('café') || d.includes('cafe')) && valor > 30) {
-    return { alt: 'Cafe solavel Melitta 200g', economia: valor * 0.6 }
+    return { alt: 'Café solúvel Melitta 200g', economia: valor * 0.6 }
   }
   if ((d.includes('almoco') || d.includes('almoço') || d.includes('jantar') || d.includes('comida')) && valor > 40) {
     return { alt: 'Marmita caseira (preparada em casa)', economia: valor * 0.5 }
   }
   if ((d.includes('uber') || d.includes('taxi') || d.includes('táxi') || d.includes('99')) && valor > 20) {
-    return { alt: 'Transporte publico ou bike', economia: valor * 0.7 }
+    return { alt: 'Transporte público ou bike', economia: valor * 0.7 }
   }
   if (d.includes('livro') && valor > 50) {
-    return { alt: 'Biblioteca publica ou e-book', economia: valor * 0.8 }
+    return { alt: 'Biblioteca pública ou e-book', economia: valor * 0.8 }
   }
   if ((d.includes('internet') || d.includes('celular')) && valor > 80) {
-    return { alt: 'Plano pre-pago com mais dados', economia: valor * 0.3 }
+    return { alt: 'Plano pré-pago com mais dados', economia: valor * 0.3 }
   }
   if (valor > 100) {
     return { alt: 'Buscar desconto por app ou cashback', economia: valor * 0.15 }
@@ -291,7 +328,7 @@ export default function FinanceiroPage() {
         .order('data', { ascending: false })
         .limit(500) // Pagination — server-side
       if (error) {
-        setErro('Nao foi possivel carregar lancamentos. Tente recarregar a pagina.')
+        setErro('Não foi possível carregar lançamentos. Tente recarregar a página.')
         setLoading(false)
         return
       }
@@ -310,7 +347,7 @@ export default function FinanceiroPage() {
       setItens(rows)
       setLoading(false)
     } catch {
-      setErro('Erro ao conectar com o banco. Verifique sua conexao.')
+      setErro('Erro ao conectar com o banco. Verifique sua conexão.')
       setLoading(false)
     }
   }, [supabase])
@@ -327,7 +364,7 @@ export default function FinanceiroPage() {
 
     // Validate descricao
     if (!form.descricao.trim() || form.descricao.length > 200) {
-      setErro('Descricao obrigatoria (1-200 caracteres).')
+      setErro('Descrição obrigatória (1-200 caracteres).')
       setSalvando(false)
       return
     }
@@ -335,21 +372,21 @@ export default function FinanceiroPage() {
     // Validate valor — was a real bug: NaN was inserted silently
     const valorNum = parseFloat(form.valor)
     if (isNaN(valorNum) || valorNum <= 0 || valorNum > 999999999) {
-      setErro('Informe um valor numerico valido maior que zero.')
+      setErro('Informe um valor numérico válido maior que zero.')
       setSalvando(false)
       return
     }
 
     // Validate data
     if (!form.data || isNaN(new Date(form.data).getTime())) {
-      setErro('Data invalida.')
+      setErro('Data inválida.')
       setSalvando(false)
       return
     }
 
     const usuarioId = await resolveUsuarioId()
     if (!usuarioId) {
-      setErro('Sessao expirada. Faca login novamente.')
+      setErro('Sessão expirada. Faça login novamente.')
       setSalvando(false)
       return
     }
@@ -367,7 +404,7 @@ export default function FinanceiroPage() {
     })
 
     if (error) {
-      setErro(error.message || 'Nao foi possivel salvar o lancamento.')
+      setErro(error.message || 'Não foi possível salvar o lançamento.')
       setSalvando(false)
       return
     }
@@ -415,14 +452,14 @@ export default function FinanceiroPage() {
       if (res.status === 503) {
         setImportMsg({
           tipo: 'info',
-          texto: data?.error || 'Belvo nao configurado. Contate o admin para ativar esta feature.',
+          texto: data?.error || 'Belvo não configurado. Contate o admin para ativar esta feature.',
         })
         setBelvoConfigured(false)
       } else if (!res.ok) {
-        setImportMsg({ tipo: 'err', texto: data?.error || 'Falha ao importar transacoes.' })
+        setImportMsg({ tipo: 'err', texto: data?.error || 'Falha ao importar transações.' })
       } else {
         const imported = Number(data?.imported ?? 0)
-        setImportMsg({ tipo: 'ok', texto: `${imported} transacoes importadas com sucesso.` })
+        setImportMsg({ tipo: 'ok', texto: `${imported} transações importadas com sucesso.` })
         await carregar()
       }
     } catch (err) {
@@ -453,10 +490,10 @@ export default function FinanceiroPage() {
         </div>
         <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
           <button className="btn-ghost" onClick={abrirImportModal} type="button">
-            <i className="bi bi-bank" /> Importar do banco
+            <Landmark size={14} strokeWidth={1.75} aria-hidden /> Importar do banco
           </button>
           <button className="btn-primary" onClick={() => setModal(true)}>
-            <i className="bi bi-plus-lg" /> Novo Lançamento
+            <Plus size={14} strokeWidth={1.75} aria-hidden /> Novo Lançamento
           </button>
         </div>
       </div>
@@ -480,43 +517,44 @@ export default function FinanceiroPage() {
             return ((cur - prev) / Math.abs(prev)) * 100
           }
           const cards = [
-            { label: 'Receitas', valor: receitas, icon: 'bi-graph-up-arrow', color: '#2d6a4f', bg: '#e8f5ee', delta: delta(curR, prevR), positiveIsGood: true },
-            { label: 'Despesas', valor: despesas, icon: 'bi-graph-down-arrow', color: '#c0392b', bg: '#fdecea', delta: delta(curD, prevD), positiveIsGood: false },
-            { label: 'Saldo', valor: saldo, icon: 'bi-wallet2', color: saldo >= 0 ? '#2d6a4f' : '#c0392b', bg: saldo >= 0 ? '#e8f5ee' : '#fdecea', delta: delta(curSaldo, prevSaldo), positiveIsGood: true },
+            { label: 'Receitas', valor: receitas, Icon: TrendingUp, color: '#2d6a4f', bg: '#e8f5ee', delta: delta(curR, prevR), positiveIsGood: true },
+            { label: 'Despesas', valor: despesas, Icon: TrendingDown, color: '#c0392b', bg: '#fdecea', delta: delta(curD, prevD), positiveIsGood: false },
+            { label: 'Saldo', valor: saldo, Icon: Wallet, color: saldo >= 0 ? '#2d6a4f' : '#c0392b', bg: saldo >= 0 ? '#e8f5ee' : '#fdecea', delta: delta(curSaldo, prevSaldo), positiveIsGood: true },
           ]
           return cards.map(c => {
             const d = c.delta
             let deltaLabel = ''
             let deltaColor = 'var(--text-muted)'
             let deltaBg = 'var(--hover)'
-            let deltaIcon = 'bi-dash'
+            let DeltaIcon: React.ComponentType<{ size?: number; strokeWidth?: number; style?: React.CSSProperties; 'aria-hidden'?: boolean }> = Minus
             if (d !== null) {
               const rounded = Math.round(d)
               const isUp = rounded > 0
               const isDown = rounded < 0
               deltaLabel = `${rounded > 0 ? '+' : ''}${rounded}%`
-              deltaIcon = isUp ? 'bi-arrow-up-right' : isDown ? 'bi-arrow-down-right' : 'bi-dash'
+              DeltaIcon = isUp ? ArrowUpRight : isDown ? ArrowDownRight : Minus
               const isGood = (isUp && c.positiveIsGood) || (isDown && !c.positiveIsGood)
               const isBad = (isDown && c.positiveIsGood) || (isUp && !c.positiveIsGood)
               if (isGood) { deltaColor = '#2d6a4f'; deltaBg = '#e8f5ee' }
               else if (isBad) { deltaColor = '#c0392b'; deltaBg = '#fdecea' }
             }
+            const CardIcon = c.Icon
             return (
               <div key={c.label} className="section-card" style={{ padding: '18px 20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                   <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{c.label}</span>
                   <span style={{ width: 32, height: 32, borderRadius: 8, background: c.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <i className={`bi ${c.icon}`} style={{ color: c.color, fontSize: 15 }} />
+                    <CardIcon size={15} strokeWidth={1.75} aria-hidden style={{ color: c.color }} />
                   </span>
                 </div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: c.color, fontVariantNumeric: 'tabular-nums' }}>{fmt(c.valor)}</div>
                 {d !== null && (
                   <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 12, background: deltaBg, color: deltaColor }}>
-                      <i className={`bi ${deltaIcon}`} style={{ fontSize: 10 }} />
+                      <DeltaIcon size={10} strokeWidth={1.75} aria-hidden />
                       {deltaLabel}
                     </span>
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>vs mes anterior</span>
+                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>vs mês anterior</span>
                   </div>
                 )}
               </div>
@@ -556,8 +594,8 @@ export default function FinanceiroPage() {
         const conic = `conic-gradient(${slices.join(', ')})`
         return (
           <div className="section-card" style={{ marginBottom: 24, padding: '20px 24px' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              <i className="bi bi-pie-chart-fill" style={{ marginRight: 8 }} />
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <PieChart size={14} strokeWidth={1.75} aria-hidden />
               Despesas por Categoria
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
@@ -623,9 +661,9 @@ export default function FinanceiroPage() {
         </div>
       )}
 
-      {/* Sugestoes de Investimento */}
+      {/* Sugestões de Investimento */}
       <div className="section-card" style={{ marginBottom:24, padding:'20px 24px' }}>
-        <div style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', marginBottom:4, textTransform:'uppercase', letterSpacing:'0.06em' }}>Sugestoes de Investimento</div>
+        <div style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', marginBottom:4, textTransform:'uppercase', letterSpacing:'0.06em' }}>Sugestões de Investimento</div>
         <div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:16 }}>
           Baseadas no seu saldo atual de <strong style={{ color:'var(--text-primary)' }}>{fmt(saldo)}</strong>
         </div>
@@ -664,19 +702,19 @@ export default function FinanceiroPage() {
                 <div style={{ fontSize:12, color:'var(--text-secondary)', lineHeight:1.45 }}>{inv.descricao}</div>
                 <div style={{ display:'flex', gap:14, marginTop:2, fontSize:11, color:'var(--text-muted)' }}>
                   <span style={{ display:'flex', alignItems:'center', gap:4 }}>
-                    <i className="bi bi-graph-up" /> <strong style={{ color:'#2d6a4f' }}>{inv.rendimento}</strong>
+                    <TrendingUp size={12} strokeWidth={1.75} aria-hidden /> <strong style={{ color:'#2d6a4f' }}>{inv.rendimento}</strong>
                   </span>
                   <span style={{ display:'flex', alignItems:'center', gap:4 }}>
-                    <i className="bi bi-clock" /> {inv.tempo}
+                    <Clock size={12} strokeWidth={1.75} aria-hidden /> {inv.tempo}
                   </span>
                 </div>
               </div>
             )
           })}
         </div>
-        <div style={{ fontSize:10, color:'var(--text-muted)', marginTop:14, fontStyle:'italic', lineHeight:1.4 }}>
-          <i className="bi bi-info-circle" style={{ marginRight:5 }} />
-          Aviso: sugestoes educacionais, nao aconselhamento financeiro. Consulte um profissional certificado antes de investir.
+        <div style={{ fontSize:10, color:'var(--text-muted)', marginTop:14, fontStyle:'italic', lineHeight:1.4, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+          <Info size={10} strokeWidth={1.75} aria-hidden />
+          Aviso: sugestões educacionais, não aconselhamento financeiro. Consulte um profissional certificado antes de investir.
         </div>
       </div>
 
@@ -692,18 +730,18 @@ export default function FinanceiroPage() {
           <div className="section-card" style={{ marginBottom:24, padding:'20px 24px' }}>
             <div style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', marginBottom:4, textTransform:'uppercase', letterSpacing:'0.06em' }}>Alternativas Mais Baratas</div>
             <div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:16 }}>
-              Sugestoes inteligentes para reduzir suas despesas recentes
+              Sugestões inteligentes para reduzir suas despesas recentes
             </div>
 
             {despesasList.length === 0 ? (
               <div style={{ textAlign:'center', padding:'20px 0', color:'var(--text-muted)', fontSize:13 }}>
-                <i className="bi bi-lightbulb" style={{ fontSize:22, display:'block', marginBottom:8, opacity:0.5 }} />
-                Nenhuma despesa registrada ainda. Adicione lancamentos para ver sugestoes.
+                <Lightbulb size={22} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 8px', opacity:0.5 }} />
+                Nenhuma despesa registrada ainda. Adicione lançamentos para ver sugestões.
               </div>
             ) : alternativas.length === 0 ? (
               <div style={{ textAlign:'center', padding:'20px 0', color:'var(--text-muted)', fontSize:13 }}>
-                <i className="bi bi-check-circle" style={{ fontSize:22, display:'block', marginBottom:8, opacity:0.5 }} />
-                Suas despesas recentes ja parecem otimizadas. Continue assim!
+                <CheckCircle2 size={22} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 8px', opacity:0.5 }} />
+                Suas despesas recentes já parecem otimizadas. Continue assim!
               </div>
             ) : (
               <>
@@ -724,7 +762,7 @@ export default function FinanceiroPage() {
                           {item.descricao} — {fmt(Number(item.valor))}
                         </div>
                         <div style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)', display:'flex', alignItems:'center', gap:6 }}>
-                          <i className="bi bi-arrow-right-circle" style={{ color:'#2d6a4f' }} />
+                          <ArrowRight size={14} strokeWidth={1.75} aria-hidden style={{ color:'#2d6a4f' }} />
                           {alt.alt}
                         </div>
                       </div>
@@ -756,7 +794,7 @@ export default function FinanceiroPage() {
                   gap:8,
                 }}>
                   <span style={{ fontSize:12, fontWeight:600, color:'#2d6a4f', display:'flex', alignItems:'center', gap:6 }}>
-                    <i className="bi bi-piggy-bank" />
+                    <PiggyBank size={14} strokeWidth={1.75} aria-hidden />
                     Economia potencial mensal
                   </span>
                   <strong style={{ fontSize:16, color:'#2d6a4f', fontVariantNumeric:'tabular-nums' }}>{fmt(totalEconomia)}</strong>
@@ -770,12 +808,12 @@ export default function FinanceiroPage() {
       {/* Lista */}
       {loading ? (
         <div style={{ textAlign:'center', padding:'60px 0', color:'var(--text-muted)' }}>
-          <i className="bi bi-hourglass-split" style={{ fontSize:28, display:'block', marginBottom:8 }} />
+          <Hourglass size={28} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 8px' }} />
           Carregando...
         </div>
       ) : itens.length === 0 ? (
         <div style={{ textAlign:'center', padding:'60px 0', color:'var(--text-muted)' }}>
-          <i className="bi bi-wallet2" style={{ fontSize:36, display:'block', marginBottom:12, opacity:0.4 }} />
+          <Wallet size={36} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 12px', opacity:0.4 }} />
           <div style={{ fontWeight:600, marginBottom:6 }}>Nenhum lançamento registrado</div>
           <button className="btn-ghost" style={{ fontSize:13, padding:'8px 16px' }} onClick={() => setModal(true)}>
             Adicionar primeiro lançamento
@@ -795,6 +833,7 @@ export default function FinanceiroPage() {
             <tbody>
               {itens.map(item => {
                 const isBigExpense = item.tipo === 'despesa' && Number(item.valor) > 500
+                const CatIcon = CAT_ICON[item.categoria] ?? MoreHorizontal
                 return (
                 <tr key={item.id} style={{
                   borderBottom:'1px solid var(--border)',
@@ -806,19 +845,20 @@ export default function FinanceiroPage() {
                   <td style={{ padding:'11px 14px', color:'var(--text-secondary)', fontVariantNumeric:'tabular-nums' }}>{fmtData(item.data)}</td>
                   <td style={{ padding:'11px 14px', color:'var(--text-primary)', fontWeight:500 }}>
                     <span style={{ display:'flex', alignItems:'center', gap:7, flexWrap:'wrap' }}>
-                      <i className={`bi ${CAT_ICON[item.categoria] ?? 'bi-three-dots'}`} style={{ fontSize:13, color:'var(--text-muted)' }} />
+                      <CatIcon size={13} strokeWidth={1.75} aria-hidden style={{ color:'var(--text-muted)' }} />
                       {item.descricao}
-                      {isBigExpense && <i className="bi bi-exclamation-triangle-fill" title="Despesa alta (> R$ 500)" style={{ fontSize: 11, color: '#e67e22', marginLeft: 4 }} />}
+                      {isBigExpense && <AlertTriangle size={11} strokeWidth={1.75} aria-hidden style={{ color: '#e67e22', marginLeft: 4 }} />}
                       {item.recorrente && (
                         <span title={`Recorrente ${item.recorrencia_freq ?? ''}`} style={{
                           fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10,
                           background: 'var(--accent-light)', color: 'var(--accent)', marginLeft: 8,
+                          display: 'inline-flex', alignItems: 'center', gap: 3,
                         }}>
-                          <i className="bi bi-arrow-repeat" style={{ marginRight: 3 }} />Recorrente
+                          <RotateCcw size={10} strokeWidth={1.75} aria-hidden />Recorrente
                         </span>
                       )}
                       {item.recorrencia_parent && !item.recorrente && (
-                        <span title="Gerado automaticamente a partir de um lancamento recorrente" style={{
+                        <span title="Gerado automaticamente a partir de um lançamento recorrente" style={{
                           fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 8,
                           background: 'var(--hover)', color: 'var(--text-muted)', marginLeft: 6,
                           textTransform: 'uppercase', letterSpacing: '0.04em',
@@ -848,7 +888,7 @@ export default function FinanceiroPage() {
                     <button type="button" onClick={() => deletar(item.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:13, padding:'4px 6px', borderRadius:6 }}
                       onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color='var(--danger)'}
                       onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color='var(--text-muted)'}>
-                      <i className="bi bi-trash3" />
+                      <Trash2 size={13} strokeWidth={1.75} aria-hidden />
                     </button>
                   </td>
                 </tr>
@@ -866,7 +906,7 @@ export default function FinanceiroPage() {
           <div className="modal">
             <div className="modal-header">
               <span className="modal-title">Novo Lançamento</span>
-              <button className="modal-close" onClick={() => setModal(false)}><i className="bi bi-x" /></button>
+              <button className="modal-close" onClick={() => setModal(false)}><X size={14} strokeWidth={1.75} aria-hidden /></button>
             </div>
             <form onSubmit={salvar}>
               <div className="modal-body">
@@ -918,14 +958,14 @@ export default function FinanceiroPage() {
                       onChange={e => setForm(f => ({ ...f, recorrente: e.target.checked }))}
                       style={{ width: 18, height: 18, accentColor: 'var(--accent)' }}
                     />
-                    <i className="bi bi-arrow-repeat" style={{ color: 'var(--accent)' }} />
-                    <span><strong>Lancamento recorrente</strong> — se repete automaticamente</span>
+                    <RotateCcw size={14} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
+                    <span><strong>Lançamento recorrente</strong> — se repete automaticamente</span>
                   </label>
 
                   {form.recorrente && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 14, paddingLeft: 28 }}>
                       <div>
-                        <label className="form-label">Frequencia</label>
+                        <label className="form-label">Frequência</label>
                         <select value={form.recorrencia_freq} onChange={e => setForm(f => ({ ...f, recorrencia_freq: e.target.value }))} className="form-input">
                           <option value="semanal">Semanal</option>
                           <option value="quinzenal">Quinzenal</option>
@@ -945,7 +985,7 @@ export default function FinanceiroPage() {
                 <div className="modal-footer">
                   <button type="button" className="btn-ghost" style={{ flex:1 }} onClick={() => setModal(false)}>Cancelar</button>
                   <button type="submit" disabled={salvando} className="btn-primary" style={{ flex:1, justifyContent:'center' }}>
-                    {salvando ? 'Salvando...' : <><i className="bi bi-check2" /> Salvar</>}
+                    {salvando ? 'Salvando...' : <><Check size={14} strokeWidth={1.75} aria-hidden /> Salvar</>}
                   </button>
                 </div>
               </div>
@@ -960,17 +1000,19 @@ export default function FinanceiroPage() {
           <div className="modal">
             <div className="modal-header">
               <span className="modal-title">Importar do banco (Belvo)</span>
-              <button className="modal-close" onClick={() => setImportModal(false)}><i className="bi bi-x" /></button>
+              <button className="modal-close" onClick={() => setImportModal(false)}><X size={14} strokeWidth={1.75} aria-hidden /></button>
             </div>
             <form onSubmit={importarBelvo}>
               <div className="modal-body">
                 {belvoConfigured === false && (
                   <div style={{ padding:'12px 14px', borderRadius:8, background:'var(--accent-light)', color:'var(--text-secondary)', fontSize:13, lineHeight:1.5 }}>
-                    <i className="bi bi-info-circle" style={{ marginRight:6 }} />
-                    Esta feature requer configuracao do Belvo. Contate o admin para ativar.
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <Info size={14} strokeWidth={1.75} aria-hidden />
+                      Esta feature requer configuração do Belvo. Contate o admin para ativar.
+                    </span>
                     <div style={{ marginTop:6, fontSize:12, color:'var(--text-muted)' }}>
-                      <a href="https://belvo.com/docs" target="_blank" rel="noopener noreferrer" style={{ color:'var(--accent)' }}>
-                        Documentacao Belvo <i className="bi bi-box-arrow-up-right" style={{ fontSize:10 }} />
+                      <a href="https://belvo.com/docs" target="_blank" rel="noopener noreferrer" style={{ color:'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        Documentação Belvo <ExternalLink size={10} strokeWidth={1.75} aria-hidden />
                       </a>
                     </div>
                   </div>
@@ -1005,7 +1047,7 @@ export default function FinanceiroPage() {
                     disabled={importing || belvoConfigured === false}
                   />
                   <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:4 }}>
-                    Padrao: ultimos 30 dias
+                    Padrão: últimos 30 dias
                   </div>
                 </div>
                 <div className="modal-footer">
@@ -1018,7 +1060,7 @@ export default function FinanceiroPage() {
                     className="btn-primary"
                     style={{ flex:1, justifyContent:'center' }}
                   >
-                    {importing ? 'Importando...' : <><i className="bi bi-download" /> Importar</>}
+                    {importing ? 'Importando...' : <><Download size={14} strokeWidth={1.75} aria-hidden /> Importar</>}
                   </button>
                 </div>
               </div>

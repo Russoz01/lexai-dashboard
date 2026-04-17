@@ -2,17 +2,35 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import {
+  RotateCcw,
+  ArrowUpRight,
+  Paperclip,
+  AlertTriangle,
+  X,
+  RefreshCw,
+  FileText,
+  Pencil,
+  BookMarked,
+  Zap,
+  Bell,
+  Calculator,
+  Book,
+  CalendarDays,
+  FileSpreadsheet,
+  Sparkles,
+} from 'lucide-react'
 import { extractPdfWithMeta } from '@/lib/pdf-parser'
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * LexAI — Chat Orquestrador
  *
- * Interface conversacional unica. O usuario manda texto ou arquivo (PDF/TXT),
+ * Interface conversacional única. O usuário manda texto ou arquivo (PDF/TXT),
  * o orquestrador decide se responde direto ou sugere o agente especialista.
  *
  * Design: editorial, mesma linguagem do atelier — stone/navy, Playfair italic,
- * hairlines, numeros em serie. Sem balao azul de chatbot. As mensagens sao
- * tratadas como entradas de diario.
+ * hairlines, números em série. Sem balão azul de chatbot. As mensagens são
+ * tratadas como entradas de diário.
  * ──────────────────────────────────────────────────────────────────────────── */
 
 type Role = 'user' | 'assistant'
@@ -34,16 +52,16 @@ interface Message {
   timestamp: number
 }
 
-const AGENTES_ICONS: Record<string, string> = {
-  resumidor:   'bi-file-earmark-text',
-  redator:     'bi-pencil-square',
-  pesquisador: 'bi-journal-bookmark',
-  negociador:  'bi-lightning',
-  professor:   'bi-bell',
-  calculador:  'bi-calculator',
-  legislacao:  'bi-book',
-  rotina:      'bi-calendar-week',
-  planilhas:   'bi-file-earmark-spreadsheet',
+const AGENTES_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean }>> = {
+  resumidor:   FileText,
+  redator:     Pencil,
+  pesquisador: BookMarked,
+  negociador:  Zap,
+  professor:   Bell,
+  calculador:  Calculator,
+  legislacao:  Book,
+  rotina:      CalendarDays,
+  planilhas:   FileSpreadsheet,
 }
 
 function nowId() { return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }
@@ -52,11 +70,11 @@ function fmtHora(ts: number) {
   return new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 }
 
-const SUGESTOES = [
-  { icon: 'bi-file-earmark-text', texto: 'Analisar um contrato anexado' },
-  { icon: 'bi-pencil-square',     texto: 'Escrever uma peticao inicial' },
-  { icon: 'bi-journal-bookmark',  texto: 'Jurisprudencia sobre dano moral no STJ' },
-  { icon: 'bi-calculator',        texto: 'Calcular prazo de contestacao' },
+const SUGESTOES: { Icon: React.ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean }>; texto: string }[] = [
+  { Icon: FileText,   texto: 'Analisar um contrato anexado' },
+  { Icon: Pencil,     texto: 'Escrever uma petição inicial' },
+  { Icon: BookMarked, texto: 'Jurisprudência sobre dano moral no STJ' },
+  { Icon: Calculator, texto: 'Calcular prazo de contestação' },
 ]
 
 export default function ChatPage() {
@@ -76,7 +94,7 @@ export default function ChatPage() {
   }, [messages, loading])
 
   useEffect(() => {
-    // Autofocus na primeira renderizacao
+    // Autofocus na primeira renderização
     inputRef.current?.focus()
   }, [])
 
@@ -107,7 +125,7 @@ export default function ChatPage() {
         setParsingPdf(true)
         const { text, numPages } = await extractPdfWithMeta(file)
         if (text.length < 20) {
-          setErro('Nao consegui extrair texto do PDF. O arquivo pode ser uma imagem escaneada.')
+          setErro('Não consegui extrair texto do PDF. O arquivo pode ser uma imagem escaneada.')
           setParsingPdf(false)
           return
         }
@@ -121,7 +139,7 @@ export default function ChatPage() {
         }
         setArquivo({ nome: file.name, texto: text, paginas: 0 })
       } else {
-        setErro('Formato nao suportado. Envie PDF, TXT ou MD.')
+        setErro('Formato não suportado. Envie PDF, TXT ou MD.')
       }
     } catch (err) {
       console.error('[chat/file]', err)
@@ -185,7 +203,7 @@ export default function ChatPage() {
       setMessages(prev => [...prev, assistantMsg])
     } catch (err) {
       console.error('[chat/send]', err)
-      setErro('Erro de rede. Verifique sua conexao e tente novamente.')
+      setErro('Erro de rede. Verifique sua conexão e tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -224,12 +242,12 @@ export default function ChatPage() {
             Orquestrador <em className="chat-italic">conversacional</em>
           </h1>
           <p className="chat-lede">
-            Mande qualquer texto ou documento. Eu respondo direto ou chamo o agente certo para voce.
+            Mande qualquer texto ou documento. Eu respondo direto ou chamo o agente certo para você.
           </p>
         </div>
         {temConversa && (
           <button className="chat-clear" onClick={limparConversa} aria-label="Limpar conversa">
-            <i className="bi bi-arrow-counterclockwise" />
+            <RotateCcw size={14} strokeWidth={1.75} aria-hidden />
             <span>Limpar</span>
           </button>
         )}
@@ -245,27 +263,30 @@ export default function ChatPage() {
                 <path d="M13 17 L20 24 L27 17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <div className="chat-empty-serial">Capitulo I</div>
+            <div className="chat-empty-serial">Capítulo I</div>
             <h2 className="chat-empty-title">
               Como posso te <em className="chat-italic">ajudar hoje</em>?
             </h2>
             <p className="chat-empty-lede">
-              Digite uma duvida, cole um trecho ou anexe um arquivo. Eu analiso e decido o melhor caminho.
+              Digite uma dúvida, cole um trecho ou anexe um arquivo. Eu analiso e decido o melhor caminho.
             </p>
 
             <div className="chat-suggestions">
-              {SUGESTOES.map((s) => (
-                <button
-                  key={s.texto}
-                  className="chat-suggestion"
-                  onClick={() => { setInput(s.texto); inputRef.current?.focus() }}
-                  type="button"
-                >
-                  <i className={`bi ${s.icon}`} />
-                  <span>{s.texto}</span>
-                  <i className="bi bi-arrow-up-right chat-sug-arrow" />
-                </button>
-              ))}
+              {SUGESTOES.map((s) => {
+                const Icon = s.Icon
+                return (
+                  <button
+                    key={s.texto}
+                    className="chat-suggestion"
+                    onClick={() => { setInput(s.texto); inputRef.current?.focus() }}
+                    type="button"
+                  >
+                    <Icon size={16} strokeWidth={1.75} aria-hidden />
+                    <span>{s.texto}</span>
+                    <ArrowUpRight size={14} strokeWidth={1.75} aria-hidden className="chat-sug-arrow" />
+                  </button>
+                )
+              })}
             </div>
           </div>
         ) : (
@@ -274,14 +295,14 @@ export default function ChatPage() {
               <article key={m.id} className={`chat-msg chat-msg--${m.role}`} data-idx={idx}>
                 <div className="chat-msg-meta">
                   <span className="chat-msg-label">
-                    {m.role === 'user' ? 'Voce' : 'LexAI'}
+                    {m.role === 'user' ? 'Você' : 'LexAI'}
                   </span>
                   <span className="chat-msg-time">{fmtHora(m.timestamp)}</span>
                 </div>
 
                 {m.arquivo && (
                   <div className="chat-msg-file">
-                    <i className="bi bi-paperclip" />
+                    <Paperclip size={14} strokeWidth={1.75} aria-hidden />
                     <span>{m.arquivo.nome}</span>
                     {m.arquivo.paginas ? <span className="chat-msg-file-meta">· {m.arquivo.paginas} pgs</span> : null}
                     <span className="chat-msg-file-meta">· {(m.arquivo.chars / 1000).toFixed(1)}k caracteres</span>
@@ -296,24 +317,27 @@ export default function ChatPage() {
                   </div>
                 )}
 
-                {m.agente && (
-                  <div className="chat-msg-agente">
-                    <div className="chat-msg-agente-head">
-                      <i className={`bi ${AGENTES_ICONS[m.agente.key] || 'bi-stars'}`} />
-                      <span className="chat-msg-agente-titulo">
-                        Agente recomendado · <strong>{m.agente.titulo}</strong>
-                      </span>
+                {m.agente && (() => {
+                  const AgenteIcon = AGENTES_ICONS[m.agente.key] || Sparkles
+                  return (
+                    <div className="chat-msg-agente">
+                      <div className="chat-msg-agente-head">
+                        <AgenteIcon size={18} strokeWidth={1.75} aria-hidden />
+                        <span className="chat-msg-agente-titulo">
+                          Agente recomendado · <strong>{m.agente.titulo}</strong>
+                        </span>
+                      </div>
+                      <p className="chat-msg-agente-just">{m.agente.justificativa}</p>
+                      <button
+                        className="chat-msg-agente-cta"
+                        onClick={() => abrirAgenteComContexto(m.agente!)}
+                        type="button"
+                      >
+                        Abrir {m.agente.titulo} &nbsp;→
+                      </button>
                     </div>
-                    <p className="chat-msg-agente-just">{m.agente.justificativa}</p>
-                    <button
-                      className="chat-msg-agente-cta"
-                      onClick={() => abrirAgenteComContexto(m.agente!)}
-                      type="button"
-                    >
-                      Abrir {m.agente.titulo} &nbsp;→
-                    </button>
-                  </div>
-                )}
+                  )
+                })()}
               </article>
             ))}
 
@@ -338,10 +362,10 @@ export default function ChatPage() {
       <div className="chat-composer">
         {erro && (
           <div className="chat-error" role="alert">
-            <i className="bi bi-exclamation-triangle" />
+            <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
             <span>{erro}</span>
             <button type="button" onClick={() => setErro('')} aria-label="Fechar">
-              <i className="bi bi-x" />
+              <X size={14} strokeWidth={1.75} aria-hidden />
             </button>
           </div>
         )}
@@ -350,21 +374,21 @@ export default function ChatPage() {
           <div className="chat-attached">
             {parsingPdf ? (
               <>
-                <i className="bi bi-arrow-repeat chat-spin" />
+                <RefreshCw size={18} strokeWidth={1.75} aria-hidden className="chat-spin" />
                 <span>Extraindo texto do PDF...</span>
               </>
             ) : arquivo ? (
               <>
-                <i className="bi bi-file-earmark-text" />
+                <FileText size={18} strokeWidth={1.75} aria-hidden />
                 <div className="chat-attached-info">
                   <div className="chat-attached-name">{arquivo.nome}</div>
                   <div className="chat-attached-meta">
-                    {arquivo.paginas > 0 ? `${arquivo.paginas} paginas · ` : ''}
-                    {(arquivo.texto.length / 1000).toFixed(1)}k caracteres extraidos
+                    {arquivo.paginas > 0 ? `${arquivo.paginas} páginas · ` : ''}
+                    {(arquivo.texto.length / 1000).toFixed(1)}k caracteres extraídos
                   </div>
                 </div>
                 <button className="chat-attached-remove" onClick={() => setArquivo(null)} aria-label="Remover anexo">
-                  <i className="bi bi-x" />
+                  <X size={18} strokeWidth={1.75} aria-hidden />
                 </button>
               </>
             ) : null}
@@ -379,7 +403,7 @@ export default function ChatPage() {
             type="button"
             aria-label="Anexar arquivo"
           >
-            <i className="bi bi-paperclip" />
+            <Paperclip size={18} strokeWidth={1.75} aria-hidden />
           </button>
           <input
             ref={fileInputRef}
@@ -409,7 +433,7 @@ export default function ChatPage() {
             aria-label="Enviar"
           >
             {loading ? (
-              <i className="bi bi-arrow-repeat chat-spin" />
+              <RefreshCw size={18} strokeWidth={1.75} aria-hidden className="chat-spin" />
             ) : (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
                 <line x1="22" y1="2" x2="11" y2="13" />
@@ -422,7 +446,7 @@ export default function ChatPage() {
         <div className="chat-composer-hint">
           <span><kbd>Enter</kbd> envia · <kbd>Shift + Enter</kbd> nova linha</span>
           <span className="chat-composer-sep">·</span>
-          <span>PDF, TXT ou MD ate 10MB</span>
+          <span>PDF, TXT ou MD até 10MB</span>
         </div>
       </div>
 
@@ -591,9 +615,8 @@ export default function ChatPage() {
           background: var(--stone-soft);
           color: var(--text-primary);
         }
-        .chat-suggestion i.bi {
+        .chat-suggestion > svg {
           color: var(--accent);
-          font-size: 16px;
           flex-shrink: 0;
         }
         .chat-suggestion span { flex: 1; }
@@ -667,7 +690,7 @@ export default function ChatPage() {
           color: var(--text-secondary);
           margin-bottom: 10px;
         }
-        .chat-msg-file i { color: var(--accent); }
+        .chat-msg-file > svg { color: var(--accent); }
         .chat-msg-file-meta { color: var(--text-muted); }
 
         /* ── Agente card ───────────────────────────────── */
@@ -694,8 +717,7 @@ export default function ChatPage() {
           gap: 12px;
           margin-bottom: 10px;
         }
-        .chat-msg-agente-head i {
-          font-size: 18px;
+        .chat-msg-agente-head > svg {
           color: var(--accent);
         }
         .chat-msg-agente-titulo {
@@ -777,7 +799,6 @@ export default function ChatPage() {
           border: none;
           color: inherit;
           cursor: pointer;
-          font-size: 16px;
           padding: 2px 6px;
         }
 
@@ -790,7 +811,7 @@ export default function ChatPage() {
           border: 1px solid var(--stone-line);
           margin-bottom: 10px;
         }
-        .chat-attached > i.bi { color: var(--accent); font-size: 18px; }
+        .chat-attached > svg { color: var(--accent); }
         .chat-attached-info { flex: 1; min-width: 0; }
         .chat-attached-name {
           font-size: 13px;
@@ -810,7 +831,6 @@ export default function ChatPage() {
           border: none;
           color: var(--text-muted);
           cursor: pointer;
-          font-size: 18px;
           padding: 6px;
           transition: color 0.2s ease;
         }
@@ -840,7 +860,6 @@ export default function ChatPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 18px;
           transition: color 0.2s ease, background 0.2s ease;
         }
         .chat-attach-btn:hover:not(:disabled) {

@@ -1,40 +1,66 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import {
+  User,
+  SlidersHorizontal,
+  Plug,
+  Mail,
+  Camera,
+  ChevronDown,
+  CheckCircle2,
+  AlertCircle,
+  RotateCw,
+  Check,
+  MapPin,
+  Sun,
+  Moon,
+  ArrowUpCircle,
+  Receipt,
+  Calendar,
+  MessageCircle,
+  Cloud,
+  BookMarked,
+  Send,
+  Info,
+  ShieldCheck,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import { useTheme } from '@/context/ThemeContext'
 
 type Tab = 'perfil' | 'preferencias' | 'integracoes' | 'contato'
 
-const INTEGRACOES = [
+type IconComp = React.ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean; style?: React.CSSProperties }>
+
+const INTEGRACOES: { id: string; label: string; Icon: IconComp; desc: string; color: string; bg: string }[] = [
   {
-    id: 'gcalendar', label: 'Google Calendar', icon: 'bi-calendar-event',
+    id: 'gcalendar', label: 'Google Calendar', Icon: Calendar,
     desc: 'Sincronize prazos e compromissos com seu Google Calendar automaticamente.',
     color: '#4285F4', bg: '#eff6ff',
   },
   {
-    id: 'whatsapp', label: 'WhatsApp', icon: 'bi-whatsapp',
+    id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle,
     desc: 'Receba alertas de prazos e lembretes diretamente no WhatsApp.',
     color: '#25D366', bg: '#f0fdf4',
   },
   {
-    id: 'gdrive', label: 'Google Drive', icon: 'bi-cloud',
+    id: 'gdrive', label: 'Google Drive', Icon: Cloud,
     desc: 'Salve documentos analisados automaticamente no seu Drive.',
     color: '#0F9D58', bg: '#f0fdf4',
   },
   {
-    id: 'email', label: 'Notificações por E-mail', icon: 'bi-envelope-fill',
+    id: 'email', label: 'Notificações por E-mail', Icon: Mail,
     desc: 'Receba resumos semanais e alertas de prazos por e-mail.',
     color: '#4f46e5', bg: '#eef2ff',
   },
   {
-    id: 'notion', label: 'Notion', icon: 'bi-journal-bookmark',
+    id: 'notion', label: 'Notion', Icon: BookMarked,
     desc: 'Exporte resumos e pesquisas diretamente para páginas do Notion.',
     color: '#000', bg: '#f8f8f8',
   },
   {
-    id: 'telegram', label: 'Telegram', icon: 'bi-telegram',
+    id: 'telegram', label: 'Telegram', Icon: Send,
     desc: 'Receba notificações e interaja com o agente via Telegram.',
     color: '#0088cc', bg: '#eff8ff',
   },
@@ -58,7 +84,7 @@ export default function ConfiguracoesPage() {
 
   // Dynamic plan from localStorage
   const planoMap: Record<string, { nome: string; preco: number }> = {
-    starter: { nome: 'Escritorio', preco: 1399 },
+    starter: { nome: 'Escritório', preco: 1399 },
     pro: { nome: 'Firma', preco: 1459 },
     enterprise: { nome: 'Enterprise', preco: 1599 },
   }
@@ -99,7 +125,7 @@ export default function ConfiguracoesPage() {
       const { lookupCEP, formatCep } = await import('@/lib/brasil-api')
       const data = await lookupCEP(cepInput)
       if (!data) {
-        setCepError('CEP nao encontrado')
+        setCepError('CEP não encontrado')
         return
       }
       setCepResult({
@@ -178,11 +204,11 @@ export default function ConfiguracoesPage() {
     setContatoEnviado(true); setAssunto(''); setMensagem(''); setLoading(false)
   }
 
-  const TABS: { id: Tab; label: string; icon: string }[] = [
-    { id: 'perfil',       label: 'Perfil',        icon: 'bi-person'        },
-    { id: 'preferencias', label: 'Preferências',  icon: 'bi-sliders'       },
-    { id: 'integracoes',  label: 'Integrações',   icon: 'bi-plug'          },
-    { id: 'contato',      label: 'Contato',        icon: 'bi-envelope'      },
+  const TABS: { id: Tab; label: string; Icon: IconComp }[] = [
+    { id: 'perfil',       label: 'Perfil',        Icon: User              },
+    { id: 'preferencias', label: 'Preferências',  Icon: SlidersHorizontal },
+    { id: 'integracoes',  label: 'Integrações',   Icon: Plug              },
+    { id: 'contato',      label: 'Contato',       Icon: Mail              },
   ]
 
   const iniciais = nome ? nome.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() : email.slice(0,2).toUpperCase()
@@ -196,13 +222,16 @@ export default function ConfiguracoesPage() {
 
       {/* Tabs */}
       <div className="tabs">
-        {TABS.map(t => (
-          <button key={t.id} className={`tab-btn ${tab === t.id ? 'active' : ''}`}
-            onClick={() => { setTab(t.id); setMsg(''); setErro(''); setContatoEnviado(false) }}>
-            <i className={`bi ${t.icon}`} style={{ marginRight: 6 }} />
-            {t.label}
-          </button>
-        ))}
+        {TABS.map(t => {
+          const TabIcon = t.Icon
+          return (
+            <button key={t.id} className={`tab-btn ${tab === t.id ? 'active' : ''}`}
+              onClick={() => { setTab(t.id); setMsg(''); setErro(''); setContatoEnviado(false) }}>
+              <TabIcon size={14} strokeWidth={1.75} aria-hidden style={{ marginRight: 6 }} />
+              {t.label}
+            </button>
+          )
+        })}
       </div>
 
       {/* ── Perfil ── */}
@@ -222,7 +251,7 @@ export default function ConfiguracoesPage() {
                 )}
                 {avatarLoading && (
                   <div style={{ position:'absolute', inset:0, borderRadius:'50%', background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <i className="bi bi-arrow-repeat" style={{ color:'#fff', fontSize:18 }} />
+                    <RotateCw size={18} strokeWidth={1.75} aria-hidden style={{ color:'#fff' }} />
                   </div>
                 )}
               </div>
@@ -234,7 +263,7 @@ export default function ConfiguracoesPage() {
                 <input ref={fileRef} type="file" accept="image/*" style={{ display:'none' }} onChange={handleAvatar} />
                 <button className="btn-ghost" style={{ fontSize:12, padding:'6px 12px', display:'flex', alignItems:'center', gap:6 }}
                   onClick={() => fileRef.current?.click()}>
-                  <i className="bi bi-camera" /> Alterar foto
+                  <Camera size={14} strokeWidth={1.75} aria-hidden /> Alterar foto
                 </button>
               </div>
             </div>
@@ -244,8 +273,8 @@ export default function ConfiguracoesPage() {
           <div className="section-card" style={{ padding:'20px 24px' }}>
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Informações Pessoais</div>
             <form onSubmit={salvarPerfil} style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {msg  && <div style={{ padding:'10px 14px', borderRadius:8, background:'var(--accent-light)', color:'var(--accent)', fontSize:13, display:'flex', alignItems:'center', gap:8 }}><i className="bi bi-check-circle-fill" /> {msg}</div>}
-              {erro && <div style={{ padding:'10px 14px', borderRadius:8, background:'var(--danger-light)', color:'var(--danger)', fontSize:13, display:'flex', alignItems:'center', gap:8 }}><i className="bi bi-exclamation-circle-fill" /> {erro}</div>}
+              {msg  && <div style={{ padding:'10px 14px', borderRadius:8, background:'var(--accent-light)', color:'var(--accent)', fontSize:13, display:'flex', alignItems:'center', gap:8 }}><CheckCircle2 size={14} strokeWidth={1.75} aria-hidden /> {msg}</div>}
+              {erro && <div style={{ padding:'10px 14px', borderRadius:8, background:'var(--danger-light)', color:'var(--danger)', fontSize:13, display:'flex', alignItems:'center', gap:8 }}><AlertCircle size={14} strokeWidth={1.75} aria-hidden /> {erro}</div>}
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
                 <div>
                   <label className="form-label">Nome completo</label>
@@ -268,7 +297,7 @@ export default function ConfiguracoesPage() {
               </div>
               <div style={{ paddingTop:8, borderTop:'1px solid var(--border)' }}>
                 <button type="submit" disabled={loading} className="btn-primary">
-                  {loading ? <><i className="bi bi-arrow-repeat" /> Salvando...</> : <><i className="bi bi-check2" /> Salvar alterações</>}
+                  {loading ? <><RotateCw size={14} strokeWidth={1.75} aria-hidden /> Salvando...</> : <><Check size={14} strokeWidth={1.75} aria-hidden /> Salvar alterações</>}
                 </button>
               </div>
             </form>
@@ -276,8 +305,8 @@ export default function ConfiguracoesPage() {
 
           {/* ── Consulta de CEP (BrasilAPI/ViaCEP) ── */}
           <div className="section-card" style={{ padding: '18px 22px' }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
-              <i className="bi bi-geo-alt" style={{ marginRight: 6 }} />Consulta de CEP
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <MapPin size={14} strokeWidth={1.75} aria-hidden />Consulta de CEP
             </div>
             <div style={{ display: 'flex', gap: 8, marginBottom: cepResult ? 12 : 0 }}>
               <input
@@ -311,27 +340,30 @@ export default function ConfiguracoesPage() {
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Aparência</div>
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
               {[
-                { value:'light', label:'Modo Claro',  icon:'bi-sun',  desc:'Interface clara para ambientes bem iluminados' },
-                { value:'dark',  label:'Modo Escuro', icon:'bi-moon', desc:'Interface escura para reduzir o cansaço visual' },
-              ].map(opt => (
-                <div key={opt.value} onClick={() => { if (theme !== opt.value) toggleTheme() }} style={{
-                  display:'flex', alignItems:'center', gap:14, padding:'14px 16px', borderRadius:10, cursor:'pointer',
-                  border:`2px solid ${theme === opt.value ? 'var(--accent)' : 'var(--border)'}`,
-                  background: theme === opt.value ? 'var(--accent-light)' : 'transparent',
-                  transition:'all 0.15s',
-                }}>
-                  <div style={{ width:36, height:36, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16,
-                    background: theme === opt.value ? 'var(--accent)' : 'var(--hover)',
-                    color: theme === opt.value ? '#fff' : 'var(--text-secondary)' }}>
-                    <i className={`bi ${opt.icon}`} />
+                { value:'light', label:'Modo Claro',  Icon: Sun,  desc:'Interface clara para ambientes bem iluminados' },
+                { value:'dark',  label:'Modo Escuro', Icon: Moon, desc:'Interface escura para reduzir o cansaço visual' },
+              ].map(opt => {
+                const OptIcon = opt.Icon
+                return (
+                  <div key={opt.value} onClick={() => { if (theme !== opt.value) toggleTheme() }} style={{
+                    display:'flex', alignItems:'center', gap:14, padding:'14px 16px', borderRadius:10, cursor:'pointer',
+                    border:`2px solid ${theme === opt.value ? 'var(--accent)' : 'var(--border)'}`,
+                    background: theme === opt.value ? 'var(--accent-light)' : 'transparent',
+                    transition:'all 0.15s',
+                  }}>
+                    <div style={{ width:36, height:36, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center',
+                      background: theme === opt.value ? 'var(--accent)' : 'var(--hover)',
+                      color: theme === opt.value ? '#fff' : 'var(--text-secondary)' }}>
+                      <OptIcon size={16} strokeWidth={1.75} aria-hidden />
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)' }}>{opt.label}</div>
+                      <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:2 }}>{opt.desc}</div>
+                    </div>
+                    {theme === opt.value && <CheckCircle2 size={18} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} />}
                   </div>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)' }}>{opt.label}</div>
-                    <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:2 }}>{opt.desc}</div>
-                  </div>
-                  {theme === opt.value && <i className="bi bi-check-circle-fill" style={{ color:'var(--accent)', fontSize:18 }} />}
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -341,7 +373,7 @@ export default function ConfiguracoesPage() {
               <div>
                 <div style={{ fontSize:11, fontWeight:600, letterSpacing:'0.8px', textTransform:'uppercase', opacity:0.8 }}>Plano ativo</div>
                 <div style={{ fontSize:24, fontWeight:700, marginTop:4 }}>{planoAtual.nome}</div>
-                <div style={{ fontSize:13, opacity:0.8, marginTop:2 }}>Renovacao automatica</div>
+                <div style={{ fontSize:13, opacity:0.8, marginTop:2 }}>Renovação automática</div>
               </div>
               <div style={{ textAlign:'right' }}>
                 <div style={{ fontSize:28, fontWeight:700, fontVariantNumeric:'tabular-nums' }}>R$ {planoAtual.preco}</div>
@@ -349,8 +381,8 @@ export default function ConfiguracoesPage() {
               </div>
             </div>
             <div style={{ marginTop:14, display:'flex', gap:8 }}>
-              <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.location.href='/dashboard/planos'}><i className="bi bi-arrow-up-circle" /> Gerenciar plano</button>
-              <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.open('https://billing.stripe.com', '_blank')}><i className="bi bi-receipt" /> Ver faturas</button>
+              <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.location.href='/dashboard/planos'}><ArrowUpCircle size={14} strokeWidth={1.75} aria-hidden /> Gerenciar plano</button>
+              <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.open('https://billing.stripe.com', '_blank')}><Receipt size={14} strokeWidth={1.75} aria-hidden /> Ver faturas</button>
             </div>
           </div>
         </div>
@@ -363,43 +395,46 @@ export default function ConfiguracoesPage() {
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:4 }}>Conectar Serviços</div>
             <div style={{ fontSize:13, color:'var(--text-muted)', marginBottom:18 }}>Ative integrações para estender as funcionalidades do LexAI com suas ferramentas favoritas.</div>
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {INTEGRACOES.map(intg => (
-                <div key={intg.id} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 16px', borderRadius:10, border:'1px solid var(--border)', transition:'all 0.15s',
-                  background: ativos[intg.id] ? 'var(--accent-light)' : 'var(--card-bg)' }}>
-                  <div style={{ width:40, height:40, borderRadius:10, background:intg.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:intg.color, flexShrink:0 }}>
-                    <i className={`bi ${intg.icon}`} />
+              {INTEGRACOES.map(intg => {
+                const IntIcon = intg.Icon
+                return (
+                  <div key={intg.id} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 16px', borderRadius:10, border:'1px solid var(--border)', transition:'all 0.15s',
+                    background: ativos[intg.id] ? 'var(--accent-light)' : 'var(--card-bg)' }}>
+                    <div style={{ width:40, height:40, borderRadius:10, background:intg.bg, display:'flex', alignItems:'center', justifyContent:'center', color:intg.color, flexShrink:0 }}>
+                      <IntIcon size={18} strokeWidth={1.75} aria-hidden />
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)', marginBottom:2 }}>{intg.label}</div>
+                      <div style={{ fontSize:12, color:'var(--text-muted)' }}>{intg.desc}</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                      {ativos[intg.id] && (
+                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--success)', padding: '2px 8px', borderRadius: 10, background: 'var(--success-light)' }}>
+                          Conectado
+                        </span>
+                      )}
+                      {/* Toggle switch */}
+                      <button type="button" onClick={() => toggleIntegracao(intg.id)} style={{
+                        width:44, height:24, borderRadius:12, border:'none', cursor:'pointer', flexShrink:0,
+                        background: ativos[intg.id] ? 'var(--accent)' : 'var(--border)',
+                        position:'relative', transition:'background 0.2s',
+                      }}>
+                        <span style={{
+                          position:'absolute', top:3, left: ativos[intg.id] ? 23 : 3,
+                          width:18, height:18, borderRadius:'50%', background:'#fff',
+                          transition:'left 0.2s', boxShadow:'0 1px 4px rgba(0,0,0,0.2)',
+                        }} />
+                      </button>
+                    </div>
                   </div>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)', marginBottom:2 }}>{intg.label}</div>
-                    <div style={{ fontSize:12, color:'var(--text-muted)' }}>{intg.desc}</div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    {ativos[intg.id] && (
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--success)', padding: '2px 8px', borderRadius: 10, background: 'var(--success-light)' }}>
-                        Conectado
-                      </span>
-                    )}
-                    {/* Toggle switch */}
-                    <button type="button" onClick={() => toggleIntegracao(intg.id)} style={{
-                      width:44, height:24, borderRadius:12, border:'none', cursor:'pointer', flexShrink:0,
-                      background: ativos[intg.id] ? 'var(--accent)' : 'var(--border)',
-                      position:'relative', transition:'background 0.2s',
-                    }}>
-                      <span style={{
-                        position:'absolute', top:3, left: ativos[intg.id] ? 23 : 3,
-                        width:18, height:18, borderRadius:'50%', background:'#fff',
-                        transition:'left 0.2s', boxShadow:'0 1px 4px rgba(0,0,0,0.2)',
-                      }} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
           <div className="section-card" style={{ padding:'16px 20px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <i className="bi bi-info-circle" style={{ color:'var(--accent)', fontSize:16 }} />
+              <Info size={16} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} />
               <div style={{ fontSize:13, color:'var(--text-secondary)' }}>
                 As integrações ainda estão em desenvolvimento. Ao ativar, você será avisado quando estiverem disponíveis.
               </div>
@@ -415,23 +450,26 @@ export default function ConfiguracoesPage() {
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Canais de Atendimento</div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
               {[
-                { icon:'bi-envelope-fill',  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'contato@vanixcorp.com', href:'mailto:contato@vanixcorp.com' },
-              ].map(ch => (
-                <a key={ch.label} href={ch.href} target="_blank" rel="noopener noreferrer" style={{
-                  display:'flex', alignItems:'center', gap:12, padding:'14px', borderRadius:10,
-                  border:'1px solid var(--border)', textDecoration:'none', color:'inherit', transition:'all 0.15s',
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--hover)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                  <div style={{ width:38, height:38, borderRadius:10, background:ch.bg, color:ch.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 }}>
-                    <i className={`bi ${ch.icon}`} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)' }}>{ch.label}</div>
-                    <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:1 }}>{ch.value}</div>
-                  </div>
-                </a>
-              ))}
+                { Icon: Mail,  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'contato@vanixcorp.com', href:'mailto:contato@vanixcorp.com' },
+              ].map(ch => {
+                const ChIcon = ch.Icon
+                return (
+                  <a key={ch.label} href={ch.href} target="_blank" rel="noopener noreferrer" style={{
+                    display:'flex', alignItems:'center', gap:12, padding:'14px', borderRadius:10,
+                    border:'1px solid var(--border)', textDecoration:'none', color:'inherit', transition:'all 0.15s',
+                  }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--hover)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                    <div style={{ width:38, height:38, borderRadius:10, background:ch.bg, color:ch.color, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <ChIcon size={18} strokeWidth={1.75} aria-hidden />
+                    </div>
+                    <div>
+                      <div style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)' }}>{ch.label}</div>
+                      <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:1 }}>{ch.value}</div>
+                    </div>
+                  </a>
+                )
+              })}
             </div>
           </div>
 
@@ -439,7 +477,7 @@ export default function ConfiguracoesPage() {
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Enviar Mensagem</div>
             {contatoEnviado ? (
               <div style={{ textAlign:'center', padding:'30px 0' }}>
-                <i className="bi bi-check-circle-fill" style={{ fontSize:40, color:'var(--accent)', display:'block', marginBottom:12 }} />
+                <CheckCircle2 size={40} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)', display:'block', margin:'0 auto 12px' }} />
                 <div style={{ fontSize:15, fontWeight:600, color:'var(--text-primary)' }}>Mensagem enviada!</div>
                 <div style={{ fontSize:13, color:'var(--text-muted)', marginTop:4 }}>Retornaremos em até 24 horas úteis.</div>
                 <button className="btn-ghost" style={{ marginTop:16 }} onClick={() => setContatoEnviado(false)}>Enviar outra mensagem</button>
@@ -466,10 +504,10 @@ export default function ConfiguracoesPage() {
                 </div>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:8, borderTop:'1px solid var(--border)' }}>
                   <div style={{ fontSize:12, color:'var(--text-muted)', display:'flex', alignItems:'center', gap:6 }}>
-                    <i className="bi bi-shield-check" style={{ color:'var(--accent)' }} /> Mensagem confidencial e segura
+                    <ShieldCheck size={14} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} /> Mensagem confidencial e segura
                   </div>
                   <button type="submit" disabled={loading} className="btn-primary">
-                    {loading ? <><i className="bi bi-arrow-repeat" /> Enviando...</> : <><i className="bi bi-send" /> Enviar</>}
+                    {loading ? <><RotateCw size={14} strokeWidth={1.75} aria-hidden /> Enviando...</> : <><Send size={14} strokeWidth={1.75} aria-hidden /> Enviar</>}
                   </button>
                 </div>
               </form>
@@ -485,7 +523,7 @@ export default function ConfiguracoesPage() {
             ].map((faq, i) => (
               <details key={i} style={{ borderBottom:'1px solid var(--border)' }}>
                 <summary style={{ padding:'12px 0', cursor:'pointer', fontSize:13, fontWeight:600, color:'var(--text-primary)', listStyle:'none', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                  {faq.q} <i className="bi bi-chevron-down" style={{ fontSize:11, color:'var(--text-muted)' }} />
+                  {faq.q} <ChevronDown size={11} strokeWidth={1.75} aria-hidden style={{ color: 'var(--text-muted)' }} />
                 </summary>
                 <div style={{ paddingBottom:12, fontSize:13, color:'var(--text-secondary)', lineHeight:1.6 }}>{faq.a}</div>
               </details>
@@ -496,3 +534,4 @@ export default function ConfiguracoesPage() {
     </div>
   )
 }
+

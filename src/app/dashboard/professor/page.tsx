@@ -2,18 +2,41 @@
 
 import { useState } from 'react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import {
+  FileText,
+  ShieldAlert,
+  Briefcase,
+  Coins,
+  Building2,
+  TreePine,
+  Laptop,
+  ShoppingBag,
+  Landmark,
+  Building,
+  Check,
+  X,
+  AlertTriangle,
+  Calendar,
+  Clock,
+  RotateCcw,
+  Radio,
+  NotebookText,
+  GitBranch,
+  TrendingUp,
+  CheckSquare,
+} from 'lucide-react'
 
 const AREAS_PRATICA = [
-  { id: 'civil', label: 'Direito Civil', icon: 'bi-file-earmark-text', color: '#44372b' },
-  { id: 'penal', label: 'Direito Penal', icon: 'bi-shield-exclamation', color: '#EF4444' },
-  { id: 'trabalhista', label: 'Direito Trabalhista', icon: 'bi-briefcase', color: '#F59E0B' },
-  { id: 'tributario', label: 'Direito Tributario', icon: 'bi-cash-coin', color: '#10B981' },
-  { id: 'empresarial', label: 'Direito Empresarial', icon: 'bi-buildings', color: '#EC4899' },
-  { id: 'ambiental', label: 'Direito Ambiental', icon: 'bi-tree', color: '#22C55E' },
-  { id: 'digital', label: 'Direito Digital', icon: 'bi-laptop', color: '#0EA5E9' },
-  { id: 'consumidor', label: 'Direito do Consumidor', icon: 'bi-bag-check', color: '#8B5CF6' },
-  { id: 'administrativo', label: 'Direito Administrativo', icon: 'bi-bank', color: '#06B6D4' },
-  { id: 'constitucional', label: 'Direito Constitucional', icon: 'bi-building', color: '#6366F1' },
+  { id: 'civil', label: 'Direito Civil', Icon: FileText, color: '#44372b' },
+  { id: 'penal', label: 'Direito Penal', Icon: ShieldAlert, color: '#EF4444' },
+  { id: 'trabalhista', label: 'Direito Trabalhista', Icon: Briefcase, color: '#F59E0B' },
+  { id: 'tributario', label: 'Direito Tributário', Icon: Coins, color: '#10B981' },
+  { id: 'empresarial', label: 'Direito Empresarial', Icon: Building2, color: '#EC4899' },
+  { id: 'ambiental', label: 'Direito Ambiental', Icon: TreePine, color: '#22C55E' },
+  { id: 'digital', label: 'Direito Digital', Icon: Laptop, color: '#0EA5E9' },
+  { id: 'consumidor', label: 'Direito do Consumidor', Icon: ShoppingBag, color: '#8B5CF6' },
+  { id: 'administrativo', label: 'Direito Administrativo', Icon: Landmark, color: '#06B6D4' },
+  { id: 'constitucional', label: 'Direito Constitucional', Icon: Building, color: '#6366F1' },
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,18 +76,18 @@ export default function MonitorLegislativoPage() {
       if (!res.ok) throw new Error(data.error)
       setRelatorio(data.relatorio)
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro ao gerar relatorio')
+      setErro(e instanceof Error ? e.message : 'Erro ao gerar relatório')
     } finally {
       setLoading(false)
     }
   }
 
   const SECOES = [
-    { key: 'legislacao' as const, label: 'Legislacao', icon: 'bi-journal-bookmark', color: '#44372b' },
-    { key: 'precedentes' as const, label: 'Precedentes', icon: 'bi-bank', color: '#4f46e5' },
-    { key: 'regulatorio' as const, label: 'Regulatorio', icon: 'bi-diagram-3', color: '#10B981' },
-    { key: 'impacto' as const, label: 'Analise de Impacto', icon: 'bi-graph-up-arrow', color: '#e67e22' },
-    { key: 'acoes' as const, label: 'Acoes Recomendadas', icon: 'bi-check2-square', color: '#c0392b' },
+    { key: 'legislacao' as const, label: 'Legislação', Icon: NotebookText, color: '#44372b' },
+    { key: 'precedentes' as const, label: 'Precedentes', Icon: Landmark, color: '#4f46e5' },
+    { key: 'regulatorio' as const, label: 'Regulatório', Icon: GitBranch, color: '#10B981' },
+    { key: 'impacto' as const, label: 'Análise de Impacto', Icon: TrendingUp, color: '#e67e22' },
+    { key: 'acoes' as const, label: 'Ações Recomendadas', Icon: CheckSquare, color: '#c0392b' },
   ]
 
   return (
@@ -78,18 +101,19 @@ export default function MonitorLegislativoPage() {
           </span>
         </div>
         <h1 className="page-title">Monitor Legislativo</h1>
-        <p className="page-subtitle">Acompanhe mudancas legislativas, novos precedentes e atualizacoes regulatorias relevantes para suas areas de atuacao</p>
+        <p className="page-subtitle">Acompanhe mudanças legislativas, novos precedentes e atualizações regulatórias relevantes para suas áreas de atuação</p>
       </div>
 
       {/* Area selection */}
       {!relatorio && !loading && (
         <div style={{ marginBottom: 36 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-            Selecione as areas de atuacao para monitorar
+            Selecione as áreas de atuação para monitorar
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }} className="monitor-grid">
             {AREAS_PRATICA.map(area => {
               const selected = areasSelecionadas.includes(area.id)
+              const AreaIcon = area.Icon
               return (
                 <button
                   key={area.id}
@@ -114,7 +138,7 @@ export default function MonitorLegislativoPage() {
                       background: area.color, display: 'flex',
                       alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <i className="bi bi-check2" style={{ fontSize: 11, color: '#fff' }} />
+                      <Check size={11} strokeWidth={1.75} aria-hidden style={{ color: '#fff' }} />
                     </span>
                   )}
                   <div style={{
@@ -123,7 +147,7 @@ export default function MonitorLegislativoPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     margin: '0 auto 8px',
                   }}>
-                    <i className={`bi ${area.icon}`} style={{ color: area.color, fontSize: 16 }} />
+                    <AreaIcon size={16} strokeWidth={1.75} aria-hidden style={{ color: area.color }} />
                   </div>
                   <div style={{
                     fontSize: 12, fontWeight: 600,
@@ -142,12 +166,12 @@ export default function MonitorLegislativoPage() {
       {!relatorio && !loading && (
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-            Topicos especificos para monitorar (opcional)
+            Tópicos específicos para monitorar (opcional)
           </div>
           <textarea
             value={topicos}
             onChange={e => setTopicos(e.target.value)}
-            placeholder="Ex: reforma tributaria, LGPD, direitos digitais, recuperacao judicial, nova lei de licitacoes..."
+            placeholder="Ex: reforma tributária, LGPD, direitos digitais, recuperação judicial, nova lei de licitações..."
             className="form-input"
             rows={3}
             style={{
@@ -179,12 +203,12 @@ export default function MonitorLegislativoPage() {
               gap: 10,
             }}
           >
-            <i className="bi bi-broadcast" style={{ fontSize: 18 }} />
-            Monitorar {areasSelecionadas.length > 0 ? `(${areasSelecionadas.length} ${areasSelecionadas.length === 1 ? 'area' : 'areas'})` : ''}
+            <Radio size={18} strokeWidth={1.75} aria-hidden />
+            Monitorar {areasSelecionadas.length > 0 ? `(${areasSelecionadas.length} ${areasSelecionadas.length === 1 ? 'área' : 'áreas'})` : ''}
           </button>
           {areasSelecionadas.length === 0 && (
             <div style={{ textAlign: 'center', marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
-              Selecione ao menos uma area de atuacao acima
+              Selecione ao menos uma área de atuação acima
             </div>
           )}
         </div>
@@ -195,24 +219,25 @@ export default function MonitorLegislativoPage() {
         <div className="section-card" style={{ padding: '16px 20px', marginBottom: 36, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingRight: 16, borderRight: '1px solid var(--border)' }}>
             <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className="bi bi-broadcast" style={{ fontSize: 18, color: 'var(--accent)' }} />
+              <Radio size={18} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
             </div>
             <div>
               <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{areasSelecionadas.length}</div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>{areasSelecionadas.length === 1 ? 'area selecionada' : 'areas selecionadas'}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>{areasSelecionadas.length === 1 ? 'área selecionada' : 'áreas selecionadas'}</div>
             </div>
           </div>
           <div style={{ flex: 1, minWidth: 200, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {areasSelecionadas.map(id => {
               const area = AREAS_PRATICA.find(a => a.id === id)
               if (!area) return null
+              const AreaIcon = area.Icon
               return (
                 <span key={id} style={{
                   fontSize: 11, padding: '4px 10px', borderRadius: 6,
                   background: `${area.color}14`, color: area.color,
                   fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4,
                 }}>
-                  <i className={`bi ${area.icon}`} style={{ fontSize: 10 }} />
+                  <AreaIcon size={10} strokeWidth={1.75} aria-hidden />
                   {area.label}
                 </span>
               )
@@ -226,9 +251,10 @@ export default function MonitorLegislativoPage() {
               background: 'none', border: '1px solid var(--border)',
               color: 'var(--text-muted)', cursor: 'pointer',
               fontFamily: "'DM Sans', sans-serif",
+              display: 'inline-flex', alignItems: 'center', gap: 4,
             }}
           >
-            <i className="bi bi-x-lg" style={{ marginRight: 4 }} />Limpar
+            <X size={11} strokeWidth={1.75} aria-hidden />Limpar
           </button>
         </div>
       )}
@@ -236,7 +262,7 @@ export default function MonitorLegislativoPage() {
       {/* Error */}
       {erro && (
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden /> {erro}
         </div>
       )}
 
@@ -244,8 +270,8 @@ export default function MonitorLegislativoPage() {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
           <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>Gerando relatorio legislativo...</div>
-          <div style={{ fontSize: 13 }}>Analisando mudancas legislativas, precedentes e regulatorias</div>
+          <div style={{ fontWeight: 600, marginBottom: 6 }}>Gerando relatório legislativo...</div>
+          <div style={{ fontSize: 13 }}>Analisando mudanças legislativas, precedentes e regulatórias</div>
         </div>
       ) : relatorio ? (
         <>
@@ -254,14 +280,14 @@ export default function MonitorLegislativoPage() {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)', marginBottom: 6 }}>
-                  Relatorio de Monitoramento
+                  Relatório de Monitoramento
                 </div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.4, margin: 0 }}>
-                  {relatorio.titulo_relatorio || 'Relatorio Legislativo'}
+                  {relatorio.titulo_relatorio || 'Relatório Legislativo'}
                 </h2>
                 {relatorio.data_referencia && (
                   <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <i className="bi bi-calendar3" style={{ fontSize: 11 }} />
+                    <Calendar size={11} strokeWidth={1.75} aria-hidden />
                     {String(relatorio.data_referencia)}
                   </div>
                 )}
@@ -272,18 +298,21 @@ export default function MonitorLegislativoPage() {
 
           {/* Section tabs */}
           <div className="monitor-tabs" style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-            {SECOES.map(s => (
-              <button key={s.key} onClick={() => setSecaoAtiva(s.key)} className="monitor-tab" style={{
-                display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 10,
-                border: secaoAtiva === s.key ? `2px solid ${s.color}` : '1px solid var(--border)',
-                background: secaoAtiva === s.key ? `${s.color}12` : 'var(--card-bg)',
-                color: secaoAtiva === s.key ? s.color : 'var(--text-secondary)',
-                fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", transition: 'all 0.15s',
-                flexShrink: 0, whiteSpace: 'nowrap',
-              }}>
-                <i className={`bi ${s.icon}`} /> {s.label}
-              </button>
-            ))}
+            {SECOES.map(s => {
+              const SecIcon = s.Icon
+              return (
+                <button key={s.key} onClick={() => setSecaoAtiva(s.key)} className="monitor-tab" style={{
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 10,
+                  border: secaoAtiva === s.key ? `2px solid ${s.color}` : '1px solid var(--border)',
+                  background: secaoAtiva === s.key ? `${s.color}12` : 'var(--card-bg)',
+                  color: secaoAtiva === s.key ? s.color : 'var(--text-secondary)',
+                  fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", transition: 'all 0.15s',
+                  flexShrink: 0, whiteSpace: 'nowrap',
+                }}>
+                  <SecIcon size={14} strokeWidth={1.75} aria-hidden /> {s.label}
+                </button>
+              )
+            })}
           </div>
 
           {/* Section content */}
@@ -294,13 +323,13 @@ export default function MonitorLegislativoPage() {
               const items = Array.isArray(relatorio.alteracoes_legislativas) ? relatorio.alteracoes_legislativas : []
               if (items.length === 0) return (
                 <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
-                  <p style={{ fontSize: 13 }}>Nenhuma alteracao legislativa identificada para o periodo</p>
+                  <p style={{ fontSize: 13 }}>Nenhuma alteração legislativa identificada para o período</p>
                 </div>
               )
               return (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#44372b', marginBottom: 4 }}>
-                    Alteracoes Legislativas Recentes
+                    Alterações Legislativas Recentes
                   </div>
                   {items.map((item: Relatorio, i: number) => (
                     <div key={i} style={{ padding: '16px 18px', borderRadius: 10, background: 'var(--hover)', border: '1px solid var(--border)' }}>
@@ -320,7 +349,7 @@ export default function MonitorLegislativoPage() {
                         )}
                         {item.data && (
                           <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                            <i className="bi bi-calendar3" style={{ fontSize: 10 }} />{String(item.data)}
+                            <Calendar size={10} strokeWidth={1.75} aria-hidden />{String(item.data)}
                           </span>
                         )}
                       </div>
@@ -332,7 +361,7 @@ export default function MonitorLegislativoPage() {
                       </p>
                       {item.impacto && (
                         <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--card-bg)', borderLeft: '3px solid var(--accent)' }}>
-                          <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)', marginBottom: 4 }}>Impacto na Pratica</div>
+                          <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent)', marginBottom: 4 }}>Impacto na Prática</div>
                           <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{String(item.impacto)}</p>
                         </div>
                       )}
@@ -347,13 +376,13 @@ export default function MonitorLegislativoPage() {
               const items = Array.isArray(relatorio.precedentes) ? relatorio.precedentes : []
               if (items.length === 0) return (
                 <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
-                  <p style={{ fontSize: 13 }}>Nenhum precedente relevante identificado para o periodo</p>
+                  <p style={{ fontSize: 13 }}>Nenhum precedente relevante identificado para o período</p>
                 </div>
               )
               return (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4f46e5', marginBottom: 4 }}>
-                    Novos Precedentes e Jurisprudencia
+                    Novos Precedentes e Jurisprudência
                   </div>
                   {items.map((item: Relatorio, i: number) => (
                     <div key={i} style={{ padding: '16px 18px', borderRadius: 10, background: 'var(--hover)', border: '1px solid var(--border)' }}>
@@ -368,7 +397,7 @@ export default function MonitorLegislativoPage() {
                         )}
                         {item.data_julgamento && (
                           <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                            <i className="bi bi-calendar3" style={{ fontSize: 10 }} />{String(item.data_julgamento)}
+                            <Calendar size={10} strokeWidth={1.75} aria-hidden />{String(item.data_julgamento)}
                           </span>
                         )}
                       </div>
@@ -382,7 +411,7 @@ export default function MonitorLegislativoPage() {
                       </p>
                       {item.impacto && (
                         <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--card-bg)', borderLeft: '3px solid #4f46e5' }}>
-                          <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4f46e5', marginBottom: 4 }}>Relevancia Pratica</div>
+                          <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4f46e5', marginBottom: 4 }}>Relevância Prática</div>
                           <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{String(item.impacto)}</p>
                         </div>
                       )}
@@ -397,13 +426,13 @@ export default function MonitorLegislativoPage() {
               const items = Array.isArray(relatorio.atualizacoes_regulatorias) ? relatorio.atualizacoes_regulatorias : []
               if (items.length === 0) return (
                 <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
-                  <p style={{ fontSize: 13 }}>Nenhuma atualizacao regulatoria identificada para o periodo</p>
+                  <p style={{ fontSize: 13 }}>Nenhuma atualização regulatória identificada para o período</p>
                 </div>
               )
               return (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#10B981', marginBottom: 4 }}>
-                    Atualizacoes de Orgaos Reguladores
+                    Atualizações de Órgãos Reguladores
                   </div>
                   {items.map((item: Relatorio, i: number) => (
                     <div key={i} style={{ padding: '16px 18px', borderRadius: 10, background: 'var(--hover)', border: '1px solid var(--border)' }}>
@@ -413,7 +442,7 @@ export default function MonitorLegislativoPage() {
                         </span>
                         {item.data && (
                           <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                            <i className="bi bi-calendar3" style={{ fontSize: 10 }} />{String(item.data)}
+                            <Calendar size={10} strokeWidth={1.75} aria-hidden />{String(item.data)}
                           </span>
                         )}
                       </div>
@@ -439,7 +468,7 @@ export default function MonitorLegislativoPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   {impacto.resumo_geral && (
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#e67e22', marginBottom: 8 }}>Cenario Atual</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#e67e22', marginBottom: 8 }}>Cenário Atual</div>
                       <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{String(impacto.resumo_geral)}</p>
                     </div>
                   )}
@@ -471,7 +500,7 @@ export default function MonitorLegislativoPage() {
                   )}
                   {destaques.length > 0 && (
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 10 }}>Topicos em Destaque</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 10 }}>Tópicos em Destaque</div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {destaques.map((t: string, i: number) => (
                           <span key={i} style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, background: 'var(--accent-light)', color: 'var(--accent)', fontWeight: 600 }}>
@@ -490,13 +519,13 @@ export default function MonitorLegislativoPage() {
               const items = Array.isArray(relatorio.acoes_recomendadas) ? relatorio.acoes_recomendadas : []
               if (items.length === 0) return (
                 <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
-                  <p style={{ fontSize: 13 }}>Nenhuma acao recomendada para o periodo</p>
+                  <p style={{ fontSize: 13 }}>Nenhuma ação recomendada para o período</p>
                 </div>
               )
               return (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#c0392b', marginBottom: 4 }}>
-                    Acoes Recomendadas para o Escritorio
+                    Ações Recomendadas para o Escritório
                   </div>
                   {items.map((item: Relatorio, i: number) => {
                     const priorColor = item.prioridade === 'Alta' ? 'var(--danger)' : item.prioridade === 'Media' ? '#e67e22' : 'var(--success)'
@@ -507,11 +536,11 @@ export default function MonitorLegislativoPage() {
                             fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
                             background: `${priorColor}14`, color: priorColor,
                           }}>
-                            Prioridade {String(item.prioridade || 'Media')}
+                            Prioridade {String(item.prioridade || 'Média')}
                           </span>
                           {item.prazo_sugerido && (
                             <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                              <i className="bi bi-clock" style={{ fontSize: 10 }} />{String(item.prazo_sugerido)}
+                              <Clock size={10} strokeWidth={1.75} aria-hidden />{String(item.prazo_sugerido)}
                             </span>
                           )}
                         </div>
@@ -543,7 +572,7 @@ export default function MonitorLegislativoPage() {
               cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 16,
             }}
           >
-            <i className="bi bi-arrow-counterclockwise" /> Novo monitoramento
+            <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Novo monitoramento
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
             <PoweredByLexAI />
@@ -551,9 +580,9 @@ export default function MonitorLegislativoPage() {
         </>
       ) : !loading && (
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-          <i className="bi bi-broadcast" style={{ fontSize: 48, display: 'block', marginBottom: 16, opacity: 0.25 }} />
+          <Radio size={48} strokeWidth={1.75} aria-hidden style={{ display: 'block', margin: '0 auto 16px', opacity: 0.25 }} />
           <div style={{ fontWeight: 600, marginBottom: 6 }}>Monitoramento legislativo inteligente</div>
-          <div style={{ fontSize: 13 }}>Selecione suas areas de atuacao e receba um relatorio completo de mudancas legislativas</div>
+          <div style={{ fontSize: 13 }}>Selecione suas áreas de atuação e receba um relatório completo de mudanças legislativas</div>
         </div>
       )}
 
