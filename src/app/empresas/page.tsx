@@ -2,47 +2,34 @@
 
 import Link from 'next/link'
 import { useEffect } from 'react'
+import {
+  CalendarCheck, Check, X, Briefcase, Hammer, Building2,
+} from 'lucide-react'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ExitIntent } from '@/components/ExitIntent'
-import s from './page.module.css'
+import { agents } from '@/lib/catalog'
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * /empresas — Página B2B LexAI
- *
- * Segue exatamente o mesmo sistema editorial da landing principal:
- *   · CSS custom properties do globals.css (--accent, --bg-base, etc.)
- *   · Playfair italic nos títulos hero
- *   · Serial labels em caps + hairlines
- *   · Scroll-reveal via IntersectionObserver
- *   · Footer MMXXVI + mesma tipografia
- * ──────────────────────────────────────────────────────────────────────────── */
-
-const AGENTES = [
-  { n: '01', name: 'Resumidor',           icon: 'bi-file-earmark-text',        desc: 'Contrato de 80 paginas em 90 segundos. Clausulas de risco, prazos e obrigacoes destacadas com pagina de origem para voce conferir.' },
-  { n: '02', name: 'Redator',             icon: 'bi-pencil-square',            desc: 'Primeira versao de peticao, recurso ou notificacao em 4 minutos. Fundamentacao com jurisprudencia rastreavel \u2014 zero invencao.' },
-  { n: '03', name: 'Pesquisador',         icon: 'bi-journal-bookmark',         desc: 'Busca paralela em STF, STJ, TRFs e TJs. Cada acórdao retorna com ementa, data, relator e link. Sem rodeios, sem pagina 8 do Google.' },
-  { n: '04', name: 'Negociador',          icon: 'bi-lightning',                desc: 'Tres cenarios de acordo calculados antes da audiencia. Gatilhos da parte contraria, concessao minima viavel e roteiro de argumentos.' },
-  { n: '05', name: 'Monitor Legislativo', icon: 'bi-bell',                     desc: 'Alerta por area do escritorio: trabalhista, tributario, penal. Voce recebe a mudanca no dia que ela sai, nao duas semanas depois.' },
-  { n: '06', name: 'Calculador',          icon: 'bi-calculator',               desc: 'Prazo processual com feriado estadual e municipal. Correcao com INPC, IGPM, IPCA ou SELIC. Verba rescisoria, custa e honorario em uma planilha.' },
-  { n: '07', name: 'Professor',           icon: 'bi-book',                     desc: 'Artigo explicado com doutrina majoritaria, precedente aplicavel e exemplo do seu caso. Estudo para OAB, concurso ou atualizacao continua.' },
-  { n: '08', name: 'Rotina',              icon: 'bi-calendar-week',            desc: 'Audiencia, prazo e compromisso em uma unica pauta, com prioridade calculada. Sincroniza com Google Calendar.' },
-  { n: '09', name: 'Parecerista',         icon: 'bi-file-earmark-check',       desc: 'Parecer com fundamentacao estruturada: tese, anti-tese, doutrina, jurisprudencia e recomendacao assinavel. Pronto para protocolar.' },
-  { n: '10', name: 'Estrategista',        icon: 'bi-shield-check',             desc: 'Antes de aceitar a causa: taxa historica de vitoria no tribunal, precedentes contrarios e melhor angulo de abordagem. Voce entra sabendo a chance real.' },
-  { n: '11', name: 'Tradutor Juridico',   icon: 'bi-translate',                desc: 'Contrato internacional em ingles, espanhol ou frances sem perder terminologia tecnica. Glossario salvo por cliente.' },
-  { n: '12', name: 'Compliance',          icon: 'bi-shield-lock',              desc: 'Checklist LGPD e anticorrupcao por operacao. Identifica exposicao regulatoria antes de virar TAC, multa ou manchete.' },
-]
+/* ═════════════════════════════════════════════════════════════════════
+ * /empresas — Página B2B LexAI (Tailwind, migrado em 2026-04-17)
+ * ─────────────────────────────────────────────────────────────────────
+ * Substitui o page.module.css antigo + bi-icons. Usa:
+ *   · Paleta Noir Atelier em Tailwind (#bfa68e champagne + neutrals)
+ *   · 22 agentes do catalog.ts (não 12 hardcoded)
+ *   · lucide-react em todo o icon set
+ *   · Reveal-on-scroll via IntersectionObserver
+ * ════════════════════════════════════════════════════════════════════ */
 
 const CASOS = [
   {
-    icon: 'bi-briefcase-fill',
+    Icon: Briefcase,
     persona: 'Banca de Direito Civil',
     size: '5–15 advogados',
-    accent: 'var(--accent)',
+    accent: '#bfa68e',
     pains: 'Alto volume de contratos, revisão lenta e risco de cláusulas abusivas passando despercebidas.',
     solution: 'Resumidor analisa o contrato em 30 segundos apontando cláusulas sensíveis. Redator gera minutas padronizadas. Pesquisador fundamenta com jurisprudência atual.',
   },
   {
-    icon: 'bi-hammer',
+    Icon: Hammer,
     persona: 'Advocacia Trabalhista',
     size: '3–10 advogados',
     accent: '#D4A853',
@@ -50,7 +37,7 @@ const CASOS = [
     solution: 'Calculador apura verbas com correção e juros automáticos. Rotina organiza pautas e prazos. Negociador prepara estratégias para acordos em audiência.',
   },
   {
-    icon: 'bi-building-fill',
+    Icon: Building2,
     persona: 'Departamento Jurídico',
     size: 'Empresas médias e grandes',
     accent: '#6B8F71',
@@ -64,8 +51,8 @@ const PLANOS = [
     name: 'Escritório',
     price: '1.399',
     seats: '1–5 advogados',
-    headline: '5 agentes · 200 documentos/mês',
-    features: ['Resumidor, Pesquisador, Redator, Calculador, Monitor Legislativo', 'Histórico de 45 dias', 'Suporte por e-mail em 24h'],
+    headline: '8 agentes essenciais · 1,5M tokens/mês',
+    features: ['Chat + Resumidor + Pesquisador + Redator + Calculador', 'Legislação + Rotina + Compliance', 'Histórico de 45 dias', 'Suporte por e-mail em 24h'],
     cta: 'Começar 7 dias grátis',
     href: '/login',
     highlight: false,
@@ -74,8 +61,8 @@ const PLANOS = [
     name: 'Firma',
     price: '1.459',
     seats: '6–15 advogados',
-    headline: '12 agentes · documentos ilimitados',
-    features: ['Todos os 12 agentes especializados', 'Exportação em PDF', 'Suporte prioritário em 3h', 'Histórico de 90 dias', 'Sessão de onboarding dedicada'],
+    headline: '22 agentes + CRM · 5M tokens/mês',
+    features: ['Todos os 22 agentes especializados', 'CRM + Jurimetria + Marketing IA', 'WhatsApp integrado (Meta API)', 'Suporte prioritário em 3h', 'Onboarding dedicado'],
     cta: 'Agendar demonstração',
     href: '/login',
     highlight: true,
@@ -84,12 +71,23 @@ const PLANOS = [
     name: 'Enterprise',
     price: '1.599',
     seats: '16+ advogados',
-    headline: 'Ilimitado · agentes customizados',
-    features: ['Agentes customizados para o escritório', 'API privada + SLA de uptime', 'Gerente de conta dedicado', 'Histórico ilimitado', 'Opção on-premise', 'DPA incluso'],
-    cta: 'Agendar demonstração',
+    headline: 'Ilimitado · 12M tokens/mês + SSO',
+    features: ['Agentes customizados treinados', 'SAML SSO + audit logs', 'API dedicada + webhooks', 'Gerente de conta + SLA', 'Opção on-premise · DPA incluso'],
+    cta: 'Falar com vendas',
     href: '/login',
     highlight: false,
   },
+]
+
+const COMPARATIVO = [
+  { k: 'Jurisprudência brasileira',        them: 'Inventa acórdão com número falso',      us: 'Cada citação com link rastreável' },
+  { k: 'Cálculo de prazo com feriado',     them: 'Não considera feriado local',            us: 'Estadual + municipal + recesso forense' },
+  { k: 'LGPD e retenção de dados',         them: 'Treina modelo público com seu caso',     us: 'Dado do cliente nunca treina modelo público' },
+  { k: 'Modelo de peça padrão',            them: 'Impossível — memória limitada',          us: 'Galeria própria, glossário por cliente' },
+  { k: 'Correção INPC / IGPM / SELIC',     them: 'Aproximação errada',                     us: 'Série histórica oficial integrada' },
+  { k: 'Quando não sabe',                  them: 'Inventa resposta confiante',             us: 'Recusa e pede fonte adicional' },
+  { k: 'Suporte em português',             them: 'Fórum em inglês, fila infinita',         us: 'WhatsApp < 4h úteis, operador jurídico' },
+  { k: 'Conformidade LGPD',                them: 'Servidor nos EUA, cláusula genérica',    us: 'Processamento BR, contrato DPA' },
 ]
 
 function useScrollReveal() {
@@ -97,14 +95,14 @@ function useScrollReveal() {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const nodes = document.querySelectorAll<HTMLElement>('[data-reveal]')
     if (prefersReduced) {
-      nodes.forEach((n) => n.classList.add('is-revealed'))
+      nodes.forEach((n) => n.setAttribute('data-revealed', 'true'))
       return
     }
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('is-revealed')
+            entry.target.setAttribute('data-revealed', 'true')
             io.unobserve(entry.target)
           }
         })
@@ -118,335 +116,364 @@ function useScrollReveal() {
 
 export default function EmpresasPage() {
   useScrollReveal()
+  const AGENTS = agents()
 
   return (
-    <div className={s.empRoot}>
+    <div className="min-h-screen bg-black text-white antialiased">
+      <style jsx global>{`
+        [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; transition-delay: var(--reveal-delay, 0ms); }
+        [data-reveal][data-revealed="true"] { opacity: 1; transform: translateY(0); }
+      `}</style>
 
-      {/* ── NAV ─────────────────────────────────────────────────────────── */}
-      <nav className={s.empNav}>
-        <Link href="/" className={s.empBrand}>
-          <span className={s.empBrandMark} aria-hidden>LX</span>
-          <span className={s.empBrandName}>LexAI</span>
-        </Link>
-        <div className={s.empNavLinks}>
-          <Link href="/" className={s.empNavLink}>Início</Link>
-          <Link href="/#planos" className={s.empNavLink}>Planos</Link>
-          <Link href="/login" className={s.empNavLink}>Entrar</Link>
-          <Link href="/login" className={s.empNavCta}>
-            Agendar demonstração
+      {/* NAV */}
+      <nav className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+          <Link href="/" className="flex items-center gap-2 text-white">
+            <span className="flex size-8 items-center justify-center rounded-md border border-white/15 bg-white/5 font-mono text-xs tracking-widest">LX</span>
+            <span className="text-sm font-medium tracking-tight">LexAI</span>
           </Link>
+          <div className="flex items-center gap-5">
+            <Link href="/" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Início</Link>
+            <Link href="/#precos" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Planos</Link>
+            <Link href="/login" className="text-sm text-white/70 transition hover:text-white">Entrar</Link>
+            <Link
+              href="/login"
+              className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium transition hover:bg-white/10"
+            >
+              Agendar demo
+            </Link>
+          </div>
         </div>
       </nav>
 
-      {/* ── HERO ────────────────────────────────────────────────────────── */}
-      <section id="main-content" className={s.empHero}>
-        <div className={s.empShell}>
-          <div className={s.empSerial}>
-            <span className={s.empSerialDot} />
+      {/* HERO */}
+      <section id="main-content" className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(60%_50%_at_50%_0%,#bfa68e1a,transparent_60%)]" />
+        <div className="relative mx-auto max-w-4xl px-4 pb-20 pt-20 text-center sm:pt-28">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+            <span className="size-1.5 rounded-full bg-[#bfa68e]" />
             LexAI para escritórios e bancas
           </div>
 
-          <h1 className={s.empHeroH1} data-reveal>
+          <h1 className="text-balance text-5xl font-medium leading-[1.05] tracking-tight text-white sm:text-6xl" data-reveal>
             Seu escritório.<br />
-            <em>Doze especialistas.</em><br />
+            <em className="italic text-[#bfa68e]/90">22 especialistas.</em><br />
             Uma assinatura.
           </h1>
 
-          <p className={s.empHeroLede} data-reveal>
-            Doze agentes de IA calibrados para o Direito brasileiro. Cada um com conhecimento profundo da sua área, disponível agora, sem contratação, sem onboarding de meses.
+          <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-white/60" data-reveal>
+            22 agentes de IA calibrados para o Direito brasileiro. Cada um com conhecimento profundo da sua área, disponível agora — sem contratação, sem onboarding de meses.
           </p>
 
-          <div className={s.empHeroCtas} data-reveal>
-            <Link href="/login" className={s.empBtnPrimary}>
-              <i className="bi bi-calendar-check" />
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-reveal>
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+            >
+              <CalendarCheck size={16} />
               Agendar demonstração
             </Link>
-            <Link href="#casos" className={s.empBtnGhost}>
+            <Link
+              href="#casos"
+              className="rounded-lg border border-white/15 bg-white/[0.02] px-5 py-3 text-sm text-white/80 transition hover:bg-white/[0.06]"
+            >
               Ver casos de uso
             </Link>
           </div>
 
           {/* Stats editoriais */}
-          <div className={s.empStats} data-reveal>
+          <div className="mt-16 grid grid-cols-2 gap-6 sm:grid-cols-4" data-reveal>
             {[
-              { roman: 'I',   value: '12',      label: 'Agentes especializados' },
-              { roman: 'II',  value: '9',       label: 'Áreas do Direito cobertas' },
-              { roman: 'III', value: '4 min',   label: 'Por análise de documento' },
-              { roman: 'IV',  value: '< 24h',   label: 'Setup completo' },
+              { roman: 'I',   value: '22',      label: 'Agentes especializados' },
+              { roman: 'II',  value: '9',       label: 'Áreas do Direito' },
+              { roman: 'III', value: '4 min',   label: 'Por análise' },
+              { roman: 'IV',  value: '<24h',    label: 'Setup completo' },
             ].map((st) => (
-              <div key={st.roman} className={s.empStat}>
-                <span className={s.empStatRoman}>{st.roman}</span>
-                <div className={s.empStatValue}>{st.value}</div>
-                <div className={s.empStatLabel}>{st.label}</div>
+              <div key={st.roman} className="text-center">
+                <div className="font-mono text-[0.6rem] uppercase tracking-[0.3em] text-white/30">{st.roman}</div>
+                <div className="mt-2 text-3xl font-medium tabular-nums text-white">{st.value}</div>
+                <div className="mt-1 text-xs text-white/50">{st.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <div className={s.empHairline} aria-hidden />
+      <div className="mx-auto h-px max-w-6xl bg-white/10" />
 
-      {/* ── AGENTES ─────────────────────────────────────────────────────── */}
-      <section className={`${s.empSection} ${s.empShell}`}>
-        <div className={s.empSectionHead} data-reveal>
-          <div className={s.empSerial}>
-            <span className={s.empSerialDot} />
-            CAPÍTULO I · ATELIER
+      {/* AGENTES — vem do catalog.ts (22 agentes) */}
+      <section className="mx-auto max-w-6xl px-4 py-20">
+        <div className="mx-auto max-w-2xl text-center" data-reveal>
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+            <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+            Capítulo I · Atelier
           </div>
-          <h2 className={s.empSectionH2}>
-            O gabinete completo,<br /><em>já disponível</em>
+          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white">
+            O gabinete completo,<br />
+            <em className="italic text-[#bfa68e]/90">já disponível</em>
           </h2>
-          <p className={s.empSectionSub}>
+          <p className="mt-4 text-white/60">
             Todos os especialistas que seu escritório precisaria contratar — em uma única plataforma, com custo por advogado, sem mensalidade extra por agente.
           </p>
         </div>
 
-        <div className={s.empAgentsGrid}>
-          {AGENTES.map((a, i) => (
-            <div key={a.n} className={s.empAgentCard} data-reveal style={{ '--reveal-delay': `${i * 40}ms` } as React.CSSProperties}>
-              <div className={s.empAgentHeader}>
-                <span className={s.empAgentNum}>{a.n}</span>
-                <div className={s.empAgentIcon}>
-                  <i className={`bi ${a.icon}`} />
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {AGENTS.map((a, i) => {
+            const Icon = a.Icon
+            return (
+              <div
+                key={a.slug}
+                className="group relative rounded-xl border border-white/10 bg-neutral-950 p-5 transition hover:border-white/20 hover:bg-neutral-900"
+                data-reveal
+                style={{ '--reveal-delay': `${Math.min(i * 30, 300)}ms` } as React.CSSProperties}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex size-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#bfa68e] transition group-hover:border-[#bfa68e]/30">
+                    <Icon size={18} aria-hidden />
+                  </div>
+                  <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/30">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
                 </div>
+                <h3 className="mt-4 text-base font-medium text-white">{a.label}</h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-white/50">{a.desc}</p>
               </div>
-              <h3 className={s.empAgentName}>{a.name}</h3>
-              <p className={s.empAgentDesc}>{a.desc}</p>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
 
-      <div className={s.empHairline} aria-hidden />
+      <div className="mx-auto h-px max-w-6xl bg-white/10" />
 
-      {/* ── CASOS DE USO ────────────────────────────────────────────────── */}
-      <section id="casos" className={`${s.empSection} ${s.empShell}`}>
-        <div className={s.empSectionHead} data-reveal>
-          <div className={s.empSerial}>
-            <span className={s.empSerialDot} />
-            CAPÍTULO II · PERFIS
+      {/* CASOS DE USO */}
+      <section id="casos" className="mx-auto max-w-6xl px-4 py-20">
+        <div className="mx-auto max-w-2xl text-center" data-reveal>
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+            <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+            Capítulo II · Perfis
           </div>
-          <h2 className={s.empSectionH2}>
-            Feito para<br /><em>seu perfil</em>
+          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white">
+            Feito para<br />
+            <em className="italic text-[#bfa68e]/90">seu perfil</em>
           </h2>
-          <p className={s.empSectionSub}>
+          <p className="mt-4 text-white/60">
             O mesmo sistema de agentes se adapta a bancas de nicho, advocacia de massa e departamentos jurídicos corporativos.
           </p>
         </div>
 
-        <div className={s.empCasosGrid}>
-          {CASOS.map((c, i) => (
-            <div key={c.persona} className={s.empCasoCard} data-reveal style={{ '--reveal-delay': `${i * 80}ms` } as React.CSSProperties}>
-              <div className={s.empCasoIcon} style={{ '--caso-accent': c.accent } as React.CSSProperties}>
-                <i className={`bi ${c.icon}`} />
+        <div className="mt-12 grid gap-4 md:grid-cols-3">
+          {CASOS.map((c, i) => {
+            const Icon = c.Icon
+            return (
+              <div
+                key={c.persona}
+                className="rounded-xl border border-white/10 bg-neutral-950 p-6"
+                data-reveal
+                style={{ '--reveal-delay': `${i * 80}ms` } as React.CSSProperties}
+              >
+                <div
+                  className="flex size-12 items-center justify-center rounded-lg border"
+                  style={{ borderColor: `${c.accent}30`, background: `${c.accent}0d`, color: c.accent }}
+                >
+                  <Icon size={22} aria-hidden />
+                </div>
+                <h3 className="mt-4 text-lg font-medium text-white">{c.persona}</h3>
+                <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/40">{c.size}</div>
+
+                <div className="mt-5 space-y-4 border-t border-white/10 pt-5">
+                  <div>
+                    <div className="mb-1.5 inline-flex rounded-full bg-red-500/10 px-2 py-0.5 text-[0.65rem] font-medium uppercase tracking-wider text-red-400">
+                      Dor
+                    </div>
+                    <p className="text-sm text-white/60">{c.pains}</p>
+                  </div>
+                  <div>
+                    <div className="mb-1.5 inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[0.65rem] font-medium uppercase tracking-wider text-emerald-400">
+                      Solução LexAI
+                    </div>
+                    <p className="text-sm text-white/80">{c.solution}</p>
+                  </div>
+                </div>
               </div>
-              <div className={s.empCasoHeader}>
-                <h3 className={s.empCasoPersona}>{c.persona}</h3>
-                <span className={s.empCasoSize}>{c.size}</span>
-              </div>
-              <div className={s.empCasoBlock}>
-                <div className={`${s.empCasoTag} ${s.empCasoTagPain}`}>Dor</div>
-                <p className={s.empCasoText}>{c.pains}</p>
-              </div>
-              <div className={s.empCasoBlock}>
-                <div className={`${s.empCasoTag} ${s.empCasoTagSol}`}>Solução LexAI</div>
-                <p className={`${s.empCasoText} ${s.empCasoTextBright}`}>{c.solution}</p>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
 
-      <div className={s.empHairline} aria-hidden />
+      <div className="mx-auto h-px max-w-6xl bg-white/10" />
 
-      {/* ── PLANOS ──────────────────────────────────────────────────────── */}
-      <section className={`${s.empSection} ${s.empShell}`}>
-        <div className={s.empSectionHead} data-reveal>
-          <div className={s.empSerial}>
-            <span className={s.empSerialDot} />
-            CAPÍTULO III · INVESTIMENTO
+      {/* PLANOS */}
+      <section className="mx-auto max-w-6xl px-4 py-20">
+        <div className="mx-auto max-w-2xl text-center" data-reveal>
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+            <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+            Capítulo III · Investimento
           </div>
-          <h2 className={s.empSectionH2}>
-            Valor por advogado,<br /><em>não por feature</em>
+          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white">
+            Valor por advogado,<br />
+            <em className="italic text-[#bfa68e]/90">não por feature</em>
           </h2>
-          <p className={s.empSectionSub}>
+          <p className="mt-4 text-white/60">
             Preço único por assento. Sem cobrança extra por agente, sem limite de documentos no Firma e Enterprise. Plano escolhido pelo tamanho da equipe.
           </p>
         </div>
 
-        <div className={s.empPlanosGrid}>
+        <div className="mt-12 grid gap-4 md:grid-cols-3">
           {PLANOS.map((p, i) => (
             <div
               key={p.name}
-              className={`${s.empPlanoCard}${p.highlight ? ` ${s.empPlanoHighlight}` : ''}`}
+              className={`relative rounded-xl border bg-neutral-950 p-6 transition ${
+                p.highlight
+                  ? 'border-[#bfa68e]/40 shadow-[0_0_0_1px_rgba(191,166,142,0.15),0_30px_80px_-20px_rgba(191,166,142,0.15)]'
+                  : 'border-white/10'
+              }`}
               data-reveal
               style={{ '--reveal-delay': `${i * 80}ms` } as React.CSSProperties}
             >
               {p.highlight && (
-                <div className={s.empPlanoBadge}>Mais escolhido</div>
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-white/15 bg-white px-3 py-1 text-[0.65rem] font-medium uppercase tracking-wider text-black">
+                  Mais escolhido
+                </div>
               )}
-              <div className={s.empPlanoName}>{p.name}</div>
-              <div className={s.empPlanoPrice}>
-                <span className={s.empPlanoCurrency}>R$</span>
-                <span className={s.empPlanoAmount}>{p.price}</span>
-                <span className={s.empPlanoPeriod}>/adv/mês</span>
+              <div className="text-xl font-medium text-white">{p.name}</div>
+              <div className="mt-4 flex items-baseline tabular-nums">
+                <span className="text-sm text-white/50">R$</span>
+                <span className="ml-1 text-4xl font-semibold text-white">{p.price}</span>
+                <span className="ml-1 text-xs text-white/50">/adv/mês</span>
               </div>
-              <div className={s.empPlanoSeats}>{p.seats}</div>
-              <div className={s.empPlanoHeadline}>{p.headline}</div>
-              <ul className={s.empPlanoFeatures}>
+              <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/40">{p.seats}</div>
+              <div className="mt-2 text-sm text-[#bfa68e]/80">{p.headline}</div>
+
+              <ul className="mt-5 space-y-2 border-t border-white/10 pt-5">
                 {p.features.map((f) => (
-                  <li key={f}>
-                    <i className="bi bi-check2" />
+                  <li key={f} className="flex items-start gap-2 text-sm text-white/70">
+                    <Check size={14} className={`mt-1 flex-none ${p.highlight ? 'text-[#bfa68e]' : 'text-white/50'}`} aria-hidden />
                     {f}
                   </li>
                 ))}
               </ul>
-              <Link href={p.href} className={`${s.empPlanoCta}${p.highlight ? ` ${s.empPlanoCtaAccent}` : ''}`}>
+
+              <Link
+                href={p.href}
+                className={`mt-6 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium transition ${
+                  p.highlight
+                    ? 'bg-white text-black hover:bg-white/90'
+                    : 'border border-white/15 bg-white/[0.02] text-white hover:bg-white/[0.06]'
+                }`}
+              >
                 {p.cta}
               </Link>
             </div>
           ))}
         </div>
 
-        <p className={s.empPlanosNote} data-reveal>
+        <p className="mx-auto mt-8 max-w-xl text-center text-xs text-white/40" data-reveal>
           Todos os planos incluem 7 dias gratuitos · Cancelamento a qualquer momento · Sem taxa de setup
         </p>
       </section>
 
-      <div className={s.empHairline} aria-hidden />
+      <div className="mx-auto h-px max-w-6xl bg-white/10" />
 
-      {/* ── COMPARATIVO vs CHAT GENERICO ────────────────────────────────── */}
-      <section className={`${s.empSection} ${s.empShell}`} data-reveal>
-        <div className={s.empSerial}>
-          <span className={s.empSerialDot} />
-          CAPÍTULO IV · COMPARATIVO
-        </div>
-        <h2 className={s.empSectionH2}>
-          Por que <em>nao</em> usar ChatGPT para peca?
-        </h2>
-        <p className={s.empSectionLede}>
-          Um modelo generalista nao foi treinado para jurisprudencia brasileira.
-          Pior: ele inventa citacao para parecer util. A LexAI recusa responder
-          antes de fabricar.
-        </p>
-
-        <div className={s.empCompareTable}>
-          <div className={`${s.empCompareRow} ${s.empCompareHead}`}>
-            <div />
-            <div className={s.empCompareThem}>ChatGPT / Gemini generico</div>
-            <div className={s.empCompareUs}>LexAI</div>
+      {/* COMPARATIVO */}
+      <section className="mx-auto max-w-5xl px-4 py-20" data-reveal>
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+            <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+            Capítulo IV · Comparativo
           </div>
-          {[
-            {
-              k: 'Jurisprudencia brasileira',
-              them: 'Inventa acórdao com numero falso',
-              us: 'Cada citacao com link rastreavel',
-              themBad: true,
-            },
-            {
-              k: 'Calculo de prazo com feriado',
-              them: 'Nao considera feriado local',
-              us: 'Feriado estadual + municipal + recesso forense',
-              themBad: true,
-            },
-            {
-              k: 'LGPD e retencao de dados',
-              them: 'Treina modelo publico com seu caso',
-              us: 'Dado do cliente nunca treina modelo publico',
-              themBad: true,
-            },
-            {
-              k: 'Modelo de peca padrao do escritorio',
-              them: 'Impossivel \u2014 memoria limitada',
-              us: 'Galeria propria, glossario por cliente',
-              themBad: true,
-            },
-            {
-              k: 'Correcao INPC / IGPM / SELIC',
-              them: 'Aproximacao errada',
-              us: 'Serie historica oficial integrada',
-              themBad: true,
-            },
-            {
-              k: 'Quando nao sabe',
-              them: 'Inventa resposta confiante',
-              us: 'Recusa e pede fonte adicional',
-              themBad: true,
-            },
-            {
-              k: 'Suporte em portugues',
-              them: 'Forum em ingles, fila infinita',
-              us: 'WhatsApp < 4h uteis, operador juridico',
-              themBad: true,
-            },
-            {
-              k: 'Conformidade LGPD',
-              them: 'Servidor nos EUA, clausula generica',
-              us: 'Processamento BR quando possivel, contrato DPA',
-              themBad: true,
-            },
-          ].map((row, i) => (
-            <div key={i} className={s.empCompareRow}>
-              <div className={s.empCompareK}>{row.k}</div>
-              <div className={`${s.empCompareThem} ${s.empCompareThemBad}`}>
-                <i className="bi bi-x" aria-hidden /> {row.them}
+          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white">
+            Por que <em className="italic text-[#bfa68e]/90">não</em> usar ChatGPT para peça?
+          </h2>
+          <p className="mt-4 text-white/60">
+            Um modelo generalista não foi treinado para jurisprudência brasileira.
+            Pior: ele inventa citação para parecer útil. A LexAI recusa antes de fabricar.
+          </p>
+        </div>
+
+        <div className="mt-10 overflow-hidden rounded-xl border border-white/10 bg-neutral-950">
+          <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-0 border-b border-white/10 bg-neutral-900 px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.2em]">
+            <div />
+            <div className="text-white/40">ChatGPT / Gemini</div>
+            <div className="text-[#bfa68e]">LexAI</div>
+          </div>
+          {COMPARATIVO.map((row) => (
+            <div
+              key={row.k}
+              className="grid grid-cols-[1.2fr_1fr_1fr] gap-0 border-b border-white/5 px-4 py-4 text-sm last:border-b-0"
+            >
+              <div className="pr-3 text-white/70">{row.k}</div>
+              <div className="flex items-start gap-2 pr-3 text-red-400/80">
+                <X size={14} className="mt-0.5 flex-none" aria-hidden />
+                <span className="text-white/50">{row.them}</span>
               </div>
-              <div className={s.empCompareUs}>
-                <i className="bi bi-check2" aria-hidden /> {row.us}
+              <div className="flex items-start gap-2 text-emerald-400/90">
+                <Check size={14} className="mt-0.5 flex-none" aria-hidden />
+                <span className="text-white/80">{row.us}</span>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <div className={s.empHairline} aria-hidden />
+      <div className="mx-auto h-px max-w-6xl bg-white/10" />
 
-      {/* ── CTA FINAL ───────────────────────────────────────────────────── */}
-      <section className={`${s.empSection} ${s.empShell} ${s.empCtaSection}`} data-reveal>
-        <div className={s.empCtaCard}>
-          <div className={`${s.empSerial} ${s.empSerialCenter}`}>
-            <span className={s.empSerialDot} />
-            CAPÍTULO IV · PRÓXIMO PASSO
-          </div>
-          <h2 className={s.empCtaH2}>
-            Pronto para conhecer<br />a LexAI <em>na prática?</em>
-          </h2>
-          <p className={s.empCtaSub}>
-            Demonstração ao vivo de 30 minutos. Nenhum compromisso de assinatura. Proposta no mesmo dia.
-          </p>
-          <div className={s.empCtaActions}>
-            <Link href="/login" className={`${s.empBtnPrimary} ${s.empBtnLg}`}>
-              <i className="bi bi-calendar-check" />
-              Agendar demonstração gratuita
-            </Link>
-            <Link href="/" className={s.empBtnGhost}>
-              Ver a plataforma completa
-            </Link>
-          </div>
-          <div className={s.empCtaTrustline}>
-            30 minutos &nbsp;·&nbsp; Sem compromisso &nbsp;·&nbsp; Proposta em até 24h
+      {/* CTA FINAL */}
+      <section className="mx-auto max-w-5xl px-4 py-20" data-reveal>
+        <div className="relative overflow-hidden rounded-2xl border border-[#bfa68e]/20 bg-gradient-to-br from-neutral-900 via-neutral-950 to-black p-10 text-center sm:p-16">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_50%_at_50%_0%,#bfa68e1f,transparent_60%)]" />
+          <div className="relative">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+              <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+              Capítulo V · Próximo Passo
+            </div>
+            <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white sm:text-5xl">
+              Pronto para conhecer<br />a LexAI <em className="italic text-[#bfa68e]/90">na prática?</em>
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-white/60">
+              Demonstração ao vivo de 30 minutos. Nenhum compromisso de assinatura. Proposta no mesmo dia.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+              >
+                <CalendarCheck size={16} />
+                Agendar demonstração gratuita
+              </Link>
+              <Link
+                href="/"
+                className="rounded-lg border border-white/15 bg-white/[0.02] px-6 py-3 text-sm text-white/80 transition hover:bg-white/[0.06]"
+              >
+                Ver a plataforma completa
+              </Link>
+            </div>
+            <div className="mt-6 font-mono text-[0.65rem] uppercase tracking-[0.25em] text-white/40">
+              30 minutos &nbsp;·&nbsp; Sem compromisso &nbsp;·&nbsp; Proposta em até 24h
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-      <footer className={s.empFooter}>
-        <div className={`${s.empShell} ${s.empFooterInner}`}>
-          <div className={s.empFooterBrand}>
-            <span className={`${s.empBrandMark} ${s.empBrandMarkSm}`} aria-hidden>LX</span>
-            <span className={s.empFooterCopy}>© MMXXVI LexAI · uma marca <strong>Vanix Corp</strong></span>
+      {/* FOOTER */}
+      <footer className="border-t border-white/10 bg-black">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-2">
+            <span className="flex size-6 items-center justify-center rounded border border-white/15 bg-white/5 font-mono text-[0.6rem] tracking-widest">LX</span>
+            <span className="text-xs text-white/50">
+              © MMXXVI LexAI · uma marca <strong className="text-white/80">Vanix Corp</strong>
+            </span>
           </div>
-          <div className={s.empFooterLinks}>
-            <Link href="/">Início</Link>
-            <Link href="/#planos">Planos</Link>
-            <Link href="/empresas">Para Empresas</Link>
-            <Link href="/privacidade">Privacidade (LGPD)</Link>
-            <Link href="/termos">Termos de Uso</Link>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/60">
+            <Link href="/" className="transition hover:text-white">Início</Link>
+            <Link href="/#precos" className="transition hover:text-white">Planos</Link>
+            <Link href="/empresas" className="transition hover:text-white">Para Empresas</Link>
+            <Link href="/privacidade" className="transition hover:text-white">Privacidade (LGPD)</Link>
+            <Link href="/termos" className="transition hover:text-white">Termos de Uso</Link>
           </div>
         </div>
       </footer>
 
-      <WhatsAppFloat message="Ola! Vim do site da LexAI Empresas e gostaria de uma demonstracao." />
+      <WhatsAppFloat message="Olá! Vim do site da LexAI Empresas e gostaria de uma demonstração." />
       <ExitIntent />
     </div>
   )
