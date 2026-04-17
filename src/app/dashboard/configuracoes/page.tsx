@@ -24,6 +24,7 @@ import {
   Send,
   Info,
   ShieldCheck,
+  type LucideIcon,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
@@ -31,7 +32,7 @@ import { useTheme } from '@/context/ThemeContext'
 
 type Tab = 'perfil' | 'preferencias' | 'integracoes' | 'contato'
 
-type IconComp = React.ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean; style?: React.CSSProperties }>
+type IconComp = LucideIcon
 
 const INTEGRACOES: { id: string; label: string; Icon: IconComp; desc: string; color: string; bg: string }[] = [
   {

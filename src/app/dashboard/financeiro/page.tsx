@@ -33,6 +33,7 @@ import {
   Building2,
   BadgeCheck,
   MoreHorizontal,
+  type LucideIcon,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
@@ -50,7 +51,7 @@ interface Lancamento {
   recorrencia_fim?: string | null
 }
 
-const CAT_ICON: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number; style?: React.CSSProperties; 'aria-hidden'?: boolean }>> = {
+const CAT_ICON: Record<string, LucideIcon> = {
   honorarios: Briefcase,
   mensalidade: GraduationCap,
   livro: BookOpen,
@@ -526,7 +527,7 @@ export default function FinanceiroPage() {
             let deltaLabel = ''
             let deltaColor = 'var(--text-muted)'
             let deltaBg = 'var(--hover)'
-            let DeltaIcon: React.ComponentType<{ size?: number; strokeWidth?: number; style?: React.CSSProperties; 'aria-hidden'?: boolean }> = Minus
+            let DeltaIcon: LucideIcon = Minus
             if (d !== null) {
               const rounded = Math.round(d)
               const isUp = rounded > 0

@@ -19,6 +19,7 @@ import {
   CalendarDays,
   FileSpreadsheet,
   Sparkles,
+  type LucideIcon,
 } from 'lucide-react'
 import { extractPdfWithMeta } from '@/lib/pdf-parser'
 
@@ -52,7 +53,7 @@ interface Message {
   timestamp: number
 }
 
-const AGENTES_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean }>> = {
+const AGENTES_ICONS: Record<string, LucideIcon> = {
   resumidor:   FileText,
   redator:     Pencil,
   pesquisador: BookMarked,
@@ -70,7 +71,7 @@ function fmtHora(ts: number) {
   return new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 }
 
-const SUGESTOES: { Icon: React.ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean }>; texto: string }[] = [
+const SUGESTOES: { Icon: LucideIcon; texto: string }[] = [
   { Icon: FileText,   texto: 'Analisar um contrato anexado' },
   { Icon: Pencil,     texto: 'Escrever uma petição inicial' },
   { Icon: BookMarked, texto: 'Jurisprudência sobre dano moral no STJ' },
