@@ -157,7 +157,6 @@
 }
 
 .agentIconI {
-  font-size: 20px;
   color: var(--accent, #BFA68E);
 }
 
@@ -184,7 +183,6 @@
 }
 
 .agentChevron {
-  font-size: 14px;
   color: var(--text-secondary, #a8a8a0);
   flex-shrink: 0;
 }
@@ -288,7 +286,6 @@
 }
 
 .finishIconI {
-  font-size: 28px;
   color: var(--accent, #BFA68E);
 }
 
@@ -313,7 +310,7 @@
 }
 
 .tagIcon {
-  font-size: 13px;
+  flex-shrink: 0;
 }
 
 /* ---- Progress dots ---- */

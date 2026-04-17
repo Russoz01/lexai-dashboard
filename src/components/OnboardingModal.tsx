@@ -1,6 +1,10 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import {
+  ArrowLeft, ArrowRight, BookMarked, Check, ChevronRight,
+  PenSquare, TextQuote, type LucideIcon,
+} from 'lucide-react'
 import s from './OnboardingModal.module.css'
 
 /* ------------------------------------------------------------------ */
@@ -11,7 +15,7 @@ type AgentKey = 'resumidor' | 'pesquisador' | 'redator'
 
 interface AgentDef {
   key: AgentKey
-  icon: string
+  Icon: LucideIcon
   label: string
   serial: string
   desc: string
@@ -24,35 +28,35 @@ interface AgentDef {
 const AGENTS: AgentDef[] = [
   {
     key: 'resumidor',
-    icon: 'bi-text-paragraph',
+    Icon: TextQuote,
     label: 'Resumidor',
     serial: 'N\u00b0 001 \u00b7 GABINETE \u00b7 MMXXVI',
-    desc: 'Analise estruturada de contratos, peticoes e acordaos com clausulas criticas e prazos.',
-    sampleTitle: 'Clausula contratual de exemplo',
+    desc: 'Análise estruturada de contratos, petições e acórdãos com cláusulas críticas e prazos.',
+    sampleTitle: 'Cláusula contratual de exemplo',
     sampleBody:
-      'O locatario obriga-se a devolver o imovel no estado em que o recebeu, ressalvado o desgaste natural, sob pena de multa equivalente a tres alugueis vigentes, sem prejuizo de perdas e danos.',
+      'O locatário obriga-se a devolver o imóvel no estado em que o recebeu, ressalvado o desgaste natural, sob pena de multa equivalente a três aluguéis vigentes, sem prejuízo de perdas e danos.',
     cta: 'Analisar agora',
     href: '/dashboard/resumidor?sample=1',
   },
   {
     key: 'pesquisador',
-    icon: 'bi-journal-bookmark',
+    Icon: BookMarked,
     label: 'Pesquisador',
     serial: 'N\u00b0 002 \u00b7 GABINETE \u00b7 MMXXVI',
-    desc: 'Jurisprudencia do STF, STJ, TRFs e TJs com ementa, tribunal e data verificados.',
+    desc: 'Jurisprudência do STF, STJ, TRFs e TJs com ementa, tribunal e data verificados.',
     sampleTitle: 'Consulta de exemplo',
-    sampleBody: 'Jurisprudencia sobre dano moral em relacao de consumo',
+    sampleBody: 'Jurisprudência sobre dano moral em relação de consumo',
     cta: 'Pesquisar agora',
     href: '/dashboard/pesquisador?sample=1',
   },
   {
     key: 'redator',
-    icon: 'bi-pencil-square',
+    Icon: PenSquare,
     label: 'Redator',
     serial: 'N\u00b0 003 \u00b7 GABINETE \u00b7 MMXXVI',
-    desc: 'Peticoes, recursos e contestacoes com fundamentacao doutrinaria e jurisprudencial.',
+    desc: 'Petições, recursos e contestações com fundamentação doutrinária e jurisprudencial.',
     sampleTitle: 'Modelo de exemplo',
-    sampleBody: 'Peticao inicial de indenizacao por dano moral',
+    sampleBody: 'Petição inicial de indenização por dano moral',
     cta: 'Redigir agora',
     href: '/dashboard/redator?sample=1',
   },
@@ -160,29 +164,30 @@ export default function OnboardingModal({
       </p>
 
       <div className={s.agentList}>
-        {AGENTS.map(agent => (
-          <button
-            key={agent.key}
-            type="button"
-            onClick={() => handleAgentPick(agent)}
-            className={s.agentCard}
-          >
-            <div className={s.agentIcon}>
-              <i
-                className={`bi ${agent.icon} ${s.agentIconI}`}
-              />
-            </div>
-            <div className={s.agentInfo}>
-              <span className={s.agentLabel}>
-                {agent.label}
-              </span>
-              <span className={s.agentDesc}>
-                {agent.desc}
-              </span>
-            </div>
-            <i className={`bi bi-chevron-right ${s.agentChevron}`} />
-          </button>
-        ))}
+        {AGENTS.map(agent => {
+          const Icon = agent.Icon
+          return (
+            <button
+              key={agent.key}
+              type="button"
+              onClick={() => handleAgentPick(agent)}
+              className={s.agentCard}
+            >
+              <div className={s.agentIcon}>
+                <Icon size={20} strokeWidth={1.75} className={s.agentIconI} aria-hidden />
+              </div>
+              <div className={s.agentInfo}>
+                <span className={s.agentLabel}>
+                  {agent.label}
+                </span>
+                <span className={s.agentDesc}>
+                  {agent.desc}
+                </span>
+              </div>
+              <ChevronRight size={16} strokeWidth={1.75} className={s.agentChevron} aria-hidden />
+            </button>
+          )
+        })}
       </div>
     </>
   )
@@ -217,7 +222,7 @@ export default function OnboardingModal({
             onClick={() => goTo(0)}
             className={s.btnGhost}
           >
-            <i className="bi bi-arrow-left" style={{ marginRight: 6 }} />
+            <ArrowLeft size={14} strokeWidth={2} style={{ marginRight: 6 }} aria-hidden />
             Voltar
           </button>
           <button
@@ -226,7 +231,7 @@ export default function OnboardingModal({
             className={s.btnPrimary}
           >
             {selectedAgent.cta}
-            <i className="bi bi-arrow-right" style={{ marginLeft: 6 }} />
+            <ArrowRight size={14} strokeWidth={2} style={{ marginLeft: 6 }} aria-hidden />
           </button>
         </div>
       </>
@@ -236,10 +241,10 @@ export default function OnboardingModal({
   const renderStep2 = () => (
     <>
       <div className={s.finishIcon}>
-        <i className={`bi bi-check-lg ${s.finishIconI}`} />
+        <Check size={26} strokeWidth={2.25} className={s.finishIconI} aria-hidden />
       </div>
       <h2 className={s.headingSm}>
-        Seu gabinete esta pronto.
+        Seu gabinete está pronto.
       </h2>
       <p className={s.descMdGap}>
         Explore os demais agentes no menu lateral ou use o Chat para que o
@@ -247,12 +252,15 @@ export default function OnboardingModal({
       </p>
 
       <div className={s.tagRow}>
-        {AGENTS.filter(a => a.key !== selectedAgent?.key).map(a => (
-          <span key={a.key} className={s.tag}>
-            <i className={`bi ${a.icon} ${s.tagIcon}`} />
-            {a.label}
-          </span>
-        ))}
+        {AGENTS.filter(a => a.key !== selectedAgent?.key).map(a => {
+          const Icon = a.Icon
+          return (
+            <span key={a.key} className={s.tag}>
+              <Icon size={12} strokeWidth={1.75} className={s.tagIcon} aria-hidden />
+              {a.label}
+            </span>
+          )
+        })}
       </div>
 
       <button
