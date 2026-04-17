@@ -1,6 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import {
+  CheckCircle2,
+  Clock,
+  Briefcase,
+  Home,
+  Landmark,
+  FileText,
+  Building2,
+  Users,
+  Lightbulb,
+  AlertTriangle,
+  Zap,
+  RotateCcw,
+  X,
+  Inbox,
+  Trash2,
+} from 'lucide-react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
@@ -44,8 +61,8 @@ export default function NegociadorPage() {
 
       // Fire-and-forget: save draft without blocking UI
       const titulo = (data.resultado?.estrategia?.tipo
-        ? `Negociacao: ${String(data.resultado.estrategia.tipo)}`
-        : 'Estrategia de negociacao')
+        ? `Negociação: ${String(data.resultado.estrategia.tipo)}`
+        : 'Estratégia de negociação')
       saveDraft('negociador', titulo, data.resultado)
         .then(row => {
           if (row) {
@@ -56,7 +73,7 @@ export default function NegociadorPage() {
         })
         .catch(err => console.error('[negociador/saveDraft]', err))
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro na analise')
+      setErro(e instanceof Error ? e.message : 'Erro na análise')
     } finally { setLoading(false) }
   }
 
@@ -67,7 +84,7 @@ export default function NegociadorPage() {
       setShowDraftsModal(false)
       setErro('')
     } catch {
-      setErro('Nao foi possivel carregar o rascunho')
+      setErro('Não foi possível carregar o rascunho')
     }
   }
 
@@ -101,7 +118,7 @@ export default function NegociadorPage() {
             </span>
           </div>
           <h1 className="page-title">Negociador</h1>
-          <p className="page-subtitle">Estrategia de negociacao e mediacao de conflitos juridicos</p>
+          <p className="page-subtitle">Estratégia de negociação e mediação de conflitos jurídicos</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {savedBadge && (
@@ -111,7 +128,7 @@ export default function NegociadorPage() {
               borderRadius: 20, background: 'var(--success-light)', color: 'var(--success)',
               border: '1px solid var(--success)',
             }}>
-              <i className="bi bi-check-circle-fill" /> Salvo como rascunho
+              <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden /> Salvo como rascunho
             </span>
           )}
           <button
@@ -120,7 +137,7 @@ export default function NegociadorPage() {
             className="btn-ghost"
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: '8px 14px' }}
           >
-            <i className="bi bi-clock-history" /> Meus rascunhos
+            <Clock size={14} strokeWidth={1.75} aria-hidden /> Meus rascunhos
           </button>
         </div>
       </div>
@@ -129,11 +146,11 @@ export default function NegociadorPage() {
         {/* Input */}
         <div className="section-card" style={{ padding: '18px 20px' }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-            Descricao do Conflito
+            Descrição do Conflito
           </div>
           <textarea value={situacao} onChange={e => setSituacao(e.target.value)}
             maxLength={50000}
-            placeholder={"Descreva a situacao de conflito com detalhes:\n\n- Partes envolvidas\n- Objeto da disputa\n- Valor em discussao\n- Historico de tentativas de acordo\n- Posicao do seu cliente"}
+            placeholder={"Descreva a situação de conflito com detalhes:\n\n- Partes envolvidas\n- Objeto da disputa\n- Valor em discussão\n- Histórico de tentativas de acordo\n- Posição do seu cliente"}
             className="form-input" style={{ resize: 'vertical', minHeight: 280, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6 }} />
           <div style={{ fontSize: 11, color: situacao.length > 45000 ? 'var(--danger)' : situacao.length > 40000 ? '#f59e0b' : 'var(--text-muted)', textAlign: 'right', marginTop: 4 }}>
             {situacao.length.toLocaleString('pt-BR')} / 50.000
@@ -142,63 +159,66 @@ export default function NegociadorPage() {
           {/* Cenarios pre-prontos */}
           <div style={{ marginTop: 16 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-              Cenarios comuns &mdash; clique para usar como base
+              Cenários comuns &mdash; clique para usar como base
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
               {[
-                { titulo: 'Trabalhista &mdash; horas extras', icon: 'bi-briefcase-fill', color: '#F59E0B', exemplo: 'Cliente trabalhou 3 anos como vendedor sem registro de horas extras. Reclama 18h semanais nao pagas. Empresa oferece R$ 8 mil. Calculo correto: ~R$ 35 mil. Buscamos acordo justo.' },
-                { titulo: 'Aluguel &mdash; rescisao contratual', icon: 'bi-house-door-fill', color: '#06B6D4', exemplo: 'Inquilino quer rescindir contrato 6 meses antes. Fiador resiste a multa. Locador exige 3 alugueis. Buscamos mediacao para reduzir multa proporcionalmente.' },
-                { titulo: 'Divida bancaria &mdash; renegociacao', icon: 'bi-bank2', color: '#22C55E', exemplo: 'Cliente devedor de R$ 45 mil em cartao com juros abusivos. Banco oferece parcelar em 24x sem desconto. Buscamos revisao de juros e parcelamento em 36x com descontos.' },
-                { titulo: 'Civil &mdash; danos morais', icon: 'bi-file-text-fill', color: '#44372b', exemplo: 'Cliente teve nome negativado indevidamente por servico nao contratado. Empresa nega responsabilidade. Buscamos acordo extrajudicial: indenizacao + retirada do nome.' },
-                { titulo: 'Empresarial &mdash; quebra de contrato', icon: 'bi-buildings-fill', color: '#EC4899', exemplo: 'Fornecedor descumpriu prazo de entrega causando perda de R$ 200 mil. Multa contratual prevista de 10%. Buscamos acordo com pagamento parcelado da multa + ressarcimento dos danos.' },
-                { titulo: 'Familia &mdash; pensao alimenticia', icon: 'bi-people-fill', color: '#8B5CF6', exemplo: 'Pai busca reduzir pensao apos perda de emprego. Mae quer manter valor atual. Filho de 8 anos. Renda atual do pai caiu 60%. Buscamos acordo proporcional a renda.' },
-              ].map((ex, i) => (
-                <button key={i} type="button" onClick={() => setSituacao(ex.exemplo)}
-                  className="negociador-scenario"
-                  style={{
-                    textAlign: 'left', padding: '10px 12px', borderRadius: 8,
-                    background: 'var(--hover)', border: '1px solid var(--border)',
-                    color: 'var(--text-secondary)', cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif", fontSize: 12, lineHeight: 1.4,
-                    transition: 'transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease',
-                    display: 'flex', alignItems: 'flex-start', gap: 10,
-                    // CSS var used by hover rule
-                    ['--scenario-accent' as string]: ex.color,
-                  }}>
-                  <span style={{ width: 28, height: 28, flexShrink: 0, borderRadius: 8, background: `${ex.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
-                    <i className={`bi ${ex.icon}`} style={{ color: ex.color, fontSize: 13 }} />
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }} dangerouslySetInnerHTML={{ __html: ex.titulo }} />
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Clique para aplicar este modelo</div>
-                  </div>
-                </button>
-              ))}
+                { titulo: 'Trabalhista &mdash; horas extras', Icon: Briefcase, color: '#F59E0B', exemplo: 'Cliente trabalhou 3 anos como vendedor sem registro de horas extras. Reclama 18h semanais não pagas. Empresa oferece R$ 8 mil. Cálculo correto: ~R$ 35 mil. Buscamos acordo justo.' },
+                { titulo: 'Aluguel &mdash; rescisão contratual', Icon: Home, color: '#06B6D4', exemplo: 'Inquilino quer rescindir contrato 6 meses antes. Fiador resiste à multa. Locador exige 3 aluguéis. Buscamos mediação para reduzir multa proporcionalmente.' },
+                { titulo: 'Dívida bancária &mdash; renegociação', Icon: Landmark, color: '#22C55E', exemplo: 'Cliente devedor de R$ 45 mil em cartão com juros abusivos. Banco oferece parcelar em 24x sem desconto. Buscamos revisão de juros e parcelamento em 36x com descontos.' },
+                { titulo: 'Civil &mdash; danos morais', Icon: FileText, color: '#44372b', exemplo: 'Cliente teve nome negativado indevidamente por serviço não contratado. Empresa nega responsabilidade. Buscamos acordo extrajudicial: indenização + retirada do nome.' },
+                { titulo: 'Empresarial &mdash; quebra de contrato', Icon: Building2, color: '#EC4899', exemplo: 'Fornecedor descumpriu prazo de entrega causando perda de R$ 200 mil. Multa contratual prevista de 10%. Buscamos acordo com pagamento parcelado da multa + ressarcimento dos danos.' },
+                { titulo: 'Família &mdash; pensão alimentícia', Icon: Users, color: '#8B5CF6', exemplo: 'Pai busca reduzir pensão após perda de emprego. Mãe quer manter valor atual. Filho de 8 anos. Renda atual do pai caiu 60%. Buscamos acordo proporcional à renda.' },
+              ].map((ex, i) => {
+                const Icon = ex.Icon
+                return (
+                  <button key={i} type="button" onClick={() => setSituacao(ex.exemplo)}
+                    className="negociador-scenario"
+                    style={{
+                      textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+                      background: 'var(--hover)', border: '1px solid var(--border)',
+                      color: 'var(--text-secondary)', cursor: 'pointer',
+                      fontFamily: "'DM Sans', sans-serif", fontSize: 12, lineHeight: 1.4,
+                      transition: 'transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease',
+                      display: 'flex', alignItems: 'flex-start', gap: 10,
+                      // CSS var used by hover rule
+                      ['--scenario-accent' as string]: ex.color,
+                    }}>
+                    <span style={{ width: 28, height: 28, flexShrink: 0, borderRadius: 8, background: `${ex.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
+                      <Icon size={13} strokeWidth={1.75} aria-hidden style={{ color: ex.color }} />
+                    </span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }} dangerouslySetInnerHTML={{ __html: ex.titulo }} />
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Clique para aplicar este modelo</div>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           </div>
 
           {/* Dicas para uma negociacao eficaz */}
           <div style={{ marginTop: 16, padding: '14px 16px', borderRadius: 10, background: 'var(--accent-light)', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <i className="bi bi-lightbulb-fill" />Dicas para uma negociacao eficaz
+              <Lightbulb size={14} strokeWidth={1.75} aria-hidden />Dicas para uma negociação eficaz
             </div>
             <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              <li><strong>Conheca seu BATNA</strong> &mdash; melhor alternativa caso a negociacao falhe</li>
-              <li><strong>Identifique a ZOPA</strong> &mdash; a zona onde os interesses das partes se sobrepoem</li>
-              <li><strong>Separe pessoas de problemas</strong> &mdash; foque em interesses, nao em posicoes</li>
-              <li><strong>Use criterios objetivos</strong> &mdash; valores de mercado, jurisprudencia, leis</li>
-              <li><strong>Documente tudo</strong> &mdash; registre as concessoes feitas e propostas trocadas</li>
-              <li><strong>Tenha um plano B</strong> &mdash; medidas judiciais como ultimo recurso</li>
+              <li><strong>Conheça seu BATNA</strong> &mdash; melhor alternativa caso a negociação falhe</li>
+              <li><strong>Identifique a ZOPA</strong> &mdash; a zona onde os interesses das partes se sobrepõem</li>
+              <li><strong>Separe pessoas de problemas</strong> &mdash; foque em interesses, não em posições</li>
+              <li><strong>Use critérios objetivos</strong> &mdash; valores de mercado, jurisprudência, leis</li>
+              <li><strong>Documente tudo</strong> &mdash; registre as concessões feitas e propostas trocadas</li>
+              <li><strong>Tenha um plano B</strong> &mdash; medidas judiciais como último recurso</li>
             </ul>
           </div>
           {erro && (
             <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <i className="bi bi-exclamation-triangle-fill" /> {erro}
+              <AlertTriangle size={14} strokeWidth={1.75} aria-hidden /> {erro}
             </div>
           )}
           <button type="button" onClick={analisar} disabled={!situacao.trim() || loading} className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
-            {loading ? <><span style={{ display: 'inline-block', width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /> Analisando estrategia...</>
-              : <><i className="bi bi-lightning" /> Analisar Negociacao</>}
+            {loading ? <><span style={{ display: 'inline-block', width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /> Analisando estratégia...</>
+              : <><Zap size={14} strokeWidth={1.75} aria-hidden /> Analisar Negociação</>}
           </button>
         </div>
 
@@ -206,21 +226,21 @@ export default function NegociadorPage() {
         <div className="section-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Estrategia de Negociacao
+              Estratégia de Negociação
             </div>
             {r && <ConfidenceBadge confianca={r?.confianca} />}
           </div>
           {loading ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)', minHeight: 280 }}>
               <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-              <div style={{ fontWeight: 600 }}>Elaborando estrategia...</div>
+              <div style={{ fontWeight: 600 }}>Elaborando estratégia...</div>
             </div>
           ) : r ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, overflowY: 'auto', maxHeight: 600 }}>
               {r.zopa ? <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--accent-light)', borderLeft: '3px solid var(--accent)' }}><strong style={{ color: 'var(--accent)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Zona de Acordo (ZOPA)</strong><p style={{ marginTop: 6 }}>{String(r.zopa)}</p></div> : null}
               {r.estrategia && typeof r.estrategia === 'object' && (
                 <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)' }}>
-                  <strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estrategia Recomendada</strong>
+                  <strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estratégia Recomendada</strong>
                   <div style={{ marginTop: 8 }}>
                     <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: 'var(--accent-light)', color: 'var(--accent)' }}>{(r.estrategia as any).tipo}</span>
                   </div>
@@ -229,7 +249,7 @@ export default function NegociadorPage() {
               )}
               {Array.isArray(r.cenarios) && r.cenarios.length > 0 && (
                 <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)' }}>
-                  <strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Cenarios</strong>
+                  <strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Cenários</strong>
                   <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {(r.cenarios as any[]).map((c, i) => {
                       // Parse probabilidade — could be "60%", "60", "Alta", etc.
@@ -268,7 +288,7 @@ export default function NegociadorPage() {
               )}
               {r.proposta_acordo ? <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)', whiteSpace: 'pre-wrap' }}><strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 8 }}>Proposta de Acordo</strong>{String(r.proposta_acordo)}</div> : null}
               <button type="button" onClick={() => { setResultado(null); setSituacao('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                <i className="bi bi-arrow-counterclockwise" /> Nova analise
+                <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Nova análise
               </button>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <PoweredByLexAI />
@@ -276,8 +296,8 @@ export default function NegociadorPage() {
             </div>
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)', minHeight: 280 }}>
-              <i className="bi bi-lightning" style={{ fontSize: 40, opacity: 0.3 }} />
-              <span style={{ fontSize: 13, textAlign: 'center' }}>Descreva a situacao de conflito<br />e clique em Analisar</span>
+              <Zap size={40} strokeWidth={1.75} aria-hidden style={{ opacity: 0.3 }} />
+              <span style={{ fontSize: 13, textAlign: 'center' }}>Descreva a situação de conflito<br />e clique em Analisar</span>
             </div>
           )}
         </div>
@@ -288,7 +308,7 @@ export default function NegociadorPage() {
           <div className="modal" style={{ maxWidth: 640 }}>
             <div className="modal-header">
               <span className="modal-title">Meus rascunhos</span>
-              <button className="modal-close" onClick={() => setShowDraftsModal(false)}><i className="bi bi-x" /></button>
+              <button className="modal-close" onClick={() => setShowDraftsModal(false)}><X size={14} strokeWidth={1.75} aria-hidden /></button>
             </div>
             <div className="modal-body">
               {loadingDrafts ? (
@@ -298,9 +318,9 @@ export default function NegociadorPage() {
                 </div>
               ) : draftsList.length === 0 ? (
                 <div style={{ padding: '32px 14px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  <i className="bi bi-inbox" style={{ fontSize: 40, opacity: 0.4, display: 'block', marginBottom: 10 }} />
+                  <Inbox size={40} strokeWidth={1.75} aria-hidden style={{ opacity: 0.4, display: 'block', margin: '0 auto 10px' }} />
                   <div style={{ fontSize: 13 }}>Nenhum rascunho salvo ainda.</div>
-                  <div style={{ fontSize: 12, marginTop: 4 }}>Faca uma analise para salvar automaticamente.</div>
+                  <div style={{ fontSize: 12, marginTop: 4 }}>Faça uma análise para salvar automaticamente.</div>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 460, overflowY: 'auto' }}>
@@ -321,15 +341,15 @@ export default function NegociadorPage() {
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
-                            {d.titulo || 'Sem titulo'}
+                            {d.titulo || 'Sem título'}
                           </span>
                           <span style={{
                             fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 12,
                             background: 'var(--accent-light)', color: 'var(--accent)',
                           }}>v{d.versao}</span>
                         </div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                          <i className="bi bi-clock" style={{ marginRight: 4 }} />
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Clock size={12} strokeWidth={1.75} aria-hidden />
                           {fmtDate(d.created_at)}
                         </div>
                       </button>
@@ -355,7 +375,7 @@ export default function NegociadorPage() {
                           e.currentTarget.style.borderColor = 'var(--border)'
                         }}
                       >
-                        <i className="bi bi-trash" />
+                        <Trash2 size={14} strokeWidth={1.75} aria-hidden />
                       </button>
                     </div>
                   ))}

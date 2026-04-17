@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Search, AlertTriangle, BookOpen, Calendar, ExternalLink, ChevronDown, ChevronUp, User, Clipboard, Check, CheckCircle2, NotebookText, Layers, Hourglass, FileX } from 'lucide-react'
 import ConfidenceBadge, { PoweredByLexAI, VerifiedBadge } from '@/components/ConfidenceBadge'
 import { SkeletonResult } from '@/components/Skeleton'
 import s from './page.module.css'
@@ -100,7 +101,7 @@ export default function PesquisadorPage() {
       <form onSubmit={buscar}>
         <div className={s.searchRow}>
           <div className={s.searchField}>
-            <i className={`bi bi-search ${s.searchIcon}`} />
+            <Search size={16} strokeWidth={1.75} aria-hidden className={s.searchIcon} />
             <input
               type="text" value={query} onChange={e => setQuery(e.target.value)}
               maxLength={2000}
@@ -110,14 +111,14 @@ export default function PesquisadorPage() {
             />
           </div>
           <button type="submit" disabled={!query.trim() || buscando} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
-            {buscando ? <><i className="bi bi-hourglass-split" /> Pesquisando...</> : <><i className="bi bi-search" /> Pesquisar</>}
+            {buscando ? <><Hourglass size={14} strokeWidth={1.75} aria-hidden /> Pesquisando...</> : <><Search size={14} strokeWidth={1.75} aria-hidden /> Pesquisar</>}
           </button>
         </div>
 
         {/* Filtros */}
         <div className={s.filtersWrap}>
           <div className={s.filtersLabel}>
-            Filtros avancados
+            Filtros avançados
           </div>
           <div className={s.filtersRow}>
             <select value={tribunal} onChange={e => setTribunal(e.target.value)} className="form-input" style={{ flex: '1 1 180px', maxWidth: 220 }}>
@@ -136,7 +137,7 @@ export default function PesquisadorPage() {
       {/* Erro */}
       {erro && (
         <div className={s.errorBox}>
-          <i className="bi bi-exclamation-triangle-fill" />
+          <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
           {erro}
         </div>
       )}
@@ -152,7 +153,7 @@ export default function PesquisadorPage() {
         </div>
       ) : buscou && resultados.length === 0 ? (
         <div className={s.emptyResults}>
-          <i className={`bi bi-journal-x ${s.emptyIcon}`} />
+          <FileX size={32} strokeWidth={1.75} aria-hidden className={s.emptyIcon} />
           <div className={s.emptyTitle}>Nenhum resultado encontrado</div>
           <div className={s.emptySub}>Tente termos diferentes ou remova filtros</div>
         </div>
@@ -160,7 +161,7 @@ export default function PesquisadorPage() {
         <div className={s.resultsContainer}>
           <div className={s.resultsHeader}>
             <div className={s.resultsCounterPill}>
-              <i className="bi bi-collection" />
+              <Layers size={14} strokeWidth={1.75} aria-hidden />
               Mostrando <strong>{resultados.length}</strong> de <strong>{resultados.length + (pesquisa?.jurisprudencia_real?.length ?? 0)}</strong> resultados
             </div>
             {pesquisa && <ConfidenceBadge confianca={pesquisa?.confianca} />}
@@ -171,10 +172,10 @@ export default function PesquisadorPage() {
             <div className={`section-card ${s.jusBrasilCard}`}>
               <div className={s.jusBrasilHeader}>
                 <span className={s.jusBrasilBadge}>
-                  <i className="bi bi-patch-check-fill" /> Verificado JusBrasil
+                  <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden /> Verificado JusBrasil
                 </span>
                 <span className={s.jusBrasilCount}>
-                  {pesquisa.jurisprudencia_real.length} decisão(oes) reais recuperadas da base JusBrasil
+                  {pesquisa.jurisprudencia_real.length} decisão(ões) reais recuperadas da base JusBrasil
                 </span>
               </div>
               <div className={s.jusBrasilList}>
@@ -185,7 +186,7 @@ export default function PesquisadorPage() {
                       <span className={s.jusBrasilNumero}>{j.numero}</span>
                       {j.data && (
                         <span className={s.badgeDate}>
-                          <i className="bi bi-calendar3" /> {j.data}
+                          <Calendar size={14} strokeWidth={1.75} aria-hidden /> {j.data}
                         </span>
                       )}
                     </div>
@@ -196,7 +197,7 @@ export default function PesquisadorPage() {
                     )}
                     {j.url && (
                       <a href={j.url} target="_blank" rel="noopener noreferrer" className={s.jusBrasilLink}>
-                        <i className="bi bi-box-arrow-up-right" /> Abrir no JusBrasil
+                        <ExternalLink size={14} strokeWidth={1.75} aria-hidden /> Abrir no JusBrasil
                       </a>
                     )}
                   </div>
@@ -223,20 +224,20 @@ export default function PesquisadorPage() {
                       {r.relevancia}
                     </span>
                     <span className={s.badgeDate}>
-                      <i className="bi bi-calendar3" /> {r.data}
+                      <Calendar size={14} strokeWidth={1.75} aria-hidden /> {r.data}
                     </span>
                     <span className={s.badgeNumero}>{r.numero}</span>
                     <VerifiedBadge />
                   </div>
                   {r.relator && (
                     <div className={s.resultRelator}>
-                      <i className="bi bi-person" style={{ marginRight: 4 }} />Rel. {r.relator}
+                      <User size={14} strokeWidth={1.75} aria-hidden style={{ marginRight: 4 }} />Rel. {r.relator}
                     </div>
                   )}
                 </div>
                 <button type="button" onClick={() => setExpandido(expandido === String(idx) ? null : String(idx))}
                   className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                  <i className={`bi ${expandido === String(idx) ? 'bi-chevron-up' : 'bi-chevron-down'}`} /> {expandido === String(idx) ? 'Recolher' : 'Ver ementa'}
+                  {expandido === String(idx) ? <ChevronUp size={14} strokeWidth={1.75} aria-hidden /> : <ChevronDown size={14} strokeWidth={1.75} aria-hidden />} {expandido === String(idx) ? 'Recolher' : 'Ver ementa'}
                 </button>
               </div>
 
@@ -269,7 +270,7 @@ export default function PesquisadorPage() {
               <div className={s.resultActions}>
                 <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5 }}
                   onClick={() => copiar(r.ementa, String(idx))}>
-                  <i className={`bi ${copied === String(idx) ? 'bi-check2' : 'bi-clipboard'}`} />
+                  {copied === String(idx) ? <Check size={14} strokeWidth={1.75} aria-hidden /> : <Clipboard size={14} strokeWidth={1.75} aria-hidden />}
                   {copied === String(idx) ? 'Copiado' : 'Copiar ementa'}
                 </button>
               </div>
@@ -316,7 +317,7 @@ export default function PesquisadorPage() {
       ) : (
         <div className={s.pesquisadorEmpty}>
           <div className={s.pesquisadorEmptyIcon}>
-            <i className="bi bi-journal-bookmark" />
+            <NotebookText size={32} strokeWidth={1.75} aria-hidden />
           </div>
           <div className={s.pesquisadorEmptyTitle}>Pesquise jurisprudência com IA</div>
           <div className={s.pesquisadorEmptySub}>Digite termos na busca e aplique filtros para encontrar decisões</div>

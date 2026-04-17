@@ -1,5 +1,18 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
+import {
+  Landmark,
+  CalendarRange,
+  Calendar,
+  CheckCircle2,
+  Flag,
+  PauseCircle,
+  Clock,
+  PlusCircle,
+  ArrowLeftRight,
+  Calculator,
+  RotateCcw,
+} from 'lucide-react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import {
   addDiasUteisForenses,
@@ -26,7 +39,7 @@ function formatBR(d: Date): string {
   const day = String(d.getDate()).padStart(2, '0')
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const y = d.getFullYear()
-  const dow = ['domingo', 'segunda-feira', 'terca-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sabado'][d.getDay()]
+  const dow = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'][d.getDay()]
   return `${day}/${m}/${y} (${dow})`
 }
 
@@ -45,13 +58,13 @@ export default function CalculadorPage() {
   const [resultado, setResultado] = useState<any>(null)
   const [erro, setErro] = useState('')
 
-  // ── Calculadora rapida (offline) ──────────────────────────────────────
+  // ── Calculadora rápida (offline) ──────────────────────────────────────
   const [rapidoModo, setRapidoModo] = useState<RapidoModo>('adicionar')
   const [rapidoInicio, setRapidoInicio] = useState('')
   const [rapidoFim, setRapidoFim] = useState('')
   const [rapidoDias, setRapidoDias] = useState('')
 
-  // ── Historico local de calculos rapidos ─────────────────────────────
+  // ── Histórico local de cálculos rápidos ─────────────────────────────
   const [historico, setHistorico] = useState<HistoricoItem[]>([])
 
   // ── Taxas atuais do Banco Central (SELIC, CDI, IPCA 12m) ────────────
@@ -129,7 +142,7 @@ export default function CalculadorPage() {
       const fim = parseInputDate(rapidoFim)
       if (!fim) return null
       if (fim.getTime() < inicio.getTime()) {
-        return { tipo: 'erro' as const, msg: 'A data final deve ser igual ou posterior a data inicial.' }
+        return { tipo: 'erro' as const, msg: 'A data final deve ser igual ou posterior à data inicial.' }
       }
       const diasUteis = diferencaDiasUteis(inicio, fim)
       const breakdown = breakdownPeriodo(inicio, fim)
@@ -143,9 +156,9 @@ export default function CalculadorPage() {
     const t = setTimeout(() => {
       let label = ''
       if (rapidoResultado.tipo === 'adicionar') {
-        label = `+${rapidoResultado.dias} dias uteis de ${formatBR(rapidoResultado.inicio).split(' ')[0]}`
+        label = `+${rapidoResultado.dias} dias úteis de ${formatBR(rapidoResultado.inicio).split(' ')[0]}`
       } else {
-        label = `${formatBR(rapidoResultado.inicio).split(' ')[0]} ate ${formatBR(rapidoResultado.fim).split(' ')[0]}`
+        label = `${formatBR(rapidoResultado.inicio).split(' ')[0]} até ${formatBR(rapidoResultado.fim).split(' ')[0]}`
       }
       salvarHistorico({
         modo: rapidoModo,
@@ -171,7 +184,7 @@ export default function CalculadorPage() {
       if (!res.ok) throw new Error(data.error)
       setResultado(data.resultado)
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro no calculo')
+      setErro(e instanceof Error ? e.message : 'Erro no cálculo')
     } finally { setLoading(false) }
   }
 
@@ -184,15 +197,15 @@ export default function CalculadorPage() {
             Agente IA
           </span>
         </div>
-        <h1 className="page-title">Calculador Juridico</h1>
-        <p className="page-subtitle">Calcule prazos processuais, correcao monetaria, juros e custas</p>
+        <h1 className="page-title">Calculador Jurídico</h1>
+        <p className="page-subtitle">Calcule prazos processuais, correção monetária, juros e custas</p>
       </div>
 
       {/* ════ Taxas atuais do Banco Central ════ */}
       {taxas && (
         <div className="section-card" style={{ padding: '14px 18px', marginBottom: 16, display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'center' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <i className="bi bi-bank" style={{ marginRight: 6 }} />Taxas atuais (BCB)
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Landmark size={14} strokeWidth={1.75} aria-hidden />Taxas atuais (BCB)
           </div>
           {taxas.selic && (
             <div>
@@ -222,9 +235,9 @@ export default function CalculadorPage() {
       <div className="section-card" style={{ padding: '16px 18px', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <i className="bi bi-calendar-week" style={{ color: 'var(--accent)', fontSize: 15 }} />
+            <CalendarRange size={15} strokeWidth={1.75} aria-hidden style={{ color: 'var(--accent)' }} />
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Calculo rapido de prazo
+              Cálculo rápido de prazo
             </div>
             <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'var(--success-light)', color: 'var(--success)', fontWeight: 700, letterSpacing: '0.04em' }}>
               OFFLINE
@@ -257,7 +270,7 @@ export default function CalculadorPage() {
                 boxShadow: rapidoModo === 'diferenca' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
               }}
             >
-              Calcular diferenca
+              Calcular diferença
             </button>
           </div>
         </div>
@@ -265,7 +278,7 @@ export default function CalculadorPage() {
         <div style={{ display: 'grid', gridTemplateColumns: rapidoModo === 'adicionar' ? '1fr 1fr' : '1fr 1fr', gap: 10, marginBottom: 10 }} className="rapido-grid">
           <div>
             <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-              Data de inicio
+              Data de início
             </label>
             <input
               type="date"
@@ -279,7 +292,7 @@ export default function CalculadorPage() {
           {rapidoModo === 'adicionar' ? (
             <div>
               <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                Quantidade de dias uteis
+                Quantidade de dias úteis
               </label>
               <input
                 type="number"
@@ -329,7 +342,7 @@ export default function CalculadorPage() {
                   {formatBR(rapidoResultado.fim)}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                  {rapidoResultado.dias} dia(s) util(eis) apos {formatBR(rapidoResultado.inicio)}
+                  {rapidoResultado.dias} dia(s) útil(eis) após {formatBR(rapidoResultado.inicio)}
                 </div>
               </div>
             ) : (
@@ -338,10 +351,10 @@ export default function CalculadorPage() {
                   Resultado
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginTop: 3 }}>
-                  {rapidoResultado.diasUteis} dia(s) util(eis) entre as datas
+                  {rapidoResultado.diasUteis} dia(s) útil(eis) entre as datas
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                  De {formatBR(rapidoResultado.inicio)} ate {formatBR(rapidoResultado.fim)}
+                  De {formatBR(rapidoResultado.inicio)} até {formatBR(rapidoResultado.fim)}
                 </div>
               </div>
             )}
@@ -351,23 +364,23 @@ export default function CalculadorPage() {
               paddingTop: 8, borderTop: '1px dashed rgba(45,106,79,0.25)',
             }}>
               <span className="breakdown-chip chip-corridos">
-                <i className="bi bi-calendar" />
+                <Calendar size={12} strokeWidth={1.75} aria-hidden />
                 {rapidoResultado.breakdown.diasCorridos} corridos
               </span>
               <span className="breakdown-chip chip-uteis">
-                <i className="bi bi-check-circle" />
-                {rapidoResultado.breakdown.diasUteis} uteis
+                <CheckCircle2 size={12} strokeWidth={1.75} aria-hidden />
+                {rapidoResultado.breakdown.diasUteis} úteis
               </span>
               <span className="breakdown-chip chip-feriados">
-                <i className="bi bi-flag" />
+                <Flag size={12} strokeWidth={1.75} aria-hidden />
                 {rapidoResultado.breakdown.feriados} feriados
               </span>
               <span className="breakdown-chip chip-fds">
-                <i className="bi bi-calendar-week" />
+                <CalendarRange size={12} strokeWidth={1.75} aria-hidden />
                 {rapidoResultado.breakdown.finaisDeSemana} fim de semana
               </span>
               <span className="breakdown-chip chip-recesso">
-                <i className="bi bi-pause-circle" />
+                <PauseCircle size={12} strokeWidth={1.75} aria-hidden />
                 {rapidoResultado.breakdown.diasRecesso} recesso
               </span>
             </div>
@@ -376,12 +389,12 @@ export default function CalculadorPage() {
 
         {!rapidoResultado && rapidoInicio && (
           <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', padding: 6 }}>
-            {rapidoModo === 'adicionar' ? 'Informe a quantidade de dias uteis.' : 'Informe a data final.'}
+            {rapidoModo === 'adicionar' ? 'Informe a quantidade de dias úteis.' : 'Informe a data final.'}
           </div>
         )}
 
         <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5 }}>
-          Considera feriados nacionais 2025-2027 e recesso forense (20/12 a 20/01 — art. 220 CPC). Calculo 100% local.
+          Considera feriados nacionais 2025-2027 e recesso forense (20/12 a 20/01 — art. 220 CPC). Cálculo 100% local.
         </div>
 
         {/* Historico local dos ultimos calculos */}
@@ -389,14 +402,14 @@ export default function CalculadorPage() {
           <div className="calc-historico">
             <div className="calc-historico-header">
               <div className="calc-historico-title">
-                <i className="bi bi-clock-history" />
-                Ultimos calculos
+                <Clock size={12} strokeWidth={1.75} aria-hidden />
+                Últimos cálculos
               </div>
               <button
                 type="button"
                 className="calc-historico-clear"
                 onClick={limparHistorico}
-                aria-label="Limpar historico"
+                aria-label="Limpar histórico"
               >
                 Limpar
               </button>
@@ -410,7 +423,9 @@ export default function CalculadorPage() {
                   onClick={() => aplicarHistorico(h)}
                   title={h.label}
                 >
-                  <i className={`bi ${h.modo === 'adicionar' ? 'bi-plus-circle' : 'bi-arrows-expand'}`} />
+                  {h.modo === 'adicionar'
+                    ? <PlusCircle size={12} strokeWidth={1.75} aria-hidden />
+                    : <ArrowLeftRight size={12} strokeWidth={1.75} aria-hidden />}
                   <span>{h.label}</span>
                 </button>
               ))}
@@ -433,10 +448,6 @@ export default function CalculadorPage() {
           border-radius: 14px;
           letter-spacing: 0.01em;
           font-family: 'DM Sans', sans-serif;
-        }
-        .breakdown-chip i {
-          font-size: 12px;
-          line-height: 1;
         }
         .chip-corridos {
           background: var(--accent-light);
@@ -480,8 +491,7 @@ export default function CalculadorPage() {
           letter-spacing: 0.05em;
           color: var(--text-muted);
         }
-        .calc-historico-title i {
-          font-size: 12px;
+        .calc-historico-title svg {
           color: var(--accent);
         }
         .calc-historico-clear {
@@ -523,8 +533,7 @@ export default function CalculadorPage() {
           max-width: 100%;
           transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .calc-historico-chip i {
-          font-size: 12px;
+        .calc-historico-chip svg {
           color: var(--accent);
           flex-shrink: 0;
         }
@@ -549,18 +558,18 @@ export default function CalculadorPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} className="redator-main-grid">
         <div className="section-card" style={{ padding: '18px 20px' }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-            Descricao do Calculo
+            Descrição do Cálculo
           </div>
           <textarea value={consulta} onChange={e => setConsulta(e.target.value)}
             maxLength={50000}
-            placeholder={"Descreva o calculo que precisa:\n\n- Prazo processual: data de intimacao, tipo de prazo\n- Correcao monetaria: valor, data inicial, indice\n- Juros: taxa, periodo, base de calculo\n- Custas: tribunal, valor da causa"}
+            placeholder={"Descreva o cálculo que precisa:\n\n- Prazo processual: data de intimação, tipo de prazo\n- Correção monetária: valor, data inicial, índice\n- Juros: taxa, período, base de cálculo\n- Custas: tribunal, valor da causa"}
             className="form-input" style={{ resize: 'vertical', minHeight: 220, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6 }} />
           <div style={{ fontSize: 11, color: consulta.length > 45000 ? 'var(--danger)' : consulta.length > 40000 ? '#f59e0b' : 'var(--text-muted)', textAlign: 'right', marginTop: 4 }}>
             {consulta.length.toLocaleString('pt-BR')} / 50.000
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
             <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Exemplos:</span>
-            {['Prazo para contestacao CPC', 'Correcao monetaria IPCA-E desde 2020', 'Custas processuais TJSP'].map((ex, i) => (
+            {['Prazo para contestação CPC', 'Correção monetária IPCA-E desde 2020', 'Custas processuais TJSP'].map((ex, i) => (
               <button key={i} type="button" onClick={() => setConsulta(ex)}
                 style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'var(--hover)', border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
                 {ex}
@@ -569,7 +578,7 @@ export default function CalculadorPage() {
           </div>
           {erro && <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginTop: 12 }}>{erro}</div>}
           <button type="button" onClick={calcular} disabled={!consulta.trim() || loading} className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
-            {loading ? 'Calculando...' : <><i className="bi bi-calculator" /> Calcular</>}
+            {loading ? 'Calculando...' : <><Calculator size={14} strokeWidth={1.75} aria-hidden /> Calcular</>}
           </button>
         </div>
 
@@ -588,7 +597,7 @@ export default function CalculadorPage() {
               {resultado.valores && <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)' }}><strong style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Valores</strong><div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>{Object.entries(resultado.valores).map(([k,v]) => <div key={k}><span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{k}</span><div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{String(v)}</div></div>)}</div></div>}
               {Array.isArray(resultado.passos) && resultado.passos.length > 0 && <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)' }}><strong style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Passos</strong>{resultado.passos.map((p: string, i: number) => <p key={i} style={{ marginTop: 6, paddingLeft: 12, borderLeft: '2px solid var(--border)' }}>{p}</p>)}</div>}
               <button type="button" onClick={() => { setResultado(null); setConsulta('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                <i className="bi bi-arrow-counterclockwise" /> Novo calculo
+                <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Novo cálculo
               </button>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <PoweredByLexAI />
@@ -596,8 +605,8 @@ export default function CalculadorPage() {
             </div>
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)', minHeight: 220 }}>
-              <i className="bi bi-calculator" style={{ fontSize: 40, opacity: 0.3 }} />
-              <span style={{ fontSize: 13, textAlign: 'center' }}>Descreva o calculo juridico<br />e clique em Calcular</span>
+              <Calculator size={40} strokeWidth={1.75} aria-hidden style={{ opacity: 0.3 }} />
+              <span style={{ fontSize: 13, textAlign: 'center' }}>Descreva o cálculo jurídico<br />e clique em Calcular</span>
             </div>
           )}
         </div>

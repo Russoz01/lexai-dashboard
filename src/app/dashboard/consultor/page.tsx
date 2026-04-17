@@ -1,6 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import {
+  RotateCcw,
+  CheckCircle2,
+  Check,
+  Clipboard,
+  Download,
+  AlertTriangle,
+  FileText,
+  Info,
+  XCircle,
+} from 'lucide-react'
 import { PoweredByLexAI } from '@/components/ConfidenceBadge'
 
 interface Parecer {
@@ -21,7 +32,7 @@ const AREAS_DIREITO = [
   'Penal',
   'Constitucional',
   'Trabalhista',
-  'Tributario',
+  'Tributário',
   'Administrativo',
   'Empresarial',
   'Ambiental',
@@ -67,17 +78,17 @@ export default function ConsultorPage() {
   function copiarParecer() {
     if (!parecer) return
     const lines: string[] = []
-    lines.push(`PARECER JURIDICO`)
+    lines.push(`PARECER JURÍDICO`)
     lines.push(``)
     lines.push(`${parecer.titulo}`)
     lines.push(``)
     lines.push(`EMENTA: ${parecer.ementa}`)
     lines.push(``)
-    lines.push(`I. QUESTAO ANALISADA`)
+    lines.push(`I. QUESTÃO ANALISADA`)
     lines.push(parecer.questao_analisada)
     lines.push(``)
     if (parecer.fundamentacao_legal?.length) {
-      lines.push(`II. FUNDAMENTACAO LEGAL`)
+      lines.push(`II. FUNDAMENTAÇÃO LEGAL`)
       parecer.fundamentacao_legal.forEach((f, i) => lines.push(`${i + 1}. ${f}`))
       lines.push(``)
     }
@@ -87,20 +98,20 @@ export default function ConsultorPage() {
       lines.push(``)
     }
     if (parecer.argumentos_favoraveis?.length) {
-      lines.push(`IV. ARGUMENTOS FAVORAVEIS`)
+      lines.push(`IV. ARGUMENTOS FAVORÁVEIS`)
       parecer.argumentos_favoraveis.forEach((a, i) => lines.push(`${i + 1}. ${a}`))
       lines.push(``)
     }
     if (parecer.argumentos_contrarios?.length) {
-      lines.push(`V. ARGUMENTOS CONTRARIOS`)
+      lines.push(`V. ARGUMENTOS CONTRÁRIOS`)
       parecer.argumentos_contrarios.forEach((a, i) => lines.push(`${i + 1}. ${a}`))
       lines.push(``)
     }
-    lines.push(`VI. CONCLUSAO`)
+    lines.push(`VI. CONCLUSÃO`)
     lines.push(parecer.conclusao)
     lines.push(``)
     if (parecer.recomendacoes?.length) {
-      lines.push(`VII. RECOMENDACOES`)
+      lines.push(`VII. RECOMENDAÇÕES`)
       parecer.recomendacoes.forEach((r, i) => lines.push(`${i + 1}. ${r}`))
       lines.push(``)
     }
@@ -117,7 +128,7 @@ export default function ConsultorPage() {
   function downloadParecer() {
     if (!parecer) return
     const lines: string[] = []
-    lines.push(`PARECER JURIDICO`)
+    lines.push(`PARECER JURÍDICO`)
     lines.push(`${'='.repeat(60)}`)
     lines.push(``)
     lines.push(`${parecer.titulo}`)
@@ -127,12 +138,12 @@ export default function ConsultorPage() {
     lines.push(``)
     lines.push(`${'─'.repeat(60)}`)
     lines.push(``)
-    lines.push(`I. QUESTAO ANALISADA`)
+    lines.push(`I. QUESTÃO ANALISADA`)
     lines.push(``)
     lines.push(parecer.questao_analisada)
     lines.push(``)
     if (parecer.fundamentacao_legal?.length) {
-      lines.push(`II. FUNDAMENTACAO LEGAL`)
+      lines.push(`II. FUNDAMENTAÇÃO LEGAL`)
       lines.push(``)
       parecer.fundamentacao_legal.forEach((f, i) => lines.push(`  ${i + 1}. ${f}`))
       lines.push(``)
@@ -144,23 +155,23 @@ export default function ConsultorPage() {
       lines.push(``)
     }
     if (parecer.argumentos_favoraveis?.length) {
-      lines.push(`IV. ARGUMENTOS FAVORAVEIS`)
+      lines.push(`IV. ARGUMENTOS FAVORÁVEIS`)
       lines.push(``)
       parecer.argumentos_favoraveis.forEach((a, i) => lines.push(`  ${i + 1}. ${a}`))
       lines.push(``)
     }
     if (parecer.argumentos_contrarios?.length) {
-      lines.push(`V. ARGUMENTOS CONTRARIOS`)
+      lines.push(`V. ARGUMENTOS CONTRÁRIOS`)
       lines.push(``)
       parecer.argumentos_contrarios.forEach((a, i) => lines.push(`  ${i + 1}. ${a}`))
       lines.push(``)
     }
-    lines.push(`VI. CONCLUSAO`)
+    lines.push(`VI. CONCLUSÃO`)
     lines.push(``)
     lines.push(parecer.conclusao)
     lines.push(``)
     if (parecer.recomendacoes?.length) {
-      lines.push(`VII. RECOMENDACOES`)
+      lines.push(`VII. RECOMENDAÇÕES`)
       lines.push(``)
       parecer.recomendacoes.forEach((r, i) => lines.push(`  ${i + 1}. ${r}`))
       lines.push(``)
@@ -198,9 +209,9 @@ export default function ConsultorPage() {
           </span>
         </div>
         <h1 className="page-title">Estrategista</h1>
-        <p className="consultor-subtitle">Pareceres Juridicos</p>
+        <p className="consultor-subtitle">Pareceres Jurídicos</p>
         <p className="page-subtitle" style={{ marginTop: 4 }}>
-          Elabore pareceres juridicos fundamentados com analise multifacetada, legislacao, doutrina e recomendacoes estrategicas
+          Elabore pareceres jurídicos fundamentados com análise multifacetada, legislação, doutrina e recomendações estratégicas
         </p>
       </div>
 
@@ -210,13 +221,13 @@ export default function ConsultorPage() {
           {/* Pergunta */}
           <div>
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 8 }}>
-              Questao Juridica
+              Questão Jurídica
             </label>
             <textarea
               value={pergunta}
               onChange={e => setPergunta(e.target.value)}
               maxLength={50000}
-              placeholder="Descreva a questao juridica para o parecer. Ex: Uma empresa de e-commerce pode ser responsabilizada por danos causados por produto vendido por terceiro em seu marketplace?"
+              placeholder="Descreva a questão jurídica para o parecer. Ex: Uma empresa de e-commerce pode ser responsabilizada por danos causados por produto vendido por terceiro em seu marketplace?"
               className="form-input consultor-textarea"
               rows={5}
               style={{ resize: 'vertical', minHeight: 120 }}
@@ -230,7 +241,7 @@ export default function ConsultorPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16 }} className="consultor-form-grid">
             <div>
               <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 8 }}>
-                Area do Direito
+                Área do Direito
               </label>
               <select
                 value={area}
@@ -252,7 +263,7 @@ export default function ConsultorPage() {
                 value={contexto}
                 onChange={e => setContexto(e.target.value)}
                 maxLength={30000}
-                placeholder="Fatos relevantes, documentos envolvidos, jurisprudencia conhecida..."
+                placeholder="Fatos relevantes, documentos envolvidos, jurisprudência conhecida..."
                 className="form-input"
                 rows={3}
                 style={{ resize: 'vertical', minHeight: 80 }}
@@ -270,7 +281,7 @@ export default function ConsultorPage() {
             className="btn-primary"
             style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 8, padding: '12px 28px', fontSize: 14 }}
           >
-            <i className="bi bi-file-earmark-text" /> Gerar parecer
+            <FileText size={16} strokeWidth={1.75} aria-hidden /> Gerar parecer
           </button>
         </div>
       )}
@@ -278,7 +289,7 @@ export default function ConsultorPage() {
       {/* Error */}
       {erro && (
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16, marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <i className="bi bi-exclamation-triangle-fill" /> {erro}
+          <AlertTriangle size={16} strokeWidth={1.75} aria-hidden /> {erro}
         </div>
       )}
 
@@ -287,8 +298,8 @@ export default function ConsultorPage() {
         <div style={{ marginTop: 24 }}>
           <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)', marginBottom: 24 }}>
             <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-            <div style={{ fontWeight: 600, marginBottom: 6 }}>Elaborando parecer juridico...</div>
-            <div style={{ fontSize: 13 }}>Analisando legislacao, doutrina e jurisprudencia</div>
+            <div style={{ fontWeight: 600, marginBottom: 6 }}>Elaborando parecer jurídico...</div>
+            <div style={{ fontSize: 13 }}>Analisando legislação, doutrina e jurisprudência</div>
           </div>
           <div className="section-card" style={{ padding: '28px 32px' }}>
             <div className="skeleton-line" style={{ width: '65%', height: 24, marginBottom: 16 }} />
@@ -320,11 +331,11 @@ export default function ConsultorPage() {
           {/* Action buttons */}
           <div style={{ display: 'flex', gap: 10, marginBottom: 16, justifyContent: 'flex-end' }}>
             <button type="button" onClick={copiarParecer} className="consultor-action-btn" title="Copiar parecer">
-              <i className={`bi ${copiado ? 'bi-check-lg' : 'bi-clipboard'}`} />
+              {copiado ? <Check size={14} strokeWidth={1.75} aria-hidden /> : <Clipboard size={14} strokeWidth={1.75} aria-hidden />}
               {copiado ? 'Copiado' : 'Copiar'}
             </button>
             <button type="button" onClick={downloadParecer} className="consultor-action-btn" title="Baixar parecer">
-              <i className="bi bi-download" /> Baixar .txt
+              <Download size={14} strokeWidth={1.75} aria-hidden /> Baixar .txt
             </button>
           </div>
 
@@ -351,7 +362,7 @@ export default function ConsultorPage() {
             {parecer.questao_analisada && (
               <div style={{ marginBottom: 28 }}>
                 <div className="consultor-section-label" style={{ color: 'var(--accent)' }}>
-                  <span className="consultor-section-number">I</span> Questao Analisada
+                  <span className="consultor-section-number">I</span> Questão Analisada
                 </div>
                 <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.8 }}>
                   {parecer.questao_analisada}
@@ -363,7 +374,7 @@ export default function ConsultorPage() {
             {Array.isArray(parecer.fundamentacao_legal) && parecer.fundamentacao_legal.length > 0 && (
               <div style={{ marginBottom: 28 }}>
                 <div className="consultor-section-label" style={{ color: '#44372b' }}>
-                  <span className="consultor-section-number">II</span> Fundamentacao Legal
+                  <span className="consultor-section-number">II</span> Fundamentação Legal
                 </div>
                 <ol className="consultor-numbered-list">
                   {parecer.fundamentacao_legal.map((f, i) => (
@@ -400,7 +411,7 @@ export default function ConsultorPage() {
                   {/* Favoraveis */}
                   <div className="consultor-args-col consultor-args-favor">
                     <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#2d8659', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <i className="bi bi-check-circle" /> Favoraveis
+                      <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden /> Favoráveis
                     </div>
                     {Array.isArray(parecer.argumentos_favoraveis) && parecer.argumentos_favoraveis.map((a, i) => (
                       <div key={i} className="consultor-arg-item" style={{ borderLeftColor: '#2d8659' }}>
@@ -411,7 +422,7 @@ export default function ConsultorPage() {
                   {/* Contrarios */}
                   <div className="consultor-args-col consultor-args-contra">
                     <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#c0392b', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <i className="bi bi-x-circle" /> Contrarios
+                      <XCircle size={14} strokeWidth={1.75} aria-hidden /> Contrários
                     </div>
                     {Array.isArray(parecer.argumentos_contrarios) && parecer.argumentos_contrarios.map((a, i) => (
                       <div key={i} className="consultor-arg-item" style={{ borderLeftColor: '#c0392b' }}>
@@ -429,7 +440,7 @@ export default function ConsultorPage() {
             {parecer.conclusao && (
               <div className="consultor-conclusao" style={{ marginBottom: 28 }}>
                 <div className="consultor-section-label" style={{ color: 'var(--accent)' }}>
-                  <span className="consultor-section-number">V</span> Conclusao
+                  <span className="consultor-section-number">V</span> Conclusão
                 </div>
                 <div className="consultor-conclusao-box">
                   <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.8, fontWeight: 500 }}>
@@ -443,7 +454,7 @@ export default function ConsultorPage() {
             {Array.isArray(parecer.recomendacoes) && parecer.recomendacoes.length > 0 && (
               <div style={{ marginBottom: 28 }}>
                 <div className="consultor-section-label" style={{ color: '#10B981' }}>
-                  <span className="consultor-section-number">VI</span> Recomendacoes
+                  <span className="consultor-section-number">VI</span> Recomendações
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {parecer.recomendacoes.map((r, i) => (
@@ -460,7 +471,7 @@ export default function ConsultorPage() {
             {parecer.ressalvas && (
               <div className="consultor-ressalvas">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <i className="bi bi-info-circle" style={{ fontSize: 14, color: '#e67e22' }} />
+                  <Info size={14} strokeWidth={1.75} aria-hidden style={{ color: '#e67e22' }} />
                   <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#e67e22' }}>Ressalvas</span>
                 </div>
                 <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
@@ -473,7 +484,7 @@ export default function ConsultorPage() {
           {/* Reset + branding */}
           <button type="button" onClick={() => { setParecer(null); setPergunta(''); setArea(''); setContexto('') }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 16 }}>
-            <i className="bi bi-arrow-counterclockwise" /> Novo parecer
+            <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Novo parecer
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
             <PoweredByLexAI />
@@ -484,9 +495,9 @@ export default function ConsultorPage() {
       {/* Empty state */}
       {!parecer && !loading && !erro && (
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-          <i className="bi bi-file-earmark-text" style={{ fontSize: 48, display: 'block', marginBottom: 16, opacity: 0.25 }} />
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>Elabore pareceres juridicos fundamentados</div>
-          <div style={{ fontSize: 13 }}>Descreva a questao e receba uma analise completa com legislacao, doutrina e recomendacoes</div>
+          <FileText size={48} strokeWidth={1.75} aria-hidden style={{ display: 'block', margin: '0 auto 16px', opacity: 0.25 }} />
+          <div style={{ fontWeight: 600, marginBottom: 6 }}>Elabore pareceres jurídicos fundamentados</div>
+          <div style={{ fontSize: 13 }}>Descreva a questão e receba uma análise completa com legislação, doutrina e recomendações</div>
         </div>
       )}
 
