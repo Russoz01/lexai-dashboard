@@ -4,16 +4,23 @@ import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import Link from 'next/link'
+import {
+  ArrowRight, BarChart3, CalendarCheck, Circle, Clock, Lock,
+  type LucideIcon,
+} from 'lucide-react'
 import { UsagePanel } from '@/components/UsagePanel'
 import { ReferralPanel } from '@/components/ReferralPanel'
+import { usePlan } from '@/hooks/usePlan'
+import { CATALOG, agents, isUnlocked, type CatalogItem, type Plan } from '@/lib/catalog'
 import s from './page.module.css'
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * Dashboard — Gabinete LexAI
- *
- * Editorial atelier layout (N° serial, Playfair italic, stone hairlines)
- * com dados REAIS vindos da tabela historico nos ultimos 7 dias.
- * ──────────────────────────────────────────────────────────────────────────── */
+/* ═════════════════════════════════════════════════════════════
+ * Dashboard — Gabinete LexAI (wired ao catalog em 2026-04-17)
+ * ─────────────────────────────────────────────────────────────
+ * Grid de agentes vem de agents() do catalog.
+ * Locked → /dashboard/planos | !implemented → /dashboard/em-breve.
+ * Editorial atelier: N° serial, Playfair italic, stone hairlines.
+ * ═════════════════════════════════════════════════════════════ */
 
 interface Stats {
   documentos: number
@@ -35,21 +42,8 @@ interface RecentItem {
   created_at: string
 }
 
-/* Catalogo canonico dos agentes — nome de exibicao + rota + icone */
-const AGENT_META: Record<string, { label: string; href: string; icon: string }> = {
-  resumidor:    { label: 'Resumidor',   href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text' },
-  redator:      { label: 'Redator',     href: '/dashboard/redator',     icon: 'bi-pencil-square' },
-  pesquisador:  { label: 'Pesquisador', href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark' },
-  negociador:   { label: 'Negociador',  href: '/dashboard/negociador',  icon: 'bi-lightning' },
-  professor:    { label: 'Monitor Legislativo', href: '/dashboard/professor', icon: 'bi-bell' },
-  calculador:   { label: 'Calculador',  href: '/dashboard/calculador',  icon: 'bi-calculator' },
-  legislacao:   { label: 'Legislacao',  href: '/dashboard/legislacao',  icon: 'bi-book' },
-  rotina:       { label: 'Rotina',      href: '/dashboard/rotina',      icon: 'bi-calendar-week' },
-  planilhas:    { label: 'Planilhas',   href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet' },
-  simulado:     { label: 'Parecerista', href: '/dashboard/simulado',    icon: 'bi-file-earmark-check' },
-  consultor:    { label: 'Estrategista', href: '/dashboard/consultor',  icon: 'bi-shield-check' },
-  chat:         { label: 'Chat',        href: '/dashboard/chat',        icon: 'bi-chat-square-dots' },
-}
+/* Lookup O(1) por slug para resolver agente → CatalogItem */
+const BY_SLUG = new Map(CATALOG.map(item => [item.slug, item]))
 
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
 
@@ -59,16 +53,25 @@ function relativeTime(iso: string) {
   const diff = Date.now() - new Date(iso).getTime()
   const min = Math.floor(diff / 60000)
   if (min < 1) return 'agora mesmo'
-  if (min < 60) return `${min} min atras`
+  if (min < 60) return `${min} min atrás`
   const h = Math.floor(min / 60)
-  if (h < 24) return `${h}h atras`
+  if (h < 24) return `${h}h atrás`
   const d = Math.floor(h / 24)
-  if (d < 7) return `${d}d atras`
+  if (d < 7) return `${d}d atrás`
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+}
+
+function resolveHref(item: CatalogItem, userPlan: Plan): string {
+  if (!isUnlocked(item, userPlan)) return '/dashboard/planos'
+  if (!item.implemented) return `/dashboard/em-breve?feature=${item.slug}`
+  return item.href
 }
 
 export default function DashboardPage() {
   const supabase = createClient()
+  const { plano } = usePlan()
+  const userPlan = (plano || 'free') as Plan
+
   const [stats, setStats] = useState<Stats>({
     documentos: 0, prazosUrgentes: 0, saldo: 0, totalInteracoesSemana: 0, prazosList: [],
   })
@@ -107,7 +110,6 @@ export default function DashboardPage() {
       const saldo = (financeiro.data ?? []).reduce((acc, f) =>
         f.tipo === 'receita' ? acc + Number(f.valor) : acc - Number(f.valor), 0)
 
-      /* Agrega historico da semana por agente */
       const counter = new Map<string, number>()
       for (const row of historicoSemana.data ?? []) {
         const key = (row.agente || '').toLowerCase().trim()
@@ -146,28 +148,29 @@ export default function DashboardPage() {
     return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
   }
 
-  // Time-dependent strings only on client to avoid hydration mismatch (#425)
-  const [greeting, setGreeting] = useState('Ola')
+  const [greeting, setGreeting] = useState('Olá')
   const [todayCapitalized, setTodayCapitalized] = useState('')
   useEffect(() => {
     const now = new Date()
     const hour = now.getHours()
     setGreeting(hour < 5 ? 'Boa noite' : hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite')
     const todayStr = now.toLocaleDateString('pt-BR', {
-      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
     })
     setTodayCapitalized(todayStr.charAt(0).toUpperCase() + todayStr.slice(1))
   }, [])
 
   const maxAgentCount = useMemo(
     () => agentCounts.reduce((m, a) => Math.max(m, a.count), 0) || 1,
-    [agentCounts]
+    [agentCounts],
   )
+
+  const agentList = useMemo(() => agents(), [])
+  const totalAgents = agentList.length
 
   return (
     <div className={`page-content ${s.dashAtelier}`}>
 
-      {/* ═════ HEADER EDITORIAL ═════ */}
       <header className={s.dashHeader}>
         <div className={s.dashSerial}>
           <span className={s.dashSerialDot} />
@@ -180,13 +183,12 @@ export default function DashboardPage() {
         <div className={s.dashHairline} aria-hidden />
       </header>
 
-      {/* ═════ PROVAS — 4 COLUNAS EDITORIAIS ═════ */}
       <section className={s.dashProvas} aria-label="Indicadores do gabinete">
         <ProvaCell
           roman="I"
           value={stats.totalInteracoesSemana}
-          label="Interacoes"
-          caption="Ultimos 7 dias"
+          label="Interações"
+          caption="Últimos 7 dias"
           href="/dashboard/historico"
         />
         <ProvaCell
@@ -200,7 +202,7 @@ export default function DashboardPage() {
           roman="III"
           value={stats.prazosUrgentes}
           label="Prazos"
-          caption="Proximos 7 dias"
+          caption="Próximos 7 dias"
           warning={stats.prazosUrgentes > 0}
           href="/dashboard/prazos"
         />
@@ -214,31 +216,28 @@ export default function DashboardPage() {
         />
       </section>
 
-      {/* ═════ PAINEL DE CONSUMO + INDICACAO ═════ */}
-      <section className={s.dashPanelsRow} aria-label="Consumo e indicacao">
+      <section className={s.dashPanelsRow} aria-label="Consumo e indicação">
         <UsagePanel />
         <ReferralPanel />
       </section>
 
-      {/* ═════ GABINETE — USO + ATIVIDADE ═════ */}
       <section className={s.dashGridUsage} aria-label="Uso dos agentes e atividade recente">
 
-        {/* Uso dos Agentes — DADOS REAIS */}
         <article className={s.dashCard}>
           <div className={s.dashCardHead}>
             <div>
-              <div className={s.dashCardCap}>CAPITULO I · ATELIER</div>
+              <div className={s.dashCardCap}>CAPÍTULO I · ATELIER</div>
               <h2 className={s.dashCardTitle}>Uso dos <em>agentes</em></h2>
               <p className={s.dashCardSub}>
                 {dataLoading
-                  ? 'Contando interacoes dos ultimos 7 dias...'
+                  ? 'Contando interações dos últimos 7 dias...'
                   : stats.totalInteracoesSemana === 0
-                    ? 'Nenhuma interacao registrada esta semana'
-                    : `${stats.totalInteracoesSemana} interacao${stats.totalInteracoesSemana === 1 ? '' : 'oes'} nos ultimos 7 dias`}
+                    ? 'Nenhuma interação registrada esta semana'
+                    : `${stats.totalInteracoesSemana} interação${stats.totalInteracoesSemana === 1 ? '' : 'ões'} nos últimos 7 dias`}
               </p>
             </div>
             <Link href="/dashboard/historico" className={s.dashCardAction}>
-              Ver tudo <i className="bi bi-arrow-right" />
+              Ver tudo <ArrowRight size={12} strokeWidth={2} aria-hidden />
             </Link>
           </div>
 
@@ -251,21 +250,23 @@ export default function DashboardPage() {
               </div>
             ) : agentCounts.length === 0 ? (
               <div className={s.dashEmptyState}>
-                <i className="bi bi-bar-chart" />
+                <BarChart3 size={22} strokeWidth={1.5} aria-hidden />
                 <div className={s.dashEmptyTitle}>Nenhum uso nesta semana</div>
-                <div className={s.dashEmptySub}>Comece pelo chat ou por um dos agentes ao lado. Seu uso aparecera aqui.</div>
+                <div className={s.dashEmptySub}>Comece pelo chat ou por um dos agentes ao lado. Seu uso aparecerá aqui.</div>
                 <Link href="/dashboard/chat" className={s.dashEmptyCta}>
-                  Abrir chat <i className="bi bi-arrow-right" />
+                  Abrir chat <ArrowRight size={12} strokeWidth={2} aria-hidden />
                 </Link>
               </div>
             ) : (
               agentCounts.map((a, i) => {
-                const meta = AGENT_META[a.agente] ?? { label: a.agente, href: '#', icon: 'bi-circle' }
+                const meta = BY_SLUG.get(a.agente)
+                const label = meta?.label ?? a.agente
+                const href = meta ? resolveHref(meta, userPlan) : '#'
                 const pct = (a.count / maxAgentCount) * 100
                 return (
-                  <Link key={a.agente} href={meta.href} className={s.dashBarRow}>
+                  <Link key={a.agente} href={href} className={s.dashBarRow}>
                     <span className={s.dashBarNum}>{pad2(i + 1)}</span>
-                    <span className={s.dashBarLabel}>{meta.label}</span>
+                    <span className={s.dashBarLabel}>{label}</span>
                     <div className={s.dashBarTrack}>
                       <div className={s.dashBarFill} style={{ width: `${pct}%` }} />
                     </div>
@@ -277,22 +278,21 @@ export default function DashboardPage() {
           </div>
         </article>
 
-        {/* Atividade Recente — DADOS REAIS */}
         <article className={s.dashCard}>
           <div className={s.dashCardHead}>
             <div>
-              <div className={s.dashCardCap}>CAPITULO II · DIARIO</div>
+              <div className={s.dashCardCap}>CAPÍTULO II · DIÁRIO</div>
               <h2 className={s.dashCardTitle}>Atividade <em>recente</em></h2>
               <p className={s.dashCardSub}>
                 {dataLoading
                   ? 'Carregando...'
                   : recent.length === 0
                     ? 'Sem registros ainda'
-                    : 'Ultimas cinco interacoes'}
+                    : 'Últimas cinco interações'}
               </p>
             </div>
             <Link href="/dashboard/historico" className={s.dashCardAction}>
-              Historico <i className="bi bi-arrow-right" />
+              Histórico <ArrowRight size={12} strokeWidth={2} aria-hidden />
             </Link>
           </div>
 
@@ -305,22 +305,25 @@ export default function DashboardPage() {
               </>
             ) : recent.length === 0 ? (
               <div className={s.dashEmptyState}>
-                <i className="bi bi-journal" />
+                <Clock size={22} strokeWidth={1.5} aria-hidden />
                 <div className={s.dashEmptyTitle}>Nenhuma atividade ainda</div>
-                <div className={s.dashEmptySub}>Cada interacao com um agente fica registrada aqui.</div>
+                <div className={s.dashEmptySub}>Cada interação com um agente fica registrada aqui.</div>
               </div>
             ) : (
               recent.map((r, i) => {
-                const meta = AGENT_META[r.agente.toLowerCase()] ?? { label: r.agente, href: '/dashboard/historico', icon: 'bi-circle' }
+                const meta = BY_SLUG.get(r.agente.toLowerCase())
+                const label = meta?.label ?? r.agente
+                const href = meta ? resolveHref(meta, userPlan) : '/dashboard/historico'
+                const Icon: LucideIcon = meta?.Icon ?? Circle
                 const snippet = (r.mensagem_usuario || '').slice(0, 64)
                 return (
-                  <Link key={r.id} href={meta.href} className={s.dashActivityRow}>
+                  <Link key={r.id} href={href} className={s.dashActivityRow}>
                     <span className={s.dashActivityNum}>{ROMAN[i] ?? (i+1)}</span>
                     <div className={s.dashActivityIcon}>
-                      <i className={`bi ${meta.icon}`} />
+                      <Icon size={15} strokeWidth={1.75} aria-hidden />
                     </div>
                     <div className={s.dashActivityInfo}>
-                      <div className={s.dashActivityName}>{meta.label}</div>
+                      <div className={s.dashActivityName}>{label}</div>
                       <div className={s.dashActivitySnippet}>{snippet || '—'}</div>
                     </div>
                     <span className={s.dashActivityTime}>{relativeTime(r.created_at)}</span>
@@ -333,71 +336,67 @@ export default function DashboardPage() {
 
       </section>
 
-      {/* ═════ GABINETE — AGENTES + PRAZOS/FINANCEIRO ═════ */}
       <section className={s.dashGridMain}>
 
-        {/* Agentes do gabinete */}
         <article className={s.dashCard}>
           <div className={s.dashCardHead}>
             <div>
-              <div className={s.dashCardCap}>CAPITULO III · ATELIER</div>
-              <h2 className={s.dashCardTitle}>Doze <em>agentes</em></h2>
+              <div className={s.dashCardCap}>CAPÍTULO III · ATELIER</div>
+              <h2 className={s.dashCardTitle}>Vinte e dois <em>agentes</em></h2>
               <p className={s.dashCardSub}>Clique para abrir o atelier do especialista</p>
             </div>
             <Link href="/dashboard/chat" className={s.dashCardAction}>
-              Chat <i className="bi bi-arrow-right" />
+              Chat <ArrowRight size={12} strokeWidth={2} aria-hidden />
             </Link>
           </div>
 
           <div className={s.dashAgentsGrid}>
-            {[
-              { href: '/dashboard/chat',        icon: 'bi-chat-square-dots',         name: 'Chat',         desc: 'Orquestrador · roteia para o agente certo' },
-              { href: '/dashboard/resumidor',   icon: 'bi-file-earmark-text',        name: 'Resumidor',    desc: 'Analisa contratos, acordaos e peticoes' },
-              { href: '/dashboard/redator',     icon: 'bi-pencil-square',            name: 'Redator',      desc: 'Pecas processuais com fundamentacao' },
-              { href: '/dashboard/pesquisador', icon: 'bi-journal-bookmark',         name: 'Pesquisador',  desc: 'Jurisprudencia STF, STJ e tribunais' },
-              { href: '/dashboard/negociador',  icon: 'bi-lightning',                name: 'Negociador',   desc: 'BATNA, ZOPA e cenarios de acordo' },
-              { href: '/dashboard/professor',   icon: 'bi-bell',                     name: 'Monitor Legislativo', desc: 'Mudancas normativas e precedentes' },
-              { href: '/dashboard/calculador',  icon: 'bi-calculator',               name: 'Calculador',   desc: 'Prazos, juros, correcao, custas' },
-              { href: '/dashboard/legislacao',  icon: 'bi-book',                     name: 'Legislacao',   desc: 'Artigos de lei explicados' },
-              { href: '/dashboard/simulado',    icon: 'bi-file-earmark-check',       name: 'Parecerista',  desc: 'Pareceres com fundamentacao legal' },
-              { href: '/dashboard/consultor',   icon: 'bi-shield-check',             name: 'Estrategista', desc: 'Risco processual e linha de atuacao' },
-              { href: '/dashboard/rotina',      icon: 'bi-calendar-week',            name: 'Rotina',       desc: 'Agenda, compromissos, fluxos' },
-              { href: '/dashboard/planilhas',   icon: 'bi-file-earmark-spreadsheet', name: 'Planilhas',    desc: 'Timesheet, controle, honorarios' },
-            ].map((ag, i) => (
-              <Link key={ag.name} href={ag.href} className={s.dashAgent}>
-                <span className={s.dashAgentNum}>{pad2(i + 1)}</span>
-                <div className={s.dashAgentIcon}>
-                  <i className={`bi ${ag.icon}`} />
-                </div>
-                <div className={s.dashAgentInfo}>
-                  <div className={s.dashAgentName}>{ag.name}</div>
-                  <div className={s.dashAgentDesc}>{ag.desc}</div>
-                </div>
-                <i className={`bi bi-arrow-right ${s.dashAgentArrow}`} />
-              </Link>
-            ))}
+            {agentList.map((ag, i) => {
+              const Icon = ag.Icon
+              const locked = !isUnlocked(ag, userPlan)
+              const href = resolveHref(ag, userPlan)
+              return (
+                <Link
+                  key={ag.slug}
+                  href={href}
+                  className={s.dashAgent}
+                  title={locked ? `Disponível no plano ${ag.minPlan}` : ag.desc}
+                  aria-disabled={locked || undefined}
+                >
+                  <span className={s.dashAgentNum}>{pad2(i + 1)}</span>
+                  <div className={s.dashAgentIcon}>
+                    <Icon size={16} strokeWidth={1.75} aria-hidden />
+                  </div>
+                  <div className={s.dashAgentInfo}>
+                    <div className={s.dashAgentName}>{ag.label}</div>
+                    <div className={s.dashAgentDesc}>{ag.desc}</div>
+                  </div>
+                  {locked
+                    ? <Lock size={14} strokeWidth={2} className={s.dashAgentArrow} aria-hidden />
+                    : <ArrowRight size={14} strokeWidth={1.75} className={s.dashAgentArrow} aria-hidden />}
+                </Link>
+              )
+            })}
           </div>
         </article>
 
-        {/* Coluna direita: Prazos + Financeiro */}
         <div className={s.dashSideCol}>
 
-          {/* Prazos */}
           <article className={s.dashCard}>
             <div className={s.dashCardHead}>
               <div>
-                <div className={s.dashCardCap}>CAPITULO IV · AGENDA</div>
-                <h2 className={s.dashCardTitle}>Prazos <em>proximos</em></h2>
+                <div className={s.dashCardCap}>CAPÍTULO IV · AGENDA</div>
+                <h2 className={s.dashCardTitle}>Prazos <em>próximos</em></h2>
                 <p className={s.dashCardSub}>Monitoramento ativo</p>
               </div>
               <Link href="/dashboard/prazos" className={s.dashCardAction}>
-                Ver todos <i className="bi bi-arrow-right" />
+                Ver todos <ArrowRight size={12} strokeWidth={2} aria-hidden />
               </Link>
             </div>
             <div className={s.dashPrazos}>
               {stats.prazosList.length === 0 ? (
                 <div className={`${s.dashEmptyState} ${s.compact}`}>
-                  <i className="bi bi-clock" />
+                  <CalendarCheck size={20} strokeWidth={1.5} aria-hidden />
                   <div className={s.dashEmptyTitle}>Nenhum prazo</div>
                   <div className={s.dashEmptySub}>Cadastre seus prazos processuais para receber alertas.</div>
                 </div>
@@ -424,11 +423,10 @@ export default function DashboardPage() {
             </div>
           </article>
 
-          {/* Financeiro */}
           <article className={s.dashCard}>
             <div className={s.dashCardHead}>
               <div>
-                <div className={s.dashCardCap}>CAPITULO V · LIVRO-CAIXA</div>
+                <div className={s.dashCardCap}>CAPÍTULO V · LIVRO-CAIXA</div>
                 <h2 className={s.dashCardTitle}>Saldo <em>atual</em></h2>
                 <p className={s.dashCardSub} suppressHydrationWarning>{typeof window === 'undefined' ? '' : new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
               </div>
@@ -438,7 +436,7 @@ export default function DashboardPage() {
                 {fmt(stats.saldo)}
               </div>
               <Link href="/dashboard/financeiro" className={s.dashFinanceCta}>
-                Ver detalhes <i className="bi bi-arrow-right" />
+                Ver detalhes <ArrowRight size={12} strokeWidth={2} aria-hidden />
               </Link>
             </div>
           </article>
@@ -450,9 +448,6 @@ export default function DashboardPage() {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * ProvaCell — celula editorial de indicador (I, II, III, IV)
- * ──────────────────────────────────────────────────────────────────────────── */
 function ProvaCell({
   roman, value, moneyValue, label, caption, href, warning,
 }: {
