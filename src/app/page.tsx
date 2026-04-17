@@ -53,6 +53,31 @@ const depoimentos = [
   },
 ]
 
+const planos = [
+  {
+    name: 'Escritorio',
+    price: '1.399',
+    seats: '1–5 advogados',
+    headline: '5 agentes · 200 documentos / mes',
+    features: ['Resumidor, Pesquisador, Redator, Calculador, Monitor Legislativo', 'Historico de 45 dias', 'Suporte por email em 24h'],
+  },
+  {
+    name: 'Firma',
+    price: '1.459',
+    seats: '6–15 advogados',
+    headline: '22 agentes · documentos ilimitados',
+    popular: true,
+    features: ['Todos os 22 agentes especializados', 'Exportacao em PDF', 'Suporte prioritario em 3h', 'Historico de 90 dias', 'Sessao de onboarding dedicada', 'Compra avulsa de tokens'],
+  },
+  {
+    name: 'Enterprise',
+    price: '1.599',
+    seats: '16+ advogados',
+    headline: 'Ilimitado · agentes customizados',
+    features: ['Agentes customizados para o escritorio', 'API privada + SLA de uptime', 'Gerente de conta dedicado', 'Historico ilimitado', 'Opcao on-premise', 'DPA incluso'],
+  },
+]
+
 const footerColumns = [
   {
     title: 'Produto',
@@ -576,6 +601,47 @@ export default function LandingPage() {
                 <span className={s.compareIconCheck} aria-hidden>✓</span>
                 {row.us}
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── PRICING ────────────────────────────────────────────────────── */}
+      <section id="planos" className={s.planosSection}>
+        <div className={s.sectionHead} data-reveal>
+          <SerialLabel>Capitulo VI · Acesso</SerialLabel>
+          <h2 className={s.sectionTitle}>
+            Planos <em className={s.italic}>transparentes</em>.
+          </h2>
+          <p className={s.sectionSub}>
+            Demonstracao guiada de 30 minutos · Sem compromisso.
+          </p>
+        </div>
+        <Rule />
+
+        <div className={s.plans} data-reveal>
+          {planos.map((p, i) => (
+            <div key={p.name} className={`${s.plan}${p.popular ? ` ${s.planPopular}` : ''}`} style={{ '--reveal-delay': `${i * 130}ms` } as React.CSSProperties}>
+              {p.popular && <div className={s.planBadge}>Mais escolhido</div>}
+              <div className={s.planName}>{p.name}</div>
+              <div className={s.planSeats}>{p.seats}</div>
+              <div className={s.planPrice}>
+                <span className={s.planCurrency}>R$</span>
+                <span className={s.planValue}>{p.price}</span>
+              </div>
+              <div className={s.planPerSeat}>por advogado / mes</div>
+              <div className={s.planHeadline}>{p.headline}</div>
+              <ul className={s.planFeatures}>
+                {p.features.map((f) => (
+                  <li key={f}>
+                    <span aria-hidden className={s.planDot} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/login" className={`${s.planCta}${p.popular ? ` ${s.planCtaSolid}` : ''}`}>
+                {i === 0 ? 'Comecar 7 dias gratis' : 'Agendar demonstracao'}
+              </Link>
             </div>
           ))}
         </div>

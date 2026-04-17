@@ -20,10 +20,30 @@
 }
 
 /* ── Root ──────────────────────────────────────────────────────────────── */
+/* Warm-brown atelier palette (espelha /login). Sobrescreve tokens globais
+   para a landing viver numa paleta noir quente independente do data-theme. */
 .root {
+  --bg-base: #0a0807;
+  --bg-raise: #1a1410;
+  --bg-deep: #050403;
+  --stone: #bfa68e;
+  --stone-light: #e6d4bd;
+  --stone-dark: #8a6f55;
+  --stone-soft: rgba(191, 166, 142, 0.10);
+  --stone-line: rgba(191, 166, 142, 0.16);
+  --text-primary: #f5efe6;
+  --text-secondary: rgba(245, 239, 230, 0.78);
+  --text-muted: rgba(245, 239, 230, 0.48);
+  --accent: #bfa68e;
+  --accent-dark: #8a6f55;
+  --card-bg: rgba(26, 20, 16, 0.55);
+  --input-bg: rgba(255, 255, 255, 0.03);
+
   position: relative;
   min-height: 100vh;
-  background: var(--bg-base);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(191, 166, 142, 0.07), transparent 70%),
+    linear-gradient(180deg, #0f0b08 0%, #0a0807 45%, #050403 100%);
   color: var(--text-primary);
   font-family: var(--font-dm-sans, 'DM Sans'), -apple-system, sans-serif;
   overflow-x: hidden;
@@ -36,8 +56,11 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 60% 45% at 15% 8%, var(--stone-soft), transparent 68%),
-    radial-gradient(ellipse 55% 50% at 90% 95%, rgba(68,55,43,0.08), transparent 70%);
+    radial-gradient(ellipse 60% 45% at 15% 8%, rgba(191, 166, 142, 0.09), transparent 68%),
+    radial-gradient(ellipse 55% 50% at 90% 95%, rgba(138, 111, 85, 0.10), transparent 70%),
+    linear-gradient(to right, rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.012) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 96px 96px, 96px 96px;
 }
 .root::after {
   content: '';
@@ -69,7 +92,11 @@
   font-family: var(--font-playfair, 'Playfair Display'), Georgia, serif;
   font-style: italic;
   font-weight: 500;
-  color: var(--accent);
+  background: linear-gradient(90deg, #e6d4bd 0%, #bfa68e 50%, #8a6f55 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   letter-spacing: -0.5px;
 }
 .serial {
@@ -345,33 +372,31 @@
   justify-content: center;
   gap: 8px;
   padding: 11px 22px;
-  background: var(--text-primary);
-  color: var(--bg-base);
-  border: 1px solid var(--text-primary);
-  border-radius: 2px;
+  background: linear-gradient(135deg, #e6d4bd 0%, #bfa68e 50%, #8a6f55 100%);
+  color: #0a0807;
+  border: 1px solid rgba(230, 212, 189, 0.4);
+  border-radius: 3px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.3px;
   text-decoration: none;
   position: relative;
   overflow: hidden;
-  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.35s ease;
+  box-shadow: 0 0 28px rgba(191, 166, 142, 0.22);
+  transition: transform 0.25s ease, box-shadow 0.35s ease;
 }
 .ctaPrimary::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, transparent 20%, rgba(191,166,142,0.18) 50%, transparent 80%);
+  background: linear-gradient(120deg, transparent 20%, rgba(255, 248, 235, 0.35) 50%, transparent 80%);
   transform: translateX(-100%);
   transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .ctaPrimary > * { position: relative; z-index: 1; }
 .ctaPrimary:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--bg-base);
   transform: translateY(-2px);
-  box-shadow: 0 10px 40px rgba(68, 55, 43, 0.25);
+  box-shadow: 0 10px 40px rgba(191, 166, 142, 0.45);
 }
 .ctaPrimary:hover::before {
   transform: translateX(100%);
@@ -1256,7 +1281,11 @@
   font-size: 72px;
   font-weight: 400;
   line-height: 1;
-  color: var(--text-primary);
+  background: linear-gradient(135deg, #f5efe6 0%, #e6d4bd 50%, #bfa68e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   letter-spacing: -3px;
 }
 .planSeats {
@@ -1329,26 +1358,27 @@
   outline-offset: 4px;
 }
 .planCtaSolid {
-  background: var(--text-primary);
-  color: var(--bg-base);
-  border-color: var(--text-primary);
-  box-shadow: 0 4px 20px rgba(68,55,43,0.15);
+  background: linear-gradient(135deg, #e6d4bd 0%, #bfa68e 50%, #8a6f55 100%);
+  color: #0a0807;
+  border-color: rgba(230, 212, 189, 0.5);
+  box-shadow: 0 0 28px rgba(191, 166, 142, 0.25);
   position: relative;
   overflow: hidden;
+  font-weight: 600;
 }
 .planCtaSolid::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 20%, rgba(191,166,142,0.2) 50%, transparent 80%);
+  background: linear-gradient(90deg, transparent 20%, rgba(255, 248, 235, 0.35) 50%, transparent 80%);
   background-size: 200% 100%;
   animation: shimmer 3s ease-in-out infinite;
   pointer-events: none;
 }
 .planCtaSolid:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 8px 30px rgba(191,166,142,0.25);
+  color: #0a0807;
+  box-shadow: 0 10px 40px rgba(191, 166, 142, 0.5);
+  transform: translateY(-2px);
 }
 
 /* ── Closing ──────────────────────────────────────────────────────────── */
