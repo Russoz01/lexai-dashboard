@@ -57,15 +57,18 @@ export function LexPricing() {
     <section id="precos" className="relative bg-black py-24">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal as="div" className="mx-auto mb-14 max-w-2xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/55">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/70">
             Planos transparentes
           </div>
           <h2 className="text-balance text-4xl font-medium tracking-tight text-white md:text-5xl">
-            Acesso ao{' '}
-            <span className="italic text-white/50">atelier</span>.
+            Preço único por{' '}
+            <span className="bg-gradient-to-br from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text text-transparent">
+              assento
+            </span>.
           </h2>
-          <p className="mt-4 text-white/55">
-            Sem fidelidade. Cancelamento em 1 clique. 7 dias gratis em todos os planos.
+          <p className="mt-4 text-white/70">
+            Todos os planos incluem 7 dias gratuitos. Sem fidelidade. Cancelamento
+            em 1 clique.
           </p>
         </Reveal>
 

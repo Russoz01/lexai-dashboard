@@ -1143,6 +1143,22 @@ input[type="date"] { cursor: pointer; }
   100% { background-position: -200% 0; }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   LEXAI LANDING — word reveal (CSS-only, confiavel)
+   Usado pelo WordReveal component. Substitui stagger do framer-motion
+   que estava falhando e deixando palavras presas em opacity:0.
+   ══════════════════════════════════════════════════════════════ */
+@keyframes lex-word-reveal-kf {
+  0%   { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+  100% { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+}
+.lex-word-reveal {
+  display: inline-block;
+  opacity: 0;
+  animation: lex-word-reveal-kf 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity, filter;
+}
+
 /* ── Reduced motion — WCAG 2.1 AAA ─────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -1151,4 +1167,5 @@ input[type="date"] { cursor: pointer; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .lex-word-reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
 }

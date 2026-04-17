@@ -1,99 +1,92 @@
 'use client'
 
-import { motion, useInView, type Variants } from 'framer-motion'
-import { useRef, type ReactNode } from 'react'
+import { motion, type Variants } from 'framer-motion'
+import type { ReactNode } from 'react'
 
 /**
  * Reveal — wrapper leve que anima filhos on-scroll usando framer-motion.
- * Substitui a dependencia `motion/react` + TimelineContent do pricing-section-4
- * original. Mesma ideia: blur + slide + fade com stagger por delay.
+ * Usa `whileInView` (idiomatico) para garantir disparo confiavel.
+ *
+ * Fix (v3): removido `motion.create(Tag)` dinamico. Garante que elementos
+ * ja visiveis no viewport inicial disparem normalmente.
  */
 export function Reveal({
   children,
   delay = 0,
-  as: Tag = 'div',
+  as = 'div',
   className,
 }: {
   children: ReactNode
   delay?: number
-  as?: keyof JSX.IntrinsicElements
+  as?: 'div' | 'section' | 'header' | 'span' | 'p' | 'article' | 'li' | 'ul'
   className?: string
 }) {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '0px 0px -80px 0px' })
-
   const variants: Variants = {
-    hidden:  { opacity: 0, y: -20, filter: 'blur(10px)' },
-    visible: { opacity: 1, y: 0,   filter: 'blur(0px)',
-      transition: { delay, duration: 0.55, ease: 'easeOut' },
+    hidden:  { opacity: 0, y: 16, filter: 'blur(8px)' },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: { delay, duration: 0.55, ease: [0.22, 1, 0.36, 1] },
     },
   }
 
-  const MotionTag = motion.create(Tag as 'div')
+  const MotionComponent =
+    as === 'section' ? motion.section
+    : as === 'header' ? motion.header
+    : as === 'span'   ? motion.span
+    : as === 'p'      ? motion.p
+    : as === 'article'? motion.article
+    : as === 'li'     ? motion.li
+    : as === 'ul'     ? motion.ul
+    : motion.div
 
   return (
-    <MotionTag
-      ref={ref}
+    <MotionComponent
       initial="hidden"
-      animate={inView ? 'visible' : 'hidden'}
+      whileInView="visible"
+      viewport={{ once: true, margin: '0px 0px -60px 0px' }}
       variants={variants}
       className={className}
     >
       {children}
-    </MotionTag>
+    </MotionComponent>
   )
 }
 
 /**
- * WordReveal — revela palavra por palavra com stagger, substitui
- * VerticalCutReveal do original (sem Intl.Segmenter ou clip complexo).
+ * WordReveal — revela palavra por palavra via CSS keyframes.
+ *
+ * Fix (v3): abandonamos framer-motion staggerChildren aqui — ele estava
+ * falhando intermitentemente deixando todas palavras em opacity:0.
+ * Agora eh puro CSS (animation + animationDelay por indice) — 100%
+ * confiavel, dispara na primeira pintura, sem precisar de IntersectionObserver.
  */
 export function WordReveal({
   text,
   className,
-  stagger = 0.08,
-  reverse = false,
+  stagger = 0.06,
 }: {
   text: string
   className?: string
   stagger?: number
-  reverse?: boolean
 }) {
   const words = text.split(' ')
-  const container: Variants = {
-    hidden:  {},
-    visible: {
-      transition: {
-        staggerChildren: stagger,
-        staggerDirection: reverse ? -1 : 1,
-      },
-    },
-  }
-  const item: Variants = {
-    hidden:  { y: '100%', opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: 'spring', stiffness: 240, damping: 26 },
-    },
-  }
   return (
-    <motion.span
-      initial="hidden"
-      animate="visible"
-      variants={container}
-      className={className}
-    >
+    <span className={className}>
       {words.map((w, i) => (
         <span
-          key={i}
-          style={{ display: 'inline-flex', overflow: 'hidden', marginRight: '0.25em' }}
+          key={`${w}-${i}`}
+          className="lex-word-reveal"
+          style={{
+            animationDelay: `${i * stagger}s`,
+            // whitespace entre palavras preservado por HTML entity
+          }}
         >
-          <motion.span variants={item} style={{ display: 'inline-block' }}>
-            {w}
-          </motion.span>
+          {w}
+          {i < words.length - 1 ? '\u00A0' : ''}
         </span>
       ))}
-    </motion.span>
+    </span>
   )
 }

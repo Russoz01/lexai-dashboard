@@ -24,11 +24,13 @@ export function LexFinalCta() {
           <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-tight text-white md:text-6xl">
             Pronto para escrever petições
             <br />
-            <span className="italic text-white/55">em minutos</span>?
+            <span className="bg-gradient-to-br from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text text-transparent">
+              em minutos
+            </span>?
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-white/55">
-            Quatorze dias gratis. Sem cartao. Cancele com um clique. Se nao te
-            economizar vinte horas na primeira semana, a gente devolve tudo.
+          <p className="mx-auto mt-6 max-w-xl text-white/70">
+            Sete dias grátis. Sem cartão. Cancele com um clique. Se não economizar
+            vinte horas na primeira semana, a gente devolve tudo.
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 md:flex-row">
@@ -40,7 +42,7 @@ export function LexFinalCta() {
                 aria-hidden
                 className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(191,166,142,0.35)_50%,transparent_75%)] bg-[length:200%_100%] animate-shimmer"
               />
-              <span className="relative">Começar trial de 14 dias</span>
+              <span className="relative">Começar 7 dias grátis</span>
               <ArrowRight className="relative size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
