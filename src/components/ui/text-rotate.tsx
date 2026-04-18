@@ -31,13 +31,21 @@ export function TextRotate({
     return () => clearInterval(id)
   }, [interval, words.length])
 
+  // className (gradient + bg-clip-text) precisa ir nas spans FILHAS, nao
+  // no wrapper — porque a motion.span real e position:absolute e, quando
+  // bg-clip:text fica no pai, o glyph do filho pinta fora do fluxo e o
+  // gradient nao renderiza (aparece "invisivel", so visivel ao selecionar).
   return (
     <span
-      className={cn('relative inline-block overflow-hidden align-baseline', className)}
+      className="relative inline-block overflow-hidden align-baseline"
       style={{ verticalAlign: 'baseline' }}
     >
-      {/* Ghost: define largura/altura da palavra mais longa (sem ser visivel) */}
-      <span className="invisible whitespace-nowrap" aria-hidden>
+      {/* Ghost: define largura/altura da palavra mais longa */}
+      <span
+        className={cn('invisible whitespace-nowrap', className)}
+        style={{ WebkitBackgroundClip: 'text' }}
+        aria-hidden
+      >
         {words.reduce((a, b) => (a.length > b.length ? a : b))}
       </span>
 
@@ -48,7 +56,8 @@ export function TextRotate({
           animate={{ y: 0,       opacity: 1, filter: 'blur(0px)' }}
           exit={{ y: '-0.9em',   opacity: 0, filter: 'blur(6px)' }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0 whitespace-nowrap"
+          className={cn('absolute inset-0 whitespace-nowrap', className)}
+          style={{ WebkitBackgroundClip: 'text' }}
         >
           {words[i]}
         </motion.span>
