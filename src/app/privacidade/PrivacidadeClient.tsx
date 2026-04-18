@@ -557,11 +557,18 @@ export default function PrivacidadeClient() {
             </div>
           </Reveal>
 
+          {/* H1 — gradient line sem WordReveal (bg-clip-text nao convive com
+              inline-block do word-reveal; usamos Reveal simples para animar) */}
           <h1 className="text-balance text-4xl font-medium leading-[1.1] tracking-tight md:text-5xl lg:text-6xl">
             <WordReveal text="Politica de" className="block" stagger={0.06} />
-            <span className="mt-1 block bg-gradient-to-br from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text text-transparent">
-              <WordReveal text="Privacidade" stagger={0.06} />
-            </span>
+            <Reveal delay={0.35}>
+              <span
+                className="mt-1 block bg-gradient-to-br from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text text-transparent"
+                style={{ WebkitBackgroundClip: 'text' }}
+              >
+                Privacidade
+              </span>
+            </Reveal>
           </h1>
 
           <Reveal delay={0.45}>

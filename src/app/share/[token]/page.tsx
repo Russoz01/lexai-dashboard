@@ -1,6 +1,20 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import {
+  Eye,
+  Calendar,
+  FileText,
+  ArrowLeft,
+  ArrowRight,
+  TextQuote,
+  CheckCircle2,
+  AlertTriangle,
+  CalendarClock,
+  Scale,
+  Link2Off,
+  Sparkles,
+} from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -80,75 +94,46 @@ function formatDate(iso: string): string {
   }
 }
 
+/* ════════════════════════════════════════════════════════════════════
+ * /share/[token] — documento publico compartilhado (Tailwind · dark)
+ * ────────────────────────────────────────────────────────────────────
+ * Migrado de cream+navy+bi-icons para black+champagne+lucide.
+ * Mantem server component (async) — sem animacoes framer.
+ * Glow decorativo CSS puro (radial-gradient, blur) no hero.
+ * Cards com border champagne e bg neutral-950/60 para legibilidade.
+ * Robots noindex/nofollow conservado.
+ * ═══════════════════════════════════════════════════════════════════ */
+
 function NotFoundView() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#F5EFE6',
-      color: '#132025',
-      fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '24px',
-    }}>
-      <div style={{
-        maxWidth: '480px',
-        width: '100%',
-        background: '#FFFFFF',
-        border: '1px solid rgba(0,0,0,0.06)',
-        borderRadius: '16px',
-        padding: '40px 32px',
-        textAlign: 'center',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}>
-        <div style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '50%',
-          background: 'rgba(239,68,68,0.08)',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '20px',
-          color: '#EF4444',
-          fontSize: '28px',
-        }}>
-          <i className="bi bi-link-45deg" />
+    <div className="flex min-h-screen items-center justify-center bg-black px-6 py-16 text-white">
+      {/* Fundo decorativo */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(50%_40%_at_50%_30%,rgba(239,68,68,0.08)_0%,transparent_70%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-20 [background:radial-gradient(70%_50%_at_50%_100%,rgba(191,166,142,0.06)_0%,transparent_70%)]"
+      />
+
+      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-neutral-950/80 p-10 text-center backdrop-blur">
+        <div className="mx-auto mb-6 flex size-14 items-center justify-center rounded-2xl border border-red-400/25 bg-red-400/[0.08]">
+          <Link2Off className="size-6 text-red-300" strokeWidth={1.75} />
         </div>
-        <h1 style={{
-          fontSize: '22px',
-          fontWeight: 700,
-          marginBottom: '10px',
-          color: '#132025',
-        }}>
+        <h1 className="mb-2.5 text-xl font-medium tracking-tight text-white">
           Link expirado ou nao encontrado
         </h1>
-        <p style={{
-          fontSize: '14px',
-          color: '#475569',
-          lineHeight: 1.6,
-          marginBottom: '24px',
-        }}>
-          Este documento compartilhado nao esta mais disponivel. Pode ter expirado ou o link esta incorreto.
+        <p className="mb-7 text-sm leading-relaxed text-white/55">
+          Este documento compartilhado nao esta mais disponivel. Pode ter expirado ou
+          o link esta incorreto.
         </p>
         <Link
           href="/"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '11px 22px',
-            background: '#bfa68e',
-            color: '#FFFFFF',
-            borderRadius: '10px',
-            fontSize: '14px',
-            fontWeight: 600,
-            textDecoration: 'none',
-            transition: 'background 0.15s ease',
-          }}
+          className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-5 text-xs font-medium text-black transition hover:bg-white/90"
         >
-          <i className="bi bi-arrow-left" /> Voltar para a LexAI
+          <ArrowLeft className="size-3.5" strokeWidth={2.25} />
+          Voltar para a LexAI
         </Link>
       </div>
     </div>
@@ -187,403 +172,251 @@ export default async function SharedDocumentPage({
   const viewsCount = (doc.views || 0) + 1 // include this view
 
   return (
-    <>
-      {/* Bootstrap Icons for the share page (standalone, no layout dep) */}
-      {/* eslint-disable-next-line @next/next/no-css-tags */}
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css"
+    <div className="relative min-h-screen bg-black text-white antialiased">
+      {/* ═══ Fundo ═══════════════════════════════════════════════════ */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[520px] [background:radial-gradient(60%_100%_at_50%_0%,rgba(191,166,142,0.10)_0%,transparent_75%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 -z-20 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"
       />
 
-      <div style={{
-        minHeight: '100vh',
-        background: '#F5EFE6',
-        color: '#132025',
-        fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-        padding: '48px 24px',
-      }}>
-        <div style={{
-          maxWidth: '800px',
-          margin: '0 auto',
-        }}>
-          {/* Header Card */}
-          <div style={{
-            background: '#FFFFFF',
-            border: '1px solid rgba(0,0,0,0.06)',
-            borderRadius: '16px',
-            padding: '28px 32px',
-            marginBottom: '20px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-          }}>
-            {/* LexAI brand strip */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '14px',
-              fontSize: '12px',
-              fontWeight: 600,
-              color: '#bfa68e',
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
-            }}>
-              <span style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                background: '#bfa68e',
-                display: 'inline-block',
-              }} />
+      {/* ═══ NAV minima ══════════════════════════════════════════════ */}
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-black/75 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-6">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex size-7 items-center justify-center rounded-md border border-white/10 bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
+              <Scale className="size-3.5 text-[#bfa68e]" strokeWidth={1.75} />
+            </div>
+            <span className="text-sm font-medium tracking-tight">LexAI</span>
+          </Link>
+          <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/45">
+            Documento publico
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-3xl px-6 py-12">
+        {/* ═══ HERO do documento ════════════════════════════════════ */}
+        <div className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-neutral-950/80 to-neutral-950/60 p-8 backdrop-blur md:p-10">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -left-16 -top-16 size-48 rounded-full bg-[#bfa68e]/10 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#bfa68e]/40 to-transparent"
+          />
+
+          <div className="relative">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#bfa68e]/25 bg-[#bfa68e]/[0.06] px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#e6d4bd]">
+              <span className="size-1 rounded-full bg-[#bfa68e]" />
               Compartilhado via LexAI
             </div>
 
-            <h1 style={{
-              fontSize: '26px',
-              fontWeight: 700,
-              lineHeight: 1.3,
-              marginBottom: '14px',
-              color: '#132025',
-            }}>
+            <h1 className="text-balance text-[1.7rem] font-medium leading-tight tracking-tight text-white md:text-[2rem]">
               {doc.titulo}
             </h1>
 
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '14px',
-              fontSize: '12px',
-              color: '#64748B',
-            }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <i className="bi bi-eye" />
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2.5 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-white/50">
+              <span className="inline-flex items-center gap-1.5">
+                <Eye className="size-3.5 text-[#bfa68e]" strokeWidth={2} />
                 {viewsCount} {viewsCount === 1 ? 'visualizacao' : 'visualizacoes'}
               </span>
-              <span style={{ color: '#CBD5E1' }}>•</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <i className="bi bi-calendar-event" />
-                Disponivel ate {expiresLabel}
+              <span className="text-white/20">&bull;</span>
+              <span className="inline-flex items-center gap-1.5">
+                <Calendar className="size-3.5 text-[#bfa68e]" strokeWidth={2} />
+                Ate {expiresLabel}
               </span>
               {doc.tipo && (
                 <>
-                  <span style={{ color: '#CBD5E1' }}>•</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    <i className="bi bi-file-earmark-text" />
+                  <span className="text-white/20">&bull;</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <FileText className="size-3.5 text-[#bfa68e]" strokeWidth={2} />
                     {doc.tipo}
                   </span>
                 </>
               )}
             </div>
           </div>
+        </div>
 
-          {/* Resumo / objeto */}
-          {objeto && (
-            <div style={{
-              background: '#FFFFFF',
-              border: '1px solid rgba(0,0,0,0.06)',
-              borderRadius: '16px',
-              padding: '28px 32px',
-              marginBottom: '20px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            }}>
-              <div style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#bfa68e',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                marginBottom: '10px',
-              }}>
-                <i className="bi bi-text-paragraph" style={{ marginRight: '6px' }} />
-                Resumo Executivo
-              </div>
-              <p style={{
-                fontSize: '15px',
-                lineHeight: 1.75,
-                color: '#1E293B',
-                margin: 0,
-                whiteSpace: 'pre-wrap',
-              }}>
-                {String(objeto)}
-              </p>
+        {/* ═══ Resumo / objeto ═══════════════════════════════════════ */}
+        {objeto && (
+          <section className="mb-5 rounded-2xl border border-white/10 bg-neutral-950/60 p-7 backdrop-blur">
+            <div className="mb-4 inline-flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#bfa68e]">
+              <TextQuote className="size-3.5" strokeWidth={2} />
+              Resumo executivo
             </div>
-          )}
+            <p className="whitespace-pre-wrap text-[0.95rem] leading-[1.78] text-white/75">
+              {String(objeto)}
+            </p>
+          </section>
+        )}
 
-          {/* Pontos principais */}
-          {Array.isArray(pontos) && pontos.length > 0 && (
-            <div style={{
-              background: '#FFFFFF',
-              border: '1px solid rgba(0,0,0,0.06)',
-              borderRadius: '16px',
-              padding: '28px 32px',
-              marginBottom: '20px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            }}>
-              <div style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#bfa68e',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                marginBottom: '14px',
-              }}>
-                <i className="bi bi-check-circle-fill" style={{ marginRight: '6px' }} />
-                Pontos Principais
-              </div>
-              <ul style={{
-                listStyle: 'none',
-                padding: 0,
-                margin: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-              }}>
-                {pontos.map((p, i) => (
-                  <li key={i} style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                    fontSize: '14px',
-                    lineHeight: 1.65,
-                    color: '#1E293B',
-                  }}>
-                    <span style={{
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      background: '#bfa68e',
-                      flexShrink: 0,
-                      marginTop: '8px',
-                    }} />
-                    <span>{typeof p === 'string' ? p : JSON.stringify(p)}</span>
-                  </li>
-                ))}
-              </ul>
+        {/* ═══ Pontos principais ═══════════════════════════════════ */}
+        {Array.isArray(pontos) && pontos.length > 0 && (
+          <section className="mb-5 rounded-2xl border border-white/10 bg-neutral-950/60 p-7 backdrop-blur">
+            <div className="mb-5 inline-flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#bfa68e]">
+              <CheckCircle2 className="size-3.5" strokeWidth={2} />
+              Pontos principais
             </div>
-          )}
+            <ul className="space-y-3">
+              {pontos.map((p, i) => (
+                <li
+                  key={i}
+                  className="relative flex items-start gap-3 pl-4 text-sm leading-[1.65] text-white/75"
+                >
+                  <span className="absolute left-0 top-[0.65rem] h-px w-2 bg-[#bfa68e]/70" />
+                  <span>{typeof p === 'string' ? p : JSON.stringify(p)}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
-          {/* Riscos */}
-          {Array.isArray(riscos) && riscos.length > 0 && (
-            <div style={{
-              background: '#FFFFFF',
-              border: '1px solid rgba(0,0,0,0.06)',
-              borderRadius: '16px',
-              padding: '28px 32px',
-              marginBottom: '20px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            }}>
-              <div style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#F59E0B',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                marginBottom: '14px',
-              }}>
-                <i className="bi bi-exclamation-triangle-fill" style={{ marginRight: '6px' }} />
-                Riscos e Clausulas Importantes
-              </div>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-              }}>
-                {riscos.map((r, i) => {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const risco = r as any
-                  const isObj = r && typeof r === 'object'
-                  const descricao = isObj ? (risco.descricao || JSON.stringify(risco)) : String(r)
-                  const gravidade = isObj ? risco.gravidade : null
-                  const mitigacao = isObj ? risco.mitigacao : null
-                  return (
-                    <div key={i} style={{
-                      padding: '16px 18px',
-                      borderRadius: '10px',
-                      background: 'rgba(245,158,11,0.06)',
-                      border: '1px solid rgba(245,158,11,0.18)',
-                    }}>
-                      {gravidade && (
-                        <span style={{
-                          display: 'inline-block',
-                          fontSize: '10px',
-                          fontWeight: 700,
-                          padding: '3px 9px',
-                          borderRadius: '20px',
-                          background: '#F59E0B',
-                          color: '#FFFFFF',
-                          marginBottom: '8px',
-                          letterSpacing: '0.3px',
-                        }}>
-                          {String(gravidade).toUpperCase()}
+        {/* ═══ Riscos ═══════════════════════════════════════════════ */}
+        {Array.isArray(riscos) && riscos.length > 0 && (
+          <section className="mb-5 rounded-2xl border border-white/10 bg-neutral-950/60 p-7 backdrop-blur">
+            <div className="mb-5 inline-flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-amber-300">
+              <AlertTriangle className="size-3.5" strokeWidth={2} />
+              Riscos e clausulas importantes
+            </div>
+            <div className="space-y-3">
+              {riscos.map((r, i) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const risco = r as any
+                const isObj = r && typeof r === 'object'
+                const descricao = isObj
+                  ? risco.descricao || JSON.stringify(risco)
+                  : String(r)
+                const gravidade = isObj ? risco.gravidade : null
+                const mitigacao = isObj ? risco.mitigacao : null
+                return (
+                  <div
+                    key={i}
+                    className="rounded-xl border border-amber-400/15 bg-amber-400/[0.04] p-5"
+                  >
+                    {gravidade && (
+                      <span className="mb-2 inline-block rounded-full bg-amber-400/90 px-2.5 py-0.5 font-mono text-[0.55rem] font-bold uppercase tracking-[0.18em] text-black">
+                        {String(gravidade)}
+                      </span>
+                    )}
+                    <div className="text-sm font-medium leading-relaxed text-white/85">
+                      {descricao}
+                    </div>
+                    {mitigacao && (
+                      <div className="mt-2 text-[0.82rem] leading-relaxed text-white/55">
+                        <strong className="font-semibold text-white/80">
+                          Mitigacao:
+                        </strong>{' '}
+                        {mitigacao}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* ═══ Prazos ═══════════════════════════════════════════════ */}
+        {Array.isArray(prazos) && prazos.length > 0 && (
+          <section className="mb-5 rounded-2xl border border-white/10 bg-neutral-950/60 p-7 backdrop-blur">
+            <div className="mb-5 inline-flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-red-300">
+              <CalendarClock className="size-3.5" strokeWidth={2} />
+              Prazos identificados
+            </div>
+            <div className="space-y-3">
+              {prazos.map((p, i) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const prazo = p as any
+                const isObj = p && typeof p === 'object'
+                const evento = isObj
+                  ? prazo.evento || prazo.prazo || JSON.stringify(prazo)
+                  : String(p)
+                const data = isObj ? prazo.data : null
+                const consequencia = isObj ? prazo.consequencia : null
+                return (
+                  <div
+                    key={i}
+                    className="rounded-xl border border-red-400/15 bg-red-400/[0.04] p-5"
+                  >
+                    <div
+                      className={
+                        'flex flex-wrap items-center gap-2 ' +
+                        (data ? 'mb-2' : '')
+                      }
+                    >
+                      <div className="flex-1 text-sm font-semibold leading-relaxed text-white/85">
+                        {evento}
+                      </div>
+                      {data && (
+                        <span className="rounded-full bg-red-500 px-2.5 py-0.5 font-mono text-[0.55rem] font-semibold uppercase tracking-[0.14em] text-white">
+                          {data}
                         </span>
                       )}
-                      <div style={{
-                        fontSize: '14px',
-                        lineHeight: 1.6,
-                        color: '#1E293B',
-                        fontWeight: 500,
-                      }}>
-                        {descricao}
-                      </div>
-                      {mitigacao && (
-                        <div style={{
-                          marginTop: '8px',
-                          fontSize: '13px',
-                          color: '#64748B',
-                          lineHeight: 1.5,
-                        }}>
-                          <strong>Mitigacao:</strong> {mitigacao}
-                        </div>
-                      )}
                     </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Prazos */}
-          {Array.isArray(prazos) && prazos.length > 0 && (
-            <div style={{
-              background: '#FFFFFF',
-              border: '1px solid rgba(0,0,0,0.06)',
-              borderRadius: '16px',
-              padding: '28px 32px',
-              marginBottom: '20px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            }}>
-              <div style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#EF4444',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                marginBottom: '14px',
-              }}>
-                <i className="bi bi-calendar-event-fill" style={{ marginRight: '6px' }} />
-                Prazos Identificados
-              </div>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-              }}>
-                {prazos.map((p, i) => {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const prazo = p as any
-                  const isObj = p && typeof p === 'object'
-                  const evento = isObj ? (prazo.evento || prazo.prazo || JSON.stringify(prazo)) : String(p)
-                  const data = isObj ? prazo.data : null
-                  const consequencia = isObj ? prazo.consequencia : null
-                  return (
-                    <div key={i} style={{
-                      padding: '16px 18px',
-                      borderRadius: '10px',
-                      background: 'rgba(239,68,68,0.06)',
-                      border: '1px solid rgba(239,68,68,0.18)',
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        flexWrap: 'wrap',
-                        marginBottom: data ? '6px' : 0,
-                      }}>
-                        <div style={{
-                          fontSize: '14px',
-                          lineHeight: 1.6,
-                          color: '#1E293B',
-                          fontWeight: 600,
-                          flex: 1,
-                        }}>
-                          {evento}
-                        </div>
-                        {data && (
-                          <span style={{
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            padding: '4px 10px',
-                            borderRadius: '20px',
-                            background: '#EF4444',
-                            color: '#FFFFFF',
-                          }}>
-                            {data}
-                          </span>
-                        )}
+                    {consequencia && (
+                      <div className="text-[0.82rem] leading-relaxed text-white/55">
+                        <strong className="font-semibold text-white/80">
+                          Consequencia:
+                        </strong>{' '}
+                        {consequencia}
                       </div>
-                      {consequencia && (
-                        <div style={{
-                          fontSize: '13px',
-                          color: '#64748B',
-                          lineHeight: 1.5,
-                        }}>
-                          <strong>Consequencia:</strong> {consequencia}
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Footer CTA */}
-          <div style={{
-            background: 'linear-gradient(135deg, #bfa68e 0%, #a08970 100%)',
-            borderRadius: '16px',
-            padding: '32px',
-            marginTop: '32px',
-            textAlign: 'center',
-            color: '#FFFFFF',
-            boxShadow: '0 10px 25px rgba(191,166,142,0.28)',
-          }}>
-            <div style={{
-              fontSize: '20px',
-              fontWeight: 700,
-              marginBottom: '8px',
-              lineHeight: 1.3,
-            }}>
-              Quer gerar suas proprias analises?
+        {/* ═══ Footer CTA ═══════════════════════════════════════════ */}
+        <div className="relative mt-10 overflow-hidden rounded-2xl border border-[#bfa68e]/25 bg-gradient-to-br from-[#bfa68e]/[0.12] via-[#bfa68e]/[0.06] to-transparent p-10 text-center">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#bfa68e]/60 to-transparent"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-[#bfa68e]/15 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-16 -left-16 size-48 rounded-full bg-[#8a6f55]/10 blur-3xl"
+          />
+
+          <div className="relative">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#bfa68e]/30 bg-black/30 px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#e6d4bd]">
+              <Sparkles className="size-3" strokeWidth={2} />
+              Prove sem compromisso
             </div>
-            <p style={{
-              fontSize: '14px',
-              opacity: 0.92,
-              marginBottom: '20px',
-              lineHeight: 1.6,
-            }}>
-              Comece gratis na LexAI e analise contratos, peticoes e acordaos em segundos.
+            <h2 className="text-balance text-2xl font-medium tracking-tight text-white md:text-[1.65rem]">
+              Quer gerar suas proprias analises juridicas?
+            </h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-white/60">
+              Contratos, peticoes e acordaos analisados em segundos. 23 agentes
+              especializados, todos no mesmo lugar.
             </p>
             <Link
               href="/"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '12px 26px',
-                background: '#FFFFFF',
-                color: '#bfa68e',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontWeight: 700,
-                textDecoration: 'none',
-                transition: 'transform 0.15s ease',
-              }}
+              className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-white px-6 text-sm font-medium text-black transition hover:-translate-y-0.5 hover:bg-white/90"
             >
               Comece gratis na LexAI
-              <i className="bi bi-arrow-right" />
+              <ArrowRight className="size-4" strokeWidth={2.25} />
             </Link>
           </div>
-
-          {/* Tiny footer */}
-          <div style={{
-            textAlign: 'center',
-            fontSize: '11px',
-            color: '#94A3B8',
-            marginTop: '24px',
-          }}>
-            Este documento foi gerado e compartilhado via LexAI. O conteudo e de responsabilidade do usuario que criou o compartilhamento.
-          </div>
         </div>
-      </div>
-    </>
+
+        {/* ═══ Micro footer ═══════════════════════════════════════════ */}
+        <div className="mt-8 text-center font-mono text-[0.6rem] uppercase tracking-[0.15em] text-white/30">
+          Gerado e compartilhado via LexAI &middot; conteudo de responsabilidade de
+          quem criou o compartilhamento
+        </div>
+      </main>
+    </div>
   )
 }
