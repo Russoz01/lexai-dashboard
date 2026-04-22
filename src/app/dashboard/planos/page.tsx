@@ -1,18 +1,35 @@
 'use client'
 
+/* ═════════════════════════════════════════════════════════════
+ * PLANOS — v10 editorial dark
+ * ─────────────────────────────────────────────────────────────
+ * Voz Renato · champagne + noir + ouro antigo.
+ * Segue padrão visual da landing / dashboard / CRM.
+ * ═════════════════════════════════════════════════════════════ */
+
 import { useState, useEffect } from 'react'
 import {
   Check, CheckCircle2, Clock, CreditCard, Gem, Headphones, MinusCircle,
   Rocket, RotateCcw, ShieldCheck, Smile, Sparkles, Star, TrendingUp, X,
   XCircle, Zap, type LucideIcon,
 } from 'lucide-react'
-import s from './page.module.css'
 
-const PLANOS_BASE = [
+type PlanoId = 'starter' | 'pro' | 'enterprise'
+
+interface Plano {
+  id: PlanoId
+  nome: string
+  tagline: string
+  precoMensal: number
+  stripeLink: string
+  economiaReal: string
+  features: { label: string; disponivel: boolean }[]
+}
+
+const PLANOS_BASE: Plano[] = [
   {
     id: 'starter', nome: 'Escritório', tagline: '1–5 advogados',
     precoMensal: 1399,
-    perSeat: true,
     stripeLink: 'https://buy.stripe.com/test_dRm4gy6gG1Nb2T14ZA2oE01',
     economiaReal: 'Recupere 12h por semana em pesquisas por advogado',
     features: [
@@ -28,7 +45,6 @@ const PLANOS_BASE = [
   {
     id: 'pro', nome: 'Firma', tagline: '6–15 advogados · Mais escolhido',
     precoMensal: 1459,
-    perSeat: true,
     stripeLink: 'https://buy.stripe.com/test_9B69ASawWajH5192Rs2oE02',
     economiaReal: 'Capacidade de atendimento +40% sem contratar',
     features: [
@@ -38,13 +54,12 @@ const PLANOS_BASE = [
       { label: 'Suporte prioritário em 3h', disponivel: true },
       { label: 'Exportação em PDF profissional', disponivel: true },
       { label: 'Sessão de onboarding dedicada', disponivel: true },
-      { label: 'Compra avulsa de tokens', disponivel: true },
+      { label: 'CRM + Marketing em beta fechado', disponivel: true },
     ],
   },
   {
     id: 'enterprise', nome: 'Enterprise', tagline: '16+ advogados',
     precoMensal: 1599,
-    perSeat: true,
     stripeLink: 'https://buy.stripe.com/test_cNicN434u0J7fFN1No2oE03',
     economiaReal: 'ROI de 8x sobre o investimento mensal',
     features: [
@@ -54,7 +69,7 @@ const PLANOS_BASE = [
       { label: 'Suporte via WhatsApp 24h + Gerente dedicado', disponivel: true },
       { label: 'API privada + SLA de uptime', disponivel: true },
       { label: 'Opção on-premise', disponivel: true },
-      { label: 'DPA incluso', disponivel: true },
+      { label: 'DPA incluso · CRM + Marketing liberados', disponivel: true },
     ],
   },
 ]
@@ -79,33 +94,32 @@ const GUARANTEE_POINTS: { Icon: LucideIcon; text: string }[] = [
   { Icon: Smile,     text: 'Sem perguntas' },
 ]
 
-function getDestaqueId(planoAtual: string): string {
+function getDestaqueId(planoAtual: PlanoId): PlanoId {
   if (planoAtual === 'starter') return 'pro'
-  if (planoAtual === 'pro') return 'enterprise'
   return 'enterprise'
 }
 
-function getBadgeLabel(planoId: string, planoAtual: string): string | null {
+function getBadgeLabel(planoId: PlanoId, planoAtual: PlanoId): string | null {
   const destaqueId = getDestaqueId(planoAtual)
   if (planoId !== destaqueId) return null
   if (planoAtual === 'enterprise') return 'SEU PLANO PREMIUM'
-  return 'MAIS POPULAR'
+  return 'MAIS ESCOLHIDO'
 }
 
-function getCtaLabel(planoId: string, planoAtual: string, precoPlano: number, precoAtual: number): string {
-  if (planoId === planoAtual) return '\u2713  Você está aqui'
+function getCtaLabel(planoId: PlanoId, planoAtual: PlanoId, precoPlano: number, precoAtual: number): string {
+  if (planoId === planoAtual) return 'Você está aqui'
   if (precoAtual > precoPlano) return 'Mudar para este plano'
-  if (planoId === 'starter' || planoId === 'escritorio') return 'Começar 7 dias grátis'
+  if (planoId === 'starter') return 'Começar 7 dias grátis'
   if (precoPlano > precoAtual) return 'Agendar demonstração'
   return 'Mudar para este plano'
 }
 
 export default function PlanosPage() {
-  const [planoAtual, setPlanoAtual] = useState('enterprise')
+  const [planoAtual, setPlanoAtual] = useState<PlanoId>('enterprise')
 
   useEffect(() => {
-    const saved = localStorage.getItem('lexai-plano')
-    if (saved) setPlanoAtual(saved)
+    const saved = localStorage.getItem('lexai-plano') as PlanoId | null
+    if (saved === 'starter' || saved === 'pro' || saved === 'enterprise') setPlanoAtual(saved)
     else localStorage.setItem('lexai-plano', 'enterprise')
   }, [])
 
@@ -122,41 +136,85 @@ export default function PlanosPage() {
   const destaqueId = getDestaqueId(planoAtual)
 
   return (
-    <div className={`page-content ${s.pageWrap}`}>
-      {/* Header — marketing-focused */}
-      <div className={s.headerWrap}>
-        <span className={s.launchBadge}>
-          <Zap size={12} strokeWidth={2} aria-hidden />
-          Oferta de lançamento &mdash; 7 dias grátis sem cartão
-        </span>
-        <h1 className="page-title" style={{ fontSize: 36, marginBottom: 8 }}>
-          Trabalhe <span style={{ color: 'var(--accent)' }}>10x mais rápido</span> no Direito
+    <div style={{ padding: '32px 36px 56px', maxWidth: 1400, margin: '0 auto' }}>
+      {/* HEADER */}
+      <header style={{ textAlign: 'center', marginBottom: 36 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: '6px 14px', borderRadius: 999,
+          background: 'linear-gradient(135deg, rgba(212,174,106,0.16), rgba(191,166,142,0.08))',
+          border: '1px solid rgba(212,174,106,0.32)',
+          fontFamily: 'var(--font-mono, ui-monospace), monospace',
+          fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
+          color: 'var(--accent)', marginBottom: 18,
+        }}>
+          <Zap size={11} strokeWidth={2} aria-hidden />
+          Oferta de lançamento · 7 dias grátis
+        </div>
+        <h1 style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: 48, fontWeight: 500, fontStyle: 'italic',
+          color: 'var(--text-primary)', margin: 0, lineHeight: 1.05, letterSpacing: '-0.02em',
+        }}>
+          Trabalhe 10× mais rápido<br />
+          <span style={{
+            background: 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text', fontStyle: 'normal',
+          }}>no Direito brasileiro.</span>
         </h1>
-        <p className={`page-subtitle ${s.headerSubtitle}`}>
-          Pare de gastar horas com pesquisas manuais. Comece hoje, cancele quando quiser, sem multas nem burocracia.
+        <p style={{
+          maxWidth: 640, margin: '18px auto 0',
+          fontSize: 15, color: 'var(--text-muted)', lineHeight: 1.65,
+        }}>
+          Pare de gastar horas com pesquisa manual. Cada advogado ganha tempo pra estratégia, não repetição.
+          Comece hoje. Cancele quando quiser. Sem letra miúda.
         </p>
-      </div>
+      </header>
 
-      {/* Trust bar — multiple signals */}
-      <div className={s.trustGrid}>
+      {/* TRUST BAR */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14,
+        marginBottom: 28,
+      }} className="lp-trust-grid">
         {TRUST_ITEMS.map((t, i) => (
-          <div key={i} className={`section-card ${s.trustItem}`}>
-            <t.Icon size={20} strokeWidth={1.75} className={s.trustIcon} aria-hidden />
+          <div key={i} style={{
+            padding: 14, borderRadius: 12,
+            background: 'rgba(15,15,15,0.78)',
+            border: '1px solid var(--border)',
+            display: 'flex', alignItems: 'center', gap: 12,
+          }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: 'rgba(212,174,106,0.12)',
+              border: '1px solid rgba(212,174,106,0.28)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}>
+              <t.Icon size={16} strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden />
+            </div>
             <div style={{ minWidth: 0 }}>
-              <div className={s.trustLabel}>{t.label}</div>
-              <div className={s.trustSub}>{t.sub}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>{t.label}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.sub}</div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Pricing model note */}
-      <div className={s.pricingNote}>
-        Cobrança <strong style={{ color: 'var(--accent)' }}>por advogado registrado</strong> · De R$ 1.399 a R$ 1.599 conforme o plano
+      {/* PRICING NOTE */}
+      <div style={{
+        textAlign: 'center', marginBottom: 22,
+        fontSize: 12, color: 'var(--text-muted)',
+        fontFamily: 'var(--font-mono, ui-monospace), monospace', letterSpacing: '0.08em',
+      }}>
+        cobrança <strong style={{ color: 'var(--accent)' }}>por advogado registrado</strong> · R$ 1.399 a R$ 1.599 conforme plano
       </div>
 
-      {/* Plan cards */}
-      <div className={s.plansGrid}>
+      {/* PLAN CARDS */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18,
+        marginBottom: 32,
+      }} className="lp-plans-grid">
         {PLANOS_BASE.map(plano => {
           const isDestaque = plano.id === destaqueId
           const badgeLabel = getBadgeLabel(plano.id, planoAtual)
@@ -165,107 +223,158 @@ export default function PlanosPage() {
           const isEnterprisePremium = plano.id === 'enterprise' && planoAtual === 'enterprise'
 
           return (
-            <div key={plano.id} className="section-card animate-in" style={{
-              padding: 0, overflow: 'hidden', position: 'relative',
+            <div key={plano.id} style={{
+              position: 'relative',
+              borderRadius: 16, overflow: 'hidden',
+              background: isEnterprisePremium
+                ? 'radial-gradient(120% 140% at 20% 0%, rgba(212,174,106,0.12), transparent 60%), linear-gradient(180deg, rgba(20,15,8,0.92), rgba(10,10,10,0.94))'
+                : 'rgba(15,15,15,0.82)',
               border: isEnterprisePremium
-                ? '2px solid transparent'
+                ? '1px solid rgba(212,174,106,0.55)'
                 : isDestaque
-                  ? '2px solid var(--accent)'
+                  ? '1px solid rgba(212,174,106,0.42)'
                   : '1px solid var(--border)',
               boxShadow: isEnterprisePremium
-                ? '0 8px 32px rgba(201,168,76,0.2)'
+                ? '0 24px 60px rgba(212,174,106,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
                 : isDestaque
-                  ? '0 8px 32px rgba(201,168,76,0.15)'
-                  : undefined,
-              backgroundImage: isEnterprisePremium
-                ? 'linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(135deg, #c9a84c, #bfa68e, #c9a84c)'
-                : undefined,
-              backgroundOrigin: isEnterprisePremium ? 'border-box' : undefined,
-              backgroundClip: isEnterprisePremium ? 'padding-box, border-box' : undefined,
+                  ? '0 16px 40px rgba(212,174,106,0.08)'
+                  : '0 8px 24px rgba(0,0,0,0.25)',
+              transform: isDestaque ? 'translateY(-4px)' : 'none',
+              transition: 'transform 0.2s ease, border-color 0.2s ease',
             }}>
-              {/* Badge */}
               {badgeLabel && (
                 <div style={{
                   position: 'absolute', top: 0, left: 0, right: 0,
-                  background: isEnterprisePremium
-                    ? 'linear-gradient(135deg, #c9a84c, #bfa68e)'
-                    : 'linear-gradient(135deg, #c9a84c, #d4b86a)',
-                  padding: '6px 0', textAlign: 'center',
-                  fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase',
-                  color: '#fff',
+                  padding: '7px 0', textAlign: 'center',
+                  background: 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
+                  color: '#0a0a0a',
+                  fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                  fontSize: 10, fontWeight: 700,
+                  letterSpacing: '0.22em', textTransform: 'uppercase',
                 }}>
                   {badgeLabel}
                 </div>
               )}
 
-              <div style={{ padding: badgeLabel ? '52px 24px 28px' : '28px 24px' }}>
+              <div style={{ padding: badgeLabel ? '44px 24px 26px' : '26px 24px' }}>
                 {/* Name + tagline */}
-                <div className={s.planBody}>
-                  <div className={s.planName}>{plano.nome}</div>
-                  <div className={s.planTagline}>{plano.tagline}</div>
+                <div style={{
+                  fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                  fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase',
+                  color: 'var(--accent)', marginBottom: 6,
+                }}>
+                  Plano · {plano.id}
+                </div>
+                <div style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: 32, fontStyle: 'italic', fontWeight: 500,
+                  color: 'var(--text-primary)', lineHeight: 1.1,
+                  letterSpacing: '-0.01em', marginBottom: 4,
+                }}>
+                  {plano.nome}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
+                  {plano.tagline}
+                </div>
 
-                  {/* Price */}
-                  <div className={s.priceRow}>
-                    <span className={s.priceCurrency}>R$</span>
-                    <span className={s.priceValue} style={{
-                      color: isDestaque ? 'var(--accent)' : 'var(--text-primary)',
-                    }}>
-                      {preco.toLocaleString('pt-BR')}
-                    </span>
-                  </div>
-                  <div className={s.pricePeriod}>
-                    por advogado / mês
-                  </div>
-                  {/* Economia real — value driver */}
-                  <div className={s.economiaBadge}>
-                    <TrendingUp size={12} strokeWidth={2} aria-hidden />
-                    {plano.economiaReal}
-                  </div>
+                {/* Price */}
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
+                  <span style={{ fontSize: 14, color: 'var(--text-secondary)', fontWeight: 600 }}>R$</span>
+                  <span style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontSize: 52, fontWeight: 600, lineHeight: 1,
+                    color: isDestaque ? 'var(--accent)' : 'var(--text-primary)',
+                    letterSpacing: '-0.02em',
+                  }}>
+                    {preco.toLocaleString('pt-BR')}
+                  </span>
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                  fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase',
+                  color: 'var(--text-muted)', marginBottom: 14,
+                }}>
+                  por advogado / mês
+                </div>
+
+                {/* Economia real */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '8px 12px', borderRadius: 10, marginBottom: 20,
+                  background: 'rgba(212,174,106,0.08)',
+                  border: '1px solid rgba(212,174,106,0.2)',
+                  fontSize: 11, color: 'var(--accent-light2)', fontWeight: 500, lineHeight: 1.4,
+                }}>
+                  <TrendingUp size={12} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden />
+                  {plano.economiaReal}
                 </div>
 
                 {/* Features */}
-                <div className={s.featuresList}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
                   {plano.features.map((f, i) => (
-                    <div key={i} className={s.featureRow}>
-                      <span className={f.disponivel ? s.featureIconActive : s.featureIconInactive}>
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <span style={{
+                        width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        background: f.disponivel ? 'rgba(212,174,106,0.14)' : 'rgba(120,110,100,0.06)',
+                        border: `1px solid ${f.disponivel ? 'rgba(212,174,106,0.34)' : 'rgba(120,110,100,0.18)'}`,
+                        color: f.disponivel ? 'var(--accent)' : 'var(--text-muted)',
+                        marginTop: 1,
+                      }}>
                         {f.disponivel
-                          ? <Check size={12} strokeWidth={2.5} aria-hidden />
-                          : <X size={12} strokeWidth={2.5} aria-hidden />}
+                          ? <Check size={11} strokeWidth={2.5} aria-hidden />
+                          : <X size={11} strokeWidth={2.5} aria-hidden />}
                       </span>
-                      <span className={f.disponivel ? s.featureTextActive : s.featureTextInactive}>
+                      <span style={{
+                        fontSize: 12, lineHeight: 1.5,
+                        color: f.disponivel ? 'var(--text-secondary)' : 'var(--text-muted)',
+                        textDecoration: f.disponivel ? 'none' : 'line-through',
+                        textDecorationColor: 'rgba(120,110,100,0.4)',
+                      }}>
                         {f.label}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {/* CTA Button */}
-                <button style={{
-                  width: '100%', padding: '12px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: isCurrentPlan ? 'default' : 'pointer',
-                  fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  background: isCurrentPlan
-                    ? 'var(--hover)'
-                    : isDestaque
-                      ? 'linear-gradient(135deg, #c9a84c, #d4b86a)'
-                      : 'var(--accent)',
-                  color: isCurrentPlan
-                    ? 'var(--text-muted)'
-                    : isDestaque
-                      ? '#0f1923'
-                      : 'var(--bg-base)',
-                  border: isCurrentPlan ? '1px solid var(--border)' : 'none',
-                }} disabled={isCurrentPlan}
-                onClick={() => {
-                  if (!isCurrentPlan) {
-                    if (plano.stripeLink) {
-                      window.open(plano.stripeLink, '_blank')
-                      setPlanoAtual(plano.id)
-                      localStorage.setItem('lexai-plano', plano.id)
-                    } else if (plano.id === 'starter' || plano.id === 'escritorio') {
-                      window.location.href = '/login'
+                {/* CTA */}
+                <button
+                  disabled={isCurrentPlan}
+                  onClick={() => {
+                    if (!isCurrentPlan) {
+                      if (plano.stripeLink) {
+                        window.open(plano.stripeLink, '_blank')
+                        setPlanoAtual(plano.id)
+                        localStorage.setItem('lexai-plano', plano.id)
+                      }
                     }
-                  }
-                }}>
+                  }}
+                  style={{
+                    width: '100%', padding: '13px 16px', borderRadius: 10,
+                    fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                    fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700,
+                    cursor: isCurrentPlan ? 'default' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    background: isCurrentPlan
+                      ? 'rgba(191,166,142,0.06)'
+                      : isDestaque
+                        ? 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)'
+                        : 'transparent',
+                    color: isCurrentPlan
+                      ? 'var(--text-muted)'
+                      : isDestaque
+                        ? '#0a0a0a'
+                        : 'var(--accent)',
+                    border: isCurrentPlan
+                      ? '1px solid var(--border)'
+                      : isDestaque
+                        ? '1px solid rgba(212,174,106,0.5)'
+                        : '1px solid rgba(212,174,106,0.38)',
+                    boxShadow: isDestaque && !isCurrentPlan ? '0 12px 32px rgba(212,174,106,0.22)' : 'none',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  }}
+                >
+                  {isCurrentPlan && <CheckCircle2 size={13} strokeWidth={2} aria-hidden />}
                   {getCtaLabel(plano.id, planoAtual, plano.precoMensal, precoAtual)}
                 </button>
               </div>
@@ -274,40 +383,79 @@ export default function PlanosPage() {
         })}
       </div>
 
-      {/* Gerenciar minha assinatura — Stripe portal */}
-      <div className={`section-card animate-in ${s.manageCard}`}>
-        <div className={s.manageIcon}>
-          <CreditCard size={22} strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden />
-        </div>
-        <div style={{ flex: 1, minWidth: 220 }}>
-          <div className={s.manageTitle}>
-            Gerenciar pagamento e assinatura
+      {/* GERENCIAR ASSINATURA */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20,
+        padding: 22, borderRadius: 14, marginBottom: 22,
+        background: 'rgba(15,15,15,0.82)',
+        border: '1px solid var(--border)',
+        flexWrap: 'wrap',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 260 }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+            background: 'rgba(212,174,106,0.12)',
+            border: '1px solid rgba(212,174,106,0.28)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <CreditCard size={20} strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden />
           </div>
-          <div className={s.manageDesc}>
-            Atualize cartão, baixe faturas, faça downgrade ou cancele a qualquer momento via Stripe.
+          <div style={{ minWidth: 0 }}>
+            <div style={{
+              fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, fontStyle: 'italic',
+              color: 'var(--text-primary)', marginBottom: 4, lineHeight: 1.25, fontWeight: 500,
+            }}>
+              Gerenciar pagamento e assinatura
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Atualize cartão, baixe faturas, faça downgrade ou cancele a qualquer momento via Stripe.
+            </div>
           </div>
         </div>
-        <button type="button" onClick={abrirPortal} className="btn-primary" style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8, flexShrink: 0,
-        }}>
-          <CreditCard size={14} strokeWidth={1.75} aria-hidden />
+        <button
+          type="button" onClick={abrirPortal}
+          style={{
+            padding: '12px 18px', borderRadius: 10, flexShrink: 0,
+            background: 'linear-gradient(135deg, #f5e8d3, #bfa68e)',
+            color: '#0a0a0a', border: '1px solid rgba(212,174,106,0.5)',
+            fontFamily: 'var(--font-mono, ui-monospace), monospace',
+            fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700,
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
+            boxShadow: '0 10px 28px rgba(212,174,106,0.22)',
+          }}
+        >
+          <CreditCard size={13} strokeWidth={2} aria-hidden />
           Abrir portal Stripe
         </button>
       </div>
 
-      {/* Enterprise exclusive benefits (shown only when user is on Enterprise) */}
+      {/* ENTERPRISE EXCLUSIVE */}
       {planoAtual === 'enterprise' && (
-        <div className={`section-card animate-in ${s.enterpriseCard}`}>
-          <div className={s.enterpriseHeader}>
+        <div style={{
+          padding: 24, borderRadius: 14, marginBottom: 32,
+          background: 'radial-gradient(140% 140% at 20% 0%, rgba(212,174,106,0.12), transparent 60%), rgba(15,15,15,0.88)',
+          border: '1px solid rgba(212,174,106,0.32)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
             <Gem size={18} strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden />
-            <span className={s.enterpriseTitle}>
-              Benefícios Exclusivos Enterprise
-            </span>
+            <div style={{
+              fontFamily: 'var(--font-mono, ui-monospace), monospace',
+              fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase',
+              color: 'var(--accent)', fontWeight: 700,
+            }}>
+              Benefícios exclusivos · Enterprise
+            </div>
           </div>
-          <div className={s.benefitsGrid}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }} className="lp-benefits-grid">
             {BENEFICIOS_ENTERPRISE.map((b, i) => (
-              <div key={i} className={s.benefitItem}>
-                <Star size={10} strokeWidth={2} style={{ color: 'var(--accent)', flexShrink: 0 }} aria-hidden />
+              <div key={i} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 10,
+                padding: '10px 12px', borderRadius: 10,
+                background: 'rgba(10,10,10,0.4)',
+                border: '1px solid rgba(191,166,142,0.12)',
+                fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5,
+              }}>
+                <Star size={11} strokeWidth={2} style={{ color: 'var(--accent)', flexShrink: 0, marginTop: 3 }} aria-hidden />
                 {b}
               </div>
             ))}
@@ -315,23 +463,41 @@ export default function PlanosPage() {
         </div>
       )}
 
-      {/* Spacer when not enterprise */}
-      {planoAtual !== 'enterprise' && <div style={{ marginBottom: 24 }} />}
-
-      {/* Before/After comparison — classic marketing tactic */}
-      <div className="section-card" style={{ padding: '28px 32px', marginBottom: 24 }}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div className={s.sectionTitle}>
+      {/* COMPARE SECTION */}
+      <div style={{
+        padding: 28, borderRadius: 14, marginBottom: 24,
+        background: 'rgba(15,15,15,0.82)',
+        border: '1px solid var(--border)',
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: 22 }}>
+          <div style={{
+            fontFamily: 'var(--font-mono, ui-monospace), monospace',
+            fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase',
+            color: 'var(--accent)', marginBottom: 8,
+          }}>
             A diferença na prática
           </div>
-          <div className={s.sectionHeading}>
-            Advogado sem LexAI <span style={{ color: 'var(--text-muted)', margin: '0 8px' }}>vs</span> Advogado com LexAI
+          <div style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: 28, fontStyle: 'italic', fontWeight: 500,
+            color: 'var(--text-primary)', letterSpacing: '-0.01em',
+          }}>
+            sem LexAI <span style={{ color: 'var(--text-muted)', margin: '0 8px', fontStyle: 'normal', fontSize: 16 }}>versus</span> com LexAI
           </div>
         </div>
-        <div className={s.compareGrid}>
-          <div className={s.compareSideNo}>
-            <div className={s.compareSideHeader} style={{ color: '#EF4444' }}>
-              <XCircle size={16} strokeWidth={2} aria-hidden /> SEM LEXAI
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }} className="lp-compare-grid">
+          <div style={{
+            padding: 18, borderRadius: 12,
+            background: 'rgba(216,137,119,0.04)',
+            border: '1px solid rgba(216,137,119,0.18)',
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14,
+              fontFamily: 'var(--font-mono, ui-monospace), monospace',
+              fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
+              color: '#d88977', fontWeight: 700,
+            }}>
+              <XCircle size={14} strokeWidth={2} aria-hidden /> Sem LexAI
             </div>
             {[
               '3 horas lendo um contrato de 40 páginas',
@@ -341,15 +507,27 @@ export default function PlanosPage() {
               'Risco de perder jurisprudência relevante',
               'Custo alto de estagiários para tarefas repetitivas',
             ].map((item, i) => (
-              <div key={i} className={s.compareItem} style={{ color: 'var(--text-secondary)' }}>
-                <MinusCircle size={11} strokeWidth={2} style={{ color: '#EF4444', marginTop: 3, flexShrink: 0 }} aria-hidden />
+              <div key={i} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 10,
+                padding: '8px 0', fontSize: 12.5, color: 'var(--text-muted)', lineHeight: 1.55,
+              }}>
+                <MinusCircle size={11} strokeWidth={2} style={{ color: '#d88977', marginTop: 3, flexShrink: 0 }} aria-hidden />
                 {item}
               </div>
             ))}
           </div>
-          <div className={s.compareSideYes}>
-            <div className={s.compareSideHeader} style={{ color: 'var(--accent)' }}>
-              <CheckCircle2 size={16} strokeWidth={2} aria-hidden /> COM LEXAI
+          <div style={{
+            padding: 18, borderRadius: 12,
+            background: 'radial-gradient(120% 140% at 20% 0%, rgba(212,174,106,0.08), transparent 60%), rgba(15,15,15,0.5)',
+            border: '1px solid rgba(212,174,106,0.3)',
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14,
+              fontFamily: 'var(--font-mono, ui-monospace), monospace',
+              fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
+              color: 'var(--accent)', fontWeight: 700,
+            }}>
+              <CheckCircle2 size={14} strokeWidth={2} aria-hidden /> Com LexAI
             </div>
             {[
               'Análise completa em 45 segundos com riscos identificados',
@@ -359,7 +537,10 @@ export default function PlanosPage() {
               'IA não esquece nenhuma súmula relevante',
               'Sua equipe focada em estratégia, não em repetição',
             ].map((item, i) => (
-              <div key={i} className={s.compareItem} style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+              <div key={i} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 10,
+                padding: '8px 0', fontSize: 12.5, color: 'var(--text-primary)', lineHeight: 1.55, fontWeight: 500,
+              }}>
                 <CheckCircle2 size={11} strokeWidth={2.5} style={{ color: 'var(--accent)', marginTop: 3, flexShrink: 0 }} aria-hidden />
                 {item}
               </div>
@@ -368,60 +549,80 @@ export default function PlanosPage() {
         </div>
       </div>
 
-      {/* Testimonials — social proof */}
-      <div className={`section-card ${s.testimonialSection}`}>
-        <div className={s.testimonialHeader}>
-          <div className={s.testimonialLabel}>
-            <Sparkles size={12} strokeWidth={2} style={{ marginRight: 6 }} aria-hidden />
-            Quem já usa está amando
+      {/* TESTIMONIALS */}
+      <div style={{
+        padding: 28, borderRadius: 14, marginBottom: 24,
+        background: 'rgba(15,15,15,0.82)',
+        border: '1px solid var(--border)',
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: 22 }}>
+          <div style={{
+            fontFamily: 'var(--font-mono, ui-monospace), monospace',
+            fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase',
+            color: 'var(--accent)', marginBottom: 8,
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+          }}>
+            <Sparkles size={11} strokeWidth={2} aria-hidden /> Quem já usa
           </div>
-          <div className={s.testimonialHeading}>
-            Resultados reais de quem testou
+          <div style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: 28, fontStyle: 'italic', fontWeight: 500,
+            color: 'var(--text-primary)', letterSpacing: '-0.01em',
+          }}>
+            resultados reais de quem testou
           </div>
         </div>
-        <div className={s.testimonialGrid}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="lp-test-grid">
           {[
             {
               nome: 'Mariana Castro',
-              cargo: 'Advogada Civil — SP',
+              cargo: 'Advogada Civil · SP',
               foto: 'MC',
-              cor: '#44372b',
-              estrelas: 5,
               texto: 'Em 2 semanas economizei mais de 20 horas que eu gastava em pesquisa de jurisprudência. O Pesquisador encontra acórdãos que eu nem sabia que existiam.',
             },
             {
               nome: 'Dr. Pedro Henrique',
-              cargo: 'Sócio — PHM Advogados',
+              cargo: 'Sócio · PHM Advogados',
               foto: 'PH',
-              cor: '#10B981',
-              estrelas: 5,
               texto: 'O Calculador e o Monitor Legislativo mudaram a forma como gerenciamos prazos. Zero perda processual desde que adotamos a plataforma no escritório.',
             },
             {
               nome: 'Renata Lima',
-              cargo: 'Sócia — Lima Advocacia',
+              cargo: 'Sócia · Lima Advocacia',
               foto: 'RL',
-              cor: '#8B5CF6',
-              estrelas: 5,
               texto: 'Substituiu 2 estagiários e ainda entrega mais rápido. O Redator gera petições que só precisam de pequenos ajustes. Investimento que se pagou em 1 mês.',
             },
           ].map((t, i) => (
-            <div key={i} className={s.testimonialCard}>
-              <div className={s.testimonialStars}>
-                {Array.from({ length: t.estrelas }).map((_, j) => (
+            <div key={i} style={{
+              padding: 20, borderRadius: 12,
+              background: 'rgba(10,10,10,0.55)',
+              border: '1px solid rgba(191,166,142,0.12)',
+              display: 'flex', flexDirection: 'column', gap: 14,
+            }}>
+              <div style={{ display: 'flex', gap: 2, color: 'var(--accent)' }}>
+                {Array.from({ length: 5 }).map((_, j) => (
                   <Star key={j} size={12} strokeWidth={2} fill="currentColor" aria-hidden />
                 ))}
               </div>
-              <div className={s.testimonialText}>
+              <div style={{
+                fontFamily: "'Playfair Display', Georgia, serif", fontStyle: 'italic',
+                fontSize: 15, color: 'var(--text-primary)', lineHeight: 1.55, fontWeight: 400,
+              }}>
                 &ldquo;{t.texto}&rdquo;
               </div>
-              <div className={s.testimonialAuthor}>
-                <div className={s.testimonialAvatar} style={{ background: `linear-gradient(135deg, ${t.cor}, ${t.cor}aa)` }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 'auto' }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 10,
+                  background: 'linear-gradient(135deg, #f5e8d3, #bfa68e)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#0a0a0a', fontWeight: 700, fontSize: 13,
+                  letterSpacing: '0.04em',
+                }}>
                   {t.foto}
                 </div>
                 <div>
-                  <div className={s.testimonialName}>{t.nome}</div>
-                  <div className={s.testimonialRole}>{t.cargo}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{t.nome}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.cargo}</div>
                 </div>
               </div>
             </div>
@@ -429,54 +630,130 @@ export default function PlanosPage() {
         </div>
       </div>
 
-      {/* Money-back guarantee — risk reversal */}
-      <div className={`section-card ${s.guaranteeCard}`}>
-        <div className={s.guaranteeIcon}>
-          <ShieldCheck size={30} strokeWidth={1.75} style={{ color: '#10B981' }} aria-hidden />
+      {/* GUARANTEE */}
+      <div style={{
+        padding: 28, borderRadius: 14, marginBottom: 24, textAlign: 'center',
+        background: 'radial-gradient(120% 160% at 50% 0%, rgba(93,123,79,0.08), transparent 60%), rgba(15,15,15,0.88)',
+        border: '1px solid rgba(93,123,79,0.28)',
+      }}>
+        <div style={{
+          width: 52, height: 52, borderRadius: 14, margin: '0 auto 14px',
+          background: 'rgba(93,123,79,0.14)',
+          border: '1px solid rgba(93,123,79,0.38)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <ShieldCheck size={26} strokeWidth={1.75} style={{ color: '#8fb082' }} aria-hidden />
         </div>
-        <div className={s.guaranteeTitle}>
-          Garantia de 7 dias ou seu dinheiro de volta
+        <div style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: 26, fontStyle: 'italic', fontWeight: 500,
+          color: 'var(--text-primary)', marginBottom: 10, letterSpacing: '-0.01em',
+        }}>
+          garantia de 7 dias · ou o dinheiro de volta
         </div>
-        <div className={s.guaranteeDesc}>
+        <div style={{
+          maxWidth: 560, margin: '0 auto 18px',
+          fontSize: 13.5, color: 'var(--text-muted)', lineHeight: 1.65,
+        }}>
           Teste todos os agentes sem risco. Se a LexAI não economizar pelo menos 5 horas do seu trabalho na primeira semana, devolvemos 100% do valor. Sem perguntas, sem burocracia.
         </div>
-        <div className={s.guaranteePoints}>
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: 22, flexWrap: 'wrap',
+        }}>
           {GUARANTEE_POINTS.map((g, i) => (
-            <div key={i} className={s.guaranteePoint}>
-              <g.Icon size={14} strokeWidth={2} style={{ color: '#10B981' }} aria-hidden />
+            <div key={i} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              fontFamily: 'var(--font-mono, ui-monospace), monospace',
+              fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: 'var(--text-secondary)', fontWeight: 600,
+            }}>
+              <g.Icon size={13} strokeWidth={2} style={{ color: '#8fb082' }} aria-hidden />
               {g.text}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Final CTA — urgency + scarcity */}
-      <div className={`section-card ${s.finalCtaCard}`}>
-        <div className={s.scarcityBadge}>
-          <span className={s.pulseDot} />
+      {/* FINAL CTA */}
+      <div style={{
+        padding: 36, borderRadius: 14, marginBottom: 24, textAlign: 'center',
+        background: 'radial-gradient(120% 140% at 20% 0%, rgba(212,174,106,0.18), transparent 60%), linear-gradient(180deg, rgba(20,15,8,0.92), rgba(10,10,10,0.94))',
+        border: '1px solid rgba(212,174,106,0.4)',
+      }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: '6px 14px', borderRadius: 999, marginBottom: 16,
+          background: 'rgba(216,137,119,0.12)',
+          border: '1px solid rgba(216,137,119,0.32)',
+          fontFamily: 'var(--font-mono, ui-monospace), monospace',
+          fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
+          color: '#d88977', fontWeight: 700,
+        }}>
+          <span style={{
+            width: 6, height: 6, borderRadius: '50%',
+            background: '#d88977', boxShadow: '0 0 8px #d88977',
+          }} />
           Vagas limitadas para o lançamento
         </div>
-        <div className={s.finalCtaTitle}>
-          Pronto para acabar com as horas perdidas?
+        <div style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: 34, fontStyle: 'italic', fontWeight: 500,
+          color: 'var(--text-primary)', marginBottom: 10, letterSpacing: '-0.01em', lineHeight: 1.2,
+        }}>
+          pronto para acabar<br />com as horas perdidas?
         </div>
-        <div className={s.finalCtaDesc}>
-          Junte-se aos primeiros escritórios que já transformaram sua rotina. Comece em 30 segundos &mdash; sem cartão de crédito.
+        <div style={{
+          maxWidth: 540, margin: '0 auto 22px',
+          fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6,
+        }}>
+          Junte-se aos primeiros escritórios que já transformaram sua rotina. Comece em 30 segundos — sem cartão de crédito.
         </div>
-        <button type="button" onClick={() => {
-          const link = PLANOS_BASE.find(p => p.id === destaqueId)?.stripeLink
-          if (link) window.open(link, '_blank')
-        }} className={s.finalCtaBtn}>
-          <Rocket size={16} strokeWidth={1.75} aria-hidden />
-          Começar 7 dias grátis agora
+        <button
+          type="button"
+          onClick={() => {
+            const link = PLANOS_BASE.find(p => p.id === destaqueId)?.stripeLink
+            if (link) window.open(link, '_blank')
+          }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            padding: '16px 30px', borderRadius: 12,
+            background: 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
+            color: '#0a0a0a',
+            fontFamily: 'var(--font-mono, ui-monospace), monospace',
+            fontSize: 12, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase',
+            border: '1px solid rgba(212,174,106,0.5)',
+            boxShadow: '0 16px 42px rgba(212,174,106,0.28)',
+            cursor: 'pointer',
+          }}
+        >
+          <Rocket size={15} strokeWidth={1.75} aria-hidden />
+          Começar 7 dias grátis
         </button>
-        <div className={s.finalCtaSub}>
-          Cancele a qualquer momento &middot; Sem cobrança durante o período grátis &middot; Suporte em português
+        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 16 }}>
+          Cancele a qualquer momento · Sem cobrança durante o período grátis · Suporte em português
         </div>
       </div>
 
       {/* FAQ */}
-      <div className={`section-card ${s.faqSection}`}>
-        <div className={s.faqTitle}>Perguntas Frequentes</div>
+      <div style={{
+        padding: 28, borderRadius: 14, marginBottom: 20,
+        background: 'rgba(15,15,15,0.82)',
+        border: '1px solid var(--border)',
+      }}>
+        <div style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: 26, fontStyle: 'italic', fontWeight: 500,
+          color: 'var(--text-primary)', marginBottom: 6,
+        }}>
+          perguntas frequentes
+        </div>
+        <div style={{
+          fontFamily: 'var(--font-mono, ui-monospace), monospace',
+          fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
+          color: 'var(--text-muted)', marginBottom: 18,
+        }}>
+          o que escritório costuma perguntar antes de começar
+        </div>
         {[
           { q: 'E se eu não gostar? Tenho como cancelar?', a: 'Sim. Você pode cancelar com 1 clique a qualquer momento, sem multas, sem ligação com vendedor, sem perguntas. Além disso, oferecemos 7 dias de garantia: se não economizar 5h na primeira semana, devolvemos 100% do valor.' },
           { q: 'Preciso ter conhecimento técnico para usar?', a: 'Não. A LexAI foi projetada para ser usada por advogados sem nenhum conhecimento de programação. Você digita em português e a IA responde estruturado, pronto para usar.' },
@@ -486,17 +763,43 @@ export default function PlanosPage() {
           { q: 'Quanto tempo eu economizo de verdade?', a: 'A média dos nossos usuários é 12 a 20 horas por semana. Uma análise de contrato que levaria 3h leva 45 segundos. Uma peça que você escreveria em 2h sai pronta em 2 minutos.' },
           { q: 'Como funciona a cobrança por advogado?', a: 'O valor por advogado varia conforme o plano: Escritório R$ 1.399, Firma R$ 1.459 e Enterprise R$ 1.599. Quanto maior o plano, mais agentes e recursos disponíveis por usuário.' },
         ].map((item, i, arr) => (
-          <div key={i} className={s.faqItem} style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
-            <div className={s.faqQuestion}>{item.q}</div>
-            <div className={s.faqAnswer}>{item.a}</div>
+          <div key={i} style={{
+            padding: '16px 0',
+            borderBottom: i < arr.length - 1 ? '1px solid rgba(191,166,142,0.12)' : 'none',
+          }}>
+            <div style={{
+              fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6,
+            }}>
+              {item.q}
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+              {item.a}
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Contact */}
-      <div className={s.contactFooter}>
-        Dúvidas? Entre em contato: contato@vanixcorp.com
+      {/* CONTACT */}
+      <div style={{
+        textAlign: 'center', padding: '20px 0',
+        fontFamily: 'var(--font-mono, ui-monospace), monospace',
+        fontSize: 11, letterSpacing: '0.12em',
+        color: 'var(--text-muted)',
+      }}>
+        dúvidas? contato@vanixcorp.com
       </div>
+
+      <style>{`
+        @media (max-width: 1100px) {
+          .lp-plans-grid   { grid-template-columns: 1fr !important; }
+          .lp-compare-grid { grid-template-columns: 1fr !important; }
+          .lp-test-grid    { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 900px) {
+          .lp-trust-grid    { grid-template-columns: repeat(2, 1fr) !important; }
+          .lp-benefits-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   )
 }

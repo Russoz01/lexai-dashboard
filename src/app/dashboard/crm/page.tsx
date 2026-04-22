@@ -71,7 +71,7 @@ export default function CrmPage() {
   const ticket   = fechados.length ? fechados.reduce((s, l) => s + l.valor, 0) / fechados.length : 0
   const conv     = LEADS.length ? (fechados.length / LEADS.length) * 100 : 0
 
-  const blockAction = () => toast('info', 'Disponível no plano Pro · módulo CRM em beta fechado')
+  const blockAction = () => toast('info', 'Modo demonstração · funcionalidade completa libera no release oficial')
 
   return (
     <div style={{ padding: 32, maxWidth: 1400, margin: '0 auto' }}>
