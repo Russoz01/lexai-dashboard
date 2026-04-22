@@ -4,8 +4,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import {
   ArrowRight, BarChart3, CalendarCheck, Circle, Clock, Lock,
+  Sparkles, Timer, Crown,
   type LucideIcon,
 } from 'lucide-react'
 import { UsagePanel } from '@/components/UsagePanel'
@@ -13,6 +15,42 @@ import { ReferralPanel } from '@/components/ReferralPanel'
 import { usePlan } from '@/hooks/usePlan'
 import { CATALOG, agents, isUnlocked, type CatalogItem, type Plan } from '@/lib/catalog'
 import s from './page.module.css'
+
+/* ════════════════════════════════════════════════════════════════
+ * AGENT_DETAILS — descrição rica + métrica de impacto + caso real
+ * ────────────────────────────────────────────────────────────────
+ * Cada agente do catálogo ganha 3 atributos extras pro card editorial:
+ *   - longDesc : descrição enriquecida (1-2 linhas)
+ *   - saves    : badge de impacto ("Economiza 4h/processo")
+ *   - example  : caso real / exemplo de prompt
+ * Categoria visual ('essencial' | 'avancado' | 'modulo') vem do
+ * minPlan/kind do catalog (sem duplicar fonte de verdade).
+ * ═══════════════════════════════════════════════════════════════ */
+const AGENT_DETAILS: Record<string, { longDesc: string; saves: string; example: string }> = {
+  chat:         { longDesc: 'Orquestrador que lê sua intenção e chama o agente certo automaticamente.',         saves: 'Resposta em 8s',          example: 'Ex: "Calcule prazo de embargos de declaração"' },
+  resumidor:    { longDesc: 'Lê contratos de 80 páginas e devolve sumário executivo com cláusulas críticas marcadas.', saves: 'Economiza 2h por contrato', example: 'Ex: M&A, locação comercial, prestação de serviço' },
+  pesquisador:  { longDesc: 'Busca jurisprudência STF/STJ com link verificado e ementa rastreável — recusa quando não acha.', saves: 'Economiza 4h por caso',   example: 'Ex: "Súmula 231 STJ aplicada a furto qualificado"' },
+  redator:      { longDesc: 'Gera peças processuais com fundamentação correta, citação verificada e formato OAB.', saves: 'Economiza 6h por peça',    example: 'Ex: petição inicial, contestação, recurso especial' },
+  calculador:   { longDesc: 'Prazos, juros, correção monetária INPC/IGPM/IPCA com feriado municipal e estadual.', saves: 'Zero erro de prazo',       example: 'Ex: prazo recursal CPC art. 1.003 + feriado SP' },
+  legislacao:   { longDesc: 'Explica artigo de lei com doutrina, jurisprudência consolidada e enunciados FONAJE.', saves: 'Resposta em 12s',          example: 'Ex: "Explique art. 422 CC com Enunciado 26 CJF"' },
+  rotina:       { longDesc: 'Agenda compromissos, audiências e fluxos do escritório com sync Google Calendar.',  saves: 'Zero conflito de agenda',  example: 'Ex: bloquear quintas pra audiência presencial' },
+  compliance:   { longDesc: 'Camada anti-claim proibido OAB · Provimento 205 + LGPD + audit log por usuário.',   saves: 'Zero infração ética',      example: 'Ex: bloqueio automático de "garantia de vitória"' },
+
+  negociador:   { longDesc: 'Calcula BATNA/ZOPA, mapeia cenários de acordo e sugere ancoragem com base em jurimetria.', saves: 'Acordos +28% mais altos', example: 'Ex: trabalhista CLT — ancoragem em 1,8x da causa' },
+  professor:    { longDesc: 'Aulas sob medida sobre responsabilidade civil, contratos, direito digital e tributário.', saves: 'Aprende em 20min',     example: 'Ex: "Me explique culpa concorrente em acidente de trânsito"' },
+  consultor:    { longDesc: 'Avalia risco processual e sugere linha estratégica com base em jurisprudência local.', saves: 'Decisão em 30min',       example: 'Ex: "Vale apostar em embargos infringentes neste caso?"' },
+  simulado:     { longDesc: 'Treino OAB e provas objetivas com estatística de erro por matéria e ranking.',       saves: 'Aprovação +40%',           example: 'Ex: simulado adaptativo OAB 2ª fase Cível' },
+  tradutor:     { longDesc: 'Tradução juramentada PT↔EN/ES com terminologia jurídica BR e formato cartorário.',  saves: 'Economiza R$ 380/lauda',  example: 'Ex: contrato internacional, sentença estrangeira' },
+  planilhas:    { longDesc: 'Timesheet, controle de honorários, repasse a sócio e relatório financeiro mensal.',  saves: 'Fechamento em 15min',      example: 'Ex: relatório de horas Q1 por cliente' },
+  parecerista:  { longDesc: 'Pareceres jurídicos fundamentados com doutrina majoritária e jurisprudência consolidada.', saves: 'Parecer em 45min',  example: 'Ex: parecer sobre cláusula leonina em SCP' },
+  revisor:      { longDesc: 'Revisão fina de contratos, peças e pareceres — pega cláusula faltante, contradição, risco.', saves: 'Pega 94% dos erros', example: 'Ex: revisão de M&A 60p antes de assinatura' },
+  contestador:  { longDesc: 'Gera contestação completa com preliminares, mérito, réplica antecipada e provas.',  saves: 'Economiza 8h',             example: 'Ex: contestação trabalhista verbas rescisórias' },
+  recursos:     { longDesc: 'Apelação, agravo, embargos, recurso especial — escolhe o cabível e fundamenta.',    saves: 'Cabimento em 3min',        example: 'Ex: REsp por divergência jurisprudencial' },
+  audiencia:    { longDesc: 'Sustentação oral, roteiro de audiência e perguntas de inquirição preparadas.',      saves: 'Roteiro em 20min',         example: 'Ex: sustentação no TJSP — recurso em apelação' },
+  estrategista: { longDesc: 'Plano estratégico do caso com timeline, custo estimado, probabilidade e plano B.',  saves: 'Plano em 1h',              example: 'Ex: estratégia trabalhista para grande devedor' },
+  atendimento:  { longDesc: 'Roteiro de entrevista inicial com cliente — colhe fatos, documentos e expectativas.', saves: 'Triagem em 25min',        example: 'Ex: primeiro atendimento de cível indenizatório' },
+  'marketing-ia': { longDesc: 'Conteúdo OAB-compliant pra Instagram, LinkedIn, blog — sem mercantilização nem promessa.', saves: '12 posts/mês', example: 'Ex: carrossel sobre prazo de devolução em e-commerce' },
+}
 
 /* ═════════════════════════════════════════════════════════════
  * Dashboard — Gabinete LexAI (wired ao catalog em 2026-04-17)
@@ -167,6 +205,16 @@ export default function DashboardPage() {
 
   const agentList = useMemo(() => agents(), [])
   const totalAgents = agentList.length
+
+  /* Agrupa por categoria pra render editorial: essenciais primeiro, depois avançados */
+  const agentGroups = useMemo(() => {
+    const essenciais = agentList.filter(a => a.minPlan === 'free' || a.minPlan === 'starter')
+    const avancados = agentList.filter(a => a.minPlan === 'pro' || a.minPlan === 'enterprise')
+    return [
+      { key: 'essenciais', label: 'Essenciais',  caption: 'Disponíveis a partir do Escritório',  Icon: Sparkles, items: essenciais },
+      { key: 'avancados',  label: 'Avançados',   caption: 'Liberados na Firma e Enterprise',     Icon: Crown,    items: avancados },
+    ]
+  }, [agentList])
 
   return (
     <div className={`page-content ${s.dashAtelier}`}>
@@ -338,46 +386,225 @@ export default function DashboardPage() {
 
       <section className={s.dashGridMain}>
 
-        <article className={s.dashCard}>
+        <article className={s.dashCard} style={{
+          background: 'radial-gradient(140% 110% at 50% 0%, rgba(191,166,142,0.07), transparent 60%), rgba(15,15,15,0.85)',
+        }}>
           <div className={s.dashCardHead}>
             <div>
-              <div className={s.dashCardCap}>CAPÍTULO III · ATELIER</div>
+              <div className={s.dashCardCap}>CAPÍTULO III · ATELIER · {totalAgents} ESPECIALISTAS</div>
               <h2 className={s.dashCardTitle}>Vinte e dois <em>agentes</em></h2>
-              <p className={s.dashCardSub}>Clique para abrir o atelier do especialista</p>
+              <p className={s.dashCardSub}>
+                Cada um treinado num recorte específico do Direito BR · clique pra abrir o atelier
+              </p>
             </div>
             <Link href="/dashboard/chat" className={s.dashCardAction}>
-              Chat <ArrowRight size={12} strokeWidth={2} aria-hidden />
+              Chat orquestrador <ArrowRight size={12} strokeWidth={2} aria-hidden />
             </Link>
           </div>
 
-          <div className={s.dashAgentsGrid}>
-            {agentList.map((ag, i) => {
-              const Icon = ag.Icon
-              const locked = !isUnlocked(ag, userPlan)
-              const href = resolveHref(ag, userPlan)
-              return (
-                <Link
-                  key={ag.slug}
-                  href={href}
-                  className={s.dashAgent}
-                  title={locked ? `Disponível no plano ${ag.minPlan}` : ag.desc}
-                  aria-disabled={locked || undefined}
+          {/* Categorias com Framer Motion stagger */}
+          {agentGroups.map((group, gi) => {
+            const GroupIcon = group.Icon
+            return (
+              <div key={group.key} style={{ marginTop: gi === 0 ? 8 : 28 }}>
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    marginBottom: 16, paddingBottom: 12,
+                    borderBottom: '1px solid rgba(191,166,142,0.10)',
+                  }}
                 >
-                  <span className={s.dashAgentNum}>{pad2(i + 1)}</span>
-                  <div className={s.dashAgentIcon}>
-                    <Icon size={16} strokeWidth={1.75} aria-hidden />
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 9,
+                    background: 'linear-gradient(135deg, rgba(212,174,106,0.14), rgba(122,95,72,0.08))',
+                    border: '1px solid rgba(212,174,106,0.30)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#e6d4bd', flexShrink: 0,
+                  }}>
+                    <GroupIcon size={15} strokeWidth={1.75} aria-hidden />
                   </div>
-                  <div className={s.dashAgentInfo}>
-                    <div className={s.dashAgentName}>{ag.label}</div>
-                    <div className={s.dashAgentDesc}>{ag.desc}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                      fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
+                      color: '#bfa68e', fontWeight: 700,
+                    }}>
+                      {group.label} · {group.items.length} agentes
+                    </div>
+                    <div style={{
+                      fontSize: 12, color: 'var(--text-muted)', marginTop: 2,
+                    }}>
+                      {group.caption}
+                    </div>
                   </div>
-                  {locked
-                    ? <Lock size={14} strokeWidth={2} className={s.dashAgentArrow} aria-hidden />
-                    : <ArrowRight size={14} strokeWidth={1.75} className={s.dashAgentArrow} aria-hidden />}
-                </Link>
-              )
-            })}
-          </div>
+                </motion.div>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                  gap: 14,
+                }}>
+                  {group.items.map((ag, i) => {
+                    const Icon = ag.Icon
+                    const locked = !isUnlocked(ag, userPlan)
+                    const href = resolveHref(ag, userPlan)
+                    const detail = AGENT_DETAILS[ag.slug] || { longDesc: ag.desc, saves: '', example: '' }
+                    return (
+                      <motion.div
+                        key={ag.slug}
+                        initial={{ opacity: 0, y: 14 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-30px' }}
+                        transition={{
+                          duration: 0.45,
+                          delay: Math.min(i * 0.04, 0.4),
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                        whileHover={{ y: -3 }}
+                      >
+                        <Link
+                          href={href}
+                          title={locked ? `Disponível no plano ${ag.minPlan}` : detail.longDesc}
+                          aria-disabled={locked || undefined}
+                          style={{
+                            display: 'flex', flexDirection: 'column', gap: 12,
+                            padding: 16, borderRadius: 14, height: '100%',
+                            background: locked
+                              ? 'rgba(10,10,10,0.55)'
+                              : 'linear-gradient(180deg, rgba(20,20,20,0.85), rgba(10,10,10,0.85))',
+                            border: locked
+                              ? '1px solid rgba(191,166,142,0.06)'
+                              : '1px solid rgba(191,166,142,0.12)',
+                            opacity: locked ? 0.62 : 1,
+                            textDecoration: 'none', color: 'inherit',
+                            position: 'relative', overflow: 'hidden',
+                            transition: 'border-color 0.25s, box-shadow 0.25s',
+                          }}
+                          onMouseEnter={e => {
+                            if (locked) return
+                            e.currentTarget.style.borderColor = 'rgba(212,174,106,0.35)'
+                            e.currentTarget.style.boxShadow = '0 12px 36px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,174,106,0.08)'
+                          }}
+                          onMouseLeave={e => {
+                            if (locked) return
+                            e.currentTarget.style.borderColor = 'rgba(191,166,142,0.12)'
+                            e.currentTarget.style.boxShadow = ''
+                          }}
+                        >
+                          {/* Spotlight gold no hover (decorativo) */}
+                          {!locked && (
+                            <span aria-hidden style={{
+                              position: 'absolute', top: -50, right: -50,
+                              width: 140, height: 140, borderRadius: '50%',
+                              background: 'radial-gradient(circle, rgba(212,174,106,0.12), transparent 70%)',
+                              pointerEvents: 'none',
+                            }} />
+                          )}
+
+                          {/* Top row: icon + nº + lock/arrow */}
+                          <div style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            position: 'relative', zIndex: 1,
+                          }}>
+                            <div style={{
+                              width: 38, height: 38, borderRadius: 11,
+                              background: locked
+                                ? 'rgba(191,166,142,0.04)'
+                                : 'linear-gradient(135deg, rgba(212,174,106,0.18), rgba(122,95,72,0.08))',
+                              border: '1px solid rgba(212,174,106,0.30)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              color: locked ? 'var(--text-muted)' : '#e6d4bd',
+                              boxShadow: locked ? 'none' : 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 14px rgba(212,174,106,0.18)',
+                            }}>
+                              <Icon size={17} strokeWidth={1.7} aria-hidden />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{
+                                fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                                fontSize: 9, letterSpacing: '0.22em', color: 'var(--text-muted)',
+                                fontWeight: 700,
+                              }}>
+                                {String(gi * 100 + i + 1).padStart(3, '0').slice(-2)}
+                              </span>
+                              {locked
+                                ? <Lock size={13} strokeWidth={2} style={{ color: 'var(--text-muted)' }} aria-hidden />
+                                : <ArrowRight size={13} strokeWidth={1.75} style={{ color: '#bfa68e' }} aria-hidden />
+                              }
+                            </div>
+                          </div>
+
+                          {/* Nome + descrição */}
+                          <div style={{ position: 'relative', zIndex: 1 }}>
+                            <div style={{
+                              fontFamily: "'Playfair Display', Georgia, serif",
+                              fontStyle: 'italic', fontWeight: 500,
+                              fontSize: 19, letterSpacing: '-0.01em',
+                              color: locked ? 'var(--text-secondary)' : 'var(--text-primary)',
+                              marginBottom: 4,
+                            }}>
+                              {ag.label}
+                            </div>
+                            <div style={{
+                              fontSize: 12.5, lineHeight: 1.55,
+                              color: 'var(--text-muted)',
+                            }}>
+                              {detail.longDesc}
+                            </div>
+                          </div>
+
+                          {/* Footer: saves badge + example */}
+                          <div style={{
+                            marginTop: 'auto', position: 'relative', zIndex: 1,
+                            display: 'flex', flexDirection: 'column', gap: 8,
+                            paddingTop: 10,
+                            borderTop: '1px dashed rgba(191,166,142,0.12)',
+                          }}>
+                            {detail.saves && (
+                              <div style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                                fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase',
+                                fontWeight: 700,
+                                color: locked ? 'var(--text-muted)' : '#9ec28b',
+                              }}>
+                                <Timer size={11} strokeWidth={2} aria-hidden />
+                                {detail.saves}
+                              </div>
+                            )}
+                            {detail.example && (
+                              <div style={{
+                                fontSize: 11, lineHeight: 1.45,
+                                color: 'var(--text-muted)',
+                                fontStyle: 'italic',
+                              }}>
+                                {detail.example}
+                              </div>
+                            )}
+                            {locked && (
+                              <div style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 5,
+                                fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                                fontSize: 9.5, letterSpacing: '0.16em', textTransform: 'uppercase',
+                                fontWeight: 700, color: '#d4ae6a',
+                                marginTop: 2,
+                              }}>
+                                <Crown size={10} strokeWidth={2} aria-hidden />
+                                Libera no plano {ag.minPlan}
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
         </article>
 
         <div className={s.dashSideCol}>

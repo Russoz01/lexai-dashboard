@@ -2,7 +2,19 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 
-type Theme = 'light' | 'dark'
+/* ════════════════════════════════════════════════════════════════
+ * ThemeContext (v10.8 · 2026-04-22)
+ * ────────────────────────────────────────────────────────────────
+ * LIGHT MODE FOI REMOVIDO — o painel é noir champagne sempre.
+ * O contrato do contexto continua exposto pra não quebrar imports
+ * existentes (Header, Sidebar, dashboard/layout etc), mas:
+ *   - theme é congelado em 'dark'
+ *   - toggleTheme vira no-op
+ *   - data-theme é forçado pra 'dark' no <html> no mount
+ * Qualquer pref antiga em localStorage é sobrescrita.
+ * ═══════════════════════════════════════════════════════════════ */
+
+type Theme = 'dark'
 
 const ThemeContext = createContext<{
   theme: Theme
@@ -10,21 +22,19 @@ const ThemeContext = createContext<{
 }>({ theme: 'dark', toggleTheme: () => {} })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const saved = localStorage.getItem('lexai-theme') as Theme | null
-    const preferred = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-    setTheme(preferred)
-    document.documentElement.setAttribute('data-theme', preferred)
+    const root = document.documentElement
+    root.setAttribute('data-theme', 'dark')
+    // Sobrescreve qualquer pref antiga
+    try { localStorage.setItem('lexai-theme', 'dark') } catch { /* ignore */ }
 
-    // Apply saved design preferences
+    // Reaplica design prefs salvas (cores customizadas)
     try {
       const prefs = localStorage.getItem('lexai-design-prefs')
       if (prefs) {
         const p = JSON.parse(prefs)
-        const root = document.documentElement
         if (p.colors) {
           if (p.colors.primary) {
             root.style.setProperty('--accent', p.colors.primary)
@@ -52,15 +62,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true)
   }, [])
 
-  function toggleTheme() {
-    const next: Theme = theme === 'light' ? 'dark' : 'light'
-    setTheme(next)
-    localStorage.setItem('lexai-theme', next)
-    document.documentElement.setAttribute('data-theme', next)
-  }
-
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: 'dark', toggleTheme: () => {} }}>
       <div style={{ visibility: mounted ? 'visible' : 'hidden' }}>
         {children}
       </div>

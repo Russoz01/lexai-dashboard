@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase'
 import { useTheme } from '@/context/ThemeContext'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
-import ThemisBackground from '@/components/ThemisBackground'
 import TopoBackground from '@/components/TopoBackground'
 import { ToastContainer } from '@/components/Toast'
 import CommandPalette from '@/components/CommandPalette'
@@ -14,7 +13,8 @@ import CommandPalette from '@/components/CommandPalette'
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const supabase = createClient()
-  const { theme } = useTheme()
+  // Light mode foi removido — sempre dark v10
+  useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<{ name: string; role: string } | null>(null)
 
@@ -44,8 +44,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <>
-      {/* Background layers — z-0 */}
-      {theme === 'dark' ? <TopoBackground /> : <ThemisBackground />}
+      {/* Background layers — z-0 (sempre TopoBackground v10 noir) */}
+      <TopoBackground />
 
       {/* Mobile overlay */}
       <div

@@ -20,7 +20,7 @@ import { Quote, Compass, Scale, MapPin } from 'lucide-react'
 
 export function LexManifesto() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#0a0f12] py-32">
+    <section className="relative isolate overflow-hidden bg-[#080606] py-32">
       {/* Decorative orbit ring */}
       <div
         aria-hidden

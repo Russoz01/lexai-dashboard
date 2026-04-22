@@ -1,9 +1,15 @@
 'use client'
 
-import { useTheme } from '@/context/ThemeContext'
 import { useState, useEffect } from 'react'
-import { Bell, HelpCircle, Menu, Moon, Sun } from 'lucide-react'
+import { Bell, HelpCircle, Menu } from 'lucide-react'
 import OnboardingModal from './OnboardingModal'
+
+/* ════════════════════════════════════════════════════════════════
+ * Header (v10.8 · 2026-04-22)
+ * ────────────────────────────────────────────────────────────────
+ * Light mode REMOVIDO — botão Sun/Moon foi suprimido.
+ * Painel é noir champagne sempre, alinhado à landing v10.
+ * ═══════════════════════════════════════════════════════════════ */
 
 interface HeaderProps {
   userName?: string
@@ -12,7 +18,6 @@ interface HeaderProps {
 }
 
 export default function Header({ userName = 'Usuario', userRole = 'LexAI', onToggleSidebar }: HeaderProps) {
-  const { theme, toggleTheme } = useTheme()
   const [time, setTime] = useState('')
   const [showHelp, setShowHelp] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -66,25 +71,20 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
           <span className="notif-dot" />
         </button>
 
-        <button className="header-theme-toggle" onClick={toggleTheme}
-          suppressHydrationWarning
-          title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}>
-          {mounted && theme === 'light'
-            ? <Moon size={16} strokeWidth={1.75} aria-hidden />
-            : <Sun size={16} strokeWidth={1.75} aria-hidden />}
-        </button>
-
         <div className="header-user-info">
           <div className="name">{userName}</div>
           <div className="role">{userRole}</div>
         </div>
         <div className="header-avatar" style={{
           transition: 'all 0.3s ease',
-          background: 'linear-gradient(135deg, var(--accent), var(--stone))',
-          color: 'var(--bg-base)',
+          background: 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
+          color: '#0a0a0a',
+          border: '1px solid rgba(191,166,142,0.4)',
+          boxShadow: '0 0 0 1px rgba(0,0,0,0.6), 0 4px 16px rgba(191,166,142,0.25)',
+          fontFamily: "'Playfair Display', Georgia, serif",
         }}
-          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 16px rgba(191,166,142,0.42)' }}
-          onMouseLeave={e => { e.currentTarget.style.boxShadow = '' }}>
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 0 1px rgba(0,0,0,0.6), 0 0 24px rgba(191,166,142,0.5)' }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 0 1px rgba(0,0,0,0.6), 0 4px 16px rgba(191,166,142,0.25)' }}>
           {initials}
         </div>
       </div>

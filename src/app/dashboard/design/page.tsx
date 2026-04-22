@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
-  Sun, Moon, CircleDot, Palette, RotateCcw, Type,
+  Palette, RotateCcw, Type,
   SlidersHorizontal, LayoutGrid, Square, Accessibility,
   LayoutPanelTop, Droplet, Eye, CheckCircle2, Settings,
 } from 'lucide-react'
@@ -18,7 +18,6 @@ import {
 /* ── Types ───────────────────────────────────────────────────── */
 
 type ColorKey = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger'
-type ThemeMode = 'light' | 'dark' | 'auto'
 type Spacing = 'compact' | 'standard' | 'relaxed'
 type Density = 'compact' | 'normal' | 'spacious'
 type DashboardLayout = 'glass' | 'minimal' | 'bold'
@@ -26,7 +25,6 @@ type Colors = Record<ColorKey, string>
 
 interface DesignPrefs {
   colors: Colors
-  themeMode: ThemeMode
   headingFont: string
   bodyFont: string
   fontSize: number
@@ -93,7 +91,6 @@ const PALETTES: Record<string, { name: string; description: string; colors: Colo
 
 const DEFAULT_PREFS: DesignPrefs = {
   colors: DEFAULT_COLORS,
-  themeMode: 'auto',
   headingFont: 'Playfair Display',
   bodyFont: 'DM Sans',
   fontSize: 16,
@@ -143,16 +140,9 @@ function applyAllStyles(prefs: DesignPrefs) {
 
   if (highContrast) root.setAttribute('data-high-contrast', 'true')
   else root.removeAttribute('data-high-contrast')
-}
 
-function applyThemeMode(mode: ThemeMode) {
-  const root = document.documentElement
-  if (mode === 'auto') {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    root.setAttribute('data-theme', prefersDark ? 'dark' : 'light')
-  } else {
-    root.setAttribute('data-theme', mode)
-  }
+  // Painel é sempre dark v10 — light mode foi removido em 2026-04-22
+  root.setAttribute('data-theme', 'dark')
 }
 
 /* ── Design tokens for cards on this page ───────────────────── */
@@ -270,9 +260,6 @@ export default function DesignPage() {
   useEffect(() => {
     if (!hasLoaded) return
     applyAllStyles(prefs)
-    if (initialApply.current) {
-      applyThemeMode(prefs.themeMode)
-    }
     initialApply.current = true
   }, [prefs, hasLoaded])
 
@@ -338,64 +325,6 @@ export default function DesignPage() {
       }} className="dp-layout">
         {/* ───── CONFIG COLUMN ───── */}
         <div>
-
-          {/* TEMA */}
-          <SectionCard
-            title="Tema do painel"
-            subtitle="Claro, escuro ou automático. O modo escuro é o padrão recomendado — alinhado à identidade LexAI v10."
-            icon={<Sun size={18} strokeWidth={1.75} aria-hidden />}
-          >
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-              {(['light', 'dark', 'auto'] as ThemeMode[]).map(mode => {
-                const isActive = prefs.themeMode === mode
-                const labels: Record<ThemeMode, { title: string; desc: string; icon: React.ReactNode }> = {
-                  light: { title: 'Claro',      desc: 'Ateliê bege — visual arejado', icon: <Sun size={22} strokeWidth={1.75} aria-hidden /> },
-                  dark:  { title: 'Noir',       desc: 'Padrão v10 — reduz cansaço visual', icon: <Moon size={22} strokeWidth={1.75} aria-hidden /> },
-                  auto:  { title: 'Automático', desc: 'Segue preferência do sistema', icon: <CircleDot size={22} strokeWidth={1.75} aria-hidden /> },
-                }
-                const info = labels[mode]
-                const previewBg = mode === 'light'
-                  ? 'linear-gradient(135deg, #F5EFE6, #e8dcc8)'
-                  : mode === 'dark'
-                    ? 'radial-gradient(120% 80% at 30% 10%, rgba(191,166,142,0.18), transparent 60%), linear-gradient(135deg, #0a0a0a, #181510)'
-                    : 'linear-gradient(135deg, #F5EFE6 0%, #F5EFE6 50%, #181510 50%, #0a0a0a 100%)'
-                const previewText = mode === 'light' ? '#44372b' : mode === 'dark' ? '#bfa68e' : '#7a5f48'
-
-                return (
-                  <button
-                    key={mode}
-                    onClick={() => update('themeMode', mode)}
-                    style={{
-                      padding: 0, borderRadius: 14,
-                      border: isActive ? `1.5px solid ${colors.primary}` : '1px solid var(--border)',
-                      background: isActive ? hexToRgba(colors.primary, 0.08) : 'rgba(10,10,10,0.5)',
-                      cursor: 'pointer', overflow: 'hidden',
-                      transition: 'all 0.2s ease', textAlign: 'left',
-                    }}
-                  >
-                    <div style={{
-                      height: 68, background: previewBg,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      borderBottom: '1px solid var(--border)', color: previewText,
-                    }}>
-                      {info.icon}
-                    </div>
-                    <div style={{ padding: '12px 14px' }}>
-                      <div style={{
-                        fontFamily: "'Playfair Display', Georgia, serif", fontStyle: 'italic',
-                        fontSize: 16, fontWeight: 500,
-                        color: isActive ? colors.primary : 'var(--text-primary)',
-                        marginBottom: 2, letterSpacing: '-0.01em',
-                      }}>{info.title}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                        {info.desc}
-                      </div>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-          </SectionCard>
 
           {/* CORES */}
           <SectionCard
