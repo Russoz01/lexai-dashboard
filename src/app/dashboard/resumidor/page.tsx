@@ -184,7 +184,7 @@ export default function ResumidorPage() {
     try {
       const { text, numPages } = await extractPdfWithMeta(file)
       if (!text.trim()) {
-        toast('error', 'PDF sem texto extraivel (verifique se nao e digitalizado)')
+        toast('error', 'PDF sem texto extraível (verifique se não é digitalizado)')
         return
       }
       if (target === 'single') setTexto(text)
@@ -192,7 +192,7 @@ export default function ResumidorPage() {
       else setTextoB(text)
       const baseName = file.name.replace(/\.pdf$/i, '').slice(0, 80)
       if (target === 'single' && !titulo) setTitulo(baseName)
-      toast('success', `PDF carregado: ${numPages} ${numPages === 1 ? 'pagina' : 'paginas'}`)
+      toast('success', `PDF carregado: ${numPages} ${numPages === 1 ? 'página' : 'páginas'}`)
     } catch (e) {
       console.error('PDF parse error:', e)
       toast('error', 'Não foi possível ler o PDF')

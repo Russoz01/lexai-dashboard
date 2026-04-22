@@ -86,7 +86,7 @@ export const CATALOG: CatalogItem[] = [
   { slug: 'marketing-ia', label: 'Marketing IA', href: '/dashboard/marketing-ia', Icon: Megaphone,      desc: 'Conteúdo OAB-compliant para redes',             kind: 'agent', minPlan: 'pro', implemented: true  },
 
   // ───────── 3 módulos de plataforma ─────────
-  { slug: 'crm',          label: 'CRM',          href: '/dashboard/crm',          Icon: Users,          desc: 'Leads, clientes e funil de atendimento',        kind: 'module', minPlan: 'pro',        implemented: false },
+  { slug: 'crm',          label: 'CRM',          href: '/dashboard/crm',          Icon: Users,          desc: 'Leads, clientes e funil de atendimento · DEMO', kind: 'module', minPlan: 'pro',        implemented: true  },
   { slug: 'jurimetria',   label: 'Jurimetria',   href: '/dashboard/jurimetria',   Icon: BarChart3,      desc: 'Métricas processuais e benchmarks',             kind: 'module', minPlan: 'pro',        implemented: false },
   { slug: 'marketing',    label: 'Marketing',    href: '/dashboard/marketing',    Icon: Sparkles,       desc: 'Agenda de conteúdo compliant · calendário',     kind: 'module', minPlan: 'enterprise', implemented: false },
 ]

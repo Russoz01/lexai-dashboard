@@ -1,5 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════
-   Dashboard — Gabinete LexAI  (page.module.css)
+   Dashboard — Gabinete LexAI  (page.module.css) — v9/v10 editorial
+   ───────────────────────────────────────────────────────────────
+   Preto puro + champagne (#bfa68e) + Playfair serif + gold gradient
+   Dual-theme: light (atelier cream) continua bonito, dark (v9 noir)
+   ativa automaticamente via tokens em globals.css [data-theme="dark"].
    ═══════════════════════════════════════════════════════════════ */
 
 .dashAtelier {
@@ -11,6 +15,7 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 2.4px;
@@ -24,8 +29,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--stone);
-  box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.5);
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.55);
   animation: dashPulse 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -40,10 +45,10 @@
 
 .dashAtelierH1 {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -1.2px;
+  line-height: 1.06;
+  letter-spacing: -1.4px;
   color: var(--text-primary);
   margin: 0;
 }
@@ -55,16 +60,18 @@
 }
 
 .dashHeaderSub {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-size: 14px;
   color: var(--text-secondary);
   margin: 0;
-  letter-spacing: 0.1px;
+  letter-spacing: 0.12px;
 }
 
 .dashHairline {
   height: 1px;
-  background: linear-gradient(90deg, var(--stone) 0%, var(--stone-line) 24%, transparent 100%);
+  background: linear-gradient(90deg, var(--accent) 0%, var(--stone-line) 24%, transparent 100%);
   margin-top: 10px;
+  opacity: 0.8;
 }
 
 /* ── Provas (4 Roman columns) ─────────────────────────────── */
@@ -81,7 +88,7 @@
   border-radius: 16px;
   padding: 0;
   overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24) inset, 0 18px 50px rgba(19, 32, 37, 0.06);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 18px 50px rgba(0, 0, 0, 0.18);
 }
 
 /* ── Usage + Referral panel row ───────────────────────────── */
@@ -115,7 +122,9 @@
 
 /* ── Cards ─────────────────────────────────────────────────── */
 .dashCard {
-  background: var(--glass);
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(191, 166, 142, 0.04) 0%, transparent 60%),
+    var(--glass);
   backdrop-filter: blur(var(--blur)) saturate(160%);
   -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
   border: 1px solid var(--stone-line);
@@ -125,13 +134,13 @@
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.35s ease;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24) inset, 0 18px 50px rgba(19, 32, 37, 0.06);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 18px 50px rgba(0, 0, 0, 0.18);
 }
 
 .dashCard:hover {
-  transform: translateY(-3px);
-  border-color: var(--stone);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.32) inset, 0 28px 64px rgba(19, 32, 37, 0.10);
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 28px 64px rgba(0, 0, 0, 0.28);
 }
 
 .dashCardHead {
@@ -145,19 +154,21 @@
 }
 
 .dashCardCap {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 2.2px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 8px;
+  color: var(--accent);
+  opacity: 0.55;
+  margin-bottom: 10px;
 }
 
 .dashCardTitle {
   font-family: var(--font-playfair), Georgia, serif;
   font-size: 24px;
   font-weight: 500;
-  line-height: 1.15;
+  line-height: 1.12;
   letter-spacing: -0.6px;
   color: var(--text-primary);
   margin: 0 0 6px;
@@ -170,6 +181,7 @@
 }
 
 .dashCardSub {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-size: 12.5px;
   color: var(--text-muted);
   margin: 0;
@@ -180,9 +192,10 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 11.5px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
   text-decoration: none;
@@ -204,10 +217,10 @@
 
 .dashBarRow {
   display: grid;
-  grid-template-columns: 28px 100px 1fr 36px;
+  grid-template-columns: 28px 110px 1fr 40px;
   align-items: center;
   gap: 16px;
-  padding: 8px 10px;
+  padding: 10px 10px;
   margin-inline: -10px;
   border-radius: 8px;
   text-decoration: none;
@@ -220,16 +233,18 @@
 
 .dashBarNum {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 13px;
+  font-size: 11px;
   font-style: italic;
   color: var(--text-muted);
   text-align: right;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.3px;
 }
 
 .dashBarLabel {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-primary);
   text-align: right;
   letter-spacing: 0.1px;
@@ -246,19 +261,19 @@
 .dashBarFill {
   position: absolute;
   inset: 0 auto 0 0;
-  background: linear-gradient(90deg, var(--accent), var(--stone));
+  background: linear-gradient(90deg, #f5e8d3 0%, var(--accent) 55%, #7a5f48 100%);
   border-radius: 2px;
-  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dashBarCount {
-  font-family: var(--font-playfair), Georgia, serif;
-  font-size: 18px;
-  font-style: italic;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
   color: var(--accent);
   text-align: right;
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.4px;
 }
 
 /* ── Atividade recente ────────────────────────────────────── */
@@ -270,7 +285,7 @@
 
 .dashActivityRow {
   display: grid;
-  grid-template-columns: 24px 36px 1fr auto;
+  grid-template-columns: 24px 34px 1fr auto;
   align-items: center;
   gap: 14px;
   padding: 14px 10px;
@@ -291,23 +306,22 @@
 
 .dashActivityNum {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 13px;
+  font-size: 12px;
   font-style: italic;
   color: var(--text-muted);
   text-align: center;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
 }
 
 .dashActivityIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--accent-bg);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(191, 166, 142, 0.1);
   border: 1px solid var(--stone-line);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
   color: var(--accent);
   flex-shrink: 0;
 }
@@ -318,46 +332,52 @@
 }
 
 .dashActivityName {
-  font-size: 13px;
-  font-weight: 700;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: 0.1px;
+  letter-spacing: -0.1px;
+  line-height: 1.2;
 }
 
 .dashActivitySnippet {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-size: 12px;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .dashActivityTime {
-  font-size: 11px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--accent);
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.4px;
+  opacity: 0.8;
 }
 
 /* ── Agentes grid ─────────────────────────────────────────── */
 .dashAgentsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 12px;
 }
 
 .dashAgent {
   display: grid;
-  grid-template-columns: 26px 38px 1fr 16px;
+  grid-template-columns: 24px 32px 1fr 16px;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding: 14px 16px;
   border: 1px solid var(--stone-line);
   border-radius: 12px;
   text-decoration: none;
-  background: transparent;
+  background: var(--glass);
   transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
@@ -368,14 +388,14 @@
   position: absolute;
   inset: 0 auto 0 0;
   width: 3px;
-  background: linear-gradient(180deg, var(--accent), var(--stone));
+  background: linear-gradient(180deg, #f5e8d3, var(--accent), #7a5f48);
   opacity: 0;
   transition: opacity 0.28s ease;
 }
 
 .dashAgent:hover {
   background: var(--hover);
-  border-color: var(--stone);
+  border-color: var(--accent);
   transform: translateX(3px);
 }
 
@@ -385,31 +405,32 @@
 
 .dashAgentNum {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 13px;
+  font-size: 12px;
   font-style: italic;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   text-align: right;
+  letter-spacing: 0.3px;
 }
 
 .dashAgentIcon {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
-  background: var(--accent-bg);
+  background: rgba(191, 166, 142, 0.08);
   border: 1px solid var(--stone-line);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
   color: var(--accent);
   flex-shrink: 0;
-  transition: background 0.28s ease, color 0.28s ease;
+  transition: background 0.28s ease, color 0.28s ease, border-color 0.28s ease;
 }
 
 .dashAgent:hover .dashAgentIcon {
   background: var(--accent);
   color: var(--bg-base);
+  border-color: var(--accent);
 }
 
 .dashAgentInfo {
@@ -417,40 +438,41 @@
 }
 
 .dashAgentName {
-  font-size: 13.5px;
-  font-weight: 700;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: 0.1px;
+  letter-spacing: -0.1px;
+  line-height: 1.2;
 }
 
 .dashAgentDesc {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-size: 11.5px;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .dashAgentArrow {
-  font-size: 13px;
-  color: var(--text-muted);
+  color: var(--accent);
   opacity: 0;
   transform: translateX(-4px);
-  transition: opacity 0.28s ease, transform 0.28s ease, color 0.28s ease;
+  transition: opacity 0.28s ease, transform 0.28s ease;
 }
 
 .dashAgent:hover .dashAgentArrow {
   opacity: 1;
   transform: translateX(0);
-  color: var(--accent);
 }
 
 /* ── Prazos ───────────────────────────────────────────────── */
 .dashPrazos {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .dashPrazoRow {
@@ -461,24 +483,25 @@
   border: 1px solid var(--stone-line);
   border-radius: 10px;
   background: var(--hover);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .dashPrazoRow:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(19, 32, 37, 0.06);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
 }
 
 .dashPrazoBar {
   width: 3px;
   height: 36px;
   border-radius: 2px;
-  background: var(--stone);
+  background: var(--accent);
 }
 
-.critical .dashPrazoBar { background: var(--danger); }
-.warning .dashPrazoBar { background: var(--warning); }
-.normal .dashPrazoBar { background: var(--success); }
+.critical .dashPrazoBar { background: #d88977; }
+.warning  .dashPrazoBar { background: #d4ae6a; }
+.normal   .dashPrazoBar { background: var(--accent); }
 
 .dashPrazoInfo {
   flex: 1;
@@ -486,23 +509,29 @@
 }
 
 .dashPrazoTitle {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: 0.1px;
 }
 
 .dashPrazoMeta {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  color: var(--accent);
+  opacity: 0.6;
+  margin-top: 3px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
 }
 
 .dashPrazoDays {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 17px;
+  font-size: 14px;
   font-style: italic;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
@@ -510,21 +539,24 @@
   flex-shrink: 0;
 }
 
-.critical .dashPrazoDays { color: var(--danger); }
+.critical .dashPrazoDays { color: #d88977; }
+.warning  .dashPrazoDays { color: #d4ae6a; }
 
 /* ── Finance ──────────────────────────────────────────────── */
 .dashFinance {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: 14px;
 }
 
 .dashFinanceValue {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 36px;
+  font-size: 42px;
+  font-style: italic;
   font-weight: 500;
-  letter-spacing: -1px;
+  line-height: 1;
+  letter-spacing: -1.2px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -532,9 +564,10 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 11.5px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
   text-decoration: none;
@@ -552,29 +585,38 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 38px 20px 10px;
+  padding: 36px 20px 12px;
   text-align: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .dashEmptyState.compact {
-  padding: 22px 12px 6px;
+  padding: 22px 12px 8px;
 }
 
-.dashEmptyState i {
-  font-size: 28px;
-  color: var(--stone);
+.dashEmptyState > svg,
+.dashEmptyState > i {
+  width: 22px;
+  height: 22px;
+  padding: 10px;
+  box-sizing: content-box;
+  border-radius: 50%;
+  background: rgba(191, 166, 142, 0.08);
+  color: var(--accent);
   margin-bottom: 4px;
 }
 
 .dashEmptyTitle {
   font-family: var(--font-playfair), Georgia, serif;
   font-style: italic;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--text-primary);
+  letter-spacing: -0.1px;
 }
 
 .dashEmptySub {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-size: 12.5px;
   color: var(--text-muted);
   max-width: 280px;
@@ -587,26 +629,35 @@
   align-items: center;
   gap: 7px;
   padding: 10px 18px;
-  background: var(--accent);
-  color: var(--bg-base);
-  border-radius: 8px;
-  font-size: 12px;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   text-decoration: none;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
 }
 
 .dashEmptyCta:hover {
+  background: var(--accent);
+  color: var(--bg-base);
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(19, 32, 37, 0.18);
 }
 
 .dashSkel,
 .dashSkelRow {
   height: 38px;
   border-radius: 8px;
-  background: linear-gradient(90deg, var(--hover), var(--stone-soft), var(--hover));
+  background: linear-gradient(
+    90deg,
+    var(--hover) 0%,
+    rgba(191, 166, 142, 0.08) 50%,
+    var(--hover) 100%
+  );
   background-size: 200% 100%;
   animation: dashShimmer 1.6s ease-in-out infinite;
   margin-bottom: 12px;
@@ -624,8 +675,9 @@
   gap: 0;
   padding: 44px 44px 40px;
   text-decoration: none;
-  border-right: 1px solid var(--stone-line);
-  transition: background 0.28s ease;
+  border-right: 1px solid rgba(191, 166, 142, 0.08);
+  border-top: 1px solid transparent;
+  transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
 }
 
@@ -635,15 +687,18 @@
 
 .provaCell:hover {
   background: var(--hover);
+  border-right-color: rgba(191, 166, 142, 0.2);
+  border-top-color: rgba(191, 166, 142, 0.2);
+  transform: translateY(-2px);
 }
 
 .provaRoman {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 13px;
+  font-size: 11px;
   font-style: italic;
   color: var(--text-muted);
-  letter-spacing: 1.6px;
-  margin-bottom: 20px;
+  letter-spacing: 1.4px;
+  margin-bottom: 22px;
 }
 
 .provaValue {
@@ -652,7 +707,7 @@
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1;
-  letter-spacing: -1.4px;
+  letter-spacing: -1.6px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -665,15 +720,17 @@
 }
 
 .provaLabel {
-  font-size: 11px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 1.4px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
 .provaCaption {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 6px;
@@ -681,7 +738,7 @@
 
 .provaCaptionWarn {
   composes: provaCaption;
-  color: var(--warning);
+  color: #d4ae6a;
   font-weight: 600;
 }
 
@@ -693,7 +750,7 @@
 
 @keyframes dashPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(191, 166, 142, 0.55); }
-  50% { box-shadow: 0 0 0 6px rgba(191, 166, 142, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(191, 166, 142, 0); }
 }
 
 /* ── Responsive ───────────────────────────────────────────── */
@@ -709,18 +766,18 @@
 }
 
 @media (max-width: 768px) {
-  .dashAtelierH1 { font-size: 34px; }
+  .dashAtelierH1 { font-size: 34px; letter-spacing: -1px; }
   .dashProvas {
     grid-template-columns: 1fr 1fr;
   }
   .dashCard { padding: 22px 20px; }
   .dashCardTitle { font-size: 20px; }
   .dashBarRow {
-    grid-template-columns: 22px 80px 1fr 30px;
+    grid-template-columns: 22px 80px 1fr 32px;
     gap: 10px;
   }
-  .dashBarCount { font-size: 15px; }
-  .dashFinanceValue { font-size: 30px; }
+  .dashBarCount { font-size: 12px; }
+  .dashFinanceValue { font-size: 34px; }
   .dashPanelsRow {
     grid-template-columns: 1fr;
   }

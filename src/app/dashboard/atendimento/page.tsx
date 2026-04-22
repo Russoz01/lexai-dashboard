@@ -139,7 +139,7 @@ export default function AtendimentoPage() {
               value={perfil}
               onChange={e => setPerfil(e.target.value)}
               maxLength={25000}
-              placeholder="Ex: PJ de pequeno porte em SP, recebeu notificacao extrajudicial de ex-socio cobrando haveres. Primeira consulta, ainda nao contratou..."
+              placeholder="Ex: PJ de pequeno porte em SP, recebeu notificação extrajudicial de ex-sócio cobrando haveres. Primeira consulta, ainda não contratou..."
               rows={10}
               style={{
                 width: '100%', padding: 12, borderRadius: 8,

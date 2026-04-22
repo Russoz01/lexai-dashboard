@@ -60,10 +60,10 @@ export default function MarketingIaPage() {
         body: JSON.stringify({ topico, plataforma }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Erro ao gerar conteudo')
+      if (!res.ok) throw new Error(data.error || 'Erro ao gerar conteúdo')
       setConteudo(data.conteudo)
     } catch (e: unknown) {
-      toast('error', e instanceof Error ? e.message : 'Erro ao gerar conteudo')
+      toast('error', e instanceof Error ? e.message : 'Erro ao gerar conteúdo')
     } finally {
       setLoading(false)
     }
@@ -81,6 +81,15 @@ export default function MarketingIaPage() {
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div className="demo-ribbon" style={{ position: 'relative', top: 'auto', borderRadius: 12, marginBottom: 24, borderBottom: '1px solid rgba(212,174,106,0.28)' }}>
+        <strong style={{ fontWeight: 700, letterSpacing: '0.22em' }}>Modo demonstração</strong>
+        <span style={{ opacity: 0.7 }}>·</span>
+        <span style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'none', fontFamily: 'var(--font-sans, system-ui)' }}>
+          módulo em beta fechado — respostas são geradas mas limitadas
+        </span>
+        <a href="/dashboard/planos" className="demo-ribbon-link">Solicitar acesso completo</a>
+      </div>
+
       <div style={{ marginBottom: 40 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
           <div style={{ background: 'rgba(191,166,142,0.1)', border: '1px solid rgba(191,166,142,0.3)', borderRadius: 12, padding: 12 }}>
@@ -91,7 +100,7 @@ export default function MarketingIaPage() {
               Marketing IA
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Conteudo OAB-compliant (Provimento 205/2021) com 3 variacoes + checklist
+              Conteúdo OAB-compliant (Provimento 205/2021) com 3 variações + checklist
             </p>
           </div>
         </div>
@@ -118,13 +127,13 @@ export default function MarketingIaPage() {
           </div>
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
-              Topico / angulo
+              Tópico / ângulo
             </label>
             <textarea
               value={topico}
               onChange={e => setTopico(e.target.value)}
               maxLength={10000}
-              placeholder="Ex: Novo entendimento do STJ sobre dano moral em demora de entrega de produto..."
+              placeholder="Ex: Novo entendimento do STJ sobre dano moral em demora de entrega de produto…"
               rows={8}
               style={{
                 width: '100%', padding: 12, borderRadius: 8,
@@ -141,7 +150,7 @@ export default function MarketingIaPage() {
           }}>
             <ShieldCheck size={14} style={{ color: '#2d8659', flexShrink: 0, marginTop: 2 }} />
             <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Todo conteudo passa pelo filtro do Provimento 205/2021 da OAB antes de ser entregue. Garantia de resultado, promocoes e mercantilizacao sao bloqueados automaticamente.
+              Todo conteúdo passa pelo filtro do Provimento 205/2021 da OAB antes de ser entregue. Garantia de resultado, promoções e mercantilização são bloqueados automaticamente.
             </div>
           </div>
           <button
@@ -156,26 +165,26 @@ export default function MarketingIaPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             }}
           >
-            <Sparkles size={16} aria-hidden /> {loading ? 'Gerando variacoes...' : 'Gerar 3 variacoes'}
+            <Sparkles size={16} aria-hidden /> {loading ? 'Gerando variações…' : 'Gerar 3 variações'}
           </button>
         </div>
 
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: 14, padding: 24, minHeight: 500 }}>
           <h2 style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', margin: '0 0 20px' }}>
-            Variacoes e compliance
+            Variações e compliance
           </h2>
 
           {loading && (
             <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>
               <span style={{ display: 'inline-block', width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-              <div style={{ fontSize: 13 }}>Redigindo 3 variacoes + checklist de compliance...</div>
+              <div style={{ fontSize: 13 }}>Redigindo 3 variações + checklist de compliance…</div>
             </div>
           )}
 
           {!loading && !conteudo && (
             <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>
               <Megaphone size={40} style={{ margin: '0 auto 16px', opacity: 0.3 }} aria-hidden />
-              <div style={{ fontSize: 13 }}>Descreva o topico (minimo 10 caracteres)</div>
+              <div style={{ fontSize: 13 }}>Descreva o tópico (mínimo 10 caracteres)</div>
             </div>
           )}
 
@@ -183,12 +192,12 @@ export default function MarketingIaPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               {conteudo.publico_alvo && (
                 <div style={{ padding: 10, borderRadius: 8, background: 'var(--hover)', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                  <strong>Publico-alvo:</strong> {conteudo.publico_alvo}
+                  <strong>Público-alvo:</strong> {conteudo.publico_alvo}
                 </div>
               )}
 
               {(conteudo.variacoes?.length ?? 0) > 0 && (
-                <Section title={`Variacoes (${conteudo.variacoes?.length ?? 0})`}>
+                <Section title={`Variações (${conteudo.variacoes?.length ?? 0})`}>
                   {conteudo.variacoes?.map((v, i) => (
                     <div key={i} style={{
                       padding: 14, borderRadius: 10, background: 'var(--bg-base)',
@@ -301,7 +310,7 @@ export default function MarketingIaPage() {
               {conteudo.rodape_obrigatorio && (
                 <div style={{ padding: 12, borderRadius: 8, background: 'var(--accent-light)', border: '1px solid var(--accent)' }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
-                    Rodape obrigatorio
+                    Rodapé obrigatório
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--text-primary)', lineHeight: 1.6 }}>
                     {conteudo.rodape_obrigatorio}
@@ -338,7 +347,7 @@ export default function MarketingIaPage() {
                   fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
                 }}
               >
-                <RotateCcw size={14} /> Novo conteudo
+                <RotateCcw size={14} /> Novo conteúdo
               </button>
             </div>
           )}
