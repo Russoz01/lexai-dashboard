@@ -290,7 +290,7 @@ export default function ConfiguracoesPage() {
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" style={{ width:72, height:72, borderRadius:'50%', objectFit:'cover', border:'3px solid var(--border)' }} />
                 ) : (
-                  <div style={{ width:72, height:72, borderRadius:'50%', background:'linear-gradient(135deg,#2d6a4f,#3d8b6a)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:24, fontWeight:700, color:'#fff', border:'3px solid var(--border)' }}>
+                  <div style={{ width:72, height:72, borderRadius:'50%', background:'linear-gradient(135deg,#8a6f55 0%,#bfa68e 60%,#e6d4bd 100%)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-playfair), "Playfair Display", Georgia, serif', fontStyle:'italic', fontSize:28, fontWeight:400, color:'#0a0807', border:'3px solid rgba(191,166,142,0.25)', boxShadow:'0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
                     {iniciais}
                   </div>
                 )}
@@ -416,33 +416,200 @@ export default function ConfiguracoesPage() {
             </div>
           </div>
 
-          <div className="section-card" style={{ padding:'20px 24px' }}>
-            <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Plano Atual</div>
-            <div style={{ background:'linear-gradient(135deg,var(--accent),#3d8b6a)', borderRadius:12, padding:'20px 24px', color:'#fff', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          {/* ───────── PLANO ATIVO · editorial atelier (v10.12) ─────────
+           * Mesma vocabulário do /dashboard/planos e LexPricingGrid:
+           * mono champagne label + Playfair italic nome + hairline rule
+           * + tabular-nums preço + ações em ghost button.
+           * ─────────────────────────────────────────────────────────── */}
+          <div
+            className="section-card"
+            style={{
+              padding: '28px 32px',
+              background:
+                'radial-gradient(120% 100% at 50% 0%, rgba(191,166,142,0.08), transparent 68%), rgba(10,10,10,0.82)',
+              border: '1px solid rgba(191,166,142,0.18)',
+              borderRadius: 18,
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            {/* serial + capítulo */}
+            <div
+              style={{
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                fontSize: 10,
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
+                color: '#bfa68e',
+                marginBottom: 14,
+              }}
+            >
+              N° VII · PLANO ATIVO
+            </div>
+
+            {/* grid 2-col: identidade + preço */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                gap: 24,
+                flexWrap: 'wrap',
+              }}
+            >
               <div>
-                <div style={{ fontSize:11, fontWeight:600, letterSpacing:'0.8px', textTransform:'uppercase', opacity:0.8 }}>Plano ativo</div>
-                <div style={{ fontSize:24, fontWeight:700, marginTop:4 }}>{planoAtual.nome}</div>
-                <div style={{ fontSize:13, opacity:0.8, marginTop:2 }}>Renovação automática</div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-playfair), "Playfair Display", Georgia, serif',
+                    fontSize: 34,
+                    fontStyle: 'italic',
+                    fontWeight: 400,
+                    lineHeight: 1.04,
+                    background: 'linear-gradient(180deg, #f5e8d3 0%, #bfa68e 60%, #8a6f55 100%)',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    color: 'transparent',
+                  }}
+                >
+                  {planoAtual.nome}
+                </div>
+                <div
+                  style={{
+                    marginTop: 6,
+                    fontSize: 13,
+                    color: 'rgba(240,230,212,0.58)',
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Renovação automática · cancele 1 clique
+                </div>
               </div>
-              <div style={{ textAlign:'right' }}>
-                <div style={{ fontSize:28, fontWeight:700, fontVariantNumeric:'tabular-nums' }}>R$ {planoAtual.preco}</div>
-                <div style={{ fontSize:12, opacity:0.75 }}>/mês</div>
+
+              <div style={{ textAlign: 'right' }}>
+                <div
+                  style={{
+                    fontSize: 36,
+                    fontWeight: 300,
+                    color: '#f0e6d4',
+                    fontVariantNumeric: 'tabular-nums',
+                    letterSpacing: '-0.01em',
+                    lineHeight: 1,
+                  }}
+                >
+                  R$ {planoAtual.preco.toLocaleString('pt-BR')}
+                </div>
+                <div
+                  style={{
+                    marginTop: 6,
+                    fontSize: 11,
+                    color: 'rgba(240,230,212,0.55)',
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Por advogado / mês
+                </div>
               </div>
             </div>
-            <div style={{ marginTop:14, display:'flex', gap:8 }}>
-              <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.location.href='/dashboard/planos'}><ArrowUpCircle size={14} strokeWidth={1.75} aria-hidden /> Gerenciar plano</button>
+
+            {/* hairline gold */}
+            <div
+              style={{
+                margin: '24px 0 20px',
+                height: 1,
+                background:
+                  'linear-gradient(90deg, transparent 0%, rgba(191,166,142,0.35) 50%, transparent 100%)',
+              }}
+            />
+
+            {/* ações */}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button
-                className="btn-ghost" style={{ flex:1 }}
+                onClick={() => (window.location.href = '/dashboard/planos')}
+                style={{
+                  flex: 1,
+                  minWidth: 180,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  padding: '12px 18px',
+                  borderRadius: 999,
+                  border: '1px solid rgba(191,166,142,0.35)',
+                  background:
+                    'linear-gradient(180deg, rgba(191,166,142,0.12) 0%, rgba(191,166,142,0.04) 100%)',
+                  color: '#f0e6d4',
+                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(191,166,142,0.6)'
+                  e.currentTarget.style.background =
+                    'linear-gradient(180deg, rgba(191,166,142,0.22) 0%, rgba(191,166,142,0.08) 100%)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(191,166,142,0.35)'
+                  e.currentTarget.style.background =
+                    'linear-gradient(180deg, rgba(191,166,142,0.12) 0%, rgba(191,166,142,0.04) 100%)'
+                }}
+              >
+                <ArrowUpCircle size={13} strokeWidth={1.75} aria-hidden />
+                Gerenciar plano
+              </button>
+              <button
                 onClick={async () => {
                   try {
                     const res = await fetch('/api/stripe/portal', { method: 'POST' })
-                    const data = await res.json() as { url?: string }
+                    const data = (await res.json()) as { url?: string }
                     if (data.url) window.location.href = data.url
-                    else { setErro('Não foi possível abrir o portal de faturas.'); setTimeout(() => setErro(''), 3500) }
-                  } catch { setErro('Erro ao abrir portal.'); setTimeout(() => setErro(''), 3500) }
+                    else {
+                      setErro('Não foi possível abrir o portal de faturas.')
+                      setTimeout(() => setErro(''), 3500)
+                    }
+                  } catch {
+                    setErro('Erro ao abrir portal.')
+                    setTimeout(() => setErro(''), 3500)
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  minWidth: 180,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  padding: '12px 18px',
+                  borderRadius: 999,
+                  border: '1px solid rgba(240,230,212,0.12)',
+                  background: 'rgba(255,255,255,0.02)',
+                  color: 'rgba(240,230,212,0.75)',
+                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(191,166,142,0.35)'
+                  e.currentTarget.style.color = '#f0e6d4'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(240,230,212,0.12)'
+                  e.currentTarget.style.color = 'rgba(240,230,212,0.75)'
                 }}
               >
-                <Receipt size={14} strokeWidth={1.75} aria-hidden /> Ver faturas
+                <Receipt size={13} strokeWidth={1.75} aria-hidden />
+                Ver faturas
               </button>
             </div>
           </div>
