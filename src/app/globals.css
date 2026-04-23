@@ -1895,3 +1895,266 @@ input[type="date"] { cursor: pointer; }
   background: rgba(212,174,106,0.24);
   color: #fff;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   AtelierCard — v10.10 vocabulário visual canônico
+   Hairline gold (::before) + radial cursor glow (::after)
+   Motion entry via Framer. Aqui mora só o style.
+   ══════════════════════════════════════════════════════════════ */
+.atelier-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 24px 20px;
+  border-radius: 16px;
+  background:
+    radial-gradient(140% 110% at 50% 0%, rgba(191,166,142,0.05), transparent 60%),
+    linear-gradient(180deg, rgba(20,20,20,0.88), rgba(10,10,10,0.88));
+  border: 1px solid rgba(191,166,142,0.12);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 18px 50px rgba(0,0,0,0.18);
+  color: inherit;
+  text-decoration: none;
+  text-align: left;
+  width: 100%;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Quando for article (não interativo), não usa pointer */
+article.atelier-card { cursor: default; }
+
+/* Hairline gold no topo — scaleX 0 → 1 no hover */
+.atelier-card__hairline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+  pointer-events: none;
+  opacity: 0.85;
+  z-index: 2;
+}
+
+.atelier-card[data-accent='gold'] .atelier-card__hairline {
+  background: linear-gradient(90deg, transparent 0%, #f5e8d3 28%, #bfa68e 55%, #7a5f48 82%, transparent 100%);
+}
+.atelier-card[data-accent='carmim'] .atelier-card__hairline {
+  background: linear-gradient(90deg, transparent 0%, rgba(239,68,68,0.85) 45%, rgba(239,68,68,0.4) 85%, transparent 100%);
+}
+
+/* Radial cursor glow — seguindo --mx/--my */
+.atelier-card__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    220px 160px at var(--mx, 50%) var(--my, 40%),
+    rgba(191,166,142,0.12),
+    transparent 68%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.atelier-card[data-accent='carmim'] .atelier-card__glow {
+  background: radial-gradient(
+    220px 160px at var(--mx, 50%) var(--my, 40%),
+    rgba(239,68,68,0.10),
+    transparent 68%
+  );
+}
+
+/* Hover — só ativa em dispositivos com hover real */
+@media (hover: hover) {
+  .atelier-card:not([data-muted='true']):hover {
+    transform: translateY(-2px);
+    border-color: rgba(191,166,142,0.32);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 28px 64px rgba(0,0,0,0.3);
+  }
+  .atelier-card:not([data-muted='true']):hover .atelier-card__hairline {
+    transform: scaleX(1);
+  }
+  .atelier-card:not([data-muted='true']):hover .atelier-card__glow {
+    opacity: 1;
+  }
+  .atelier-card[data-accent='carmim']:not([data-muted='true']):hover {
+    border-color: rgba(239,68,68,0.35);
+  }
+}
+
+/* Em mobile (pointer: coarse), a hairline fica estática como hint */
+@media (hover: none) {
+  .atelier-card__hairline {
+    transform: scaleX(1);
+    opacity: 0.3;
+  }
+}
+
+/* Focus visible (keyboard) */
+.atelier-card:focus-visible {
+  outline: 2px solid rgba(191,166,142,0.6);
+  outline-offset: 3px;
+}
+.atelier-card[data-accent='carmim']:focus-visible {
+  outline-color: rgba(239,68,68,0.6);
+}
+
+/* Muted (card bloqueado por plano) */
+.atelier-card[data-muted='true'] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tipografia interna */
+.atelier-card__roman {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(191,166,142,0.6);
+  font-weight: 700;
+  position: relative;
+  z-index: 3;
+}
+
+.atelier-card__title {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #f5f1ea;
+  margin: 0;
+  position: relative;
+  z-index: 3;
+}
+
+.atelier-card__title em {
+  font-style: italic;
+  color: #bfa68e;
+}
+
+.atelier-card__desc {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(191,166,142,0.72);
+  margin: 0;
+  position: relative;
+  z-index: 3;
+}
+
+.atelier-card__slot {
+  margin-top: auto;
+  padding-top: 12px;
+  position: relative;
+  z-index: 3;
+}
+
+/* Reduced motion — sem translate nem scale; só opacity preserva entry */
+@media (prefers-reduced-motion: reduce) {
+  .atelier-card:hover {
+    transform: none !important;
+  }
+  .atelier-card__hairline {
+    transition: opacity 0.3s ease;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Empty-state accent — Playfair italic champagne na última
+   palavra. Usado pela biblioteca canônica v10.10.
+   ══════════════════════════════════════════════════════════════ */
+.empty-state__accent {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-style: italic;
+  color: #bfa68e;
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   v10.10 — Editorial treatment automático em .section-card
+   Aplica hairline gold ::before + cursor glow ::after em TODAS
+   as section-cards do dashboard (chat, prazos, financeiro,
+   configuracoes, planos). Zero refactor de lógica — o componente
+   existente recebe o vocabulário v10.9 só no nível visual.
+   Só ativa em dark theme pra não mexer com light mode legacy.
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="dark"] .section-card {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-theme="dark"] .section-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(245,232,211,0.55) 28%,
+    rgba(191,166,142,0.85) 55%,
+    rgba(122,95,72,0.55) 82%,
+    transparent 100%);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.85;
+}
+
+[data-theme="dark"] .section-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    220px 160px at var(--mx, 50%) var(--my, 40%),
+    rgba(191,166,142,0.09),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+@media (hover: hover) {
+  [data-theme="dark"] .section-card:hover::before {
+    transform: scaleX(1);
+  }
+  [data-theme="dark"] .section-card:hover::after {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  [data-theme="dark"] .section-card::before {
+    transform: scaleX(1);
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="dark"] .section-card::before {
+    transition: opacity 0.3s ease;
+  }
+  [data-theme="dark"] .section-card:hover {
+    transform: none;
+  }
+}
