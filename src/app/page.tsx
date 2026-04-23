@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import {
   ArrowRight,
   CalendarCheck,
@@ -10,10 +9,6 @@ import {
   Scale,
   Menu,
   X,
-  Check,
-  Minus,
-  Sparkles,
-  Zap,
 } from 'lucide-react'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ExitIntent } from '@/components/ExitIntent'
@@ -22,6 +17,7 @@ import { LexAreasMarquee } from '@/components/ui/lex-areas-marquee'
 import { LexPricing } from '@/components/ui/lex-pricing'
 import { LexFaq } from '@/components/ui/lex-faq'
 import { LexFinalCta } from '@/components/ui/lex-final-cta'
+import { LexComparison } from '@/components/ui/lex-comparison'
 import { LexManifesto } from '@/components/ui/lex-manifesto'
 import { LexProvimento } from '@/components/ui/lex-provimento'
 import { LexHeroStage, GlyphReveal } from '@/components/ui/lex-hero-stage'
@@ -359,118 +355,8 @@ export default function LandingPage() {
       {/* ═══ AGENTES BENTO ═════════════════════════════════════════════ */}
       <LexAgentsBento />
 
-      {/* ═══ DIFERENCIAIS — vs ChatGPT/Generalistas ══════════════════ */}
-      <section
-        id="diferencial"
-        className="relative isolate overflow-hidden bg-black py-28"
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(50%_45%_at_50%_0%,rgba(191,166,142,0.07)_0%,transparent_70%)]"
-        />
-
-        <div className="mx-auto max-w-5xl px-6">
-          <Reveal as="div" className="mx-auto mb-14 max-w-2xl text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/65">
-              <Zap className="size-3 text-[#bfa68e]" strokeWidth={2} />
-              LexAI vs generalista
-            </div>
-            <h2 className="text-balance font-serif text-4xl text-white md:text-5xl">
-              Por que generalistas{' '}
-              <span className="italic text-[#e6d4bd]">falham em peça</span>.
-            </h2>
-            <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/65">
-              Modelo genérico inventa citação para parecer útil. A LexAI recusa
-              antes de fabricar.
-            </p>
-          </Reveal>
-
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-neutral-950 to-black shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)]"
-          >
-            <div className="grid grid-cols-[1.2fr_1fr_1fr] border-b border-white/[0.08] bg-white/[0.02]">
-              <div className="px-6 py-4 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55">
-                Comparativo
-              </div>
-              <div className="px-6 py-4 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55">
-                ChatGPT / Gemini
-              </div>
-              <div className="flex items-center gap-2 px-6 py-4 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-[#e6d4bd]">
-                <Sparkles className="size-3" strokeWidth={2} />
-                LexAI
-              </div>
-            </div>
-            {[
-              {
-                k: 'Jurisprudência BR',
-                them: 'Inventa acórdão fake',
-                us: 'Link rastreável STF/STJ',
-              },
-              {
-                k: 'Cálculo de prazo',
-                them: 'Ignora feriado local',
-                us: 'Estadual + municipal',
-              },
-              {
-                k: 'Retenção de dados',
-                them: 'Treina modelo público',
-                us: 'Zero retenção',
-              },
-              {
-                k: 'Modelos próprios',
-                them: 'Sem memória persistente',
-                us: 'Galeria por escritório',
-              },
-              {
-                k: 'Correção monetária',
-                them: 'Aproximação errada',
-                us: 'INPC, IGPM, IPCA oficiais',
-              },
-              {
-                k: 'Quando não sabe',
-                them: 'Inventa com confiança',
-                us: 'Recusa e pede fonte',
-              },
-              {
-                k: 'Conformidade LGPD',
-                them: 'Servidor EUA, contrato genérico',
-                us: 'BR + DPA assinado',
-              },
-            ].map((row, i) => (
-              <motion.div
-                key={row.k}
-                initial={{ opacity: 0, x: -8 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.4, delay: 0.05 + i * 0.04 }}
-                className="grid grid-cols-[1.2fr_1fr_1fr] border-b border-white/[0.04] last:border-b-0 transition-colors hover:bg-white/[0.02]"
-              >
-                <div className="px-6 py-4 text-[14px] font-medium text-white">
-                  {row.k}
-                </div>
-                <div className="flex items-start gap-2 px-6 py-4 text-[13.5px] text-white/55">
-                  <Minus
-                    className="mt-0.5 size-3.5 shrink-0 text-red-400/60"
-                    strokeWidth={2.5}
-                  />
-                  <span>{row.them}</span>
-                </div>
-                <div className="flex items-start gap-2 px-6 py-4 text-[13.5px] text-white/90">
-                  <Check
-                    className="mt-0.5 size-3.5 shrink-0 text-[#bfa68e]"
-                    strokeWidth={2.5}
-                  />
-                  <span>{row.us}</span>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      {/* ═══ COMPARATIVO — 10 rivais × 21 critérios ═══════════════════ */}
+      <LexComparison />
 
       {/* ═══ PROVIMENTO 205 — compliance-first ═══════════════════════ */}
       <div id="provimento">
