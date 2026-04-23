@@ -227,10 +227,43 @@ export default function ConfiguracoesPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: '100%' }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 className="page-title">Configurações</h1>
-        <p className="page-subtitle">Gerencie seu perfil, preferências e integrações</p>
-      </div>
+      {/* Header editorial — alinhado ao padrao do /dashboard principal */}
+      <header style={{ marginBottom: 32, paddingTop: 4 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 9,
+          fontFamily: 'var(--font-mono, ui-monospace), monospace',
+          fontSize: 10, fontWeight: 700, letterSpacing: '0.22em',
+          textTransform: 'uppercase', color: 'var(--text-muted)',
+          marginBottom: 12,
+        }}>
+          <span style={{
+            display: 'inline-block', width: 6, height: 6, borderRadius: '50%',
+            background: 'var(--accent)',
+            boxShadow: '0 0 10px rgba(191,166,142,0.55)',
+          }} />
+          <span>N° 006 · ATELIER · CONFIGURACOES</span>
+        </div>
+        <h1 style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: 38, fontWeight: 500,
+          lineHeight: 1.08, letterSpacing: '-1px',
+          color: 'var(--text-primary)', margin: 0,
+        }}>
+          Seu <em style={{ fontStyle: 'italic', fontWeight: 400, color: 'var(--accent)' }}>gabinete</em>.
+        </h1>
+        <p style={{
+          fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
+          fontSize: 14, color: 'var(--text-secondary)',
+          margin: '10px 0 0', maxWidth: 620, lineHeight: 1.55,
+        }}>
+          Perfil, vocacao, integracoes e canais. Voce decide como o atelier responde — a gente so afina.
+        </p>
+        <div aria-hidden style={{
+          height: 1, marginTop: 16,
+          background: 'linear-gradient(90deg, var(--accent) 0%, rgba(191,166,142,0.16) 26%, transparent 100%)',
+          opacity: 0.85,
+        }} />
+      </header>
 
       {/* Tabs */}
       <div className="tabs">
