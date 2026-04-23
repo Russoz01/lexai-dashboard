@@ -591,7 +591,7 @@ export default function RotinaPage() {
         {compHoje.length === 0 ? (
           <div style={{ textAlign:'center', padding:'30px 0', color:'var(--text-muted)', fontSize:13 }}>
             <Sun size={24} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 8px', opacity:0.4 }} />
-            Nenhum compromisso hoje
+            Agenda limpa hoje — o dia é seu
           </div>
         ) : (
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>

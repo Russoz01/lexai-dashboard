@@ -915,8 +915,8 @@ export default function RedatorPage() {
               ) : draftsList.length === 0 ? (
                 <div style={{ padding: '32px 14px', textAlign: 'center', color: 'var(--text-muted)' }}>
                   <Inbox size={40} strokeWidth={1.75} aria-hidden style={{ opacity: 0.4, display: 'block', margin: '0 auto 10px' }} />
-                  <div style={{ fontSize: 13 }}>Nenhum rascunho salvo ainda.</div>
-                  <div style={{ fontSize: 12, marginTop: 4 }}>Gere uma peça para salvar automaticamente.</div>
+                  <div style={{ fontSize: 13 }}>O rol de rascunhos está vazio.</div>
+                  <div style={{ fontSize: 12, marginTop: 4 }}>Cada peça gerada entra aqui como rascunho.</div>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 460, overflowY: 'auto' }}>

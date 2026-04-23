@@ -135,8 +135,8 @@ export default function ModelosPage() {
       {filtered.length === 0 ? (
         <div className={s.modEmpty}>
           <Search size={14} strokeWidth={1.75} aria-hidden className={s.modEmptyIcon} />
-          <h3 className={s.modEmptyH3}>Nenhum modelo encontrado</h3>
-          <p className={s.modEmptyP}>Tente ampliar o filtro ou limpar a busca.</p>
+          <h3 className={s.modEmptyH3}>O acervo não devolveu modelo</h3>
+          <p className={s.modEmptyP}>Ajuste o filtro ou limpe a busca — ainda há mais peças no arquivo.</p>
           <button
             type="button"
             onClick={() => { setQuery(''); setArea('all'); setAgent('all') }}

@@ -309,7 +309,7 @@ export default function DashboardPage() {
                 {dataLoading
                   ? 'Contando interações dos últimos 7 dias...'
                   : stats.totalInteracoesSemana === 0
-                    ? 'Nenhuma interação registrada esta semana'
+                    ? 'Semana em silêncio — o atelier ainda não abriu'
                     : `${stats.totalInteracoesSemana} interação${stats.totalInteracoesSemana === 1 ? '' : 'ões'} nos últimos 7 dias`}
               </p>
             </div>
@@ -328,8 +328,8 @@ export default function DashboardPage() {
             ) : agentCounts.length === 0 ? (
               <div className={s.dashEmptyState}>
                 <BarChart3 size={22} strokeWidth={1.5} aria-hidden />
-                <div className={s.dashEmptyTitle}>Nenhum uso nesta semana</div>
-                <div className={s.dashEmptySub}>Comece pelo chat ou por um dos agentes ao lado. Seu uso aparecerá aqui.</div>
+                <div className={s.dashEmptyTitle}>O atelier ainda não girou</div>
+                <div className={s.dashEmptySub}>Cada consulta a um agente vira linha aqui, ordenada por volume.</div>
                 <Link href="/dashboard/chat" className={s.dashEmptyCta}>
                   Abrir chat <ArrowRight size={12} strokeWidth={2} aria-hidden />
                 </Link>
@@ -364,7 +364,7 @@ export default function DashboardPage() {
                 {dataLoading
                   ? 'Carregando...'
                   : recent.length === 0
-                    ? 'Sem registros ainda'
+                    ? 'Diário em branco'
                     : 'Últimas cinco interações'}
               </p>
             </div>
@@ -383,8 +383,8 @@ export default function DashboardPage() {
             ) : recent.length === 0 ? (
               <div className={s.dashEmptyState}>
                 <Clock size={22} strokeWidth={1.5} aria-hidden />
-                <div className={s.dashEmptyTitle}>Nenhuma atividade ainda</div>
-                <div className={s.dashEmptySub}>Cada interação com um agente fica registrada aqui.</div>
+                <div className={s.dashEmptyTitle}>O diário abre em branco</div>
+                <div className={s.dashEmptySub}>Toda consulta vira linha do arquivo, em ordem cronológica.</div>
               </div>
             ) : (
               recent.map((r, i) => {
@@ -653,8 +653,8 @@ export default function DashboardPage() {
               {stats.prazosList.length === 0 ? (
                 <div className={`${s.dashEmptyState} ${s.compact}`}>
                   <CalendarCheck size={20} strokeWidth={1.5} aria-hidden />
-                  <div className={s.dashEmptyTitle}>Nenhum prazo</div>
-                  <div className={s.dashEmptySub}>Cadastre seus prazos processuais para receber alertas.</div>
+                  <div className={s.dashEmptyTitle}>Agenda em silêncio</div>
+                  <div className={s.dashEmptySub}>Sem prazo no radar. Cadastre o primeiro e o alerta começa a rodar.</div>
                 </div>
               ) : (
                 stats.prazosList.map((p, i) => {

@@ -140,9 +140,9 @@ export default function PrazosPage() {
       ) : lista.length === 0 ? (
         <div style={{ textAlign:'center', padding:'60px 0', color:'var(--text-muted)' }}>
           <Clock size={36} strokeWidth={1.75} aria-hidden style={{ display:'block', marginBottom:12, opacity:0.4, marginLeft:'auto', marginRight:'auto' }} />
-          <div style={{ fontWeight:600, marginBottom:6 }}>Nenhum prazo encontrado</div>
+          <div style={{ fontWeight:600, marginBottom:6 }}>Radar limpo — sem prazo no horizonte</div>
           <button className="btn-ghost" style={{ fontSize:13, padding:'8px 16px' }} onClick={() => setModal(true)}>
-            Adicionar primeiro prazo
+            Cadastrar primeiro prazo
           </button>
         </div>
       ) : (

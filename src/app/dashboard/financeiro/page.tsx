@@ -745,12 +745,12 @@ export default function FinanceiroPage() {
             {despesasList.length === 0 ? (
               <div style={{ textAlign:'center', padding:'20px 0', color:'var(--text-muted)', fontSize:13 }}>
                 <Lightbulb size={22} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 8px', opacity:0.5 }} />
-                Nenhuma despesa registrada ainda. Adicione lançamentos para ver sugestões.
+                O livro-caixa aguarda o primeiro lançamento. Depois dele as sugestões aparecem sozinhas.
               </div>
             ) : alternativas.length === 0 ? (
               <div style={{ textAlign:'center', padding:'20px 0', color:'var(--text-muted)', fontSize:13 }}>
                 <CheckCircle2 size={22} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 8px', opacity:0.5 }} />
-                Suas despesas recentes já parecem otimizadas. Continue assim!
+                As despesas recentes parecem redondas. Nada a apontar por agora.
               </div>
             ) : (
               <>
@@ -823,9 +823,9 @@ export default function FinanceiroPage() {
       ) : itens.length === 0 ? (
         <div style={{ textAlign:'center', padding:'60px 0', color:'var(--text-muted)' }}>
           <Wallet size={36} strokeWidth={1.75} aria-hidden style={{ display:'block', margin:'0 auto 12px', opacity:0.4 }} />
-          <div style={{ fontWeight:600, marginBottom:6 }}>Nenhum lançamento registrado</div>
+          <div style={{ fontWeight:600, marginBottom:6 }}>O livro-caixa abre em branco</div>
           <button className="btn-ghost" style={{ fontSize:13, padding:'8px 16px' }} onClick={() => setModal(true)}>
-            Adicionar primeiro lançamento
+            Registrar primeiro lançamento
           </button>
         </div>
       ) : (

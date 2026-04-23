@@ -154,7 +154,7 @@ export default function HistoricoPage() {
           padding: '56px 24px', textAlign: 'center', border: '1px dashed var(--border)',
         }}>
           <MessageSquare size={36} strokeWidth={1.5} aria-hidden style={{ color: 'var(--text-muted)', opacity: 0.4, marginBottom: 12 }} />
-          <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>Nenhuma interação registrada ainda</p>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>O arquivo abre em branco — sua primeira consulta ancora a primeira linha</p>
         </div>
       ) : historicoFiltrado.length === 0 ? (
         <div className="section-card" style={{
@@ -162,7 +162,7 @@ export default function HistoricoPage() {
           padding: '40px 24px', textAlign: 'center', border: '1px dashed var(--border)',
         }}>
           <Search size={28} strokeWidth={1.5} aria-hidden style={{ color: 'var(--text-muted)', opacity: 0.4, marginBottom: 10 }} />
-          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Nenhum resultado para os filtros aplicados</p>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Nada corresponde a esses filtros — ajuste e tente de novo</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
