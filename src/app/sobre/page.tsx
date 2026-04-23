@@ -106,6 +106,61 @@ export default function SobrePage() {
 
         <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
+        <div className="mb-4 font-mono text-[0.65rem] uppercase tracking-[0.28em] text-[#bfa68e]">
+          Nº 005/I · Carta do sócio-gestor
+        </div>
+        <h2 className="mb-8 text-2xl font-medium tracking-tight text-white md:text-3xl">
+          Por que isso existe
+        </h2>
+
+        <figure className="relative mb-10 rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-8 md:p-10">
+          <div
+            aria-hidden="true"
+            className="absolute left-0 top-8 h-[calc(100%-4rem)] w-px bg-gradient-to-b from-transparent via-[#bfa68e]/60 to-transparent"
+          />
+          <blockquote className="mb-6 text-balance text-xl font-light italic leading-[1.35] text-white/90 md:text-2xl">
+            &ldquo;A gente construiu LexAI porque cansou de ver IA generalista inventar
+            jurisprudência de madrugada e o advogado assinar sem conferir.&rdquo;
+          </blockquote>
+
+          <div className="space-y-4 text-[0.95rem] leading-relaxed text-white/70 md:text-base">
+            <p>
+              Sou o Renato, sócio-gestor do produto. Advogo em contencioso desde
+              2008, com pé em vara cível e de família no interior de Minas. O Leonardo
+              é quem escreve o código. A gente responde pelo produto juntos — jurídico
+              de um lado, engenharia do outro, sem intermediário.
+            </p>
+            <p>
+              Quando ChatGPT invadiu nosso escritório em 2024, vi dois desfechos
+              possíveis pra IA no Direito. O primeiro é o que já virou rotina: IA
+              cita tribunal errado, relator inexistente, data inventada. O
+              advogado confere na pressa, deixa passar, assina. Às vezes o juiz
+              não pega. Outras vezes pega e vira representação na OAB.
+            </p>
+            <p>
+              O segundo desfecho é mais lento, mais caro de construir, mas é o
+              único que sustenta: IA que nega a resposta quando não tem fonte
+              rastreável. Nada de marketing com &ldquo;100% de precisão&rdquo; — o modelo
+              erra. Nosso trabalho é fazer ele pedir socorro antes de mentir.
+            </p>
+            <p>
+              LexAI atende escritório médio — de 1 a 15 advogados. A gente não
+              vende pra departamento jurídico de banco, não serve tech bro. Serve
+              quem bate ponto em fórum, quem perde almoço por peça, quem ainda
+              cobra honorário de sucesso. Se você já perdeu noite conferindo IA
+              generalista, esse produto foi desenhado pra você.
+            </p>
+          </div>
+
+          <figcaption className="mt-8 flex flex-col gap-1 border-t border-white/10 pt-5 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
+            <span className="text-white/75">— Renato, sócio-gestor</span>
+            <span>Leonardo, engenheiro fundador</span>
+            <span>Vanix Corp · LexAI · MMXXVI</span>
+          </figcaption>
+        </figure>
+
+        <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+
         <h2 className="mb-6 text-2xl font-medium tracking-tight text-white md:text-3xl">
           O time
         </h2>
