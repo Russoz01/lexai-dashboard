@@ -26,30 +26,30 @@ import s from './page.module.css'
  * Categoria visual ('essencial' | 'avancado' | 'modulo') vem do
  * minPlan/kind do catalog (sem duplicar fonte de verdade).
  * ═══════════════════════════════════════════════════════════════ */
-const AGENT_DETAILS: Record<string, { longDesc: string; saves: string; example: string }> = {
-  chat:         { longDesc: 'Orquestrador que lê sua intenção e chama o agente certo automaticamente.',         saves: 'Resposta em 8s',          example: 'Ex: "Calcule prazo de embargos de declaração"' },
-  resumidor:    { longDesc: 'Lê contratos de 80 páginas e devolve sumário executivo com cláusulas críticas marcadas.', saves: 'Economiza 2h por contrato', example: 'Ex: M&A, locação comercial, prestação de serviço' },
-  pesquisador:  { longDesc: 'Busca jurisprudência STF/STJ com link verificado e ementa rastreável — recusa quando não acha.', saves: 'Economiza 4h por caso',   example: 'Ex: "Súmula 231 STJ aplicada a furto qualificado"' },
-  redator:      { longDesc: 'Gera peças processuais com fundamentação correta, citação verificada e formato OAB.', saves: 'Economiza 6h por peça',    example: 'Ex: petição inicial, contestação, recurso especial' },
-  calculador:   { longDesc: 'Prazos, juros, correção monetária INPC/IGPM/IPCA com feriado municipal e estadual.', saves: 'Zero erro de prazo',       example: 'Ex: prazo recursal CPC art. 1.003 + feriado SP' },
-  legislacao:   { longDesc: 'Explica artigo de lei com doutrina, jurisprudência consolidada e enunciados FONAJE.', saves: 'Resposta em 12s',          example: 'Ex: "Explique art. 422 CC com Enunciado 26 CJF"' },
-  rotina:       { longDesc: 'Agenda compromissos, audiências e fluxos do escritório com sync Google Calendar.',  saves: 'Zero conflito de agenda',  example: 'Ex: bloquear quintas pra audiência presencial' },
-  compliance:   { longDesc: 'Camada anti-claim proibido OAB · Provimento 205 + LGPD + audit log por usuário.',   saves: 'Zero infração ética',      example: 'Ex: bloqueio automático de "garantia de vitória"' },
+const AGENT_DETAILS: Record<string, { longDesc: string; saves: string; example: string; useCases?: string[] }> = {
+  chat:         { longDesc: 'Orquestrador que lê sua intenção e chama o agente certo automaticamente.',         saves: 'Resposta em 8s',          example: 'Ex: "Calcule prazo de embargos de declaração"', useCases: ['Triagem', 'Orquestração'] },
+  resumidor:    { longDesc: 'Lê contratos de 80 páginas e devolve sumário executivo com cláusulas críticas marcadas.', saves: 'Economiza 2h por contrato', example: 'Ex: M&A, locação comercial, prestação de serviço', useCases: ['Contratos', 'M&A', 'Due diligence'] },
+  pesquisador:  { longDesc: 'Busca jurisprudência STF/STJ com link verificado e ementa rastreável — recusa quando não acha.', saves: 'Economiza 4h por caso',   example: 'Ex: "Súmula 231 STJ aplicada a furto qualificado"', useCases: ['STF/STJ', 'Fundamentação', 'Súmulas'] },
+  redator:      { longDesc: 'Gera peças processuais com fundamentação correta, citação verificada e formato OAB.', saves: 'Economiza 6h por peça',    example: 'Ex: petição inicial, contestação, recurso especial', useCases: ['Petição inicial', 'Contestação', 'Recurso'] },
+  calculador:   { longDesc: 'Prazos, juros, correção monetária INPC/IGPM/IPCA com feriado municipal e estadual.', saves: 'Zero erro de prazo',       example: 'Ex: prazo recursal CPC art. 1.003 + feriado SP', useCases: ['Prazos CPC', 'INPC/IGPM', 'Verbas rescisórias'] },
+  legislacao:   { longDesc: 'Explica artigo de lei com doutrina, jurisprudência consolidada e enunciados FONAJE.', saves: 'Resposta em 12s',          example: 'Ex: "Explique art. 422 CC com Enunciado 26 CJF"', useCases: ['Artigos CC/CPP', 'Enunciados', 'Doutrina'] },
+  rotina:       { longDesc: 'Agenda compromissos, audiências e fluxos do escritório com sync Google Calendar.',  saves: 'Zero conflito de agenda',  example: 'Ex: bloquear quintas pra audiência presencial', useCases: ['Agenda', 'Audiências', 'Fluxos'] },
+  compliance:   { longDesc: 'Camada anti-claim proibido OAB · Provimento 205 + LGPD + audit log por usuário.',   saves: 'Zero infração ética',      example: 'Ex: bloqueio automático de "garantia de vitória"', useCases: ['Ético OAB', 'LGPD', 'Audit'] },
 
-  negociador:   { longDesc: 'Calcula BATNA/ZOPA, mapeia cenários de acordo e sugere ancoragem com base em jurimetria.', saves: 'Acordos +28% mais altos', example: 'Ex: trabalhista CLT — ancoragem em 1,8x da causa' },
-  professor:    { longDesc: 'Aulas sob medida sobre responsabilidade civil, contratos, direito digital e tributário.', saves: 'Aprende em 20min',     example: 'Ex: "Me explique culpa concorrente em acidente de trânsito"' },
-  consultor:    { longDesc: 'Avalia risco processual e sugere linha estratégica com base em jurisprudência local.', saves: 'Decisão em 30min',       example: 'Ex: "Vale apostar em embargos infringentes neste caso?"' },
-  simulado:     { longDesc: 'Treino OAB e provas objetivas com estatística de erro por matéria e ranking.',       saves: 'Aprovação +40%',           example: 'Ex: simulado adaptativo OAB 2ª fase Cível' },
-  tradutor:     { longDesc: 'Tradução juramentada PT↔EN/ES com terminologia jurídica BR e formato cartorário.',  saves: 'Economiza R$ 380/lauda',  example: 'Ex: contrato internacional, sentença estrangeira' },
-  planilhas:    { longDesc: 'Timesheet, controle de honorários, repasse a sócio e relatório financeiro mensal.',  saves: 'Fechamento em 15min',      example: 'Ex: relatório de horas Q1 por cliente' },
-  parecerista:  { longDesc: 'Pareceres jurídicos fundamentados com doutrina majoritária e jurisprudência consolidada.', saves: 'Parecer em 45min',  example: 'Ex: parecer sobre cláusula leonina em SCP' },
-  revisor:      { longDesc: 'Revisão fina de contratos, peças e pareceres — pega cláusula faltante, contradição, risco.', saves: 'Pega 94% dos erros', example: 'Ex: revisão de M&A 60p antes de assinatura' },
-  contestador:  { longDesc: 'Gera contestação completa com preliminares, mérito, réplica antecipada e provas.',  saves: 'Economiza 8h',             example: 'Ex: contestação trabalhista verbas rescisórias' },
-  recursos:     { longDesc: 'Apelação, agravo, embargos, recurso especial — escolhe o cabível e fundamenta.',    saves: 'Cabimento em 3min',        example: 'Ex: REsp por divergência jurisprudencial' },
-  audiencia:    { longDesc: 'Sustentação oral, roteiro de audiência e perguntas de inquirição preparadas.',      saves: 'Roteiro em 20min',         example: 'Ex: sustentação no TJSP — recurso em apelação' },
-  estrategista: { longDesc: 'Plano estratégico do caso com timeline, custo estimado, probabilidade e plano B.',  saves: 'Plano em 1h',              example: 'Ex: estratégia trabalhista para grande devedor' },
-  atendimento:  { longDesc: 'Roteiro de entrevista inicial com cliente — colhe fatos, documentos e expectativas.', saves: 'Triagem em 25min',        example: 'Ex: primeiro atendimento de cível indenizatório' },
-  'marketing-ia': { longDesc: 'Conteúdo OAB-compliant pra Instagram, LinkedIn, blog — sem mercantilização nem promessa.', saves: '12 posts/mês', example: 'Ex: carrossel sobre prazo de devolução em e-commerce' },
+  negociador:   { longDesc: 'Calcula BATNA/ZOPA, mapeia cenários de acordo e sugere ancoragem com base em jurimetria.', saves: 'Acordos +28% mais altos', example: 'Ex: trabalhista CLT — ancoragem em 1,8x da causa', useCases: ['Trabalhista', 'Empresarial', 'Civil'] },
+  professor:    { longDesc: 'Aulas sob medida sobre responsabilidade civil, contratos, direito digital e tributário.', saves: 'Aprende em 20min',     example: 'Ex: "Me explique culpa concorrente em acidente de trânsito"', useCases: ['Civil', 'Digital', 'Tributário'] },
+  consultor:    { longDesc: 'Avalia risco processual e sugere linha estratégica com base em jurisprudência local.', saves: 'Decisão em 30min',       example: 'Ex: "Vale apostar em embargos infringentes neste caso?"', useCases: ['Risco processual', 'Estratégia', 'Jurimetria'] },
+  simulado:     { longDesc: 'Treino OAB e provas objetivas com estatística de erro por matéria e ranking.',       saves: 'Aprovação +40%',           example: 'Ex: simulado adaptativo OAB 2ª fase Cível', useCases: ['OAB 1ª', 'OAB 2ª', 'Concursos'] },
+  tradutor:     { longDesc: 'Tradução juramentada PT↔EN/ES com terminologia jurídica BR e formato cartorário.',  saves: 'Economiza R$ 380/lauda',  example: 'Ex: contrato internacional, sentença estrangeira', useCases: ['PT↔EN', 'PT↔ES', 'Cartorário'] },
+  planilhas:    { longDesc: 'Timesheet, controle de honorários, repasse a sócio e relatório financeiro mensal.',  saves: 'Fechamento em 15min',      example: 'Ex: relatório de horas Q1 por cliente', useCases: ['Timesheet', 'Honorários', 'Fechamento'] },
+  parecerista:  { longDesc: 'Pareceres jurídicos fundamentados com doutrina majoritária e jurisprudência consolidada.', saves: 'Parecer em 45min',  example: 'Ex: parecer sobre cláusula leonina em SCP', useCases: ['Societário', 'Regulatório', 'Empresarial'] },
+  revisor:      { longDesc: 'Revisão fina de contratos, peças e pareceres — pega cláusula faltante, contradição, risco.', saves: 'Pega 94% dos erros', example: 'Ex: revisão de M&A 60p antes de assinatura', useCases: ['Contratos', 'M&A', 'Peças'] },
+  contestador:  { longDesc: 'Gera contestação completa com preliminares, mérito, réplica antecipada e provas.',  saves: 'Economiza 8h',             example: 'Ex: contestação trabalhista verbas rescisórias', useCases: ['Civil', 'Trabalhista', 'Consumidor'] },
+  recursos:     { longDesc: 'Apelação, agravo, embargos, recurso especial — escolhe o cabível e fundamenta.',    saves: 'Cabimento em 3min',        example: 'Ex: REsp por divergência jurisprudencial', useCases: ['Apelação', 'Agravo', 'REsp/RE'] },
+  audiencia:    { longDesc: 'Sustentação oral, roteiro de audiência e perguntas de inquirição preparadas.',      saves: 'Roteiro em 20min',         example: 'Ex: sustentação no TJSP — recurso em apelação', useCases: ['Sustentação', 'Inquirição', 'Cível/Criminal'] },
+  estrategista: { longDesc: 'Plano estratégico do caso com timeline, custo estimado, probabilidade e plano B.',  saves: 'Plano em 1h',              example: 'Ex: estratégia trabalhista para grande devedor', useCases: ['Plano de caso', 'Timeline', 'Plano B'] },
+  atendimento:  { longDesc: 'Roteiro de entrevista inicial com cliente — colhe fatos, documentos e expectativas.', saves: 'Triagem em 25min',        example: 'Ex: primeiro atendimento de cível indenizatório', useCases: ['Triagem', 'Entrevista', 'Documentos'] },
+  'marketing-ia': { longDesc: 'Conteúdo OAB-compliant pra Instagram, LinkedIn, blog — sem mercantilização nem promessa.', saves: '12 posts/mês', example: 'Ex: carrossel sobre prazo de devolução em e-commerce', useCases: ['Instagram', 'LinkedIn', 'Blog'] },
 }
 
 /* ═════════════════════════════════════════════════════════════
@@ -481,7 +481,7 @@ export default function DashboardPage() {
                     const Icon = ag.Icon
                     const locked = !isUnlocked(ag, userPlan)
                     const href = resolveHref(ag, userPlan)
-                    const detail = AGENT_DETAILS[ag.slug] || { longDesc: ag.desc, saves: '', example: '' }
+                    const detail = AGENT_DETAILS[ag.slug] || { longDesc: ag.desc, saves: '', example: '', useCases: [] as string[] }
                     return (
                       <motion.div
                         key={ag.slug}
@@ -585,13 +585,34 @@ export default function DashboardPage() {
                             </div>
                           </div>
 
-                          {/* Footer: saves badge + example */}
+                          {/* Footer: useCases pills + saves badge + example */}
                           <div style={{
                             marginTop: 'auto', position: 'relative', zIndex: 1,
                             display: 'flex', flexDirection: 'column', gap: 8,
                             paddingTop: 10,
                             borderTop: '1px dashed rgba(191,166,142,0.12)',
                           }}>
+                            {detail.useCases && detail.useCases.length > 0 && (
+                              <div style={{
+                                display: 'flex', flexWrap: 'wrap', gap: 5,
+                                marginBottom: 2,
+                              }}>
+                                {detail.useCases.map((uc, ui) => (
+                                  <span key={ui} style={{
+                                    display: 'inline-flex', alignItems: 'center',
+                                    padding: '2px 7px', borderRadius: 5,
+                                    background: locked ? 'rgba(120,110,100,0.06)' : 'rgba(212,174,106,0.08)',
+                                    border: `1px solid ${locked ? 'rgba(120,110,100,0.18)' : 'rgba(212,174,106,0.22)'}`,
+                                    fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                                    fontSize: 9.5, letterSpacing: '0.08em',
+                                    color: locked ? 'var(--text-muted)' : '#bfa68e',
+                                    fontWeight: 600, whiteSpace: 'nowrap',
+                                  }}>
+                                    {uc}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                             {detail.saves && (
                               <div style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 6,
