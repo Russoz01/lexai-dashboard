@@ -7,7 +7,7 @@ import { usePlan } from '@/hooks/usePlan'
 import { agents, modules, isUnlocked, type CatalogItem, type Plan } from '@/lib/catalog'
 import {
   LayoutDashboard, Folder, History, CalendarCheck, Wallet,
-  Gem, Palette, Settings, LogOut, Sparkles, Lock,
+  Gem, Settings, LogOut, Sparkles, Lock,
 } from 'lucide-react'
 import s from './Sidebar.module.css'
 
@@ -42,7 +42,6 @@ const PRINCIPAL = [
 
 const CONTA = [
   { href: '/dashboard/planos',        Icon: Gem,      label: 'Planos' },
-  { href: '/dashboard/design',        Icon: Palette,  label: 'Design' },
   { href: '/dashboard/configuracoes', Icon: Settings, label: 'Configurações' },
 ] as const
 

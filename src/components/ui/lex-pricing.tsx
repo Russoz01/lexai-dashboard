@@ -5,7 +5,7 @@
  * ────────────────────────────────────────────────────────────────────
  * Wrapper da landing sobre o LexPricingGrid canônico.
  * Mantém o hero editorial "Um preço por escritório / Não por advogado"
- * que vive acima do grid de planos na home + lex-v2.
+ * que vive acima do grid de planos na home.
  * ═══════════════════════════════════════════════════════════════════ */
 
 import { Reveal } from '@/components/ui/reveal'

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   CalendarCheck, Folder, Gem, History, LayoutDashboard, Lock,
-  Palette, Search, Settings, Wallet, type LucideIcon,
+  Search, Settings, Wallet, type LucideIcon,
 } from 'lucide-react'
 import { usePlan } from '@/hooks/usePlan'
 import { CATALOG, isUnlocked, type Plan } from '@/lib/catalog'
@@ -39,7 +39,6 @@ const FIXED_PRINCIPAL: NavItem[] = [
 
 const FIXED_CONTA: NavItem[] = [
   { href: '/dashboard/planos',        Icon: Gem,      label: 'Planos',        category: 'Conta' },
-  { href: '/dashboard/design',        Icon: Palette,  label: 'Design',        category: 'Conta' },
   { href: '/dashboard/configuracoes', Icon: Settings, label: 'Configurações', category: 'Conta' },
 ]
 
