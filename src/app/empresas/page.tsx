@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ExitIntent } from '@/components/ExitIntent'
+import { LexPricingGrid } from '@/components/ui/lex-pricing-grid'
 import { agents } from '@/lib/catalog'
 
 /* ═════════════════════════════════════════════════════════════════════
@@ -46,38 +47,8 @@ const CASOS = [
   },
 ]
 
-const PLANOS = [
-  {
-    name: 'Escritório',
-    price: '1.399',
-    seats: '1–5 advogados',
-    headline: '8 agentes essenciais · 1,5M tokens/mês',
-    features: ['Chat + Resumidor + Pesquisador + Redator + Calculador', 'Legislação + Rotina + Compliance', 'Histórico de 45 dias', 'Suporte por e-mail em 24h'],
-    cta: 'Começar 7 dias grátis',
-    href: '/login',
-    highlight: false,
-  },
-  {
-    name: 'Firma',
-    price: '1.459',
-    seats: '6–15 advogados',
-    headline: '22 agentes + CRM · 5M tokens/mês',
-    features: ['Todos os 22 agentes especializados', 'CRM + Jurimetria + Marketing IA', 'WhatsApp integrado (Meta API)', 'Suporte prioritário em 3h', 'Onboarding dedicado'],
-    cta: 'Agendar demonstração',
-    href: '/login',
-    highlight: true,
-  },
-  {
-    name: 'Enterprise',
-    price: '1.599',
-    seats: '16+ advogados',
-    headline: 'Ilimitado · 12M tokens/mês + SSO',
-    features: ['Agentes customizados treinados', 'SAML SSO + audit logs', 'API dedicada + webhooks', 'Gerente de conta + SLA', 'Opção on-premise · DPA incluso'],
-    cta: 'Falar com vendas',
-    href: '/login',
-    highlight: false,
-  },
-]
+// PLANOS agora vêm do componente canônico <LexPricingGrid />
+// (single source of truth em src/components/ui/lex-pricing-grid.tsx)
 
 const COMPARATIVO = [
   { k: 'Jurisprudência brasileira',        them: 'Inventa acórdão com número falso',      us: 'Cada citação com link rastreável' },
@@ -318,53 +289,8 @@ export default function EmpresasPage() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {PLANOS.map((p, i) => (
-            <div
-              key={p.name}
-              className={`relative rounded-xl border bg-neutral-950 p-6 transition ${
-                p.highlight
-                  ? 'border-[#bfa68e]/40 shadow-[0_0_0_1px_rgba(191,166,142,0.15),0_30px_80px_-20px_rgba(191,166,142,0.15)]'
-                  : 'border-white/10'
-              }`}
-              data-reveal
-              style={{ '--reveal-delay': `${i * 80}ms` } as React.CSSProperties}
-            >
-              {p.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-white/15 bg-white px-3 py-1 text-[0.65rem] font-medium uppercase tracking-wider text-black">
-                  Mais escolhido
-                </div>
-              )}
-              <div className="text-xl font-medium text-white">{p.name}</div>
-              <div className="mt-4 flex items-baseline tabular-nums">
-                <span className="text-sm text-white/50">R$</span>
-                <span className="ml-1 text-4xl font-semibold text-white">{p.price}</span>
-                <span className="ml-1 text-xs text-white/50">/adv/mês</span>
-              </div>
-              <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/40">{p.seats}</div>
-              <div className="mt-2 text-sm text-[#bfa68e]/80">{p.headline}</div>
-
-              <ul className="mt-5 space-y-2 border-t border-white/10 pt-5">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-white/70">
-                    <Check size={14} className={`mt-1 flex-none ${p.highlight ? 'text-[#bfa68e]' : 'text-white/50'}`} aria-hidden />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={p.href}
-                className={`mt-6 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium transition ${
-                  p.highlight
-                    ? 'bg-white text-black hover:bg-white/90'
-                    : 'border border-white/15 bg-white/[0.02] text-white hover:bg-white/[0.06]'
-                }`}
-              >
-                {p.cta}
-              </Link>
-            </div>
-          ))}
+        <div className="mt-12" data-reveal>
+          <LexPricingGrid />
         </div>
 
         <p className="mx-auto mt-8 max-w-xl text-center text-xs text-white/40" data-reveal>
