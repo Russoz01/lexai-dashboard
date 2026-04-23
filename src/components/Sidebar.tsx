@@ -115,7 +115,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         <LexLogo />
         <div className={s.brandCol}>
           <span>LexAI</span>
-          <span className={s.brandSub}>by Vanix Corp</span>
+          <span className={s.brandSub}>by Pralvex</span>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         </div>
         <div className={s.footerMark}>
           <Sparkles size={11} strokeWidth={1.75} className={s.footerSpark} aria-hidden />
-          Uma marca <strong className={s.footerStrong}>Vanix Corp</strong>
+          Uma marca <strong className={s.footerStrong}>Pralvex</strong>
         </div>
       </div>
     </aside>

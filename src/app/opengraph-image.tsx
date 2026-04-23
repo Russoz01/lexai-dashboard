@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og'
 // Next.js App Router native OG image generation
 // Size recommended by social platforms: 1200x630
 export const runtime = 'edge'
-export const alt = 'LexAI — Inteligencia Juridica · uma marca Vanix Corp'
+export const alt = 'LexAI — Inteligencia Juridica · uma marca Pralvex'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -98,7 +98,7 @@ export default async function OpenGraphImage() {
                 marginTop: 6,
               }}
             >
-              by Vanix Corp
+              by Pralvex
             </div>
           </div>
         </div>

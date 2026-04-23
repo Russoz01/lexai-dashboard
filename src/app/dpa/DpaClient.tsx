@@ -52,7 +52,7 @@ const SECTIONS: Section[] = [
       <>
         <p>
           Este Data Processing Agreement (&ldquo;DPA&rdquo;) regula o tratamento de
-          dados pessoais realizado pela <strong>Vanix Corp</strong> (&ldquo;Operadora&rdquo;)
+          dados pessoais realizado pela <strong>Pralvex</strong> (&ldquo;Operadora&rdquo;)
           quando voce (&ldquo;Controladora&rdquo;) contrata a plataforma LexAI para
           apoiar sua atividade de advocacia.
         </p>
@@ -80,12 +80,12 @@ const SECTIONS: Section[] = [
           na plataforma, a finalidade do tratamento e o tempo de retencao.
         </p>
         <p>
-          <strong>A LexAI/Vanix Corp e a Operadora</strong>: processa os dados
+          <strong>A LexAI/Pralvex e a Operadora</strong>: processa os dados
           exclusivamente conforme instrucao sua, nao utiliza para treinar modelos
           proprios ou de terceiros, e nao revende ou compartilha para marketing.
         </p>
         <p>
-          <strong>DPO nomeado</strong>: Leonardo Luiz Fernando, Vanix Corp,
+          <strong>DPO nomeado</strong>: Leonardo Luiz Fernando, Pralvex,
           contato em <a href="mailto:dpo@vanixcorp.com" className="text-[#bfa68e] underline decoration-[#bfa68e]/40 underline-offset-2 hover:decoration-[#bfa68e]">dpo@vanixcorp.com</a>.
           Responde em 15 dias corridos a qualquer solicitacao LGPD art. 18.
         </p>

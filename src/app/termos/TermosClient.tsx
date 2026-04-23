@@ -758,7 +758,7 @@ export default function TermosClient() {
             </ul>
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 font-mono text-[0.65rem] uppercase tracking-[0.15em] text-white/45">
-            <span>© MMXXVI · LexAI — uma marca Vanix Corp</span>
+            <span>© MMXXVI · LexAI — uma marca Pralvex</span>
             <span className="text-white/35">contato@vanixcorp.com</span>
           </div>
         </div>

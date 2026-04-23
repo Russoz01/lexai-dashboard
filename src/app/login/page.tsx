@@ -24,7 +24,7 @@ const VALUE_PROPS = [
 
 const FOUNDER_NOTE = {
   initials: 'VC',
-  signature: 'Vanix Corp',
+  signature: 'Pralvex',
   cargo: 'Ofício do atelier · MMXXVI',
   quote:
     'Escrevi cada agente do zero pensando em um sócio-gestor brasileiro — que vive entre audiência, boletim de compliance e prazo de segunda-feira. Nenhum dos 22 aprende com o seu caso. É um instrumento, não um estagiário digital.',

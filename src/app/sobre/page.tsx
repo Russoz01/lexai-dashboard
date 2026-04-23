@@ -72,7 +72,7 @@ export default function SobrePage() {
         </h1>
 
         <p className="mt-8 text-base leading-relaxed text-white/70 md:text-lg">
-          A LexAI nasceu dentro da Vanix Corp em 2026 com uma premissa desconfortável
+          A LexAI nasceu dentro da Pralvex em 2026 com uma premissa desconfortável
           para a indústria de IA generalista: um modelo não treinado no Direito brasileiro
           não serve para advogado brasileiro. Não adianta empacotar Claude em uma
           interface bonita se o advogado precisa conferir cada citação.
@@ -155,7 +155,7 @@ export default function SobrePage() {
           <figcaption className="mt-8 flex flex-col gap-1 border-t border-white/10 pt-5 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
             <span className="text-white/75">— Renato, sócio-gestor</span>
             <span>Leonardo, engenheiro fundador</span>
-            <span>Vanix Corp · LexAI · MMXXVI</span>
+            <span>Pralvex · LexAI · MMXXVI</span>
           </figcaption>
         </figure>
 
@@ -165,7 +165,7 @@ export default function SobrePage() {
           O time
         </h2>
         <p className="text-base leading-relaxed text-white/70 md:text-lg">
-          A LexAI é um produto da <strong className="text-white">Vanix Corp</strong>, estúdio de software
+          A LexAI é um produto da <strong className="text-white">Pralvex</strong>, estúdio de software
           do interior de Minas. Trabalhamos em células pequenas: dois engenheiros,
           um designer, um operador jurídico em residência, uma diretora de
           conformidade. Sem vendedor, sem gerente de produto. Quem escreve a feature
@@ -237,7 +237,7 @@ export default function SobrePage() {
         </div>
 
         <footer className="mt-20 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-white/40 sm:flex-row sm:items-center">
-          <span>© MMXXVI Vanix Corp · LexAI</span>
+          <span>© MMXXVI Pralvex · LexAI</span>
           <div className="flex gap-4">
             <Link href="/privacidade" className="transition hover:text-white">
               Privacidade

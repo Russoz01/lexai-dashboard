@@ -386,7 +386,7 @@ export default function EmpresasPage() {
           <div className="flex items-center gap-2">
             <span className="flex size-6 items-center justify-center rounded border border-white/15 bg-white/5 font-mono text-[0.6rem] tracking-widest">LX</span>
             <span className="text-xs text-white/50">
-              © MMXXVI LexAI · uma marca <strong className="text-white/80">Vanix Corp</strong>
+              © MMXXVI LexAI · uma marca <strong className="text-white/80">Pralvex</strong>
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/60">

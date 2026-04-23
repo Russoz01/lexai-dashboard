@@ -26,7 +26,7 @@ import { Reveal, WordReveal } from '@/components/ui/reveal'
 /* ════════════════════════════════════════════════════════════════════
  * LexAI — Landing v9 "Editorial 3D" (2026-04-19)
  * ────────────────────────────────────────────────────────────────────
- * Reescrita completa baseada no brain VanixCorp:
+ * Reescrita completa baseada no brain Pralvex:
  *
  * DIRECAO DE DESIGN (vault: 05-design/reference-library/, atelier-design-system)
  *  - Editorial-SaaS DNA · Cormorant/Playfair serif accent + DM Sans body
@@ -451,7 +451,7 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-white/[0.06] pt-6 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/45">
-            <div>© MMXXVI · LexAI — uma marca Vanix Corp</div>
+            <div>© MMXXVI · LexAI — uma marca Pralvex</div>
             <div className="flex items-center gap-4">
               <span>contato@vanixcorp.com</span>
               <span className="size-1 rounded-full bg-white/20" />
