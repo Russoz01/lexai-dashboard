@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { withAgentAuth } from '@/lib/with-agent-auth'
+import { buildAreaContext } from '@/lib/agents/taxonomy'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -70,6 +71,14 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
     return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
   }
 
+  // v10.10 Phase 4: se o advogado escolheu area padrao, enriquece o prompt.
+  const { data: profile } = await supabase
+    .from('usuarios')
+    .select('area_juridica_padrao')
+    .eq('auth_user_id', user.id)
+    .maybeSingle()
+  const areaContext = buildAreaContext(profile?.area_juridica_padrao)
+
   const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
   const message = await client.messages.create({
     model: 'claude-haiku-4-5-20251001',
@@ -77,7 +86,7 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
     system: [
       {
         type: 'text' as const,
-        text: buildSystemPrompt(),
+        text: buildSystemPrompt() + areaContext,
         cache_control: { type: 'ephemeral' as const },
       },
     ],

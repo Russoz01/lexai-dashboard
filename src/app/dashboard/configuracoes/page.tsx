@@ -29,6 +29,7 @@ import {
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import { useTheme } from '@/context/ThemeContext'
+import { AreaSelector } from '@/components/AreaSelector'
 
 type Tab = 'perfil' | 'preferencias' | 'integracoes' | 'contato'
 
@@ -347,6 +348,10 @@ export default function ConfiguracoesPage() {
       {/* ── Preferências ── */}
       {tab === 'preferencias' && (
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          <div className="section-card" style={{ padding:'20px 24px' }}>
+            <AreaSelector />
+          </div>
+
           <div className="section-card" style={{ padding:'20px 24px' }}>
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Aparência</div>
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>

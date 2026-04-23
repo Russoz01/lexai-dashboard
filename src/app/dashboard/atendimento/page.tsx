@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { LEGAL_AREAS_LABEL_MAP } from '@/lib/agents/taxonomy'
 
 interface Pergunta {
   pergunta?: string; racional?: string; red_flags?: string[]; followups?: string[]
@@ -35,18 +36,8 @@ interface Roteiro {
   confianca?: { nivel?: string; nota?: string }
 }
 
-const AREAS: Record<string, string> = {
-  civel: 'Civel',
-  familia: 'Familia e Sucessoes',
-  trabalhista: 'Trabalhista',
-  penal: 'Penal',
-  tributario: 'Tributario',
-  consumidor: 'Consumidor',
-  empresarial: 'Empresarial',
-  imobiliario: 'Imobiliario',
-  previdenciario: 'Previdenciario',
-  administrativo: 'Administrativo',
-}
+// Taxonomia canônica (v10.10): src/lib/agents/taxonomy.ts é o source of truth.
+const AREAS = LEGAL_AREAS_LABEL_MAP
 
 export default function AtendimentoPage() {
   const [area, setArea] = useState('civel')

@@ -3,21 +3,12 @@ import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { withAgentAuth } from '@/lib/with-agent-auth'
+import { LEGAL_AREAS_LABEL_MAP, isLegalAreaSlug } from '@/lib/agents/taxonomy'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
-const AREAS: Record<string, string> = {
-  civel: 'Civel',
-  familia: 'Familia e Sucessoes',
-  trabalhista: 'Trabalhista',
-  penal: 'Penal',
-  tributario: 'Tributario',
-  consumidor: 'Consumidor',
-  empresarial: 'Empresarial',
-  imobiliario: 'Imobiliario',
-  previdenciario: 'Previdenciario',
-  administrativo: 'Administrativo',
-}
+// Taxonomia canônica (v10.10): src/lib/agents/taxonomy.ts.
+const AREAS = LEGAL_AREAS_LABEL_MAP
 
 const SYSTEM_PROMPT = `You are an elite Brazilian attorney with 20+ years of experience designing initial client interview scripts. You structure entrevistas iniciais that collect all relevant facts, identify legal issues, and protect the attorney-client relationship under the Codigo de Etica da OAB.
 
@@ -73,12 +64,13 @@ Return exactly this JSON:
 
 export const POST = withAgentAuth('atendimento', async ({ req, supabase, user }) => {
   const body = await req.json().catch(() => ({}))
-  const area = typeof body?.area === 'string' ? body.area : ''
+  const areaInput = typeof body?.area === 'string' ? body.area : ''
   const perfil = typeof body?.perfil === 'string' ? body.perfil : ''
 
-  if (!area || !AREAS[area]) {
+  if (!areaInput || !isLegalAreaSlug(areaInput)) {
     return NextResponse.json({ error: 'Area do caso invalida.' }, { status: 400 })
   }
+  const area = areaInput
   if (!perfil || perfil.trim().length < 20) {
     return NextResponse.json({ error: 'Descreva o perfil do cliente (minimo 20 caracteres).' }, { status: 400 })
   }
