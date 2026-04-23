@@ -1,9 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { checkAndIncrementQuota } from '@/lib/quotas'
+import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { withAgentAuth } from '@/lib/with-agent-auth'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -61,78 +60,50 @@ Return this JSON:
 }`
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
-    if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
-
-    // Sliding-window rate limit (20 req/min per user per agent)
-    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
-    const rl = await checkRateLimit(supabase, `user:${user.id}:calculador`)
-    if (!rl.ok) return rateLimitResponse(rl)
-
-    // Server-side quota enforcement (server-trusted, never localStorage)
-    const quota = await checkAndIncrementQuota(supabase, user.id, 'calculador')
-    if (!quota.ok && quota.response) {
-      return quota.response
-    }
-
-    const body = await req.json().catch(() => ({}))
-    const consulta = typeof body?.consulta === 'string' ? body.consulta : ''
-    if (!consulta || consulta.trim().length < 10) return NextResponse.json({ error: 'Descreva o calculo com mais detalhes.' }, { status: 400 })
-    if (consulta.length > 50000) {
-      return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
-    }
-
-    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
-    const message = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4096,
-      system: [
-        {
-          type: 'text' as const,
-          text: buildSystemPrompt(),
-          cache_control: { type: 'ephemeral' as const },
-        },
-      ],
-      messages: [{ role: 'user', content: `Calculation request:\n\n${consulta}` }],
-    })
-
-    const textBlock = message.content.find(b => b.type === 'text')
-    const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let resultado
-    try {
-      resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
-    } catch {
-      resultado = { resultado: responseText, erro_parse: true }
-    }
-
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
-    if (usuarioId) {
-      await supabase.from('historico').insert({
-        usuario_id: usuarioId, agente: 'calculador',
-        mensagem_usuario: `Calculo: ${consulta.slice(0, 100)}`,
-        resposta_agente: resultado.tipo_calculo || 'Calculo realizado',
-      })
-    }
-
-    events.agentUsed(user.id, 'calculador', 'unknown').catch(() => {})
-
-    return NextResponse.json({ resultado })
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /calcular]', msg)
-    if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {
-      return NextResponse.json({
-        error: 'Agente temporariamente sobrecarregado. Aguarde 30 segundos e tente novamente.',
-        retry: true,
-      }, { status: 503 })
-    }
-    return NextResponse.json({
-      error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
-      details: msg,
-    }, { status: 500 })
+export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) => {
+  const body = await req.json().catch(() => ({}))
+  const consulta = typeof body?.consulta === 'string' ? body.consulta : ''
+  if (!consulta || consulta.trim().length < 10) {
+    return NextResponse.json({ error: 'Descreva o calculo com mais detalhes.' }, { status: 400 })
   }
-}
+  if (consulta.length > 50000) {
+    return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
+  }
+
+  const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
+  const message = await client.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 4096,
+    system: [
+      {
+        type: 'text' as const,
+        text: buildSystemPrompt(),
+        cache_control: { type: 'ephemeral' as const },
+      },
+    ],
+    messages: [{ role: 'user', content: `Calculation request:\n\n${consulta}` }],
+  })
+
+  const textBlock = message.content.find(b => b.type === 'text')
+  const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
+  let resultado
+  try {
+    resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
+  } catch {
+    resultado = { resultado: responseText, erro_parse: true }
+  }
+
+  const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+  if (usuarioId) {
+    await supabase.from('historico').insert({
+      usuario_id: usuarioId,
+      agente: 'calculador',
+      mensagem_usuario: `Calculo: ${consulta.slice(0, 100)}`,
+      resposta_agente: resultado.tipo_calculo || 'Calculo realizado',
+    })
+  }
+
+  events.agentUsed(user.id, 'calculador', 'unknown').catch(() => {})
+
+  return NextResponse.json({ resultado })
+})

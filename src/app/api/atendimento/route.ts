@@ -1,9 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { checkAndIncrementQuota } from '@/lib/quotas'
+import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { withAgentAuth } from '@/lib/with-agent-auth'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -72,85 +71,58 @@ Return exactly this JSON:
   }
 }`
 
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
-    if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
+export const POST = withAgentAuth('atendimento', async ({ req, supabase, user }) => {
+  const body = await req.json().catch(() => ({}))
+  const area = typeof body?.area === 'string' ? body.area : ''
+  const perfil = typeof body?.perfil === 'string' ? body.perfil : ''
 
-    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
-    const rl = await checkRateLimit(supabase, `user:${user.id}:atendimento`)
-    if (!rl.ok) return rateLimitResponse(rl)
-
-    const quota = await checkAndIncrementQuota(supabase, user.id, 'atendimento')
-    if (!quota.ok && quota.response) return quota.response
-
-    const body = await req.json().catch(() => ({}))
-    const area = typeof body?.area === 'string' ? body.area : ''
-    const perfil = typeof body?.perfil === 'string' ? body.perfil : ''
-
-    if (!area || !AREAS[area]) {
-      return NextResponse.json({ error: 'Area do caso invalida.' }, { status: 400 })
-    }
-    if (!perfil || perfil.trim().length < 20) {
-      return NextResponse.json({ error: 'Descreva o perfil do cliente (minimo 20 caracteres).' }, { status: 400 })
-    }
-    if (perfil.length > 25000) {
-      return NextResponse.json({ error: 'Texto excede o limite maximo de 25.000 caracteres.' }, { status: 400 })
-    }
-
-    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
-    const userMessage = `Area do caso: ${AREAS[area]}\n\nPerfil do cliente e contexto inicial:\n${perfil}`
-
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-      ],
-      messages: [{ role: 'user', content: userMessage }],
-    })
-
-    const textBlock = message.content.find(b => b.type === 'text')
-    const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let parsed
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      parsed = JSON.parse(cleaned)
-    } catch {
-      parsed = { roteiro: { titulo: 'Entrevista inicial', perfil_cliente: responseText } }
-    }
-    const roteiro = parsed?.roteiro ?? parsed
-
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
-    if (usuarioId) {
-      await supabase.from('historico').insert({
-        usuario_id: usuarioId,
-        agente: 'atendimento',
-        mensagem_usuario: `Entrevista: ${AREAS[area]}`,
-        resposta_agente: roteiro?.titulo || `Entrevista - ${AREAS[area]}`,
-      })
-    }
-
-    events.agentUsed(user.id, 'atendimento', 'unknown').catch(() => {})
-    return NextResponse.json({ roteiro })
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /atendimento]', msg)
-    if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {
-      return NextResponse.json({
-        error: 'Agente temporariamente sobrecarregado. Aguarde 30 segundos e tente novamente.',
-        retry: true,
-      }, { status: 503 })
-    }
-    return NextResponse.json({
-      error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
-      details: msg,
-    }, { status: 500 })
+  if (!area || !AREAS[area]) {
+    return NextResponse.json({ error: 'Area do caso invalida.' }, { status: 400 })
   }
-}
+  if (!perfil || perfil.trim().length < 20) {
+    return NextResponse.json({ error: 'Descreva o perfil do cliente (minimo 20 caracteres).' }, { status: 400 })
+  }
+  if (perfil.length > 25000) {
+    return NextResponse.json({ error: 'Texto excede o limite maximo de 25.000 caracteres.' }, { status: 400 })
+  }
+
+  const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
+  const userMessage = `Area do caso: ${AREAS[area]}\n\nPerfil do cliente e contexto inicial:\n${perfil}`
+
+  const message = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 8192,
+    system: [
+      {
+        type: 'text' as const,
+        text: SYSTEM_PROMPT,
+        cache_control: { type: 'ephemeral' as const },
+      },
+    ],
+    messages: [{ role: 'user', content: userMessage }],
+  })
+
+  const textBlock = message.content.find(b => b.type === 'text')
+  const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
+  let parsed
+  try {
+    const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    parsed = JSON.parse(cleaned)
+  } catch {
+    parsed = { roteiro: { titulo: 'Entrevista inicial', perfil_cliente: responseText } }
+  }
+  const roteiro = parsed?.roteiro ?? parsed
+
+  const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+  if (usuarioId) {
+    await supabase.from('historico').insert({
+      usuario_id: usuarioId,
+      agente: 'atendimento',
+      mensagem_usuario: `Entrevista: ${AREAS[area]}`,
+      resposta_agente: roteiro?.titulo || `Entrevista - ${AREAS[area]}`,
+    })
+  }
+
+  events.agentUsed(user.id, 'atendimento', 'unknown').catch(() => {})
+  return NextResponse.json({ roteiro })
+})

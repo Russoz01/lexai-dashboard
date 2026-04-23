@@ -1,9 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { checkAndIncrementQuota } from '@/lib/quotas'
+import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { withAgentAuth } from '@/lib/with-agent-auth'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -61,85 +60,58 @@ Return exactly this JSON:
   }
 }`
 
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
-    if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
+export const POST = withAgentAuth('audiencia', async ({ req, supabase, user }) => {
+  const body = await req.json().catch(() => ({}))
+  const tipo = typeof body?.tipo === 'string' ? body.tipo : ''
+  const caso = typeof body?.caso === 'string' ? body.caso : ''
 
-    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
-    const rl = await checkRateLimit(supabase, `user:${user.id}:audiencia`)
-    if (!rl.ok) return rateLimitResponse(rl)
-
-    const quota = await checkAndIncrementQuota(supabase, user.id, 'audiencia')
-    if (!quota.ok && quota.response) return quota.response
-
-    const body = await req.json().catch(() => ({}))
-    const tipo = typeof body?.tipo === 'string' ? body.tipo : ''
-    const caso = typeof body?.caso === 'string' ? body.caso : ''
-
-    if (!tipo || !TIPOS_AUDIENCIA[tipo]) {
-      return NextResponse.json({ error: 'Tipo de audiencia invalido.' }, { status: 400 })
-    }
-    if (!caso || caso.trim().length < 30) {
-      return NextResponse.json({ error: 'Descreva o caso (minimo 30 caracteres).' }, { status: 400 })
-    }
-    if (caso.length > 50000) {
-      return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
-    }
-
-    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
-    const userMessage = `Tipo de audiencia: ${TIPOS_AUDIENCIA[tipo]}\n\nDescricao do caso e posicao do cliente:\n${caso}`
-
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-      ],
-      messages: [{ role: 'user', content: userMessage }],
-    })
-
-    const textBlock = message.content.find(b => b.type === 'text')
-    const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let parsed
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      parsed = JSON.parse(cleaned)
-    } catch {
-      parsed = { roteiro: { titulo: TIPOS_AUDIENCIA[tipo], abertura: { tese_central: responseText } } }
-    }
-    const roteiro = parsed?.roteiro ?? parsed
-
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
-    if (usuarioId) {
-      await supabase.from('historico').insert({
-        usuario_id: usuarioId,
-        agente: 'audiencia',
-        mensagem_usuario: `Roteiro: ${TIPOS_AUDIENCIA[tipo]}`,
-        resposta_agente: roteiro?.titulo || TIPOS_AUDIENCIA[tipo],
-      })
-    }
-
-    events.agentUsed(user.id, 'audiencia', 'unknown').catch(() => {})
-    return NextResponse.json({ roteiro })
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /audiencia]', msg)
-    if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {
-      return NextResponse.json({
-        error: 'Agente temporariamente sobrecarregado. Aguarde 30 segundos e tente novamente.',
-        retry: true,
-      }, { status: 503 })
-    }
-    return NextResponse.json({
-      error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
-      details: msg,
-    }, { status: 500 })
+  if (!tipo || !TIPOS_AUDIENCIA[tipo]) {
+    return NextResponse.json({ error: 'Tipo de audiencia invalido.' }, { status: 400 })
   }
-}
+  if (!caso || caso.trim().length < 30) {
+    return NextResponse.json({ error: 'Descreva o caso (minimo 30 caracteres).' }, { status: 400 })
+  }
+  if (caso.length > 50000) {
+    return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
+  }
+
+  const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
+  const userMessage = `Tipo de audiencia: ${TIPOS_AUDIENCIA[tipo]}\n\nDescricao do caso e posicao do cliente:\n${caso}`
+
+  const message = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 8192,
+    system: [
+      {
+        type: 'text' as const,
+        text: SYSTEM_PROMPT,
+        cache_control: { type: 'ephemeral' as const },
+      },
+    ],
+    messages: [{ role: 'user', content: userMessage }],
+  })
+
+  const textBlock = message.content.find(b => b.type === 'text')
+  const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
+  let parsed
+  try {
+    const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    parsed = JSON.parse(cleaned)
+  } catch {
+    parsed = { roteiro: { titulo: TIPOS_AUDIENCIA[tipo], abertura: { tese_central: responseText } } }
+  }
+  const roteiro = parsed?.roteiro ?? parsed
+
+  const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+  if (usuarioId) {
+    await supabase.from('historico').insert({
+      usuario_id: usuarioId,
+      agente: 'audiencia',
+      mensagem_usuario: `Roteiro: ${TIPOS_AUDIENCIA[tipo]}`,
+      resposta_agente: roteiro?.titulo || TIPOS_AUDIENCIA[tipo],
+    })
+  }
+
+  events.agentUsed(user.id, 'audiencia', 'unknown').catch(() => {})
+  return NextResponse.json({ roteiro })
+})
