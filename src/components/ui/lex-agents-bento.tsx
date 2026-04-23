@@ -15,8 +15,8 @@ import { cn } from '@/lib/utils'
  * do site. Agora:
  *
  *  · DADOS 100% do catalog.ts (fonte de verdade da dashboard).
- *    3 modulos (CRM, Jurimetria, Marketing) + 22 agentes
- *    (14 implementados + 8 em breve).
+ *    4 modulos (Casos, CRM, Jurimetria, Marketing) + 27 agentes
+ *    (todos implementados na v10.8).
  *  · Hierarquia honesta:
  *      1) 3 MODULOS featured com preview animado
  *      2) 14 AGENTES prontos — grid denso
@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils'
  *      · lex-pipeline-flow (dot cruza o CRM)
  *      · lex-line-draw (linhas do Redator aparecem escritas)
  *      · lex-chip-pop (chips dos tribunais entram com bounce)
- *  · Zero "23 agentes" mentiroso. Contagem real: 22 agentes, 14 prontos.
+ *  · Contagem real v10.8: 27 agentes implementados + 4 módulos (Casos novo).
  * ═══════════════════════════════════════════════════════════════════ */
 
 /* ───────────────────────────────────────────────────────────────────

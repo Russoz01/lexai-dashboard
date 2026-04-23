@@ -77,7 +77,7 @@ export function LexProvimento() {
             className="mt-5 max-w-md text-[15px] leading-relaxed text-white/65"
           >
             A OAB ainda não publicou sucessor ao Provimento 205/2021. Toda saída
-            de qualquer agente da LexAI passa por validação automática — claims
+            de qualquer agente da Pralvex passa por validação automática — claims
             proibidos são bloqueados antes da entrega.
           </motion.p>
         </div>

@@ -8,7 +8,7 @@ import { resolveUsuarioIdServer } from '@/lib/api-utils'
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
 /* ─────────────────────────────────────────────────────────────────────────────
- * LexAI — Chat / Orquestrador
+ * Pralvex — Chat / Orquestrador
  *
  * Recebe texto livre (opcionalmente com contexto de arquivo anexado) e:
  *   1. Classifica a intencao
@@ -88,7 +88,7 @@ function buildSystemPrompt(): string {
     minute: '2-digit',
   })
 
-  return `Voce e o Orquestrador LexAI — o ponto de entrada conversacional de um gabinete juridico digital premium.
+  return `Voce e o Orquestrador Pralvex — o ponto de entrada conversacional de um gabinete juridico digital premium.
 
 CONTEXTO TEMPORAL (fornecido pelo servidor — use estes valores exatos):
 - Data e hora atual: ${dataHora} (horario de Brasilia)
@@ -125,7 +125,7 @@ HUMANIZACAO:
 
 const ROUTING_TOOL = {
   name: 'rotear_agente',
-  description: 'Encaminha o usuario para um agente especialista quando a tarefa exige uma ferramenta especifica do atelier LexAI. Use apenas quando o agente especialista for claramente a melhor opcao.',
+  description: 'Encaminha o usuario para um agente especialista quando a tarefa exige uma ferramenta especifica do atelier Pralvex. Use apenas quando o agente especialista for claramente a melhor opcao.',
   input_schema: {
     type: 'object' as const,
     properties: {

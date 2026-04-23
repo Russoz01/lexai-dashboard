@@ -21,7 +21,7 @@ export default function ConfidenceBadge({ confianca, compact = false }: Confiden
   return (
     <span
       className={`confidence-badge ${safe}`}
-      title={confianca?.nota || 'Resposta verificada pela LexAI'}
+      title={confianca?.nota || 'Resposta verificada pela Pralvex'}
       style={{ cursor: 'help' }}
     >
       <span className={`dot ${safe}`} />
@@ -39,7 +39,7 @@ export function VerifiedBadge() {
   )
 }
 
-export function PoweredByLexAI() {
+export function PoweredByPralvex() {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -49,12 +49,8 @@ export function PoweredByLexAI() {
       background: 'var(--hover)', border: '1px solid var(--border)',
     }}>
       <Zap size={11} strokeWidth={2} style={{ color: 'var(--accent)' }} aria-hidden />
-      LexAI
-      <span style={{
-        display: 'inline-block', width: 1, height: 10,
-        background: 'var(--border)', margin: '0 1px',
-      }} />
-      <span style={{ color: 'var(--text-secondary)' }}>by Pralvex</span>
+      Pralvex
     </span>
   )
 }
+

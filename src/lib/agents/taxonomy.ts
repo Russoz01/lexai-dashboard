@@ -1,7 +1,7 @@
 /* ═════════════════════════════════════════════════════════════
  * Legal vertical taxonomy — v10.10
  * ─────────────────────────────────────────────────────────────
- * Source of truth pras 10 áreas do Direito brasileiro que a LexAI
+ * Source of truth pras 10 áreas do Direito brasileiro que a Pralvex
  * atende. Substitui 6+ cópias espalhadas em route handlers e páginas
  * do dashboard (atendimento, consultor, simulado, pesquisador, ...).
  *
@@ -12,7 +12,7 @@
  *  - `shortLabel` é versão compacta pra pills/chips (<= 18 chars)
  *  - `description` é uma frase curta sócio-gestor style
  *  - `commonCases` são 3 exemplos reais de casos que caem nessa área
- *  - `relevantAgents` lista os agentes LexAI mais úteis pra essa área
+ *  - `relevantAgents` lista os agentes Pralvex mais úteis pra essa área
  *
  * Por que 10 áreas e não 12+:
  *  - Ambiental, Digital, Constitucional virão depois (n=5 pra validar)

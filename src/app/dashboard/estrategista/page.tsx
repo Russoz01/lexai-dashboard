@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   Clock,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 
 interface Acao {
@@ -269,7 +269,7 @@ export default function EstrategistaPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {plano.confianca && <ConfidenceBadge confianca={plano.confianca} />}
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
               <button
                 onClick={() => { setPlano(null); setCaso(''); setObjetivo('') }}

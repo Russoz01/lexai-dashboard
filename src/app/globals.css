@@ -5,7 +5,7 @@
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
 /* ══════════════════════════════════════════════════════════════
-   LEXAI — DESIGN SYSTEM v6 "Atelier"
+   PRALVEX — DESIGN SYSTEM v6 "Atelier"
    Editorial minimalism · Looera palette · Patek Philippe restraint
    Dark: deep navy #132025 + warm stone #bfa68e
    Light: warm cream #F5EFE6 + deep navy #132025
@@ -1108,15 +1108,15 @@ input[type="date"] { cursor: pointer; }
   transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* LexAI badge */
-.lexai-badge {
+/* Pralvex badge */
+.pralvex-badge {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: 11px; font-weight: 500; color: var(--text-muted);
   padding: 6px 12px; border-radius: 20px;
   background: var(--hover); border: 1px solid var(--border);
   margin-top: 16px;
 }
-.lexai-badge i { font-size: 13px; }
+.pralvex-badge i { font-size: 13px; }
 
 /* Confidence badge */
 .confidence-badge {
@@ -1269,9 +1269,9 @@ input[type="date"] { cursor: pointer; }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   SKELETON LOADER (lexai-skeleton)
+   SKELETON LOADER (pralvex-skeleton)
    ══════════════════════════════════════════════════════════════ */
-.lexai-skeleton {
+.pralvex-skeleton {
   background: linear-gradient(
     90deg,
     var(--hover) 0%,
@@ -1288,7 +1288,7 @@ input[type="date"] { cursor: pointer; }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   LEXAI LANDING — word reveal (CSS-only, confiavel)
+   PRALVEX LANDING — word reveal (CSS-only, confiavel)
    Usado pelo WordReveal component. Substitui stagger do framer-motion
    que estava falhando e deixando palavras presas em opacity:0.
    ══════════════════════════════════════════════════════════════ */
@@ -1304,7 +1304,7 @@ input[type="date"] { cursor: pointer; }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   LEXAI BENTO — animacoes distintas (nao reutiliza o fade-up)
+   PRALVEX BENTO — animacoes distintas (nao reutiliza o fade-up)
    Usado por LexAgentsBento (featured cards + preview visuals).
    Fade-up esta em todo lugar do site — aqui queremos outra linguagem.
    ══════════════════════════════════════════════════════════════ */
@@ -1370,7 +1370,7 @@ input[type="date"] { cursor: pointer; }
 .lex-caret { animation: lex-caret-blink 1s steps(2) infinite; }
 
 /* ══════════════════════════════════════════════════════════════
-   LEXAI LANDING — V9 "Editorial 3D"
+   PRALVEX LANDING — V9 "Editorial 3D"
    Hero stage com perspectiva real + parallax do mouse,
    reveal glyph-by-glyph editorial, divisor analog, magnetic CTA.
    Adicionado em 2026-04-19 — convive com keyframes V8 acima.

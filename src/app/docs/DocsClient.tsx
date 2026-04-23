@@ -38,7 +38,7 @@ const CHAPTERS: Chapter[] = [
       <>
         <p>
           Depois do signup a plataforma cria seu gabinete. Voce entra com 7 dias
-          de trial ilimitado e acesso aos 22 agentes. Nao exige cartao.
+          de trial ilimitado e acesso aos 27 agentes. Nao exige cartao.
         </p>
         <ol className="mt-4 space-y-2 pl-5 text-[14px] leading-[1.7] text-white/70 [counter-reset:step]">
           <li className="relative pl-8 before:absolute before:left-0 before:top-0 before:font-mono before:text-[11px] before:font-bold before:tracking-[0.22em] before:text-[#bfa68e] before:content-['01']">
@@ -192,7 +192,7 @@ const CHAPTERS: Chapter[] = [
       <>
         <p>
           Integracoes ativam-se em <Link href="/dashboard/configuracoes" className="text-[#bfa68e] underline decoration-[#bfa68e]/40 underline-offset-2 hover:decoration-[#bfa68e]">Configuracoes</Link>.
-          Todas usam OAuth — LexAI nunca armazena senha.
+          Todas usam OAuth — Pralvex nunca armazena senha.
         </p>
         <ul className="mt-4 space-y-3 text-[14px] leading-[1.7] text-white/70">
           <li>
@@ -233,7 +233,7 @@ const CHAPTERS: Chapter[] = [
             POST /api/v1/agents/pesquisador
           </div>
           <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.65] text-white/80">
-{`curl -X POST https://api.lexai.com.br/v1/agents/pesquisador \\
+{`curl -X POST https://api.pralvex.com.br/v1/agents/pesquisador \\
   -H "Authorization: Bearer lx_live_xxx" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -246,7 +246,7 @@ const CHAPTERS: Chapter[] = [
         <p className="mt-4">
           SDK TypeScript:{' '}
           <code className="rounded border border-[#bfa68e]/20 bg-[#bfa68e]/[0.04] px-2 py-0.5 font-mono text-[12.5px] text-[#e6d4bd]">
-            npm i @lexai/sdk
+            npm i @pralvex/sdk
           </code>
         </p>
       </>
@@ -288,7 +288,7 @@ const CHAPTERS: Chapter[] = [
             </div>
             <p className="text-[13px] text-white/65">
               Clique em &ldquo;Nova consulta&rdquo; — reset do contexto. Se persistir,
-              fale com Renato: contato@vanixcorp.com, resposta em 24h.
+              fale com Renato: contato@pralvex.com, resposta em 24h.
             </p>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function DocsClient() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-[16px] leading-[1.75] text-white/65">
-            Guia pratico para advogados que usam a LexAI como parte do ritual de
+            Guia pratico para advogados que usam a Pralvex como parte do ritual de
             trabalho. Sete capitulos, linguagem direta, exemplos reais. Atualizado
             a cada release.
           </p>
@@ -473,7 +473,7 @@ export default function DocsClient() {
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href="mailto:contato@vanixcorp.com?subject=Duvida%20sobre%20a%20documentacao%20LexAI"
+              href="mailto:contato@pralvex.com?subject=Duvida%20sobre%20a%20documentacao%20Pralvex"
               className="group inline-flex items-center gap-3 rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#f5e8d3] via-[#bfa68e] to-[#7a5f48] px-7 py-3 font-mono text-[0.7rem] font-bold uppercase tracking-[0.2em] text-[#0a0a0a] shadow-[0_10px_40px_rgba(191,166,142,0.28)] transition-all hover:shadow-[0_14px_56px_rgba(191,166,142,0.45)]"
             >
               Escrever para Renato

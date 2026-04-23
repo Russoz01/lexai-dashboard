@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Calculadora de ROI | LexAI para escritorios',
-  description: 'Calcule em 30 segundos quanto seu escritorio economiza com LexAI. Insira horas mensais, valor/hora e numero de advogados.',
-  alternates: { canonical: 'https://lexai.com.br/roi' },
+  title: 'Calculadora de ROI | Pralvex para escritorios',
+  description: 'Calcule em 30 segundos quanto seu escritorio economiza com Pralvex. Insira horas mensais, valor/hora e numero de advogados.',
+  alternates: { canonical: 'https://pralvex.com.br/roi' },
   openGraph: {
-    title: 'Quanto seu escritorio economiza com LexAI?',
+    title: 'Quanto seu escritorio economiza com Pralvex?',
     description: 'Calculadora gratuita. 30 segundos. Sem cadastro.',
-    url: 'https://lexai.com.br/roi',
-    siteName: 'LexAI',
+    url: 'https://pralvex.com.br/roi',
+    siteName: 'Pralvex',
     locale: 'pt_BR',
     type: 'website',
   },

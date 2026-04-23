@@ -12,7 +12,7 @@ import {
   CheckCircle2,
   XCircle,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 
 interface Variacao {
@@ -336,7 +336,7 @@ export default function MarketingIaPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {conteudo.confianca && <ConfidenceBadge confianca={conteudo.confianca} />}
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
               <button
                 onClick={() => { setConteudo(null); setTopico('') }}

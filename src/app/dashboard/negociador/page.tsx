@@ -18,7 +18,7 @@ import {
   Inbox,
   Trash2,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 
@@ -34,7 +34,7 @@ export default function NegociadorPage() {
   const [draftsList, setDraftsList]           = useState<DraftRow[]>([])
   const [loadingDrafts, setLoadingDrafts]     = useState(false)
 
-  useDraft('lexai-draft-negociador', situacao, setSituacao)
+  useDraft('pralvex-draft-negociador', situacao, setSituacao)
 
   useEffect(() => {
     if (!showDraftsModal) return
@@ -57,7 +57,7 @@ export default function NegociadorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setResultado(data.resultado)
-      clearDraft('lexai-draft-negociador')
+      clearDraft('pralvex-draft-negociador')
 
       // Fire-and-forget: save draft without blocking UI
       const titulo = (data.resultado?.estrategia?.tipo
@@ -291,7 +291,7 @@ export default function NegociadorPage() {
                 <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Nova análise
               </button>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
             </div>
           ) : (

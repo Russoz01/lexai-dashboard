@@ -47,15 +47,15 @@ const SECTIONS: Array<{
     body: (
       <>
         <p>
-          A LexAI (&ldquo;nos&rdquo;, &ldquo;nossa&rdquo; ou &ldquo;plataforma&rdquo;) e uma
+          A Pralvex (&ldquo;nos&rdquo;, &ldquo;nossa&rdquo; ou &ldquo;plataforma&rdquo;) e uma
           plataforma de inteligencia artificial voltada para advogados e departamentos
-          juridicos brasileiros. Nossos 23 agentes especializados auxiliam em analise
+          juridicos brasileiros. Nossos 27 agentes especializados auxiliam em analise
           de documentos, pesquisa jurisprudencial, redacao de pecas processuais,
           calculos juridicos e outras tarefas de apoio juridico.
         </p>
         <h3>Controlador dos dados</h3>
         <p>
-          Para fins da Lei 13.709/2018 (LGPD), a LexAI atua como{' '}
+          Para fins da Lei 13.709/2018 (LGPD), a Pralvex atua como{' '}
           <strong>controladora</strong> dos dados pessoais coletados pela plataforma.
           Nosso encarregado de dados (DPO) pode ser contatado pelos canais listados no
           item 10 desta politica.
@@ -425,7 +425,7 @@ const SECTIONS: Array<{
               <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/50">
                 E-mail
               </div>
-              <div className="mt-0.5 text-white">contato@vanixcorp.com</div>
+              <div className="mt-0.5 text-white">contato@pralvex.com</div>
             </div>
           </div>
           <div className="flex items-start gap-3 text-sm text-white/70">
@@ -470,7 +470,7 @@ const SECTIONS: Array<{
           <strong>07 de abril de 2026</strong>.
         </p>
         <p>
-          Ao continuar utilizando a LexAI apos as atualizacoes, voce concorda com os
+          Ao continuar utilizando a Pralvex apos as atualizacoes, voce concorda com os
           termos revisados. Caso nao concorde, voce pode solicitar o cancelamento da
           conta a qualquer momento.
         </p>
@@ -489,7 +489,7 @@ export default function PrivacidadeClient() {
             <div className="flex size-8 items-center justify-center rounded-md border border-white/10 bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
               <Scale className="size-4 text-[#bfa68e]" strokeWidth={1.75} />
             </div>
-            <span className="text-sm font-medium tracking-tight">LexAI</span>
+            <span className="text-sm font-medium tracking-tight">Pralvex</span>
           </Link>
           <nav className="flex items-center gap-5">
             <Link
@@ -655,7 +655,7 @@ export default function PrivacidadeClient() {
                     strokeWidth={1.75}
                   />
                 </div>
-                <span className="text-sm font-medium tracking-tight">LexAI</span>
+                <span className="text-sm font-medium tracking-tight">Pralvex</span>
               </Link>
               <p className="mt-3 max-w-xs text-sm text-white/50">
                 Dados processados no Brasil. Modelo nao treina com seu conteudo.
@@ -681,8 +681,8 @@ export default function PrivacidadeClient() {
             </ul>
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 font-mono text-[0.65rem] uppercase tracking-[0.15em] text-white/45">
-            <span>© MMXXVI · LexAI — uma marca Pralvex</span>
-            <span className="text-white/35">contato@vanixcorp.com</span>
+            <span>© MMXXVI · Pralvex</span>
+            <span className="text-white/35">contato@pralvex.com</span>
           </div>
         </div>
       </footer>

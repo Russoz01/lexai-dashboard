@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ShieldCheck } from 'lucide-react'
 
-const STORAGE_KEY = 'lexai-cookie-consent'
+const STORAGE_KEY = 'pralvex-cookie-consent'
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
@@ -44,7 +44,7 @@ export function CookieConsent() {
         role="dialog"
         aria-live="polite"
         aria-label="Aviso de cookies"
-        className="lexai-cookie-consent"
+        className="pralvex-cookie-consent"
         style={{
           position: 'fixed',
           left: '50%',
@@ -99,7 +99,7 @@ export function CookieConsent() {
         </div>
 
         <div
-          className="lexai-cookie-buttons"
+          className="pralvex-cookie-buttons"
           style={{
             display: 'flex',
             gap: 8,
@@ -149,17 +149,17 @@ export function CookieConsent() {
 
       <style>{`
         @media (max-width: 640px) {
-          .lexai-cookie-consent {
+          .pralvex-cookie-consent {
             flex-direction: column !important;
             align-items: stretch !important;
             gap: 14px !important;
             bottom: 12px !important;
           }
-          .lexai-cookie-buttons {
+          .pralvex-cookie-buttons {
             width: 100%;
             justify-content: stretch !important;
           }
-          .lexai-cookie-buttons button {
+          .pralvex-cookie-buttons button {
             flex: 1;
           }
         }

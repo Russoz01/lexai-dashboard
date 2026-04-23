@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
       request: req,
     })
 
-    const origin = req.headers.get('origin') || 'https://lexai.com.br'
+    const origin = req.headers.get('origin') || 'https://pralvex.com.br'
     const acceptUrl = `${origin}/equipe/aceitar?token=${invite.token}`
 
     // Fetch caller display name for the email salutation. Falls back to

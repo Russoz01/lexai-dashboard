@@ -7,7 +7,7 @@ import { Check, X, Minus, Crown, Shield, Cpu, Banknote, Scale, type LucideIcon }
 /* ════════════════════════════════════════════════════════════════
  * LexComparison — matriz definitiva v10.9 (2026-04-22)
  * ────────────────────────────────────────────────────────────────
- * Compara LexAI contra 9 alternativas:
+ * Compara Pralvex contra 9 alternativas:
  *   - Generalistas (4): ChatGPT, Claude, Gemini, Copilot
  *   - Legal AI global (1): Harvey
  *   - Jurídicos BR (4): Astrea, Projuris, Lexter, Jusbrasil IA
@@ -23,7 +23,7 @@ import { Check, X, Minus, Crown, Shield, Cpu, Banknote, Scale, type LucideIcon }
  *   - lexterlegal.com/precos · jusbrasil.com.br/empresas/ia
  *
  * Valores: true | false | 'partial' (quase lá) | string (número/preço).
- * Diferencial LexAI: linhas onde somos únicos = 14 de 21 (67%).
+ * Diferencial Pralvex: linhas onde somos únicos = 14 de 21 (67%).
  * ═══════════════════════════════════════════════════════════════ */
 
 type Cell = true | false | 'partial' | string
@@ -35,7 +35,7 @@ type Rival = {
 }
 
 const RIVALS: Rival[] = [
-  { name: 'LexAI',        kind: 'lex' },
+  { name: 'Pralvex',      kind: 'lex' },
   { name: 'ChatGPT',      kind: 'generalista' },
   { name: 'Claude',       kind: 'generalista' },
   { name: 'Gemini',       kind: 'generalista' },
@@ -54,7 +54,7 @@ type Group = {
 }
 
 // ordem das colunas (10):
-// LexAI · ChatGPT · Claude · Gemini · Copilot · Harvey · Astrea · Projuris · Lexter · Jusbrasil
+// Pralvex · ChatGPT · Claude · Gemini · Copilot · Harvey · Astrea · Projuris · Lexter · Jusbrasil
 const GROUPS: Group[] = [
   {
     label: 'Precisão jurídica',
@@ -109,7 +109,7 @@ const GROUPS: Group[] = [
   },
 ]
 
-// contagem de linhas onde APENAS LexAI marca true (diferencial absoluto)
+// contagem de linhas onde APENAS Pralvex marca true (diferencial absoluto)
 const UNIQUE_LEX_ROWS = GROUPS.flatMap(g => g.rows).filter(row => {
   if (row.values[0] !== true) return false
   // qualquer outra coluna também true? se sim, não é unique
@@ -165,17 +165,17 @@ export function LexComparison() {
         <Reveal as="div" className="mx-auto mb-12 max-w-3xl text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#bfa68e]/20 bg-[#bfa68e]/[0.04] px-3 py-1 font-mono text-[0.62rem] uppercase tracking-[0.24em] text-[#bfa68e]/85">
             <span className="size-1.5 rounded-full bg-[#bfa68e]" />
-            LexAI vs {totalRivals - 1} alternativas do mercado
+            Pralvex vs {totalRivals - 1} alternativas do mercado
           </div>
           <h2 className="text-balance text-4xl font-medium leading-tight text-white md:text-[3rem]">
             {UNIQUE_LEX_ROWS} diferenciais onde{' '}
-            <span className="font-serif italic text-[#e6d4bd]">só a LexAI entrega.</span>
+            <span className="font-serif italic text-[#e6d4bd]">só a Pralvex entrega.</span>
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-[1.7] text-white/60">
             Comparamos {totalRows} pontos críticos contra 4 generalistas (ChatGPT, Claude,
             Gemini, Copilot), 1 legal AI global (Harvey, US/UK) e 4 plataformas jurídicas
             brasileiras (Astrea, Projuris, Lexter, Jusbrasil). Linhas destacadas em ouro são
-            diferenciais absolutos LexAI — exatamente onde escritório perde dinheiro.
+            diferenciais absolutos Pralvex — exatamente onde escritório perde dinheiro.
           </p>
         </Reveal>
 
@@ -244,13 +244,13 @@ export function LexComparison() {
           {[
             {
               kicker: `${UNIQUE_LEX_ROWS} diferenciais`,
-              title: 'exclusivos LexAI',
+              title: 'exclusivos Pralvex',
               body: 'Marketing OAB-compliant, citação com link verificado, bloqueio Provimento 205 pré-envio, modelo customizado por escritório — nenhum outro entrega.',
             },
             {
               kicker: 'R$ 1.399 · stack único',
               title: 'substitui 4 contratos',
-              body: 'Astrea (R$ 549) + Jusbrasil (R$ 149) + ChatGPT Pro (R$ 100) + Projuris CRM (R$ 890) = R$ 1.687/mês fragmentado. LexAI faz tudo em um.',
+              body: 'Astrea (R$ 549) + Jusbrasil (R$ 149) + ChatGPT Pro (R$ 100) + Projuris CRM (R$ 890) = R$ 1.687/mês fragmentado. Pralvex faz tudo em um.',
             },
             {
               kicker: 'BR nativo',
@@ -315,7 +315,7 @@ function Group({ group, isLast }: { group: Group; isLast: boolean }) {
                 <span
                   aria-hidden
                   className="size-1 shrink-0 rounded-full bg-[#bfa68e]"
-                  title="Diferencial exclusivo LexAI"
+                  title="Diferencial exclusivo Pralvex"
                 />
               )}
               {row.feature}

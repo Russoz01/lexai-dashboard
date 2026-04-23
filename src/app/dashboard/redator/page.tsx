@@ -7,7 +7,7 @@ import {
   Clock, Search, ArrowRight, ArrowLeft, AlertTriangle, Sparkles, Wand2, Info,
   CheckCircle2, Check, Clipboard, RotateCcw, Pencil, PenSquare, Trash2, X, Inbox,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { generateDocx, downloadBlob } from '@/lib/word-export'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
@@ -255,7 +255,7 @@ export default function RedatorPage() {
     setWizardValues({})
   }, [template, modo])
 
-  useDraft('lexai-draft-redator', instrucoes, setInstrucoes)
+  useDraft('pralvex-draft-redator', instrucoes, setInstrucoes)
 
   useEffect(() => {
     if (!showDraftsModal) return
@@ -281,7 +281,7 @@ export default function RedatorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar documento')
       setPeca(data.peca)
-      clearDraft('lexai-draft-redator')
+      clearDraft('pralvex-draft-redator')
 
       // Fire-and-forget: save draft without blocking UI
       saveDraft('redator', data.peca?.titulo || 'Peça sem título', data.peca)
@@ -882,7 +882,7 @@ export default function RedatorPage() {
               </button>
 
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
             </div>
           ) : (

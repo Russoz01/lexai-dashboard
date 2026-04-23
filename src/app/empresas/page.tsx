@@ -11,13 +11,13 @@ import { LexPricingGrid } from '@/components/ui/lex-pricing-grid'
 import { agents } from '@/lib/catalog'
 
 /* ═════════════════════════════════════════════════════════════════════
- * /empresas — Página B2B LexAI (Tailwind, migrado em 2026-04-17)
+ * /empresas — Página B2B Pralvex (v10.8 Editorial · 2026-04-23)
  * ─────────────────────────────────────────────────────────────────────
- * Substitui o page.module.css antigo + bi-icons. Usa:
+ * Usa:
  *   · Paleta Noir Atelier em Tailwind (#bfa68e champagne + neutrals)
- *   · 22 agentes do catalog.ts (não 12 hardcoded)
+ *   · 27 agentes do catalog.ts (8 essenciais + 14 pro + 5 novos v10.8)
  *   · lucide-react em todo o icon set
- *   · Reveal-on-scroll via IntersectionObserver
+ *   · AtelierBg + motion-variants para premium Editorial 3D
  * ════════════════════════════════════════════════════════════════════ */
 
 const CASOS = [
@@ -85,6 +85,8 @@ function useScrollReveal() {
   }, [])
 }
 
+const NEW_V108 = new Set(['cnj', 'comparador', 'risco', 'flashcards', 'plano', 'casos'])
+
 export default function EmpresasPage() {
   useScrollReveal()
   const AGENTS = agents()
@@ -99,9 +101,9 @@ export default function EmpresasPage() {
       {/* NAV */}
       <nav className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link href="/" className="flex items-center gap-2 text-white">
-            <span className="flex size-8 items-center justify-center rounded-md border border-white/15 bg-white/5 font-mono text-xs tracking-widest">LX</span>
-            <span className="text-sm font-medium tracking-tight">LexAI</span>
+          <Link href="/" className="group flex items-center gap-2 text-white">
+            <span className="flex size-8 items-center justify-center rounded-md border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-xs tracking-widest text-[#bfa68e] shadow-[0_0_16px_rgba(191,166,142,0.2)] transition-all group-hover:border-[#bfa68e]/50 group-hover:shadow-[0_0_24px_rgba(191,166,142,0.35)]">PX</span>
+            <span className="text-sm font-medium tracking-tight">Pralvex</span>
           </Link>
           <div className="flex items-center gap-5">
             <Link href="/" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Início</Link>
@@ -123,17 +125,17 @@ export default function EmpresasPage() {
         <div className="relative mx-auto max-w-4xl px-4 pb-20 pt-20 text-center sm:pt-28">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
             <span className="size-1.5 rounded-full bg-[#bfa68e]" />
-            LexAI para escritórios e bancas
+            Pralvex para escritórios e bancas
           </div>
 
           <h1 className="text-balance text-5xl font-medium leading-[1.05] tracking-tight text-white sm:text-6xl" data-reveal>
             Seu escritório.<br />
-            <em className="italic text-[#bfa68e]/90">22 especialistas.</em><br />
+            <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">27 especialistas.</em><br />
             Uma assinatura.
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-white/60" data-reveal>
-            22 agentes de IA calibrados para o Direito brasileiro. Cada um com conhecimento profundo da sua área, disponível agora — sem contratação, sem onboarding de meses.
+            27 agentes de IA calibrados para o Direito brasileiro — 6 novos na v10.8 (CNJ, Comparador, Risco, Flashcards, Plano, Casos). Cada um com conhecimento profundo da sua área, disponível agora — sem contratação, sem onboarding de meses.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-reveal>
@@ -155,8 +157,8 @@ export default function EmpresasPage() {
           {/* Stats editoriais */}
           <div className="mt-16 grid grid-cols-2 gap-6 sm:grid-cols-4" data-reveal>
             {[
-              { roman: 'I',   value: '22',      label: 'Agentes especializados' },
-              { roman: 'II',  value: '9',       label: 'Áreas do Direito' },
+              { roman: 'I',   value: '27',      label: 'Agentes especializados' },
+              { roman: 'II',  value: '11',      label: 'Áreas do Direito' },
               { roman: 'III', value: '4 min',   label: 'Por análise' },
               { roman: 'IV',  value: '<24h',    label: 'Setup completo' },
             ].map((st) => (
@@ -172,7 +174,7 @@ export default function EmpresasPage() {
 
       <div className="mx-auto h-px max-w-6xl bg-white/10" />
 
-      {/* AGENTES — vem do catalog.ts (22 agentes) */}
+      {/* AGENTES — vem do catalog.ts (27 agentes pós v10.8) */}
       <section className="mx-auto max-w-6xl px-4 py-20">
         <div className="mx-auto max-w-2xl text-center" data-reveal>
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
@@ -191,15 +193,31 @@ export default function EmpresasPage() {
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {AGENTS.map((a, i) => {
             const Icon = a.Icon
+            const isNew = NEW_V108.has(a.slug)
             return (
               <div
                 key={a.slug}
-                className="group relative rounded-xl border border-white/10 bg-neutral-950 p-5 transition hover:border-white/20 hover:bg-neutral-900"
+                className={`group relative overflow-hidden rounded-xl border p-5 transition ${
+                  isNew
+                    ? 'border-[#bfa68e]/35 bg-gradient-to-br from-[#1a1410]/80 via-neutral-950 to-black hover:border-[#bfa68e]/55 hover:shadow-[0_0_28px_rgba(191,166,142,0.25)]'
+                    : 'border-white/10 bg-neutral-950 hover:border-white/20 hover:bg-neutral-900'
+                }`}
                 data-reveal
                 style={{ '--reveal-delay': `${Math.min(i * 30, 300)}ms` } as React.CSSProperties}
               >
+                {isNew && (
+                  <span className="pointer-events-none absolute -right-8 top-3 rotate-[35deg] bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-8 py-0.5 font-mono text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[#0a0807] shadow-[0_0_10px_rgba(191,166,142,0.45)]">
+                    Novo
+                  </span>
+                )}
                 <div className="flex items-start justify-between">
-                  <div className="flex size-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#bfa68e] transition group-hover:border-[#bfa68e]/30">
+                  <div
+                    className={`flex size-10 items-center justify-center rounded-lg border text-[#bfa68e] transition ${
+                      isNew
+                        ? 'border-[#bfa68e]/35 bg-[#bfa68e]/[0.08] group-hover:border-[#bfa68e]/55 group-hover:shadow-[0_0_12px_rgba(191,166,142,0.3)]'
+                        : 'border-white/10 bg-white/5 group-hover:border-[#bfa68e]/30'
+                    }`}
+                  >
                     <Icon size={18} aria-hidden />
                   </div>
                   <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/30">
@@ -260,7 +278,7 @@ export default function EmpresasPage() {
                   </div>
                   <div>
                     <div className="mb-1.5 inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[0.65rem] font-medium uppercase tracking-wider text-emerald-400">
-                      Solução LexAI
+                      Solução Pralvex
                     </div>
                     <p className="text-sm text-white/80">{c.solution}</p>
                   </div>
@@ -312,7 +330,7 @@ export default function EmpresasPage() {
           </h2>
           <p className="mt-4 text-white/60">
             Um modelo generalista não foi treinado para jurisprudência brasileira.
-            Pior: ele inventa citação para parecer útil. A LexAI recusa antes de fabricar.
+            Pior: ele inventa citação para parecer útil. A Pralvex recusa antes de fabricar.
           </p>
         </div>
 
@@ -320,7 +338,7 @@ export default function EmpresasPage() {
           <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-0 border-b border-white/10 bg-neutral-900 px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.2em]">
             <div />
             <div className="text-white/40">ChatGPT / Gemini</div>
-            <div className="text-[#bfa68e]">LexAI</div>
+            <div className="text-[#bfa68e]">Pralvex</div>
           </div>
           {COMPARATIVO.map((row) => (
             <div
@@ -353,7 +371,7 @@ export default function EmpresasPage() {
               Capítulo V · Próximo Passo
             </div>
             <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white sm:text-5xl">
-              Pronto para conhecer<br />a LexAI <em className="italic text-[#bfa68e]/90">na prática?</em>
+              Pronto para conhecer<br />a Pralvex <em className="italic text-[#bfa68e]/90">na prática?</em>
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-white/60">
               Demonstração ao vivo de 30 minutos. Nenhum compromisso de assinatura. Proposta no mesmo dia.
@@ -384,9 +402,9 @@ export default function EmpresasPage() {
       <footer className="border-t border-white/10 bg-black">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2">
-            <span className="flex size-6 items-center justify-center rounded border border-white/15 bg-white/5 font-mono text-[0.6rem] tracking-widest">LX</span>
+            <span className="flex size-6 items-center justify-center rounded border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-[0.6rem] tracking-widest text-[#bfa68e]">PX</span>
             <span className="text-xs text-white/50">
-              © MMXXVI LexAI · uma marca <strong className="text-white/80">Pralvex</strong>
+              © MMXXVI Pralvex
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/60">
@@ -399,7 +417,7 @@ export default function EmpresasPage() {
         </div>
       </footer>
 
-      <WhatsAppFloat message="Olá! Vim do site da LexAI Empresas e gostaria de uma demonstração." />
+      <WhatsAppFloat message="Olá! Vim do site da Pralvex Empresas e gostaria de uma demonstração." />
       <ExitIntent />
     </div>
   )

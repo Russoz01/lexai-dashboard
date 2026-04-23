@@ -48,7 +48,7 @@ const SECTIONS: Array<{
     body: (
       <>
         <p>
-          Ao se cadastrar, acessar ou utilizar a plataforma LexAI
+          Ao se cadastrar, acessar ou utilizar a plataforma Pralvex
           (&ldquo;Plataforma&rdquo;), voce (&ldquo;Usuario&rdquo;) declara ter lido,
           compreendido e aceito integralmente estes Termos de Uso (&ldquo;Termos&rdquo;)
           e a nossa{' '}
@@ -58,7 +58,7 @@ const SECTIONS: Array<{
           >
             Politica de Privacidade
           </Link>
-          , formando um contrato juridicamente vinculante entre voce e a LexAI.
+          , formando um contrato juridicamente vinculante entre voce e a Pralvex.
         </p>
         <p>
           Se voce nao concordar com qualquer disposicao destes Termos, voce deve
@@ -80,7 +80,7 @@ const SECTIONS: Array<{
     body: (
       <>
         <p>
-          A LexAI e uma plataforma de software como servico (SaaS) que oferece 23
+          A Pralvex e uma plataforma de software como servico (SaaS) que oferece 27
           agentes de inteligencia artificial especializados para apoiar profissionais
           do Direito brasileiro em tarefas como analise de documentos, pesquisa
           jurisprudencial, redacao de pecas, calculos juridicos, estudo de legislacao
@@ -88,7 +88,7 @@ const SECTIONS: Array<{
         </p>
         <p>
           <strong>
-            A LexAI e uma ferramenta de apoio tecnologico e NAO substitui o trabalho de
+            A Pralvex e uma ferramenta de apoio tecnologico e NAO substitui o trabalho de
             advogado habilitado.
           </strong>{' '}
           Os agentes utilizam modelos de linguagem (LLMs) treinados em textos
@@ -108,7 +108,7 @@ const SECTIONS: Array<{
       <>
         <p>
           <strong>
-            A LexAI nao presta consultoria juridica, parecer tecnico, assessoria ou
+            A Pralvex nao presta consultoria juridica, parecer tecnico, assessoria ou
             representacao processual.
           </strong>{' '}
           A Plataforma e exclusivamente uma ferramenta de produtividade baseada em
@@ -123,7 +123,7 @@ const SECTIONS: Array<{
           antes de qualquer uso processual, contratual, negocial ou extrajudicial.
         </p>
         <p>
-          A LexAI nao se responsabiliza, sob qualquer hipotese, por decisoes, peticoes,
+          A Pralvex nao se responsabiliza, sob qualquer hipotese, por decisoes, peticoes,
           contratos, acordos, pareceres ou quaisquer atos juridicos baseados
           exclusivamente em outputs gerados pela Plataforma. Modelos de IA podem
           apresentar imprecisoes, citacoes inexistentes (&ldquo;alucinacoes&rdquo;),
@@ -174,7 +174,7 @@ const SECTIONS: Array<{
           </li>
         </ul>
         <p>
-          A LexAI se reserva o direito de recusar, suspender ou encerrar contas que
+          A Pralvex se reserva o direito de recusar, suspender ou encerrar contas que
           violem estes Termos, apresentem comportamento suspeito ou indicadores de
           fraude.
         </p>
@@ -189,14 +189,14 @@ const SECTIONS: Array<{
     body: (
       <>
         <p>
-          A LexAI oferece assinaturas recorrentes nos planos Starter, Pro e Enterprise,
+          A Pralvex oferece assinaturas recorrentes nos planos Starter, Pro e Enterprise,
           com preco e recursos descritos na pagina de planos. As condicoes comerciais
           sao as seguintes:
         </p>
         <ul>
           <li>
             <strong>Processador de pagamento:</strong> todos os pagamentos sao
-            processados pela Stripe, empresa certificada PCI-DSS nivel 1. A LexAI
+            processados pela Stripe, empresa certificada PCI-DSS nivel 1. A Pralvex
             jamais armazena dados de cartao de credito.
           </li>
           <li>
@@ -215,7 +215,7 @@ const SECTIONS: Array<{
             pago.
           </li>
           <li>
-            <strong>Inadimplencia:</strong> em caso de falha no pagamento, a LexAI
+            <strong>Inadimplencia:</strong> em caso de falha no pagamento, a Pralvex
             tentara nova cobranca por ate 7 dias. Persistindo a inadimplencia, o acesso
             sera suspenso ate regularizacao.
           </li>
@@ -245,7 +245,7 @@ const SECTIONS: Array<{
             multiplos trials e vedada.
           </li>
           <li>
-            <strong>Detecao de fraude:</strong> a LexAI monitora padroes de uso
+            <strong>Detecao de fraude:</strong> a Pralvex monitora padroes de uso
             (e-mails descartaveis, IPs, dispositivos, dados de cadastro) para
             identificar tentativas de fraude. Contas suspeitas podem ser bloqueadas sem
             aviso previo.
@@ -273,7 +273,7 @@ const SECTIONS: Array<{
       <>
         <p>
           Em conformidade com o artigo 49 do Codigo de Defesa do Consumidor (Lei
-          8.078/1990) e como politica comercial adicional, a LexAI oferece garantia de
+          8.078/1990) e como politica comercial adicional, a Pralvex oferece garantia de
           reembolso integral nas seguintes condicoes:
         </p>
         <ul>
@@ -308,7 +308,7 @@ const SECTIONS: Array<{
     body: (
       <>
         <p>
-          Voce se compromete a utilizar a LexAI de forma licita, etica e em
+          Voce se compromete a utilizar a Pralvex de forma licita, etica e em
           conformidade com estes Termos. E expressamente proibido:
         </p>
         <ul>
@@ -338,9 +338,9 @@ const SECTIONS: Array<{
           </li>
           <li>
             Revender, sublicenciar ou oferecer a Plataforma como servico proprio sem
-            autorizacao por escrito da LexAI.
+            autorizacao por escrito da Pralvex.
           </li>
-          <li>Criar produtos ou servicos concorrentes com base no uso da LexAI.</li>
+          <li>Criar produtos ou servicos concorrentes com base no uso da Pralvex.</li>
         </ul>
         <p>
           O descumprimento das regras de uso aceitavel resulta em suspensao imediata da
@@ -357,16 +357,16 @@ const SECTIONS: Array<{
     Icon: Copyright,
     body: (
       <>
-        <h3>9.1 Propriedade da LexAI</h3>
+        <h3>9.1 Propriedade da Pralvex</h3>
         <p>
-          Todo o codigo-fonte, design, marca, nome &ldquo;LexAI&rdquo;, logotipos,
+          Todo o codigo-fonte, design, marca, nome &ldquo;Pralvex&rdquo;, logotipos,
           textos institucionais, prompts proprietarios, modelos customizados,
           documentacao e arquitetura da Plataforma sao de propriedade exclusiva da
-          LexAI, protegidos pela Lei 9.610/1998 (Direitos Autorais), Lei 9.279/1996
+          Pralvex, protegidos pela Lei 9.610/1998 (Direitos Autorais), Lei 9.279/1996
           (Propriedade Industrial) e demais normas aplicaveis.
         </p>
         <p>
-          A assinatura da LexAI concede ao Usuario uma licenca nao exclusiva,
+          A assinatura da Pralvex concede ao Usuario uma licenca nao exclusiva,
           intransferivel, revogavel e limitada para utilizar a Plataforma conforme o
           plano contratado. Nenhuma outra cessao de direitos e realizada.
         </p>
@@ -380,7 +380,7 @@ const SECTIONS: Array<{
         <p>
           O Usuario garante que tem os direitos necessarios sobre os documentos e dados
           que submete a Plataforma e assume integral responsabilidade pelo conteudo
-          inserido. A LexAI nao revisa previamente os conteudos processados.
+          inserido. A Pralvex nao revisa previamente os conteudos processados.
         </p>
       </>
     ),
@@ -393,7 +393,7 @@ const SECTIONS: Array<{
     body: (
       <>
         <p>
-          Na medida maxima permitida pela legislacao brasileira, a LexAI nao se
+          Na medida maxima permitida pela legislacao brasileira, a Pralvex nao se
           responsabiliza por:
         </p>
         <ul>
@@ -420,7 +420,7 @@ const SECTIONS: Array<{
           </li>
         </ul>
         <p>
-          Em qualquer hipotese, a responsabilidade total da LexAI fica limitada ao
+          Em qualquer hipotese, a responsabilidade total da Pralvex fica limitada ao
           valor efetivamente pago pelo Usuario nos 12 (doze) meses anteriores ao evento
           que gerou a responsabilizacao.
         </p>
@@ -441,7 +441,7 @@ const SECTIONS: Array<{
     body: (
       <>
         <p>
-          A LexAI pode alterar estes Termos periodicamente para refletir mudancas
+          A Pralvex pode alterar estes Termos periodicamente para refletir mudancas
           legais, em seus servicos ou em suas praticas comerciais. As alteracoes
           materiais serao comunicadas por e-mail e/ou aviso destacado na Plataforma com
           antecedencia minima de 15 dias.
@@ -480,7 +480,7 @@ const SECTIONS: Array<{
         </p>
         <p>
           As partes concordam em tentar resolver qualquer disputa amigavelmente, por
-          meio de contato direto com a LexAI, antes de recorrer a medidas judiciais.
+          meio de contato direto com a Pralvex, antes de recorrer a medidas judiciais.
         </p>
       </>
     ),
@@ -504,7 +504,7 @@ const SECTIONS: Array<{
               <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/50">
                 E-mail
               </div>
-              <div className="mt-0.5 text-white">contato@vanixcorp.com</div>
+              <div className="mt-0.5 text-white">contato@pralvex.com</div>
             </div>
           </div>
           <div className="flex items-start gap-3 text-sm text-white/70">
@@ -542,7 +542,7 @@ export default function TermosClient() {
             <div className="flex size-8 items-center justify-center rounded-md border border-white/10 bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
               <Scale className="size-4 text-[#bfa68e]" strokeWidth={1.75} />
             </div>
-            <span className="text-sm font-medium tracking-tight">LexAI</span>
+            <span className="text-sm font-medium tracking-tight">Pralvex</span>
           </Link>
           <nav className="flex items-center gap-5">
             <Link
@@ -731,7 +731,7 @@ export default function TermosClient() {
                     strokeWidth={1.75}
                   />
                 </div>
-                <span className="text-sm font-medium tracking-tight">LexAI</span>
+                <span className="text-sm font-medium tracking-tight">Pralvex</span>
               </Link>
               <p className="mt-3 max-w-xs text-sm text-white/50">
                 Ferramenta de apoio. Resultados devem ser revisados por advogado
@@ -758,8 +758,8 @@ export default function TermosClient() {
             </ul>
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 font-mono text-[0.65rem] uppercase tracking-[0.15em] text-white/45">
-            <span>© MMXXVI · LexAI — uma marca Pralvex</span>
-            <span className="text-white/35">contato@vanixcorp.com</span>
+            <span>© MMXXVI · Pralvex</span>
+            <span className="text-white/35">contato@pralvex.com</span>
           </div>
         </div>
       </footer>

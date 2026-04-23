@@ -26,7 +26,7 @@ export async function track({ event, distinctId, properties }: TrackParams): Pro
         api_key: POSTHOG_KEY,
         event,
         distinct_id: distinctId,
-        properties: { ...properties, $lib: 'lexai-server', source: 'server' },
+        properties: { ...properties, $lib: 'pralvex-server', source: 'server' },
         timestamp: new Date().toISOString(),
       }),
     })

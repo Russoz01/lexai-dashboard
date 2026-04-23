@@ -2,15 +2,18 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
-import { ArrowRight, Link2 } from 'lucide-react'
+import { ArrowRight, Link2, Sparkles } from 'lucide-react'
+import { heroContainer, heroItem, EASE_EDITORIAL } from '@/lib/motion-variants'
 
 /* ═════════════════════════════════════════════════════════════
- * /roi — calculadora pública (migrado para Tailwind em 2026-04-17)
+ * /roi — calculadora pública (v10.8 Editorial · 2026-04-23)
  * ─────────────────────────────────────────────────────────────
  * Lead magnet da /empresas. Sem cadastro. Resultado sharable via
  * URL params pra prospect encaminhar ao decisor de orçamento.
  * Paleta Noir Atelier, grid 2-col (inputs + resultado destaque).
+ * Motion variants + hero layers para premium editorial 3D.
  * ═════════════════════════════════════════════════════════════ */
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
@@ -87,10 +90,16 @@ export default function RoiCalculator() {
     'mt-3 w-full accent-[#bfa68e]'
 
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur-md md:px-10">
-        <Link href="/" className="font-mono text-sm uppercase tracking-[0.3em] text-white">
-          LexAI
+    <div className="relative min-h-screen bg-[#0a0807] text-white antialiased">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[620px] overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_65%_45%_at_50%_0%,rgba(191,166,142,0.13),transparent_72%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:96px_96px] [mask-image:radial-gradient(ellipse_70%_55%_at_50%_0%,black,transparent_75%)]" />
+      </div>
+
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#0a0807]/75 px-6 py-4 backdrop-blur-md md:px-10">
+        <Link href="/" className="group flex items-center gap-2 font-mono text-sm uppercase tracking-[0.3em] text-white">
+          <span className="flex size-7 items-center justify-center rounded-md border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black text-[0.55rem] text-[#bfa68e] shadow-[0_0_12px_rgba(191,166,142,0.2)] transition-all group-hover:border-[#bfa68e]/50">PX</span>
+          Pralvex
         </Link>
         <Link
           href="/empresas"
@@ -100,24 +109,34 @@ export default function RoiCalculator() {
         </Link>
       </header>
 
-      <main id="main-content" className="mx-auto max-w-5xl px-6 py-14 md:py-20">
-        <div className="mb-6 font-mono text-[0.65rem] uppercase tracking-[0.28em] text-[#bfa68e]">
-          Nº 004 · ROI · MMXXVI
-        </div>
+      <main id="main-content" className="relative z-10 mx-auto max-w-5xl px-6 py-14 md:py-20">
+        <motion.div initial="hidden" animate="visible" variants={heroContainer}>
+          <motion.div variants={heroItem} className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#bfa68e]/30 bg-gradient-to-r from-[#bfa68e]/[0.08] to-transparent px-3 py-1.5 backdrop-blur">
+            <Sparkles size={11} strokeWidth={2} className="text-[#bfa68e]" />
+            <span className="font-mono text-[0.6rem] uppercase tracking-[0.28em] text-[#bfa68e]">
+              Nº 004 · ROI · MMXXVI
+            </span>
+          </motion.div>
 
-        <h1 className="text-balance text-4xl font-light leading-[1.08] tracking-tight text-white sm:text-5xl md:text-[3.25rem]">
-          Quanto seu escritório{' '}
-          <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
-            economiza
-          </em>{' '}
-          com a LexAI?
-        </h1>
-        <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
-          Resultado em 30 segundos. Nenhum cadastro. Compartilhe o link com quem
-          decide o orçamento.
-        </p>
+          <motion.h1 variants={heroItem} className="text-balance text-4xl font-light leading-[1.08] tracking-tight text-white sm:text-5xl md:text-[3.25rem]">
+            Quanto seu escritório{' '}
+            <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
+              economiza
+            </em>{' '}
+            com a Pralvex?
+          </motion.h1>
+          <motion.p variants={heroItem} className="mt-5 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
+            Resultado em 30 segundos. Nenhum cadastro. Compartilhe o link com quem
+            decide o orçamento.
+          </motion.p>
+        </motion.div>
 
-        <div className="my-10 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+        <motion.div
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ duration: 1.2, delay: 0.5, ease: EASE_EDITORIAL }}
+          className="my-10 h-px w-full origin-left bg-gradient-to-r from-transparent via-[#bfa68e]/40 to-transparent"
+        />
 
         <div className="grid gap-4 md:grid-cols-2">
           <section
@@ -311,7 +330,7 @@ export default function RoiCalculator() {
         </div>
       </main>
 
-      <WhatsAppFloat message="Olá! Usei a calculadora de ROI da LexAI e gostaria de conversar sobre os planos." />
+      <WhatsAppFloat message="Olá! Usei a calculadora de ROI da Pralvex e gostaria de conversar sobre os planos." />
     </div>
   )
 }

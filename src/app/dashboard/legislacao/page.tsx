@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { Search, BookOpen, Landmark, ShieldAlert, FileText, NotebookText, Gavel, Briefcase, ShoppingBag, Coins, CheckSquare, ShieldCheck, Globe, Bookmark, ExternalLink, RotateCcw } from 'lucide-react'
 
 export default function LegislacaoPage() {
@@ -152,7 +152,7 @@ export default function LegislacaoPage() {
             <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Nova pesquisa
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
-            <PoweredByLexAI />
+            <PoweredByPralvex />
           </div>
         </div>
       ) : (

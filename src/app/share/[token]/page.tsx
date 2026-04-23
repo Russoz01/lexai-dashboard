@@ -21,8 +21,8 @@ export const revalidate = 0
 
 // Private shared content — never index
 export const metadata: Metadata = {
-  title: 'Documento compartilhado — LexAI',
-  description: 'Analise juridica compartilhada via LexAI.',
+  title: 'Documento compartilhado — Pralvex',
+  description: 'Analise juridica compartilhada via Pralvex.',
   robots: { index: false, follow: false, nocache: true },
 }
 
@@ -133,7 +133,7 @@ function NotFoundView() {
           className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-5 text-xs font-medium text-black transition hover:bg-white/90"
         >
           <ArrowLeft className="size-3.5" strokeWidth={2.25} />
-          Voltar para a LexAI
+          Voltar para a Pralvex
         </Link>
       </div>
     </div>
@@ -190,7 +190,7 @@ export default async function SharedDocumentPage({
             <div className="flex size-7 items-center justify-center rounded-md border border-white/10 bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
               <Scale className="size-3.5 text-[#bfa68e]" strokeWidth={1.75} />
             </div>
-            <span className="text-sm font-medium tracking-tight">LexAI</span>
+            <span className="text-sm font-medium tracking-tight">Pralvex</span>
           </Link>
           <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/45">
             Documento publico
@@ -213,7 +213,7 @@ export default async function SharedDocumentPage({
           <div className="relative">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#bfa68e]/25 bg-[#bfa68e]/[0.06] px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#e6d4bd]">
               <span className="size-1 rounded-full bg-[#bfa68e]" />
-              Compartilhado via LexAI
+              Compartilhado via Pralvex
             </div>
 
             <h1 className="text-balance text-[1.7rem] font-medium leading-tight tracking-tight text-white md:text-[2rem]">
@@ -398,14 +398,14 @@ export default async function SharedDocumentPage({
               Quer gerar suas proprias analises juridicas?
             </h2>
             <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-white/60">
-              Contratos, peticoes e acordaos analisados em segundos. 23 agentes
+              Contratos, peticoes e acordaos analisados em segundos. 27 agentes
               especializados, todos no mesmo lugar.
             </p>
             <Link
               href="/"
               className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-white px-6 text-sm font-medium text-black transition hover:-translate-y-0.5 hover:bg-white/90"
             >
-              Comece gratis na LexAI
+              Comece gratis na Pralvex
               <ArrowRight className="size-4" strokeWidth={2.25} />
             </Link>
           </div>
@@ -413,7 +413,7 @@ export default async function SharedDocumentPage({
 
         {/* ═══ Micro footer ═══════════════════════════════════════════ */}
         <div className="mt-8 text-center font-mono text-[0.6rem] uppercase tracking-[0.15em] text-white/30">
-          Gerado e compartilhado via LexAI &middot; conteudo de responsabilidade de
+          Gerado e compartilhado via Pralvex &middot; conteudo de responsabilidade de
           quem criou o compartilhamento
         </div>
       </main>

@@ -11,7 +11,7 @@ import {
   Check,
   Clipboard,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 
 interface Issue {
@@ -287,7 +287,7 @@ export default function RevisorPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {revisao.confianca && <ConfidenceBadge confianca={revisao.confianca} />}
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
               <button
                 onClick={() => { setRevisao(null); setDocumento(''); setTipo('') }}

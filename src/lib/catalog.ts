@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
- * CATALOG — fonte única de verdade dos 22 agentes + 3 módulos
+ * CATALOG — fonte única de verdade dos 27 agentes + 4 módulos (v10.8)
  * ──────────────────────────────────────────────────────────────
  * [NOTA PARA PRÓXIMA SESSÃO — 2026-04-17]
  *
@@ -35,6 +35,7 @@ import {
   GraduationCap, ShieldCheck, Languages, Table2,
   FileCheck2, FileEdit, Scale, Gavel, Mic, Target, UserRound, Megaphone,
   Users, BarChart3, Sparkles,
+  FolderKanban, Network, GitCompare, AlertTriangle, Layers, CalendarDays,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -54,8 +55,8 @@ export interface CatalogItem {
 }
 
 /**
- * Catálogo único — 22 agentes + 3 módulos (CRM, Jurimetria, Marketing).
- * A landing promete "22 agentes, CRM integrado, jurimetria e marketing compliant".
+ * Catálogo único — 27 agentes + 4 módulos (Casos, CRM, Jurimetria, Marketing).
+ * A landing promete "27 agentes, CRM integrado, jurimetria e marketing compliant".
  * Este é o contrato único consumido por Sidebar, Dashboard e Planos.
  */
 export const CATALOG: CatalogItem[] = [
@@ -85,10 +86,18 @@ export const CATALOG: CatalogItem[] = [
   { slug: 'atendimento',  label: 'Atendimento',  href: '/dashboard/atendimento',  Icon: UserRound,      desc: 'Roteiro de entrevista inicial',                 kind: 'agent', minPlan: 'pro', implemented: true  },
   { slug: 'marketing-ia', label: 'Marketing IA', href: '/dashboard/marketing-ia', Icon: Megaphone,      desc: 'Conteúdo OAB-compliant para redes',             kind: 'agent', minPlan: 'pro', implemented: true  },
 
-  // ───────── 3 módulos de plataforma ─────────
+  // ───────── 6 novos agentes v10.8 (2026-04-23 · Pralvex expansion) ─────────
+  { slug: 'cnj',          label: 'CNJ',          href: '/dashboard/cnj',          Icon: Network,        desc: 'Consulta processual via DataJud · monitora',    kind: 'agent', minPlan: 'pro', implemented: true  },
+  { slug: 'comparador',   label: 'Comparador',   href: '/dashboard/comparador',   Icon: GitCompare,     desc: 'Diff v1 × v2 de contratos e peças',             kind: 'agent', minPlan: 'pro', implemented: true  },
+  { slug: 'risco',        label: 'Risco',        href: '/dashboard/risco',        Icon: AlertTriangle,  desc: 'Score 0-100 de risco processual',               kind: 'agent', minPlan: 'pro', implemented: true  },
+  { slug: 'flashcards',   label: 'Flashcards',   href: '/dashboard/flashcards',   Icon: Layers,         desc: 'Memorização SM-2 · spaced repetition',          kind: 'agent', minPlan: 'pro', implemented: true  },
+  { slug: 'plano',        label: 'Plano',        href: '/dashboard/plano',        Icon: CalendarDays,   desc: 'Plano de estudos IA · cronograma OAB',          kind: 'agent', minPlan: 'pro', implemented: true  },
+
+  // ───────── 4 módulos de plataforma ─────────
+  { slug: 'casos',        label: 'Casos',        href: '/dashboard/casos',        Icon: FolderKanban,   desc: 'Pastas de casos · timeline por cliente',        kind: 'module', minPlan: 'pro',        implemented: true  },
   { slug: 'crm',          label: 'CRM',          href: '/dashboard/crm',          Icon: Users,          desc: 'Leads, clientes e funil de atendimento · DEMO', kind: 'module', minPlan: 'pro',        implemented: true  },
-  { slug: 'jurimetria',   label: 'Jurimetria',   href: '/dashboard/jurimetria',   Icon: BarChart3,      desc: 'Métricas processuais e benchmarks',             kind: 'module', minPlan: 'pro',        implemented: false },
-  { slug: 'marketing',    label: 'Marketing',    href: '/dashboard/marketing',    Icon: Sparkles,       desc: 'Agenda de conteúdo compliant · calendário',     kind: 'module', minPlan: 'enterprise', implemented: false },
+  { slug: 'jurimetria',   label: 'Jurimetria',   href: '/dashboard/jurimetria',   Icon: BarChart3,      desc: 'Métricas processuais e benchmarks',             kind: 'module', minPlan: 'pro',        implemented: true  },
+  { slug: 'marketing',    label: 'Marketing',    href: '/dashboard/marketing',    Icon: Sparkles,       desc: 'Agenda de conteúdo compliant · calendário',     kind: 'module', minPlan: 'enterprise', implemented: true  },
 ]
 
 const PLAN_RANK: Record<Plan, number> = { free: 0, starter: 1, pro: 2, enterprise: 3 }

@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
   ArrowRight, BarChart3, CalendarCheck, Circle, Clock, Lock,
-  Sparkles, Timer, Crown,
+  Sparkles, Timer, Crown, Flame,
   type LucideIcon,
 } from 'lucide-react'
 import { UsagePanel } from '@/components/UsagePanel'
@@ -50,10 +50,20 @@ const AGENT_DETAILS: Record<string, { longDesc: string; saves: string; example: 
   estrategista: { longDesc: 'Plano estratégico do caso com timeline, custo estimado, probabilidade e plano B.',  saves: 'Plano em 1h',              example: 'Ex: estratégia trabalhista para grande devedor', useCases: ['Plano de caso', 'Timeline', 'Plano B'] },
   atendimento:  { longDesc: 'Roteiro de entrevista inicial com cliente — colhe fatos, documentos e expectativas.', saves: 'Triagem em 25min',        example: 'Ex: primeiro atendimento de cível indenizatório', useCases: ['Triagem', 'Entrevista', 'Documentos'] },
   'marketing-ia': { longDesc: 'Conteúdo OAB-compliant pra Instagram, LinkedIn, blog — sem mercantilização nem promessa.', saves: '12 posts/mês', example: 'Ex: carrossel sobre prazo de devolução em e-commerce', useCases: ['Instagram', 'LinkedIn', 'Blog'] },
+
+  // ───────── Novos agentes v10.8 (2026-04-23) ─────────
+  cnj:         { longDesc: 'Consulta DataJud CNJ em 20 tribunais e monitora movimentação — alerta no WhatsApp em tempo real.', saves: 'Zero polling manual',    example: 'Ex: "puxa andamento do 0001234-56.2026.8.13.0702"', useCases: ['DataJud', 'STF/STJ', 'WhatsApp'] },
+  comparador:  { longDesc: 'Diff v1 × v2 de contratos com análise IA do que mudou — exporta PDF colorido pra cliente revisar.', saves: 'Economiza 40min/revisão', example: 'Ex: "compara esses dois contratos de distribuição"',    useCases: ['Contratos', 'Diff', 'PDF export'] },
+  risco:       { longDesc: 'Score 0-100 de risco jurídico com top 3 pontos e probabilidade de sucesso — disclaimer firme.',      saves: 'Análise em 30s',         example: 'Ex: "avalia risco desse contrato de distribuição"',   useCases: ['Executive summary', 'Probabilidade', 'Slide 1-page'] },
+  flashcards:  { longDesc: 'SM-2 spaced repetition igual Anki — gera deck de qualquer aula do Professor.',                       saves: 'Retenção 3-5x maior',    example: 'Ex: flashcards de responsabilidade civil objetiva',  useCases: ['SM-2', 'OAB', 'Streak'] },
+  plano:       { longDesc: 'Plano de estudos dia-a-dia até a data da prova, ajustando ao seu desempenho real.',                 saves: 'Fim da paralisia',       example: 'Ex: "plano de OAB em 83 dias, 3h/dia"',              useCases: ['Cronograma', 'OAB', 'Notificação'] },
+  casos:       { longDesc: 'Pastas por cliente com processos CNJ, timeline, tags e busca semântica — o CRM-lite jurídico.',     saves: 'Dossiê em 1 clique',     example: 'Ex: "me mostra tudo do cliente Marina nos últimos 30d"', useCases: ['CRM jurídico', 'Timeline', 'Busca'] },
+  jurimetria:  { longDesc: 'Estatística real por vara, relator, tipo de ação — fim do achismo sobre expectativa processual.',   saves: 'Expectativa com dado',   example: 'Ex: "jurimetria de dano moral em negativação no TJ-MG"', useCases: ['BI jurídico', 'Mediana', 'Benchmark'] },
+  marketing:   { longDesc: 'Calendário editorial 30 dias pré-validado contra Provimento 205 — semáforo verde/amarelo/vermelho.', saves: '0 risco de representação', example: 'Ex: "calendário de família, tom editorial"',         useCases: ['Prov. 205', 'Instagram', 'LinkedIn'] },
 }
 
 /* ═════════════════════════════════════════════════════════════
- * Dashboard — Gabinete LexAI (wired ao catalog em 2026-04-17)
+ * Dashboard — Gabinete Pralvex (wired ao catalog em 2026-04-17)
  * ─────────────────────────────────────────────────────────────
  * Grid de agentes vem de agents() do catalog.
  * Locked → /dashboard/planos | !implemented → /dashboard/em-breve.
@@ -83,7 +93,21 @@ interface RecentItem {
 /* Lookup O(1) por slug para resolver agente → CatalogItem */
 const BY_SLUG = new Map(CATALOG.map(item => [item.slug, item]))
 
+/* Agentes novos introduzidos na v10.8 (2026-04-23) — ganham ribbon NOVO */
+const NEW_V10_8 = new Set(['cnj', 'comparador', 'risco', 'flashcards', 'plano', 'casos'])
+
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
+
+/** Converte número em extenso português pra heading editorial. */
+function numberToPt(n: number): string {
+  const map: Record<number, string> = {
+    20: 'Vinte', 21: 'Vinte e um', 22: 'Vinte e dois', 23: 'Vinte e três',
+    24: 'Vinte e quatro', 25: 'Vinte e cinco', 26: 'Vinte e seis',
+    27: 'Vinte e sete', 28: 'Vinte e oito', 29: 'Vinte e nove', 30: 'Trinta',
+    31: 'Trinta e um', 32: 'Trinta e dois',
+  }
+  return map[n] ?? String(n)
+}
 
 function pad2(n: number) { return n.toString().padStart(2, '0') }
 
@@ -206,14 +230,16 @@ export default function DashboardPage() {
   const agentList = useMemo(() => agents(), [])
   const totalAgents = agentList.length
 
-  /* Agrupa por categoria pra render editorial: essenciais primeiro, depois avançados */
+  /* Agrupa por categoria pra render editorial: novos primeiro (hype), essenciais, avançados */
   const agentGroups = useMemo(() => {
-    const essenciais = agentList.filter(a => a.minPlan === 'free' || a.minPlan === 'starter')
-    const avancados = agentList.filter(a => a.minPlan === 'pro' || a.minPlan === 'enterprise')
+    const novos = agentList.filter(a => NEW_V10_8.has(a.slug))
+    const essenciais = agentList.filter(a => !NEW_V10_8.has(a.slug) && (a.minPlan === 'free' || a.minPlan === 'starter'))
+    const avancados = agentList.filter(a => !NEW_V10_8.has(a.slug) && (a.minPlan === 'pro' || a.minPlan === 'enterprise'))
     return [
-      { key: 'essenciais', label: 'Essenciais',  caption: 'Disponíveis a partir do Escritório',  Icon: Sparkles, items: essenciais },
-      { key: 'avancados',  label: 'Avançados',   caption: 'Liberados na Firma e Enterprise',     Icon: Crown,    items: avancados },
-    ]
+      { key: 'novos',       label: 'Novos · v10.8', caption: 'Recém-lançados · beta aberto', Icon: Flame,    items: novos,      highlight: true  },
+      { key: 'essenciais',  label: 'Essenciais',    caption: 'Disponíveis a partir do Escritório',  Icon: Sparkles, items: essenciais, highlight: false },
+      { key: 'avancados',   label: 'Avançados',     caption: 'Liberados na Firma e Enterprise',     Icon: Crown,    items: avancados,  highlight: false },
+    ].filter(g => g.items.length > 0)
   }, [agentList])
 
   return (
@@ -421,9 +447,9 @@ export default function DashboardPage() {
           <div className={s.dashCardHead}>
             <div>
               <div className={s.dashCardCap}>CAPÍTULO III · ATELIER · {totalAgents} ESPECIALISTAS</div>
-              <h2 className={s.dashCardTitle}>Vinte e dois <em>agentes</em></h2>
+              <h2 className={s.dashCardTitle}>{numberToPt(totalAgents)} <em>agentes</em></h2>
               <p className={s.dashCardSub}>
-                Cada um treinado num recorte específico do Direito BR · clique pra abrir o atelier
+                Cada um treinado num recorte específico do Direito BR · <span style={{ color: '#d4ae6a', fontWeight: 600 }}>6 novos na v10.8</span> · clique pra abrir o atelier
               </p>
             </div>
             <Link href="/dashboard/chat" className={s.dashCardAction}>
@@ -449,10 +475,17 @@ export default function DashboardPage() {
                 >
                   <div style={{
                     width: 32, height: 32, borderRadius: 9,
-                    background: 'linear-gradient(135deg, rgba(212,174,106,0.14), rgba(122,95,72,0.08))',
-                    border: '1px solid rgba(212,174,106,0.30)',
+                    background: group.highlight
+                      ? 'linear-gradient(135deg, rgba(245,232,211,0.22), rgba(191,166,142,0.14))'
+                      : 'linear-gradient(135deg, rgba(212,174,106,0.14), rgba(122,95,72,0.08))',
+                    border: group.highlight
+                      ? '1px solid rgba(245,232,211,0.45)'
+                      : '1px solid rgba(212,174,106,0.30)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#e6d4bd', flexShrink: 0,
+                    color: group.highlight ? '#f5e8d3' : '#e6d4bd', flexShrink: 0,
+                    boxShadow: group.highlight
+                      ? 'inset 0 0 0 1px rgba(245,232,211,0.15), 0 0 12px rgba(245,232,211,0.2)'
+                      : 'none',
                   }}>
                     <GroupIcon size={15} strokeWidth={1.75} aria-hidden />
                   </div>
@@ -482,6 +515,7 @@ export default function DashboardPage() {
                     const locked = !isUnlocked(ag, userPlan)
                     const href = resolveHref(ag, userPlan)
                     const detail = AGENT_DETAILS[ag.slug] || { longDesc: ag.desc, saves: '', example: '', useCases: [] as string[] }
+                    const isNew = NEW_V10_8.has(ag.slug)
                     return (
                       <motion.div
                         key={ag.slug}
@@ -529,9 +563,32 @@ export default function DashboardPage() {
                             <span aria-hidden style={{
                               position: 'absolute', top: -50, right: -50,
                               width: 140, height: 140, borderRadius: '50%',
-                              background: 'radial-gradient(circle, rgba(212,174,106,0.12), transparent 70%)',
+                              background: isNew
+                                ? 'radial-gradient(circle, rgba(245,232,211,0.18), transparent 70%)'
+                                : 'radial-gradient(circle, rgba(212,174,106,0.12), transparent 70%)',
                               pointerEvents: 'none',
                             }} />
+                          )}
+
+                          {/* Ribbon NOVO — canto superior direito, gradient champagne */}
+                          {isNew && (
+                            <span
+                              aria-label="Novo agente"
+                              style={{
+                                position: 'absolute', top: 12, right: -34,
+                                transform: 'rotate(35deg)',
+                                padding: '2px 36px',
+                                fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                                fontSize: 9, letterSpacing: '0.28em',
+                                fontWeight: 700, textTransform: 'uppercase',
+                                background: 'linear-gradient(90deg, #f5e8d3, #bfa68e, #8a6f55)',
+                                color: '#1a1410',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
+                                zIndex: 2,
+                              }}
+                            >
+                              Novo
+                            </span>
                           )}
 
                           {/* Top row: icon + nº + lock/arrow */}

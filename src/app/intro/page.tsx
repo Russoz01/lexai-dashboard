@@ -1,7 +1,7 @@
 'use client'
 
 /* ══════════════════════════════════════════════════════════════
-   LexAI · /intro
+   Pralvex · /intro
    Cinematic entrance teaser. Four scenes, no nav, no footer.
    Editorial-SaaS voice: sophisticated, anti-hype, champagne on black.
    ══════════════════════════════════════════════════════════════ */
@@ -52,7 +52,7 @@ const MANIFESTO_WORDS = [
   'inventar.',
 ] as const
 
-const HERO_TITLE = 'LexAI' as const
+const HERO_TITLE = 'Pralvex' as const
 
 type AgentRow = { Icon: typeof MessageSquare; name: string; desc: string }
 
@@ -177,7 +177,7 @@ function HeroScene({ reduced }: { reduced: boolean }) {
           initial="hidden"
           animate="show"
           transition={{ staggerChildren: reduced ? 0 : 0.06, delayChildren: reduced ? 0 : 0.5 }}
-          className="font-serif text-[clamp(88px,18vw,224px)] font-bold leading-[0.9] tracking-tight"
+          className="font-serif text-[clamp(68px,14vw,168px)] font-bold leading-[0.9] tracking-tight"
           style={{ perspective: 1200 }}
           aria-label={HERO_TITLE}
         >

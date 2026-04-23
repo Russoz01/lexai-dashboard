@@ -9,7 +9,7 @@ import { useEffect, useRef } from 'react'
  *
  * @example
  * const [text, setText] = useState('')
- * useDraft('lexai-draft-resumidor', text, setText)
+ * useDraft('pralvex-draft-resumidor', text, setText)
  */
 export function useDraft<T extends string>(
   key: string,

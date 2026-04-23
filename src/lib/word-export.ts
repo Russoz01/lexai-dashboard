@@ -18,7 +18,7 @@ export async function generateDocx(title: string, sections: DocxSection[]): Prom
 
   // Date
   children.push(new Paragraph({
-    children: [new TextRun({ text: `Gerado em ${new Date().toLocaleDateString('pt-BR')} via LexAI`, italics: true, size: 20 })],
+    children: [new TextRun({ text: `Gerado em ${new Date().toLocaleDateString('pt-BR')} via Pralvex`, italics: true, size: 20 })],
     alignment: AlignmentType.CENTER,
     spacing: { after: 600 },
   }))
@@ -42,7 +42,7 @@ export async function generateDocx(title: string, sections: DocxSection[]): Prom
   }
 
   const doc = new Document({
-    creator: 'LexAI',
+    creator: 'Pralvex',
     title,
     sections: [{ properties: {}, children }],
   })

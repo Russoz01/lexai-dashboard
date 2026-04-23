@@ -5,7 +5,7 @@
  * reset. Consome /api/user/usage (fonte de verdade no server) e renderiza
  * uma barra de progresso editorial (hairline + accent fill).
  *
- * Emite um evento "lexai:usage-updated" que outras paginas podem ouvir
+ * Emite um evento "pralvex:usage-updated" que outras paginas podem ouvir
  * apos completar chamadas aos agentes, forcando um refetch sem precisar
  * de polling.
  */
@@ -69,10 +69,10 @@ export function UsagePanel() {
 
     fetchUsage()
     const onUpdate = () => fetchUsage()
-    window.addEventListener('lexai:usage-updated', onUpdate)
+    window.addEventListener('pralvex:usage-updated', onUpdate)
     return () => {
       mounted = false
-      window.removeEventListener('lexai:usage-updated', onUpdate)
+      window.removeEventListener('pralvex:usage-updated', onUpdate)
     }
   }, [])
 

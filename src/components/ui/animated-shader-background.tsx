@@ -5,7 +5,7 @@ import { useRef, useEffect } from 'react'
 /* ─────────────────────────────────────────────────────────────
  * AnimatedShaderBackground
  * WebGL fragment shader (Matthias Hurrle @atzedent) rodando como
- * camada de fundo. Usa cores champagne/noir do LexAI.
+ * camada de fundo. Usa cores champagne/noir do Pralvex.
  * Background-only — conteudo vai sobreposto no parent.
  * ────────────────────────────────────────────────────────────── */
 

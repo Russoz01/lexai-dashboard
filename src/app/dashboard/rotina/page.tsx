@@ -39,9 +39,9 @@ interface PlanoFuturo {
 
 const EMPTY_LIST: Compromisso[] = []
 
-const LS_COMPROMISSOS = 'lexai-rotina'
-const LS_PLANOS = 'lexai-planos-futuros'
-const LS_MIGRATED = 'lexai-rotina-migrated'
+const LS_COMPROMISSOS = 'pralvex-rotina'
+const LS_PLANOS = 'pralvex-planos-futuros'
+const LS_MIGRATED = 'pralvex-rotina-migrated'
 
 function formatDataISO(d: Date) {
   const y = d.getFullYear()

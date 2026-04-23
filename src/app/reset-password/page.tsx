@@ -95,7 +95,7 @@ export default function ResetPasswordPage() {
             <LexLogoMark />
             <div>
               <div className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[#bfa68e]">
-                Nº 002 · LexAI · MMXXVI
+                Nº 002 · Pralvex · MMXXVI
               </div>
               <h1 className="mt-1 text-3xl font-light leading-tight tracking-tight md:text-4xl">
                 Recuperar{' '}
@@ -187,9 +187,9 @@ export default function ResetPasswordPage() {
                 <span className="font-mono uppercase tracking-[0.2em] text-white/40">Validade</span>
                 <span>1 hora a partir do envio</span>
                 <span className="font-mono uppercase tracking-[0.2em] text-white/40">Remetente</span>
-                <span>noreply@lexai.com.br</span>
+                <span>noreply@pralvex.com.br</span>
                 <span className="font-mono uppercase tracking-[0.2em] text-white/40">Suporte</span>
-                <span>contato@lexai.com.br</span>
+                <span>contato@pralvex.com.br</span>
               </div>
 
               <div className="flex flex-col gap-2 sm:flex-row">
@@ -211,7 +211,7 @@ export default function ResetPasswordPage() {
         </div>
 
         <footer className="relative z-10 mt-10 text-center font-mono text-[0.58rem] uppercase tracking-[0.3em] text-white/25">
-          LexAI · MMXXVI · Atelier
+          Pralvex · MMXXVI · Atelier
         </footer>
       </section>
     </main>

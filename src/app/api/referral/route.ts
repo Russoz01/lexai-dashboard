@@ -49,7 +49,7 @@ export async function GET() {
 
     return ok({
       code,
-      shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lexai.com.br'}/login?ref=${code}`,
+      shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://pralvex.com.br'}/login?ref=${code}`,
       stats: { completed, pending, totalDaysEarned: completed * 15 },
       referrals: referrals ?? [],
     })
@@ -113,7 +113,7 @@ export async function POST() {
 
     return ok({
       code: inviteCode,
-      shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lexai.com.br'}/login?ref=${code}`,
+      shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://pralvex.com.br'}/login?ref=${code}`,
     })
   } catch (err) {
     return serverError('referral/post', err)

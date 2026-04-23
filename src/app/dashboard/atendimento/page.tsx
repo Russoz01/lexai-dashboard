@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Flag,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { LEGAL_AREAS_LABEL_MAP } from '@/lib/agents/taxonomy'
 
@@ -256,7 +256,7 @@ export default function AtendimentoPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {roteiro.confianca && <ConfidenceBadge confianca={roteiro.confianca} />}
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
               <button
                 onClick={() => { setRoteiro(null); setPerfil('') }}

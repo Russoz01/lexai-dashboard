@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { generateDocx, downloadBlob } from '@/lib/word-export'
@@ -171,7 +171,7 @@ export default function ResumidorPage() {
   const [analiseB, setAnaliseB] = useState<Analise | null>(null)
   const [comparando, setComparando] = useState(false)
 
-  useDraft('lexai-draft-resumidor', texto, setTexto)
+  useDraft('pralvex-draft-resumidor', texto, setTexto)
 
   // ── PDF upload handlers ──────────────────────────────────────────────
   async function handlePdfFile(file: File, target: 'single' | 'A' | 'B') {
@@ -386,7 +386,7 @@ export default function ResumidorPage() {
 
     setSalvo(true)
     setSalvando(false)
-    clearDraft('lexai-draft-resumidor')
+    clearDraft('pralvex-draft-resumidor')
     toast('success', 'Documento salvo no historico')
   }
 
@@ -984,7 +984,7 @@ export default function ResumidorPage() {
                         {prazos.length} prazo(s) detectado(s) automaticamente
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                        A LexAI extraiu prazos importantes deste documento. Verifique a seção &quot;Prazos Identificados&quot; abaixo e considere adicionar ao seu calendário para não perder datas críticas.
+                        A Pralvex extraiu prazos importantes deste documento. Verifique a seção &quot;Prazos Identificados&quot; abaixo e considere adicionar ao seu calendário para não perder datas críticas.
                       </div>
                     </div>
                   )
@@ -1131,7 +1131,7 @@ export default function ResumidorPage() {
                 </button>
 
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
-                  <PoweredByLexAI />
+                  <PoweredByPralvex />
                 </div>
 
               </>
@@ -1473,7 +1473,7 @@ export default function ResumidorPage() {
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
-                    <PoweredByLexAI />
+                    <PoweredByPralvex />
                   </div>
                 </>
               )

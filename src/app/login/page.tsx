@@ -16,18 +16,18 @@ import { ArrowLeft, Check, Eye, EyeOff, Loader2, MailCheck } from 'lucide-react'
  * ═════════════════════════════════════════════════════════════ */
 
 const VALUE_PROPS = [
-  { n: 'I', title: 'Vinte e dois agentes afinados', desc: 'Treinados especificamente para o ordenamento jurídico brasileiro.' },
+  { n: 'I', title: 'Vinte e sete agentes afinados', desc: 'Treinados especificamente para o ordenamento jurídico brasileiro. 6 novos na v10.8.' },
   { n: 'II', title: '7 dias grátis', desc: 'Experimente sem cartão, cancele em um clique, sem fidelidade.' },
   { n: 'III', title: 'Segurança e LGPD', desc: 'Dados criptografados em trânsito e em repouso. Nunca utilizados em treinamento.' },
   { n: 'IV', title: 'Feito à mão', desc: 'Não somos mais um SaaS genérico. Somos um atelier.' },
 ]
 
 const FOUNDER_NOTE = {
-  initials: 'VC',
+  initials: 'PX',
   signature: 'Pralvex',
   cargo: 'Ofício do atelier · MMXXVI',
   quote:
-    'Escrevi cada agente do zero pensando em um sócio-gestor brasileiro — que vive entre audiência, boletim de compliance e prazo de segunda-feira. Nenhum dos 22 aprende com o seu caso. É um instrumento, não um estagiário digital.',
+    'Escrevi cada agente do zero pensando em um sócio-gestor brasileiro — que vive entre audiência, boletim de compliance e prazo de segunda-feira. Nenhum dos 27 aprende com o seu caso. É um instrumento, não um estagiário digital.',
 }
 
 type Strength = 'fraca' | 'media' | 'forte'
@@ -270,7 +270,7 @@ function LoginPageInner() {
             <LexLogoMark />
             <div>
               <div className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[#bfa68e]">
-                Nº 001 · LexAI · MMXXVI
+                Nº 001 · Pralvex · MMXXVI
               </div>
               <h1 className="mt-1 text-3xl font-light leading-tight tracking-tight md:text-4xl">
                 Reservar{' '}
@@ -494,7 +494,7 @@ function LoginPageInner() {
               .
             </h2>
             <p className="mt-5 max-w-md text-base leading-relaxed text-white/60">
-              Vinte e dois agentes afinados para o exercício da advocacia no Brasil.
+              Vinte e sete agentes afinados para o exercício da advocacia no Brasil.
               Estratégia e precisão para quem trata Direito como ofício.
             </p>
           </div>

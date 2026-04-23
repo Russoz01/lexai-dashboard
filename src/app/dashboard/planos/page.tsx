@@ -60,7 +60,7 @@ function PlanosPageInner() {
   useEffect(() => {
     const checkout = searchParams.get('checkout')
     if (checkout === 'success') {
-      setToast({ kind: 'success', msg: 'Assinatura criada. Obrigado por confiar na LexAI.' })
+      setToast({ kind: 'success', msg: 'Assinatura criada. Obrigado por confiar na Pralvex.' })
     } else if (checkout === 'cancelled') {
       setToast({ kind: 'info', msg: 'Checkout cancelado. Pode tentar de novo quando quiser.' })
     }
@@ -292,7 +292,7 @@ function PlanosPageInner() {
             fontSize: 28, fontStyle: 'italic', fontWeight: 500,
             color: 'var(--text-primary)', letterSpacing: '-0.01em',
           }}>
-            sem LexAI <span style={{ color: 'var(--text-muted)', margin: '0 8px', fontStyle: 'normal', fontSize: 16 }}>versus</span> com LexAI
+            sem Pralvex <span style={{ color: 'var(--text-muted)', margin: '0 8px', fontStyle: 'normal', fontSize: 16 }}>versus</span> com Pralvex
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }} className="lp-compare-grid">
@@ -307,7 +307,7 @@ function PlanosPageInner() {
               fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
               color: '#d88977', fontWeight: 700,
             }}>
-              <XCircle size={14} strokeWidth={2} aria-hidden /> Sem LexAI
+              <XCircle size={14} strokeWidth={2} aria-hidden /> Sem Pralvex
             </div>
             {[
               '3 horas lendo um contrato de 40 páginas',
@@ -337,7 +337,7 @@ function PlanosPageInner() {
               fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
               color: 'var(--accent)', fontWeight: 700,
             }}>
-              <CheckCircle2 size={14} strokeWidth={2} aria-hidden /> Com LexAI
+              <CheckCircle2 size={14} strokeWidth={2} aria-hidden /> Com Pralvex
             </div>
             {[
               'Análise completa em 45 segundos com riscos identificados',
@@ -384,7 +384,7 @@ function PlanosPageInner() {
           <div style={{
             marginTop: 10, fontSize: 13, color: 'var(--text-muted)', maxWidth: 560, margin: '10px auto 0',
           }}>
-            LexAI é nova. No lugar de depoimentos, estes são os três pactos que sustentam o produto hoje — os mesmos que você poderá auditar a qualquer momento dentro da conta.
+            Pralvex é nova. No lugar de depoimentos, estes são os três pactos que sustentam o produto hoje — os mesmos que você poderá auditar a qualquer momento dentro da conta.
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="lp-test-grid">
@@ -477,7 +477,7 @@ function PlanosPageInner() {
           maxWidth: 560, margin: '0 auto 18px',
           fontSize: 13.5, color: 'var(--text-muted)', lineHeight: 1.65,
         }}>
-          Teste todos os agentes sem risco. Se a LexAI não economizar pelo menos 5 horas do seu trabalho na primeira semana, devolvemos 100% do valor. Sem perguntas, sem burocracia.
+          Teste todos os agentes sem risco. Se a Pralvex não economizar pelo menos 5 horas do seu trabalho na primeira semana, devolvemos 100% do valor. Sem perguntas, sem burocracia.
         </div>
         <div style={{
           display: 'flex', justifyContent: 'center', gap: 22, flexWrap: 'wrap',
@@ -582,7 +582,7 @@ function PlanosPageInner() {
         </div>
         {[
           { q: 'E se eu não gostar? Tenho como cancelar?', a: 'Sim. Você pode cancelar com 1 clique a qualquer momento, sem multas, sem ligação com vendedor, sem perguntas. Além disso, oferecemos 7 dias de garantia: se não economizar 5h na primeira semana, devolvemos 100% do valor.' },
-          { q: 'Preciso ter conhecimento técnico para usar?', a: 'Não. A LexAI foi projetada para ser usada por advogados sem nenhum conhecimento de programação. Você digita em português e a IA responde estruturado, pronto para usar.' },
+          { q: 'Preciso ter conhecimento técnico para usar?', a: 'Não. A Pralvex foi projetada para ser usada por advogados sem nenhum conhecimento de programação. Você digita em português e a IA responde estruturado, pronto para usar.' },
           { q: 'Os documentos que eu enviar ficam seguros?', a: 'Totalmente. Somos LGPD compliant, todos os dados são criptografados em trânsito e em repouso. Não usamos seus documentos para treinar modelos. Sua privacidade é prioridade.' },
           { q: 'Posso trocar de plano depois?', a: 'Sim, você pode fazer upgrade ou downgrade a qualquer momento. A diferença é calculada proporcionalmente. Sem fidelidade nem multa.' },
           { q: 'Como funciona o limite de documentos?', a: 'Cada análise, pesquisa ou peça conta como 1 documento. O contador reseta no início do mês. Se atingir o limite, você recebe aviso e pode fazer upgrade ou aguardar o próximo ciclo.' },
@@ -612,7 +612,7 @@ function PlanosPageInner() {
         fontSize: 11, letterSpacing: '0.12em',
         color: 'var(--text-muted)',
       }}>
-        dúvidas? contato@vanixcorp.com
+        dúvidas? contato@pralvex.com
       </div>
 
       <style>{`

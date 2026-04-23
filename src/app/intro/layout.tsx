@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Apresentando — LexAI',
+  title: 'Apresentando — Pralvex',
   description:
-    'Vinte e dois agentes. Um compromisso: nunca inventar. LexAI, o sistema operacional da advocacia brasileira.',
+    'Vinte e sete agentes. Um compromisso: nunca inventar. Pralvex, o sistema operacional da advocacia brasileira.',
   robots: { index: false, follow: true },
 }
 

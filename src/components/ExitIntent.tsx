@@ -15,8 +15,8 @@ import { X } from 'lucide-react'
  * aparecer de novo por 30 dias.
  * ═════════════════════════════════════════════════════════════ */
 
-const SEEN_KEY = 'lexai-exit-seen-v1'
-const SESSION_KEY = 'lexai-exit-fired-session'
+const SEEN_KEY = 'pralvex-exit-seen-v1'
+const SESSION_KEY = 'pralvex-exit-fired-session'
 
 export function ExitIntent() {
   const [open, setOpen] = useState(false)

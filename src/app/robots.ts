@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/dashboard/', '/api/', '/auth/', '/share/'],
       },
     ],
-    sitemap: 'https://lexai.com.br/sitemap.xml',
+    sitemap: 'https://pralvex.com.br/sitemap.xml',
   }
 }

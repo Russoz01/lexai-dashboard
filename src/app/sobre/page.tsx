@@ -16,7 +16,7 @@ const pillars = [
   {
     n: 'I',
     title: 'Precisão acima de viralidade',
-    body: 'A LexAI nunca inventa jurisprudência. Cada citação tem origem rastreável. Em produção jurídica, uma alucinação não é bug: é risco de sanção.',
+    body: 'A Pralvex nunca inventa jurisprudência. Cada citação tem origem rastreável. Em produção jurídica, uma alucinação não é bug: é risco de sanção.',
   },
   {
     n: 'II',
@@ -40,7 +40,7 @@ export default function SobrePage() {
     <div className="min-h-screen bg-black text-white antialiased">
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur-md md:px-10">
         <Link href="/" className="font-mono text-sm uppercase tracking-[0.3em] text-white">
-          LexAI
+          Pralvex
         </Link>
         <nav className="flex items-center gap-5 text-sm">
           <Link href="/empresas" className="text-white/60 transition hover:text-white">
@@ -72,7 +72,7 @@ export default function SobrePage() {
         </h1>
 
         <p className="mt-8 text-base leading-relaxed text-white/70 md:text-lg">
-          A LexAI nasceu dentro da Pralvex em 2026 com uma premissa desconfortável
+          A Pralvex nasceu em 2026 com uma premissa desconfortável
           para a indústria de IA generalista: um modelo não treinado no Direito brasileiro
           não serve para advogado brasileiro. Não adianta empacotar Claude em uma
           interface bonita se o advogado precisa conferir cada citação.
@@ -119,7 +119,7 @@ export default function SobrePage() {
             className="absolute left-0 top-8 h-[calc(100%-4rem)] w-px bg-gradient-to-b from-transparent via-[#bfa68e]/60 to-transparent"
           />
           <blockquote className="mb-6 text-balance text-xl font-light italic leading-[1.35] text-white/90 md:text-2xl">
-            &ldquo;A gente construiu LexAI porque cansou de ver IA generalista inventar
+            &ldquo;A gente construiu a Pralvex porque cansou de ver IA generalista inventar
             jurisprudência de madrugada e o advogado assinar sem conferir.&rdquo;
           </blockquote>
 
@@ -144,7 +144,7 @@ export default function SobrePage() {
               erra. Nosso trabalho é fazer ele pedir socorro antes de mentir.
             </p>
             <p>
-              LexAI atende escritório médio — de 1 a 15 advogados. A gente não
+              A Pralvex atende escritório médio — de 1 a 15 advogados. A gente não
               vende pra departamento jurídico de banco, não serve tech bro. Serve
               quem bate ponto em fórum, quem perde almoço por peça, quem ainda
               cobra honorário de sucesso. Se você já perdeu noite conferindo IA
@@ -155,7 +155,7 @@ export default function SobrePage() {
           <figcaption className="mt-8 flex flex-col gap-1 border-t border-white/10 pt-5 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
             <span className="text-white/75">— Renato, sócio-gestor</span>
             <span>Leonardo, engenheiro fundador</span>
-            <span>Pralvex · LexAI · MMXXVI</span>
+            <span>Pralvex · MMXXVI</span>
           </figcaption>
         </figure>
 
@@ -165,7 +165,7 @@ export default function SobrePage() {
           O time
         </h2>
         <p className="text-base leading-relaxed text-white/70 md:text-lg">
-          A LexAI é um produto da <strong className="text-white">Pralvex</strong>, estúdio de software
+          A <strong className="text-white">Pralvex</strong> é um estúdio de software
           do interior de Minas. Trabalhamos em células pequenas: dois engenheiros,
           um designer, um operador jurídico em residência, uma diretora de
           conformidade. Sem vendedor, sem gerente de produto. Quem escreve a feature
@@ -201,10 +201,10 @@ export default function SobrePage() {
               E-mail
             </span>
             <a
-              href="mailto:contato@vanixcorp.com"
+              href="mailto:contato@pralvex.com"
               className="text-sm text-white transition hover:text-[#bfa68e]"
             >
-              contato@vanixcorp.com
+              contato@pralvex.com
             </a>
           </li>
           <li className="flex items-center justify-between px-5 py-4">
@@ -212,10 +212,10 @@ export default function SobrePage() {
               Imprensa
             </span>
             <a
-              href="mailto:imprensa@vanixcorp.com"
+              href="mailto:imprensa@pralvex.com"
               className="text-sm text-white transition hover:text-[#bfa68e]"
             >
-              imprensa@vanixcorp.com
+              imprensa@pralvex.com
             </a>
           </li>
         </ul>
@@ -237,7 +237,7 @@ export default function SobrePage() {
         </div>
 
         <footer className="mt-20 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-white/40 sm:flex-row sm:items-center">
-          <span>© MMXXVI Pralvex · LexAI</span>
+          <span>© MMXXVI Pralvex</span>
           <div className="flex gap-4">
             <Link href="/privacidade" className="transition hover:text-white">
               Privacidade
@@ -249,7 +249,7 @@ export default function SobrePage() {
         </footer>
       </main>
 
-      <WhatsAppFloat message="Olá! Conheci a LexAI pela página Sobre e gostaria de saber mais." />
+      <WhatsAppFloat message="Olá! Conheci a Pralvex pela página Sobre e gostaria de saber mais." />
     </div>
   )
 }

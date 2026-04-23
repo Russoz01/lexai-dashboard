@@ -105,7 +105,7 @@ export default function OnboardingModal({
 
   const markOnboarded = useCallback(() => {
     try {
-      localStorage.setItem('lexai-onboarded', '1')
+      localStorage.setItem('pralvex-onboarded', '1')
     } catch {
       /* SSR / privacy mode — silently ignore */
     }
@@ -157,7 +157,7 @@ export default function OnboardingModal({
         N&deg; 001 &middot; GABINETE &middot; MMXXVI
       </p>
       <h2 className={s.heading}>
-        Bem-vindo ao LexAI
+        Bem-vindo a Pralvex
       </h2>
       <p className={s.desc}>
         Escolha um agente para experimentar. Voce pode explorar os demais depois.

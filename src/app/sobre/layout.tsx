@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Sobre | LexAI, uma marca Pralvex',
-  description: 'A LexAI foi construida por quem vive o Direito brasileiro. Conheca o time, a missao e como pensamos automacao juridica.',
-  alternates: { canonical: 'https://lexai.com.br/sobre' },
+  title: 'Sobre | Pralvex',
+  description: 'A Pralvex foi construida por quem vive o Direito brasileiro. Conheca o time, a missao e como pensamos automacao juridica.',
+  alternates: { canonical: 'https://pralvex.com.br/sobre' },
   openGraph: {
-    title: 'Sobre a LexAI',
+    title: 'Sobre a Pralvex',
     description: 'Construido por quem vive o Direito brasileiro.',
-    url: 'https://lexai.com.br/sobre',
-    siteName: 'LexAI',
+    url: 'https://pralvex.com.br/sobre',
+    siteName: 'Pralvex',
     locale: 'pt_BR',
     type: 'website',
   },

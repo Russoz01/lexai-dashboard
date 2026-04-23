@@ -8,7 +8,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 /* ═════════════════════════════════════════════════════════════
  * withAgentAuth — v10.10 agent route guard
  * ─────────────────────────────────────────────────────────────
- * Uniforme em TODOS os 22 agentes LexAI: auth, rate-limit, quota,
+ * Uniforme em TODOS os 27 agentes Pralvex: auth, rate-limit, quota,
  * error handling (529/overloaded) num só wrapper. O handler do
  * agente recebe `{ req, supabase, user, agentSlug }` e devolve a
  * Response do negócio.

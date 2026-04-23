@@ -18,7 +18,7 @@ interface HeaderProps {
   onToggleSidebar: () => void
 }
 
-export default function Header({ userName = 'Usuario', userRole = 'LexAI', onToggleSidebar }: HeaderProps) {
+export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onToggleSidebar }: HeaderProps) {
   const router = useRouter()
   const [time, setTime] = useState('')
   const [showHelp, setShowHelp] = useState(false)
@@ -35,9 +35,9 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
   }, [])
 
   useEffect(() => {
-    if (!localStorage.getItem('lexai-onboarded')) {
+    if (!localStorage.getItem('pralvex-onboarded')) {
       setShowHelp(true)
-      localStorage.setItem('lexai-onboarded', '1')
+      localStorage.setItem('pralvex-onboarded', '1')
     }
   }, [])
 
@@ -64,7 +64,7 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
       </div>
 
       <div className="header-user">
-        <button className="notif-bell" title="Ajuda e tour do LexAI" onClick={() => setShowHelp(true)}>
+        <button className="notif-bell" title="Ajuda e tour do Pralvex" onClick={() => setShowHelp(true)}>
           <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
         </button>
 

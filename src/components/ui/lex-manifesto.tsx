@@ -66,7 +66,7 @@ export function LexManifesto() {
           </h2>
           <p className="mx-auto mt-10 max-w-2xl text-balance text-[15px] leading-[1.7] text-white/65">
             ChatGPT cita STJ que não existe porque foi treinado pra parecer útil.
-            A LexAI passa por uma camada de validação que bloqueia citação sem
+            A Pralvex passa por uma camada de validação que bloqueia citação sem
             fonte rastreável <span className="text-white/85">antes</span> da peça
             chegar na sua mesa.
           </p>

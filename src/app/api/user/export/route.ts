@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
       sharedDocuments: sharedDocuments.data || [],
     }
 
-    const filename = `lexai-export-${usuarioId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.json`
+    const filename = `pralvex-export-${usuarioId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.json`
 
     // Fire-and-forget audit entry. Never blocks the response.
     void audit({

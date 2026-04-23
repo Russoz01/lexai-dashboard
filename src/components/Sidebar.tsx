@@ -7,7 +7,7 @@ import { usePlan } from '@/hooks/usePlan'
 import { agents, modules, isUnlocked, type CatalogItem, type Plan } from '@/lib/catalog'
 import {
   LayoutDashboard, Folder, History, CalendarCheck, Wallet,
-  Gem, Settings, LogOut, Sparkles, Lock,
+  Gem, Settings, LogOut, Sparkles, Lock, Crown,
 } from 'lucide-react'
 import s from './Sidebar.module.css'
 
@@ -68,12 +68,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
-  const { plano, trial, loading } = usePlan()
-  const userPlan = (plano || 'free') as Plan
+  const { plano, trial, loading, founder } = usePlan()
+  // Founder resolve pra enterprise no servidor — usamos como fallback aqui
+  const userPlan = (founder ? 'enterprise' : plano || 'free') as Plan
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    sessionStorage.removeItem('lexai-plan-cache')
+    sessionStorage.removeItem('pralvex-plan-cache')
     router.push('/login')
     router.refresh()
   }
@@ -114,8 +115,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="sidebar-brand">
         <LexLogo />
         <div className={s.brandCol}>
-          <span>LexAI</span>
-          <span className={s.brandSub}>by Pralvex</span>
+          <span>Pralvex</span>
+          <span className={s.brandSub}>Inteligência jurídica</span>
         </div>
       </div>
 
@@ -166,25 +167,96 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </nav>
 
       <div className={`sidebar-plan ${s.planWrapper}`}>
-        <div
-          className={`sidebar-plan-badge${trial?.active ? ' trial-glow' : ''}${
-            trial?.active && trial.days_left <= 1 ? ' trial-urgent' : ''
-          }`}
-        >
-          <div className={s.planLabel}>
-            <span className={trial?.active && trial.days_left <= 1 ? s.planDotUrgent : s.planDot} />
-            {trial?.active ? 'Trial ativo' : 'Plano ativo'}
+        {founder ? (
+          <div
+            className="sidebar-plan-badge"
+            style={{
+              position: 'relative',
+              overflow: 'hidden',
+              borderRadius: 12,
+              padding: '14px 14px 13px',
+              background:
+                'linear-gradient(135deg, rgba(230,212,189,0.14) 0%, rgba(191,166,142,0.08) 45%, rgba(138,111,85,0.06) 100%)',
+              border: '1px solid rgba(191,166,142,0.35)',
+              boxShadow:
+                '0 0 0 1px rgba(230,212,189,0.08), 0 8px 24px -12px rgba(191,166,142,0.4), inset 0 1px 0 rgba(230,212,189,0.18)',
+            }}
+          >
+            <span
+              aria-hidden
+              style={{
+                position: 'absolute',
+                inset: 0,
+                pointerEvents: 'none',
+                background:
+                  'radial-gradient(120% 60% at 100% 0%, rgba(230,212,189,0.22) 0%, rgba(230,212,189,0) 55%)',
+              }}
+            />
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontFamily: 'var(--font-dm-sans)',
+                fontSize: 9.5,
+                fontWeight: 600,
+                letterSpacing: '0.22em',
+                textTransform: 'uppercase',
+                color: '#e6d4bd',
+                marginBottom: 6,
+                position: 'relative',
+              }}
+            >
+              <Crown size={11} strokeWidth={2} aria-hidden style={{ color: '#e6d4bd' }} />
+              Founder · Lifetime
+            </div>
+            <div
+              className="plan-name"
+              style={{
+                fontFamily: 'var(--font-playfair)',
+                fontSize: 17,
+                lineHeight: 1.15,
+                color: '#f5ecdd',
+                fontStyle: 'italic',
+                position: 'relative',
+              }}
+            >
+              Leonardo
+            </div>
+            <div
+              className="plan-price"
+              style={{
+                marginTop: 3,
+                fontFamily: 'var(--font-dm-sans)',
+                fontSize: 11,
+                color: 'rgba(230,212,189,0.72)',
+                position: 'relative',
+              }}
+            >
+              Acesso supremo · sem expiração
+            </div>
           </div>
-          <div className="plan-name">{loading ? '...' : PLANOS[plano]?.nome || 'Free Trial'}</div>
-          <div className="plan-price">
-            {trial?.active
-              ? `${trial.days_left} dia${trial.days_left === 1 ? '' : 's'} restante${trial.days_left === 1 ? '' : 's'}`
-              : PLANOS[plano]?.preco || ''}
+        ) : (
+          <div
+            className={`sidebar-plan-badge${trial?.active ? ' trial-glow' : ''}${
+              trial?.active && trial.days_left <= 1 ? ' trial-urgent' : ''
+            }`}
+          >
+            <div className={s.planLabel}>
+              <span className={trial?.active && trial.days_left <= 1 ? s.planDotUrgent : s.planDot} />
+              {trial?.active ? 'Trial ativo' : 'Plano ativo'}
+            </div>
+            <div className="plan-name">{loading ? '...' : PLANOS[plano]?.nome || 'Free Trial'}</div>
+            <div className="plan-price">
+              {trial?.active
+                ? `${trial.days_left} dia${trial.days_left === 1 ? '' : 's'} restante${trial.days_left === 1 ? '' : 's'}`
+                : PLANOS[plano]?.preco || ''}
+            </div>
           </div>
-        </div>
+        )}
         <div className={s.footerMark}>
           <Sparkles size={11} strokeWidth={1.75} className={s.footerSpark} aria-hidden />
-          Uma marca <strong className={s.footerStrong}>Pralvex</strong>
+          MMXXVI · Ofício do atelier
         </div>
       </div>
     </aside>

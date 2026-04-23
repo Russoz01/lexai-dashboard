@@ -9,6 +9,7 @@ export interface PlanInfo {
   subscription_status: string
   trial: { active: boolean; ends_at: string | null; days_left: number }
   stripe_customer_id: string | null
+  founder: boolean
   loading: boolean
 }
 
@@ -19,6 +20,7 @@ const DEFAULT: PlanInfo = {
   subscription_status: 'trialing',
   trial: { active: false, ends_at: null, days_left: 0 },
   stripe_customer_id: null,
+  founder: false,
   loading: true,
 }
 
@@ -34,7 +36,7 @@ export function usePlan(): PlanInfo & { refresh: () => Promise<void> } {
   const fetchPlan = useCallback(async () => {
     try {
       // Try cache first (60s freshness)
-      const cached = sessionStorage.getItem('lexai-plan-cache')
+      const cached = sessionStorage.getItem('pralvex-plan-cache')
       if (cached) {
         try {
           const parsed = JSON.parse(cached)
@@ -58,10 +60,11 @@ export function usePlan(): PlanInfo & { refresh: () => Promise<void> } {
         subscription_status: data.subscription_status || 'trialing',
         trial: data.trial || { active: false, ends_at: null, days_left: 0 },
         stripe_customer_id: data.stripe_customer_id || null,
+        founder: !!data.founder,
         loading: false,
       }
       setInfo(result)
-      sessionStorage.setItem('lexai-plan-cache', JSON.stringify({ t: Date.now(), data: result }))
+      sessionStorage.setItem('pralvex-plan-cache', JSON.stringify({ t: Date.now(), data: result }))
     } catch {
       setInfo({ ...DEFAULT, loading: false })
     }
@@ -70,7 +73,7 @@ export function usePlan(): PlanInfo & { refresh: () => Promise<void> } {
   useEffect(() => { fetchPlan() }, [fetchPlan])
 
   const refresh = useCallback(async () => {
-    sessionStorage.removeItem('lexai-plan-cache')
+    sessionStorage.removeItem('pralvex-plan-cache')
     await fetchPlan()
   }, [fetchPlan])
 

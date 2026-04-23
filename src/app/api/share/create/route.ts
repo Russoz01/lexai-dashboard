@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       token,
-      url: `https://lexai.com.br/share/${token}`,
+      url: `https://pralvex.com.br/share/${token}`,
       expires_at: expiresAt,
     })
   } catch (err: unknown) {

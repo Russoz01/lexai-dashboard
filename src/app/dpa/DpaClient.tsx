@@ -53,7 +53,7 @@ const SECTIONS: Section[] = [
         <p>
           Este Data Processing Agreement (&ldquo;DPA&rdquo;) regula o tratamento de
           dados pessoais realizado pela <strong>Pralvex</strong> (&ldquo;Operadora&rdquo;)
-          quando voce (&ldquo;Controladora&rdquo;) contrata a plataforma LexAI para
+          quando voce (&ldquo;Controladora&rdquo;) contrata a plataforma para
           apoiar sua atividade de advocacia.
         </p>
         <p>
@@ -80,13 +80,13 @@ const SECTIONS: Section[] = [
           na plataforma, a finalidade do tratamento e o tempo de retencao.
         </p>
         <p>
-          <strong>A LexAI/Pralvex e a Operadora</strong>: processa os dados
+          <strong>A Pralvex e a Operadora</strong>: processa os dados
           exclusivamente conforme instrucao sua, nao utiliza para treinar modelos
           proprios ou de terceiros, e nao revende ou compartilha para marketing.
         </p>
         <p>
           <strong>DPO nomeado</strong>: Leonardo Luiz Fernando, Pralvex,
-          contato em <a href="mailto:dpo@vanixcorp.com" className="text-[#bfa68e] underline decoration-[#bfa68e]/40 underline-offset-2 hover:decoration-[#bfa68e]">dpo@vanixcorp.com</a>.
+          contato em <a href="mailto:dpo@pralvex.com" className="text-[#bfa68e] underline decoration-[#bfa68e]/40 underline-offset-2 hover:decoration-[#bfa68e]">dpo@pralvex.com</a>.
           Responde em 15 dias corridos a qualquer solicitacao LGPD art. 18.
         </p>
       </>
@@ -114,7 +114,7 @@ const SECTIONS: Section[] = [
             <strong className="text-white">Tecnicos</strong>: IP, user-agent, timestamp, pais de acesso, device, latencia de requisicao.
           </li>
           <li className="relative pl-4 before:absolute before:left-0 before:top-[10px] before:h-1 before:w-1.5 before:bg-[#bfa68e]">
-            <strong className="text-white">Pagamento</strong>: processado por Stripe sob PCI DSS. LexAI nao armazena numero de cartao, apenas token opaco.
+            <strong className="text-white">Pagamento</strong>: processado por Stripe sob PCI DSS. Pralvex nao armazena numero de cartao, apenas token opaco.
           </li>
         </ul>
       </>
@@ -128,7 +128,7 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          A LexAI mantem controles tecnicos compativeis com ISO 27001 e Provimento
+          A Pralvex mantem controles tecnicos compativeis com ISO 27001 e Provimento
           205 da OAB:
         </p>
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -158,7 +158,7 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          A LexAI usa os seguintes sub-operadores para entregar o servico. Qualquer
+          A Pralvex usa os seguintes sub-operadores para entregar o servico. Qualquer
           alteracao nesta lista e comunicada com 30 dias de antecedencia.
         </p>
         <div className="mt-5 overflow-x-auto">
@@ -184,7 +184,7 @@ const SECTIONS: Section[] = [
           </table>
         </div>
         <p className="mt-4 text-[13px] text-white/55">
-          <strong className="text-white/75">Importante:</strong> a LexAI nunca envia
+          <strong className="text-white/75">Importante:</strong> a Pralvex nunca envia
           o conteudo de peticoes/pareceres para treinar modelos de terceiros. O
           acordo zero-retention com a Anthropic garante que prompts sao deletados
           em no maximo 30 dias apos processamento.
@@ -234,7 +234,7 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          Em caso de incidente de seguranca que afete dados pessoais, a LexAI
+          Em caso de incidente de seguranca que afete dados pessoais, a Pralvex
           notifica a Controladora em ate <strong className="text-white">72 horas</strong> apos
           ciencia, contendo:
         </p>
@@ -343,7 +343,7 @@ export default function DpaClient() {
             </em>
           </h1>
           <p className="mt-6 max-w-2xl text-[15px] leading-[1.75] text-white/65">
-            Voce e Controladora. A LexAI e Operadora. Este DPA formaliza essa
+            Voce e Controladora. A Pralvex e Operadora. Este DPA formaliza essa
             relacao em conformidade com a LGPD (Lei 13.709/18) e, quando
             aplicavel, GDPR + Standard Contractual Clauses.
           </p>
@@ -382,18 +382,18 @@ export default function DpaClient() {
           className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center"
         >
           <a
-            href="mailto:dpo@vanixcorp.com?subject=Solicitacao%20de%20copia%20assinada%20do%20DPA%20LexAI&body=Ola%20Leonardo%2C%0A%0AGostaria%20de%20receber%20uma%20copia%20assinada%20do%20DPA%20para%20o%20nosso%20escritorio.%0A%0ARazao%20social%3A%0ACNPJ%3A%0AEndereco%3A%0APessoa%20responsavel%3A%0A%0AObrigado."
+            href="mailto:dpo@pralvex.com?subject=Solicitacao%20de%20copia%20assinada%20do%20DPA%20Pralvex&body=Ola%20Leonardo%2C%0A%0AGostaria%20de%20receber%20uma%20copia%20assinada%20do%20DPA%20para%20o%20nosso%20escritorio.%0A%0ARazao%20social%3A%0ACNPJ%3A%0AEndereco%3A%0APessoa%20responsavel%3A%0A%0AObrigado."
             className="group inline-flex items-center gap-3 rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#f5e8d3] via-[#bfa68e] to-[#7a5f48] px-6 py-3 font-mono text-[0.7rem] font-bold uppercase tracking-[0.2em] text-[#0a0a0a] shadow-[0_10px_40px_rgba(191,166,142,0.28)] transition-all hover:shadow-[0_14px_56px_rgba(191,166,142,0.45)]"
           >
             <Download className="size-4" strokeWidth={2} />
             Solicitar copia assinada
           </a>
           <a
-            href="mailto:dpo@vanixcorp.com"
+            href="mailto:dpo@pralvex.com"
             className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white/55 transition-colors hover:text-[#bfa68e]"
           >
             <Mail className="size-3" strokeWidth={1.8} />
-            dpo@vanixcorp.com
+            dpo@pralvex.com
           </a>
         </motion.div>
       </section>
@@ -456,7 +456,7 @@ export default function DpaClient() {
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href="mailto:dpo@vanixcorp.com?subject=DPA%20customizado%20-%20escritorio%20X"
+              href="mailto:dpo@pralvex.com?subject=DPA%20customizado%20-%20escritorio%20X"
               className="group inline-flex items-center gap-3 rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#f5e8d3] via-[#bfa68e] to-[#7a5f48] px-7 py-3 font-mono text-[0.7rem] font-bold uppercase tracking-[0.2em] text-[#0a0a0a] shadow-[0_10px_40px_rgba(191,166,142,0.28)] transition-all hover:shadow-[0_14px_56px_rgba(191,166,142,0.45)]"
             >
               Falar com o DPO

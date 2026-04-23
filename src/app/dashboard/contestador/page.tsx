@@ -8,7 +8,7 @@ import {
   Clipboard,
   Sparkles,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 
 interface Preliminar {
@@ -306,7 +306,7 @@ export default function ContestadorPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {contestacao.confianca && <ConfidenceBadge confianca={contestacao.confianca} />}
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
               <button
                 onClick={() => { setContestacao(null); setTeseInicial(''); setTeseDefesa('') }}

@@ -72,7 +72,7 @@ const PLANOS: Plano[] = [
     precoMensal: 1459,
     economiaReal: 'Capacidade de atendimento +40% sem contratar',
     features: [
-      { label: 'Todos os 22 agentes especializados', disponivel: true },
+      { label: 'Todos os 27 agentes especializados', disponivel: true },
       { label: 'Documentos ilimitados', disponivel: true },
       { label: 'Histórico de 90 dias', disponivel: true },
       { label: 'Suporte prioritário em 3h', disponivel: true },

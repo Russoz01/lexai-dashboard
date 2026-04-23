@@ -8,7 +8,7 @@ import { LEGAL_AREAS, type LegalAreaSlug } from '@/lib/agents/taxonomy'
  * AreaSelector — v10.11 Atelier edition
  * ─────────────────────────────────────────────────────────────
  * Deixa o advogado eleger sua area principal de atuacao. Cada
- * agente LexAI usa esse sinal pra calibrar exemplos, jurisprudencia
+ * agente Pralvex usa esse sinal pra calibrar exemplos, jurisprudencia
  * referente e tom da resposta.
  *
  * v10.11: alinhado ao padrao editorial do /dashboard — Playfair

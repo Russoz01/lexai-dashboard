@@ -128,7 +128,7 @@ function EmBreveContent() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="mt-12 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/30"
         >
-          LexAI v2.0 · roadmap ativo
+          Pralvex v10.8 · roadmap ativo
         </motion.div>
       </div>
     </div>

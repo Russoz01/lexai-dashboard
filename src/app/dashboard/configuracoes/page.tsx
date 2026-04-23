@@ -621,7 +621,7 @@ export default function ConfiguracoesPage() {
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
           <div className="section-card" style={{ padding:'20px 24px' }}>
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:4 }}>Conectar Serviços</div>
-            <div style={{ fontSize:13, color:'var(--text-muted)', marginBottom:18 }}>Ative integrações para estender as funcionalidades do LexAI com suas ferramentas favoritas.</div>
+            <div style={{ fontSize:13, color:'var(--text-muted)', marginBottom:18 }}>Ative integrações para estender as funcionalidades da Pralvex com suas ferramentas favoritas.</div>
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
               {INTEGRACOES.map(intg => {
                 const IntIcon = intg.Icon
@@ -678,7 +678,7 @@ export default function ConfiguracoesPage() {
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Canais de Atendimento</div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
               {[
-                { Icon: Mail,  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'contato@vanixcorp.com', href:'mailto:contato@vanixcorp.com' },
+                { Icon: Mail,  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'contato@pralvex.com', href:'mailto:contato@pralvex.com' },
               ].map(ch => {
                 const ChIcon = ch.Icon
                 return (

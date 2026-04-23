@@ -28,11 +28,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const root = document.documentElement
     root.setAttribute('data-theme', 'dark')
     // Sobrescreve qualquer pref antiga
-    try { localStorage.setItem('lexai-theme', 'dark') } catch { /* ignore */ }
+    try { localStorage.setItem('pralvex-theme', 'dark') } catch { /* ignore */ }
 
     // Reaplica design prefs salvas (cores customizadas)
     try {
-      const prefs = localStorage.getItem('lexai-design-prefs')
+      const prefs = localStorage.getItem('pralvex-design-prefs')
       if (prefs) {
         const p = JSON.parse(prefs)
         if (p.colors) {

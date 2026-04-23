@@ -12,7 +12,7 @@ import {
   Info,
   XCircle,
 } from 'lucide-react'
-import { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import { PoweredByPralvex } from '@/components/ConfidenceBadge'
 
 interface Parecer {
   titulo: string
@@ -185,7 +185,7 @@ export default function ConsultorPage() {
     }
     lines.push(``)
     lines.push(`${'='.repeat(60)}`)
-    lines.push(`Parecer gerado via LexAI — Estrategista`)
+    lines.push(`Parecer gerado via Pralvex — Estrategista`)
 
     const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -487,7 +487,7 @@ export default function ConsultorPage() {
             <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Novo parecer
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-            <PoweredByLexAI />
+            <PoweredByPralvex />
           </div>
         </>
       )}

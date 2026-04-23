@@ -13,7 +13,7 @@ import {
   Calculator,
   RotateCcw,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import {
   addDiasUteisForenses,
   breakdownPeriodo,
@@ -32,7 +32,7 @@ interface HistoricoItem {
   ts: number
 }
 
-const HISTORICO_KEY = 'lexai-calc-historico'
+const HISTORICO_KEY = 'pralvex-calc-historico'
 const HISTORICO_MAX = 5
 
 function formatBR(d: Date): string {
@@ -600,7 +600,7 @@ export default function CalculadorPage() {
                 <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Novo cálculo
               </button>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
             </div>
           ) : (

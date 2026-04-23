@@ -32,7 +32,7 @@ export function LexPricing() {
             <span className="text-white/60">Transparente do Escritório ao Enterprise.</span>
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-white/65">
-            Astrea cobra R$ 1.379 por usuário com limite de documentos. A LexAI cobra entre{' '}
+            Astrea cobra R$ 1.379 por usuário com limite de documentos. A Pralvex cobra entre{' '}
             <span className="font-mono tabular-nums text-white/85">R$ 1.399 e R$ 1.599</span>{' '}
             por advogado registrado — com documentos ilimitados a partir do Firma e 7 dias grátis.
           </p>

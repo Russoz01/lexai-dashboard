@@ -11,7 +11,7 @@ interface SkeletonProps {
 export function Skeleton({ width = '100%', height = 16, circle = false, style = {}, className = '' }: SkeletonProps) {
   return (
     <div
-      className={`lexai-skeleton ${className}`}
+      className={`pralvex-skeleton ${className}`}
       style={{
         width,
         height,

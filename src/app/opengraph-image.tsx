@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og'
 // Next.js App Router native OG image generation
 // Size recommended by social platforms: 1200x630
 export const runtime = 'edge'
-export const alt = 'LexAI — Inteligencia Juridica · uma marca Pralvex'
+export const alt = 'Pralvex — Inteligencia juridica'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -86,7 +86,7 @@ export default async function OpenGraphImage() {
                 lineHeight: 1,
               }}
             >
-              LexAI
+              Pralvex
             </div>
             <div
               style={{
@@ -98,7 +98,7 @@ export default async function OpenGraphImage() {
                 marginTop: 6,
               }}
             >
-              by Pralvex
+              Inteligencia juridica
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default async function OpenGraphImage() {
               display: 'flex',
             }}
           >
-            22 agentes de IA para escritorios de advocacia &mdash; analise de documentos,
+            27 agentes de IA para escritorios de advocacia &mdash; analise de documentos,
             jurisprudencia, pecas processuais, calculos e mais.
           </div>
         </div>
@@ -195,7 +195,7 @@ export default async function OpenGraphImage() {
               display: 'flex',
             }}
           >
-            lexai.com.br
+            pralvex.com.br
           </div>
         </div>
       </div>

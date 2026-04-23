@@ -10,7 +10,7 @@ import { Reveal } from '@/components/ui/reveal'
  * LexFaq (v9 · 2026-04-19)
  * ────────────────────────────────────────────────────────────────────
  * Reescrito com:
- *  · Numero correto: 22 agentes (14 prontos + 8 em onda)
+ *  · Numero correto: 27 agentes (21 prontos + 6 novos v10.8)
  *  · Resposta da implantacao alinhada com tier (Escritorio/Firma/Enterprise)
  *  · Resposta de provimento 205 mais especifica (tipos de claim bloqueados)
  *  · LGPD com servidor sa-east-1 (real)
@@ -19,15 +19,15 @@ import { Reveal } from '@/components/ui/reveal'
 
 const faqs = [
   {
-    q: 'Os 22 agentes são especializados em Direito brasileiro?',
-    a: 'Sim. CF/88, CLT, CDC, CPC, CC, legislação tributária, previdenciária e regulatória. Base jurisprudencial cobre STF, STJ, TRFs, TJs estaduais e tribunais superiores trabalhistas. Os 22 agentes estão ativos hoje — Resumidor, Pesquisador, Redator, Calculador, Legislação, Contestador, Recursos, Audiência, Parecerista, Revisor, Estrategista, Atendimento, Marketing IA, Professor, Simulado, Tradutor, Negociador, Consultor, Modelos, Financeiro, Prazos e Compliance.',
+    q: 'Os 27 agentes são especializados em Direito brasileiro?',
+    a: 'Sim. CF/88, CLT, CDC, CPC, CC, legislação tributária, previdenciária e regulatória. Base jurisprudencial cobre STF, STJ, TRFs, TJs estaduais e tribunais superiores trabalhistas. Os 27 agentes estão ativos hoje — Resumidor, Pesquisador, Redator, Calculador, Legislação, Contestador, Recursos, Audiência, Parecerista, Revisor, Estrategista, Atendimento, Marketing IA, Professor, Simulado, Tradutor, Negociador, Consultor, Rotina, Planilhas, Compliance mais os 6 novos da v10.8: CNJ (DataJud), Comparador, Risco, Flashcards, Plano e Casos.',
   },
   {
     q: 'Como funciona a validação contra o Provimento 205/2021 da OAB?',
     a: 'Toda saída de qualquer agente passa por uma camada automática de validação. Claims proibidos pela OAB são bloqueados antes da entrega: garantia de resultado, mercantilização do serviço, captação indevida, sensacionalismo, e citação sem fonte rastreável. Audit log registra cada validação por usuário — você pode auditar tudo a qualquer momento.',
   },
   {
-    q: 'Meus documentos treinam o modelo da LexAI?',
+    q: 'Meus documentos treinam o modelo da Pralvex?',
     a: 'Nunca. Isolamento total entre clientes, criptografia em repouso (AES-256) e em trânsito (TLS 1.3), processamento por sessão. DPA assinado conforme LGPD (Lei 13.709/2018). Servidor em São Paulo (AWS sa-east-1). O modelo não aprende com sua base — cada nova sessão começa do zero.',
   },
   {
@@ -36,7 +36,7 @@ const faqs = [
   },
   {
     q: 'E se a IA errar em uma peça? Quem responde?',
-    a: 'A LexAI é ferramenta de apoio. Toda saída deve ser revisada por profissional habilitado pela OAB antes de uso processual ou contratual. O fluxo sempre termina com aprovação humana — exatamente como o Provimento 205 exige. Nunca enviamos peça sem revisão; o sistema foi projetado para recusar quando a confiança da resposta cai abaixo do limite.',
+    a: 'A Pralvex é ferramenta de apoio. Toda saída deve ser revisada por profissional habilitado pela OAB antes de uso processual ou contratual. O fluxo sempre termina com aprovação humana — exatamente como o Provimento 205 exige. Nunca enviamos peça sem revisão; o sistema foi projetado para recusar quando a confiança da resposta cai abaixo do limite.',
   },
   {
     q: 'Quanto tempo leva a implantação?',
@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     q: 'Por que o preço é fixo por escritório e não por advogado?',
-    a: 'Porque escritório que cresce não pode pagar imposto de crescimento. Astrea cobra R$ 1.379 por usuário — a 9 advogados, R$ 12.411/mês. A LexAI cobra um único valor pelo escritório inteiro. Você contrata um analista júnior sem renegociar contrato de software. Sem fidelidade, cancela com um clique.',
+    a: 'Porque escritório que cresce não pode pagar imposto de crescimento. Astrea cobra R$ 1.379 por usuário — a 9 advogados, R$ 12.411/mês. A Pralvex cobra um único valor pelo escritório inteiro. Você contrata um analista júnior sem renegociar contrato de software. Sem fidelidade, cancela com um clique.',
   },
 ]
 

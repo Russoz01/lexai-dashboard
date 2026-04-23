@@ -29,14 +29,14 @@ type ComponentStatus = {
 }
 
 const COMPONENTS: ComponentStatus[] = [
-  { name: '22 agentes IA',       Icon: Cpu,      state: 'operational', latencyMs: 38, uptime90: 99.97, caption: 'Resumidor, Redator, Pesquisador e 19 outros' },
+  { name: '27 agentes IA',       Icon: Cpu,      state: 'operational', latencyMs: 38, uptime90: 99.97, caption: 'Resumidor, Redator, Pesquisador e 24 outros' },
   { name: 'Chat orquestrador',   Icon: Activity, state: 'operational', latencyMs: 142, uptime90: 99.92, caption: 'Streaming + roteamento' },
   { name: 'API REST',            Icon: Globe,    state: 'operational', latencyMs: 68, uptime90: 99.99, caption: 'v1 publica · Firma e Enterprise' },
   { name: 'Autenticacao',        Icon: Shield,   state: 'operational', latencyMs: 124, uptime90: 99.98, caption: 'Supabase Auth · Google OAuth' },
   { name: 'Banco de dados',      Icon: Database, state: 'operational', latencyMs: 14, uptime90: 99.99, caption: 'Postgres · sa-east-1' },
   { name: 'Webhook Stripe',      Icon: Zap,      state: 'operational', latencyMs: 210, uptime90: 99.95, caption: 'Processamento de cobranca' },
   { name: 'Servidor (Vercel)',   Icon: Server,   state: 'operational', latencyMs: 22, uptime90: 100,   caption: 'Edge · Sao Paulo' },
-  { name: 'Painel do cliente',   Icon: Globe,    state: 'operational', latencyMs: 48, uptime90: 99.94, caption: 'lexai.com.br · HTTPS A+' },
+  { name: 'Painel do cliente',   Icon: Globe,    state: 'operational', latencyMs: 48, uptime90: 99.94, caption: 'pralvex.com.br · HTTPS A+' },
 ]
 
 type Incident = {
@@ -392,7 +392,7 @@ export default function StatusClient() {
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href="mailto:status@vanixcorp.com?subject=Inscrever%20em%20status%20LexAI"
+              href="mailto:status@pralvex.com?subject=Inscrever%20em%20status%20Pralvex"
               className="group inline-flex items-center gap-3 rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#f5e8d3] via-[#bfa68e] to-[#7a5f48] px-7 py-3 font-mono text-[0.7rem] font-bold uppercase tracking-[0.2em] text-[#0a0a0a] shadow-[0_10px_40px_rgba(191,166,142,0.28)] transition-all hover:shadow-[0_14px_56px_rgba(191,166,142,0.45)]"
             >
               Inscrever em status

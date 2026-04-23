@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 const WHATSAPP_NUMBER = '5534993026456'
-const DEFAULT_MESSAGE = 'Ola! Vim do site da LexAI e gostaria de saber mais sobre a plataforma.'
+const DEFAULT_MESSAGE = 'Ola! Vim do site da Pralvex e gostaria de saber mais sobre a plataforma.'
 
 /**
  * Floating WhatsApp CTA for /empresas and landing.
@@ -41,7 +41,7 @@ export function WhatsAppFloat({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Conversar com a LexAI no WhatsApp"
+      aria-label="Conversar com a Pralvex no WhatsApp"
       data-visible={visible}
       style={{
         position: 'fixed',

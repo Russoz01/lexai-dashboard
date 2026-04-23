@@ -31,7 +31,7 @@ import {
   Circle,
   ArrowRight,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 
@@ -189,7 +189,7 @@ export default function PlanilhasPage() {
   }, [csvText, analise?.versao_melhorada])
 
   // Auto-save the user instruction draft
-  useDraft('lexai-draft-planilhas-instruction', instruction, setInstruction)
+  useDraft('pralvex-draft-planilhas-instruction', instruction, setInstruction)
 
   async function handleFile(file: File | null | undefined) {
     if (!file) return
@@ -235,7 +235,7 @@ export default function PlanilhasPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro desconhecido')
       setAnalise(data.analise as Analise)
-      clearDraft('lexai-draft-planilhas-instruction')
+      clearDraft('pralvex-draft-planilhas-instruction')
       toast('success', 'Planilha analisada com sucesso')
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Erro ao processar planilha'
@@ -1121,7 +1121,7 @@ export default function PlanilhasPage() {
                 )}
 
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
-                  <PoweredByLexAI />
+                  <PoweredByPralvex />
                 </div>
               </>
             )}

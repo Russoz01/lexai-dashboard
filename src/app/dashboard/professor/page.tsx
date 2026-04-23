@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import {
   FileText,
   ShieldAlert,
@@ -575,7 +575,7 @@ export default function MonitorLegislativoPage() {
             <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Novo monitoramento
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-            <PoweredByLexAI />
+            <PoweredByPralvex />
           </div>
         </>
       ) : !loading && (

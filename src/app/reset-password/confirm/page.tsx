@@ -148,7 +148,7 @@ export default function ResetPasswordConfirmPage() {
             <LexLogoMark />
             <div>
               <div className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[#bfa68e]">
-                Nº 003 · LexAI · MMXXVI
+                Nº 003 · Pralvex · MMXXVI
               </div>
               <h1 className="mt-1 text-3xl font-light leading-tight tracking-tight md:text-4xl">
                 Nova{' '}
@@ -314,7 +314,7 @@ export default function ResetPasswordConfirmPage() {
         </div>
 
         <footer className="relative z-10 mt-10 text-center font-mono text-[0.58rem] uppercase tracking-[0.3em] text-white/25">
-          LexAI · MMXXVI · Atelier
+          Pralvex · MMXXVI · Atelier
         </footer>
       </section>
     </main>

@@ -1,7 +1,7 @@
 import { Resend } from 'resend'
 
 const RESEND_KEY = process.env.RESEND_API_KEY
-const FROM = process.env.RESEND_FROM_EMAIL || 'LexAI <onboarding@resend.dev>'
+const FROM = process.env.RESEND_FROM_EMAIL || 'Pralvex <onboarding@resend.dev>'
 
 const resend = RESEND_KEY ? new Resend(RESEND_KEY) : null
 
@@ -43,7 +43,7 @@ function baseTemplate(content: string): string {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>LexAI</title>
+      <title>Pralvex</title>
     </head>
     <body style="margin:0;padding:0;background:#f4f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f4f6f8;">
@@ -52,7 +52,7 @@ function baseTemplate(content: string): string {
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.06);">
               <tr>
                 <td style="padding:32px 32px 24px;border-bottom:1px solid #e5e7eb;">
-                  <div style="font-size:24px;font-weight:800;color:#132025;letter-spacing:-0.5px;">LexAI</div>
+                  <div style="font-size:24px;font-weight:800;color:#132025;letter-spacing:-0.5px;">Pralvex</div>
                   <div style="font-size:13px;color:#64748b;margin-top:4px;">IA para Direito brasileiro</div>
                 </td>
               </tr>
@@ -63,9 +63,9 @@ function baseTemplate(content: string): string {
               </tr>
               <tr>
                 <td style="padding:24px 32px;border-top:1px solid #e5e7eb;background:#f9fafb;font-size:12px;color:#94a3b8;line-height:1.6;">
-                  <div>Voce esta recebendo este email porque criou uma conta na LexAI.</div>
-                  <div style="margin-top:8px;">A LexAI e ferramenta de apoio. Decisoes juridicas devem ser revisadas por profissional habilitado OAB.</div>
-                  <div style="margin-top:8px;">2026 LexAI &middot; LGPD Compliant</div>
+                  <div>Voce esta recebendo este email porque criou uma conta na Pralvex.</div>
+                  <div style="margin-top:8px;">A Pralvex e ferramenta de apoio. Decisoes juridicas devem ser revisadas por profissional habilitado OAB.</div>
+                  <div style="margin-top:8px;">2026 Pralvex &middot; LGPD Compliant</div>
                 </td>
               </tr>
             </table>
@@ -79,26 +79,26 @@ function baseTemplate(content: string): string {
 
 export function welcomeEmailHtml(nome: string): string {
   return baseTemplate(`
-    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;letter-spacing:-0.3px;">Bem-vindo a LexAI, ${nome}!</h1>
-    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Seu trial gratuito de <strong>7 dias</strong> esta ativo. Voce tem acesso a todos os 22 agentes IA, sem cobranca e sem precisar cadastrar cartao.</p>
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;letter-spacing:-0.3px;">Bem-vindo a Pralvex, ${nome}!</h1>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Seu trial gratuito de <strong>7 dias</strong> esta ativo. Voce tem acesso a todos os 27 agentes IA, sem cobranca e sem precisar cadastrar cartao.</p>
     <div style="background:#f5efe6;border-left:4px solid #bfa68e;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Comece pelo Resumidor</div>
       <div style="font-size:13px;color:#475569;line-height:1.5;">E o agente mais usado. Cole qualquer documento juridico e veja a magia acontecer em 45 segundos.</div>
     </div>
-    <a href="https://lexai.com.br/dashboard/resumidor" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;">Acessar Dashboard</a>
-    <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Duvidas? Responda este email ou escreva para contato@vanixcorp.com.</p>
+    <a href="https://pralvex.com.br/dashboard/resumidor" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;">Acessar Dashboard</a>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Duvidas? Responda este email ou escreva para contato@pralvex.com.</p>
   `)
 }
 
 export function trialEndingEmailHtml(nome: string, daysLeft: number): string {
   return baseTemplate(`
     <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">${nome}, seu trial termina em ${daysLeft} dia${daysLeft === 1 ? '' : 's'}</h1>
-    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Esperamos que voce esteja aproveitando os agentes da LexAI. Para continuar usando todos os 22 agentes, escolha um plano antes do trial expirar.</p>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Esperamos que voce esteja aproveitando os agentes da Pralvex. Para continuar usando todos os 27 agentes, escolha um plano antes do trial expirar.</p>
     <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:6px;">Oferta de lancamento</div>
       <div style="font-size:13px;color:#78350f;line-height:1.5;">Plano anual com 16% de desconto. Garanta o preco fixo por 12 meses.</div>
     </div>
-    <a href="https://lexai.com.br/dashboard/planos" style="display:inline-block;background:#132025;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ver planos</a>
+    <a href="https://pralvex.com.br/dashboard/planos" style="display:inline-block;background:#132025;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ver planos</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Sem cobranca automatica. Voce so paga se escolher um plano.</p>
   `)
 }
@@ -110,7 +110,7 @@ export function inviteEmailHtml(
 ): string {
   return baseTemplate(`
     <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">Voce foi convidado para ${equipeNome}</h1>
-    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;"><strong>${invitedByName}</strong> convidou voce para fazer parte da equipe <strong>${equipeNome}</strong> no LexAI &mdash; a IA juridica mais usada por escritorios brasileiros.</p>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;"><strong>${invitedByName}</strong> convidou voce para fazer parte da equipe <strong>${equipeNome}</strong> na Pralvex &mdash; a IA juridica mais usada por escritorios brasileiros.</p>
     <div style="background:#f5efe6;border-left:4px solid #bfa68e;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Ao aceitar o convite voce tera acesso a</div>
       <div style="font-size:13px;color:#475569;line-height:1.6;">&bull; Todos os agentes contratados no plano da equipe<br>&bull; Historico compartilhado (quando autorizado pelo admin)<br>&bull; Suporte prioritario atraves do admin da equipe</div>
@@ -131,7 +131,7 @@ export async function sendInviteEmail(params: {
 }) {
   return sendEmail({
     to: params.to,
-    subject: `${params.invitedByName} te convidou para ${params.equipeNome} no LexAI`,
+    subject: `${params.invitedByName} te convidou para ${params.equipeNome} na Pralvex`,
     html: inviteEmailHtml(params.invitedByName, params.equipeNome, params.acceptUrl),
   })
 }
@@ -144,7 +144,7 @@ export function paymentReceivedEmailHtml(nome: string, plano: string, valor: str
       <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:6px;">Detalhes do pagamento</div>
       <div style="font-size:13px;color:#047857;line-height:1.6;">Plano: ${plano}<br>Valor: ${valor}<br>Cobranca: mensal recorrente</div>
     </div>
-    <a href="https://lexai.com.br/dashboard" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ir para o Dashboard</a>
+    <a href="https://pralvex.com.br/dashboard" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ir para o Dashboard</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Gerencie sua assinatura, cancele ou baixe faturas em <strong>Configuracoes &gt; Pagamento</strong>.</p>
   `)
 }

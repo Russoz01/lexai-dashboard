@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Search, AlertTriangle, BookOpen, Calendar, ExternalLink, ChevronDown, ChevronUp, User, Clipboard, Check, CheckCircle2, NotebookText, Layers, Hourglass, FileX } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI, VerifiedBadge } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex, VerifiedBadge } from '@/components/ConfidenceBadge'
 import { SkeletonResult } from '@/components/Skeleton'
 import s from './page.module.css'
 
@@ -311,7 +311,7 @@ export default function PesquisadorPage() {
             </div>
           )}
           <div className={s.poweredRow}>
-            <PoweredByLexAI />
+            <PoweredByPralvex />
           </div>
         </div>
       ) : (

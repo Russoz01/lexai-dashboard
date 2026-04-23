@@ -25,7 +25,7 @@ import { extractPdfWithMeta } from '@/lib/pdf-parser'
 import { confirmDialog } from '@/components/ConfirmDialog'
 
 /* ─────────────────────────────────────────────────────────────────────────────
- * LexAI — Chat Orquestrador
+ * Pralvex — Chat Orquestrador
  *
  * Interface conversacional única. O usuário manda texto ou arquivo (PDF/TXT),
  * o orquestrador decide se responde direto ou sugere o agente especialista.
@@ -234,7 +234,7 @@ export default function ChatPage() {
   function abrirAgenteComContexto(agente: AgenteSugerido) {
     // Salva pre_prompt no sessionStorage para ser consumido pelo agente destino
     if (agente.pre_prompt) {
-      sessionStorage.setItem(`lexai-prefill-${agente.key}`, agente.pre_prompt)
+      sessionStorage.setItem(`pralvex-prefill-${agente.key}`, agente.pre_prompt)
     }
     window.location.href = agente.rota
   }
@@ -304,7 +304,7 @@ export default function ChatPage() {
               <article key={m.id} className={`chat-msg chat-msg--${m.role}`} data-idx={idx}>
                 <div className="chat-msg-meta">
                   <span className="chat-msg-label">
-                    {m.role === 'user' ? 'Você' : 'LexAI'}
+                    {m.role === 'user' ? 'Você' : 'Pralvex'}
                   </span>
                   <span className="chat-msg-time">{fmtHora(m.timestamp)}</span>
                 </div>
@@ -353,7 +353,7 @@ export default function ChatPage() {
             {loading && (
               <article className="chat-msg chat-msg--assistant">
                 <div className="chat-msg-meta">
-                  <span className="chat-msg-label">LexAI</span>
+                  <span className="chat-msg-label">Pralvex</span>
                   <span className="chat-msg-time">agora</span>
                 </div>
                 <div className="chat-typing">

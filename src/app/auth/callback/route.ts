@@ -37,7 +37,7 @@ export async function GET(request: Request) {
             const nome = (user.user_metadata?.nome as string) || user.email.split('@')[0]
             sendEmail({
               to: user.email,
-              subject: 'Bem-vindo a LexAI — seu trial de 7 dias esta ativo',
+              subject: 'Bem-vindo a Pralvex — seu trial de 7 dias esta ativo',
               html: welcomeEmailHtml(nome),
             }).catch(() => { /* never block auth on email failure */ })
             events.signup(user.id, user.email).catch(() => { /* silent */ })

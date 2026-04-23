@@ -8,7 +8,7 @@ import {
   Clipboard,
   Sparkles,
 } from 'lucide-react'
-import ConfidenceBadge, { PoweredByLexAI } from '@/components/ConfidenceBadge'
+import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 
 interface FundamentoReforma {
@@ -275,7 +275,7 @@ export default function RecursosPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {recurso.confianca && <ConfidenceBadge confianca={recurso.confianca} />}
-                <PoweredByLexAI />
+                <PoweredByPralvex />
               </div>
               <button
                 onClick={() => { setRecurso(null); setDecisao('') }}

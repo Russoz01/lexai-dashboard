@@ -24,7 +24,7 @@ import { LexHeroStage, GlyphReveal } from '@/components/ui/lex-hero-stage'
 import { Reveal, WordReveal } from '@/components/ui/reveal'
 
 /* ════════════════════════════════════════════════════════════════════
- * LexAI — Landing v9 "Editorial 3D" (2026-04-19)
+ * Pralvex — Landing v9 "Editorial 3D" (2026-04-19)
  * ────────────────────────────────────────────────────────────────────
  * Reescrita completa baseada no brain Pralvex:
  *
@@ -43,7 +43,7 @@ import { Reveal, WordReveal } from '@/components/ui/reveal'
  *  - Persona Renato (52, conservative, anti-hype): vocabulario "peca, Provimento"
  *  - Anti-positioning vs ChatGPT (compliance-first, nao hype-first)
  *  - Anchor competitivo: Astrea R$1.379 x usuario quebra a 9 advs
- *  - Numero correto: 22 agentes (14 prontos + 8 em onda), NAO 23
+ *  - Numero correto: 27 agentes (v10.8, 6 novos: CNJ/Comparador/Risco/Flashcards/Plano/Casos)
  *
  * ARQUITETURA (12 secoes, hierarquia validada pelo brain)
  *   1. Nav glass progressivo
@@ -51,7 +51,7 @@ import { Reveal, WordReveal } from '@/components/ui/reveal'
  *   3. Trust strip
  *   4. Areas marquee (9 areas)
  *   5. Manifesto editorial (anti-positioning, 3 pilares)
- *   6. Agentes bento (catalog.ts: 22 agentes + 3 modulos)
+ *   6. Agentes bento (catalog.ts: 27 agentes + 4 modulos)
  *   7. Comparativo vs ChatGPT (linhas honestas)
  *   8. Provimento 205 block (compliance-first big-number)
  *   9. Pricing (3 tiers + toggle anual)
@@ -99,7 +99,7 @@ export default function LandingPage() {
               />
             </div>
             <span className="font-serif text-[15px] tracking-tight text-white">
-              LexAI
+              Pralvex
             </span>
           </Link>
 
@@ -171,7 +171,7 @@ export default function LandingPage() {
         >
           <div className="flex h-16 items-center justify-between px-6">
             <span className="font-serif text-[15px] tracking-tight text-white">
-              LexAI
+              Pralvex
             </span>
             <button
               type="button"
@@ -263,7 +263,7 @@ export default function LandingPage() {
 
           <Reveal delay={0.85}>
             <p className="mx-auto mt-9 max-w-2xl text-balance text-[16px] leading-[1.65] text-white/70 md:text-[17px]">
-              Vinte e dois agentes treinados em PJe, Provimentos e rotina de
+              Vinte e sete agentes treinados em PJe, Provimentos e rotina de
               escritório brasileiro. CRM jurídico, jurimetria e marketing
               OAB-compliant — no lugar de cinco contratos diferentes.
             </p>
@@ -290,7 +290,7 @@ export default function LandingPage() {
                 className="inline-flex h-13 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-8 py-3.5 text-[14px] font-medium text-white backdrop-blur transition hover:border-white/35 hover:bg-white/[0.08]"
               >
                 <CalendarCheck className="size-4" strokeWidth={1.75} />
-                Ver os 22 agentes
+                Ver os 27 agentes
               </Link>
             </div>
           </Reveal>
@@ -385,11 +385,11 @@ export default function LandingPage() {
                   />
                 </div>
                 <span className="font-serif text-[15px] tracking-tight text-white">
-                  LexAI
+                  Pralvex
                 </span>
               </Link>
               <p className="mt-4 max-w-xs text-[13.5px] leading-[1.6] text-white/55">
-                Sistema operacional jurídico. 22 agentes + CRM + jurimetria em
+                Sistema operacional jurídico. 27 agentes + CRM + jurimetria em
                 uma única plataforma — no lugar de cinco contratos.
               </p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55">
@@ -451,9 +451,9 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-white/[0.06] pt-6 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/45">
-            <div>© MMXXVI · LexAI — uma marca Pralvex</div>
+            <div>© MMXXVI · Pralvex</div>
             <div className="flex items-center gap-4">
-              <span>contato@vanixcorp.com</span>
+              <span>contato@pralvex.com</span>
               <span className="size-1 rounded-full bg-white/20" />
               <span>Ituverava, SP · Brasil</span>
             </div>
