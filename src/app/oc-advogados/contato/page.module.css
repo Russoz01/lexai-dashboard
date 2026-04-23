@@ -1,0 +1,570 @@
+/* ══════════════════════════════════════════════════════════════
+   OC Advogados — Contato (Contact) page
+   ══════════════════════════════════════════════════════════════ */
+
+.root {
+  position: relative;
+  z-index: 1;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.section {
+  padding: 96px 0;
+  position: relative;
+}
+
+.sectionHead {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 56px;
+}
+
+.sectionRule {
+  max-width: 720px;
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(191, 166, 142, 0.22) 30%,
+    rgba(191, 166, 142, 0.22) 70%,
+    transparent
+  );
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 22px;
+}
+
+.eyebrowRule {
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--stone);
+  opacity: 0.55;
+}
+
+.h1 {
+  font-size: clamp(2.2rem, 5.2vw, 4.2rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 30px;
+}
+
+.h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.h2 {
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.lede {
+  font-size: clamp(16px, 1.5vw, 18px);
+  line-height: 1.75;
+  color: var(--text-secondary);
+  max-width: 660px;
+  letter-spacing: 0.005em;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.revealVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  padding: 180px 0 100px;
+  overflow: hidden;
+}
+
+.heroGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 50% at 70% 40%,
+    rgba(191, 166, 142, 0.08),
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   OFFICES GRID
+   ══════════════════════════════════════════════════════════════ */
+.officesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.officeCard {
+  position: relative;
+  padding: 40px 36px;
+  background: rgba(24, 40, 46, 0.52);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  border: 1px solid rgba(191, 166, 142, 0.12);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.officeCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(191, 166, 142, 0.28);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
+}
+
+.officeCardHq {
+  border-top: 2px solid var(--stone);
+}
+
+.officeBadge {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--stone);
+  padding: 5px 12px;
+  background: rgba(191, 166, 142, 0.1);
+  border: 1px solid rgba(191, 166, 142, 0.24);
+  border-radius: 2px;
+}
+
+.officeHead {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(191, 166, 142, 0.1);
+}
+
+.officeIndex {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.officeCity {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.officeState {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  padding: 3px 8px;
+  background: rgba(191, 166, 142, 0.06);
+  border-radius: 2px;
+}
+
+.officeInfo {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.officeInfoItem {
+  display: flex;
+  gap: 14px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+.officeInfoItem > i {
+  color: var(--stone);
+  font-size: 15px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+
+.officeInfoItem > span {
+  min-width: 0;
+  flex: 1;
+}
+
+.officeCep {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.officeLink {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.18s ease;
+}
+
+.officeLink:hover {
+  color: var(--text-primary);
+}
+
+.officeActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  border-top: 1px solid rgba(191, 166, 142, 0.08);
+}
+
+.officeCtaWa {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #25D366;
+  color: #0a1a10;
+  border-radius: 3px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: filter 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+}
+
+.officeCtaWa:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.officeCtaWa > i {
+  font-size: 15px;
+}
+
+.officeCtaMaps {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: transparent;
+  border: 1px solid rgba(191, 166, 142, 0.24);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.officeCtaMaps:hover {
+  background: rgba(191, 166, 142, 0.06);
+  border-color: var(--stone);
+}
+
+.officeCtaMaps > i {
+  font-size: 14px;
+  color: var(--stone);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CHANNELS (email / whatsapp / instagram)
+   ══════════════════════════════════════════════════════════════ */
+.channelsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.channelCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 36px 28px 28px;
+  background: rgba(24, 40, 46, 0.52);
+  border: 1px solid rgba(191, 166, 142, 0.12);
+  border-radius: 6px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease, background 0.3s ease;
+}
+
+.channelCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(191, 166, 142, 0.32);
+  background: rgba(24, 40, 46, 0.72);
+}
+
+.channelIcon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(191, 166, 142, 0.08);
+  border: 1px solid rgba(191, 166, 142, 0.2);
+  border-radius: 3px;
+  color: var(--stone);
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.channelLabel {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.channelValue {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--text-primary);
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.channelAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--stone);
+  transition: gap 0.22s ease;
+}
+
+.channelCard:hover .channelAction {
+  gap: 10px;
+}
+
+.channelAction > i {
+  font-size: 13px;
+  transition: transform 0.22s ease;
+}
+
+.channelCard:hover .channelAction > i {
+  transform: translate(2px, -2px);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FINAL CTA
+   ══════════════════════════════════════════════════════════════ */
+.finalCta {
+  position: relative;
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 72px 48px;
+  background: linear-gradient(
+    180deg,
+    rgba(24, 40, 46, 0.72) 0%,
+    rgba(14, 24, 28, 0.82) 100%
+  );
+  border: 1px solid rgba(191, 166, 142, 0.18);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.finalCtaGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 60% at 50% 0%,
+    rgba(191, 166, 142, 0.12),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.finalCta > *:not(.finalCtaGlow) {
+  position: relative;
+  z-index: 1;
+}
+
+.finalCtaTitle {
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 18px;
+}
+
+.finalCtaTitle em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.finalCtaLede {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto 32px;
+}
+
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 30px;
+  background: #25D366;
+  color: #0a1a10;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: transform 0.22s ease, box-shadow 0.24s ease, filter 0.2s ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 6px 18px rgba(37, 211, 102, 0.3);
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.ctaPrimary > i {
+  font-size: 18px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .section {
+    padding: 72px 0;
+  }
+  .hero {
+    padding: 140px 0 72px;
+  }
+  .channelsGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+  .section {
+    padding: 56px 0;
+  }
+  .hero {
+    padding: 120px 0 56px;
+  }
+  .heroInner {
+    padding: 0 20px;
+  }
+  .officesGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .officeCard {
+    padding: 32px 24px;
+  }
+  .officeBadge {
+    top: 14px;
+    right: 14px;
+    font-size: 9px;
+  }
+  .officeCity {
+    font-size: 22px;
+  }
+  .officeActions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .officeCtaWa,
+  .officeCtaMaps {
+    flex: none;
+    width: 100%;
+  }
+  .finalCta {
+    padding: 52px 24px;
+  }
+}

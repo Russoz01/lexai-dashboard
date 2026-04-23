@@ -83,18 +83,28 @@ export default function ConfiguracoesPage() {
   const [msg, setMsg]         = useState('')
   const [erro, setErro]       = useState('')
 
-  // Dynamic plan from localStorage
+  // Plan resolvido server-side (antes: localStorage — exploitavel via DevTools)
   const planoMap: Record<string, { nome: string; preco: number }> = {
     starter: { nome: 'Escritório', preco: 1399 },
+    escritorio: { nome: 'Escritório', preco: 1399 },
     pro: { nome: 'Firma', preco: 1459 },
+    firma: { nome: 'Firma', preco: 1459 },
     enterprise: { nome: 'Enterprise', preco: 1599 },
   }
-  const [planoId, setPlanoId] = useState('enterprise')
+  const [planoId, setPlanoId] = useState<string>('starter')
   useEffect(() => {
-    const saved = localStorage.getItem('lexai-plano')
-    if (saved && planoMap[saved]) setPlanoId(saved)
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/user/plan', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json() as { plan?: string }
+        if (!cancelled && data.plan && planoMap[data.plan]) setPlanoId(data.plan)
+      } catch { /* silent */ }
+    })()
+    return () => { cancelled = true }
   }, [])
-  const planoAtual = planoMap[planoId] || planoMap.enterprise
+  const planoAtual = planoMap[planoId] || planoMap.starter
 
   // Perfil
   const [nome, setNome]       = useState('')
@@ -383,7 +393,19 @@ export default function ConfiguracoesPage() {
             </div>
             <div style={{ marginTop:14, display:'flex', gap:8 }}>
               <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.location.href='/dashboard/planos'}><ArrowUpCircle size={14} strokeWidth={1.75} aria-hidden /> Gerenciar plano</button>
-              <button className="btn-ghost" style={{ flex:1 }} onClick={() => window.open('https://billing.stripe.com', '_blank')}><Receipt size={14} strokeWidth={1.75} aria-hidden /> Ver faturas</button>
+              <button
+                className="btn-ghost" style={{ flex:1 }}
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/stripe/portal', { method: 'POST' })
+                    const data = await res.json() as { url?: string }
+                    if (data.url) window.location.href = data.url
+                    else { setErro('Não foi possível abrir o portal de faturas.'); setTimeout(() => setErro(''), 3500) }
+                  } catch { setErro('Erro ao abrir portal.'); setTimeout(() => setErro(''), 3500) }
+                }}
+              >
+                <Receipt size={14} strokeWidth={1.75} aria-hidden /> Ver faturas
+              </button>
             </div>
           </div>
         </div>
@@ -518,7 +540,7 @@ export default function ConfiguracoesPage() {
           <div className="section-card" style={{ padding:'16px 20px' }}>
             <div style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)', marginBottom:10 }}>Perguntas Frequentes</div>
             {[
-              { q:'Como o agente resumidor funciona?', a:'Cole qualquer documento jurídico no campo de texto. A IA analisa com Gemini e retorna um resumo estruturado com pontos principais e riscos.' },
+              { q:'Como o agente resumidor funciona?', a:'Cole qualquer documento jurídico no campo de texto. A IA analisa com Claude (Anthropic) e retorna um resumo estruturado com pontos principais e riscos.' },
               { q:'Meus documentos ficam armazenados?', a:'Sim, todos os documentos ficam salvos em sua conta no Supabase com criptografia. Somente você tem acesso.' },
               { q:'Como alterar meu plano?', a:'Acesse a aba Preferências e clique em "Fazer upgrade" para ver os planos disponíveis.' },
             ].map((faq, i) => (

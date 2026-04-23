@@ -8,6 +8,7 @@ import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 import TopoBackground from '@/components/TopoBackground'
 import { ToastContainer } from '@/components/Toast'
+import { ConfirmDialogContainer } from '@/components/ConfirmDialog'
 import CommandPalette from '@/components/CommandPalette'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -70,8 +71,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
 
-      {/* Global toast notifications */}
+      {/* Global toast notifications + confirm dialog */}
       <ToastContainer />
+      <ConfirmDialogContainer />
       <CommandPalette />
 
       <style>{`

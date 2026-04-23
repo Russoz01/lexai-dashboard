@@ -20,7 +20,7 @@ import { Reveal } from '@/components/ui/reveal'
 const faqs = [
   {
     q: 'Os 22 agentes são especializados em Direito brasileiro?',
-    a: 'Sim. CF/88, CLT, CDC, CPC, CC, legislação tributária, previdenciária e regulatória. Base jurisprudencial cobre STF, STJ, TRFs, TJs estaduais e tribunais superiores trabalhistas. Hoje 14 agentes estão prontos para uso; os 8 restantes (parecerista, revisor, contestador, recursos, audiência, estrategista, atendimento e marketing IA) entram em onda nos próximos meses.',
+    a: 'Sim. CF/88, CLT, CDC, CPC, CC, legislação tributária, previdenciária e regulatória. Base jurisprudencial cobre STF, STJ, TRFs, TJs estaduais e tribunais superiores trabalhistas. Os 22 agentes estão ativos hoje — Resumidor, Pesquisador, Redator, Calculador, Legislação, Contestador, Recursos, Audiência, Parecerista, Revisor, Estrategista, Atendimento, Marketing IA, Professor, Simulado, Tradutor, Negociador, Consultor, Modelos, Financeiro, Prazos e Compliance.',
   },
   {
     q: 'Como funciona a validação contra o Provimento 205/2021 da OAB?',

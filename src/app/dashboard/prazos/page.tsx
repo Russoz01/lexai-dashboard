@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { AlertTriangle, Calendar, Check, Clock, Hourglass, Plus, Trash2, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
+import { confirmDialog } from '@/components/ConfirmDialog'
 
 interface Prazo {
   id: string; titulo: string; descricao: string | null; data_limite: string
@@ -70,7 +71,14 @@ export default function PrazosPage() {
   }
 
   async function deletar(id: string) {
-    if (!confirm('Excluir este prazo?')) return
+    const ok = await confirmDialog({
+      title: 'Excluir este prazo',
+      description: 'O prazo será removido permanentemente da sua agenda. Essa ação não pode ser desfeita.',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Manter',
+      variant: 'danger',
+    })
+    if (!ok) return
     await supabase.from('prazos').delete().eq('id', id); await carregar()
   }
 

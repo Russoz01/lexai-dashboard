@@ -22,6 +22,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { extractPdfWithMeta } from '@/lib/pdf-parser'
+import { confirmDialog } from '@/components/ConfirmDialog'
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * LexAI — Chat Orquestrador
@@ -217,8 +218,15 @@ export default function ChatPage() {
     }
   }
 
-  function limparConversa() {
-    if (!confirm('Limpar toda a conversa?')) return
+  async function limparConversa() {
+    const ok = await confirmDialog({
+      title: 'Limpar a conversa',
+      description: 'Essa ação remove todas as mensagens desta sessão. Não é possível desfazer.',
+      confirmLabel: 'Limpar',
+      cancelLabel: 'Manter',
+      variant: 'danger',
+    })
+    if (!ok) return
     setMessages([])
     setErro('')
   }

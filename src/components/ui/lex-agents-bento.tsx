@@ -356,17 +356,17 @@ export function LexAgentsBento() {
             {agentList.length} agentes &middot; {modulesList.length} modulos
           </div>
           <h2 className="text-balance text-4xl font-medium tracking-tight text-white md:text-5xl">
-            {ready.length} prontos hoje.{' '}
+            {ready.length} agentes,{' '}
             <span
               className="bg-gradient-to-br from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent"
               style={{ WebkitBackgroundClip: 'text' }}
             >
-              {upcoming.length} em breve
+              todos ativos
             </span>
             .
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-balance text-white/65">
-            Especialistas treinados em funcoes especificas do Direito brasileiro,
+            Especialistas treinados em funções específicas do Direito brasileiro,
             com CRM, jurimetria e marketing OAB-compliant no mesmo lugar.
           </p>
         </motion.div>
@@ -374,7 +374,7 @@ export function LexAgentsBento() {
         {/* ── Modulos (3 cards grandes com preview) ──────────────── */}
         <div className="mb-3 flex items-center justify-between">
           <div className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/45">
-            Plataforma &mdash; {modulesList.length} modulos
+            Plataforma &mdash; {modulesList.length} módulos
           </div>
           <div className="h-px flex-1 ml-4 bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
         </div>
@@ -388,7 +388,7 @@ export function LexAgentsBento() {
         <div className="mb-3 flex items-center justify-between">
           <div className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-[#bfa68e]">
             <span className="mr-2 inline-block size-1.5 rounded-full bg-emerald-400/80 align-middle" />
-            Agentes prontos &mdash; {ready.length} disponiveis
+            Agentes ativos &mdash; {ready.length} disponíveis
           </div>
           <div className="h-px flex-1 ml-4 bg-gradient-to-r from-[#bfa68e]/20 via-white/5 to-transparent" />
         </div>
@@ -398,19 +398,23 @@ export function LexAgentsBento() {
           ))}
         </div>
 
-        {/* ── Agentes em breve ─────────────────────────────────── */}
-        <div className="mb-3 flex items-center justify-between">
-          <div className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/45">
-            <Clock3 className="mr-2 inline size-3 align-[-2px]" strokeWidth={2} />
-            Em desenvolvimento &mdash; {upcoming.length} chegando
-          </div>
-          <div className="h-px flex-1 ml-4 bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {upcoming.map((a, i) => (
-            <AgentCard key={a.slug} item={a} i={i} upcoming />
-          ))}
-        </div>
+        {/* ── Agentes em breve (só renderiza se realmente houver algum) ─── */}
+        {upcoming.length > 0 && (
+          <>
+            <div className="mb-3 flex items-center justify-between">
+              <div className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/45">
+                <Clock3 className="mr-2 inline size-3 align-[-2px]" strokeWidth={2} />
+                Em desenvolvimento &mdash; {upcoming.length} chegando
+              </div>
+              <div className="h-px flex-1 ml-4 bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {upcoming.map((a, i) => (
+                <AgentCard key={a.slug} item={a} i={i} upcoming />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* ── Footer stats ─────────────────────────────────────── */}
         <div className="mt-16 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-y border-white/10 py-6">

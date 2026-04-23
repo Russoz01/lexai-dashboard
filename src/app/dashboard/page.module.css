@@ -8,6 +8,27 @@
 
 .dashAtelier {
   position: relative;
+  isolation: isolate;
+}
+
+/* Grain + ambient glow atmosphere layer (dashboard premium feel) */
+.dashAtelier::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 38% at 0% -10%, rgba(191,166,142,0.055), transparent 60%),
+    radial-gradient(50% 35% at 100% 8%, rgba(191,166,142,0.04), transparent 60%);
+  animation: dashAtelierDrift 24s ease-in-out infinite alternate;
+}
+@keyframes dashAtelierDrift {
+  0%   { transform: translate3d(-6px, -4px, 0); }
+  100% { transform: translate3d(10px, 6px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashAtelier::before { animation: none; }
 }
 
 /* ── Serial label ─────────────────────────────────────────── */
@@ -677,8 +698,33 @@
   text-decoration: none;
   border-right: 1px solid rgba(191, 166, 142, 0.08);
   border-top: 1px solid transparent;
-  transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 0.28s ease, border-color 0.28s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.provaCell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(191,166,142,0.85), transparent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.provaCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(200px 140px at var(--mx, 50%) var(--my, 40%), rgba(191,166,142,0.10), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
 }
 
 .provaCell:last-child {
@@ -689,7 +735,14 @@
   background: var(--hover);
   border-right-color: rgba(191, 166, 142, 0.2);
   border-top-color: rgba(191, 166, 142, 0.2);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+}
+.provaCell:hover::before { transform: scaleX(1); }
+.provaCell:hover::after { opacity: 1; }
+.provaCell:hover .provaRoman { color: var(--accent); letter-spacing: 2px; }
+.provaCell:hover .provaValue,
+.provaCell:hover .provaValueMoney {
+  text-shadow: 0 0 24px rgba(191,166,142,0.14);
 }
 
 .provaRoman {
@@ -699,6 +752,7 @@
   color: var(--text-muted);
   letter-spacing: 1.4px;
   margin-bottom: 22px;
+  transition: color 0.32s ease, letter-spacing 0.32s ease;
 }
 
 .provaValue {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Bell, HelpCircle, Menu } from 'lucide-react'
 import OnboardingModal from './OnboardingModal'
 
@@ -18,6 +19,7 @@ interface HeaderProps {
 }
 
 export default function Header({ userName = 'Usuario', userRole = 'LexAI', onToggleSidebar }: HeaderProps) {
+  const router = useRouter()
   const [time, setTime] = useState('')
   const [showHelp, setShowHelp] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -66,7 +68,12 @@ export default function Header({ userName = 'Usuario', userRole = 'LexAI', onTog
           <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
         </button>
 
-        <button className="notif-bell" title="Notificações" onClick={() => window.location.href='/dashboard/prazos'}>
+        <button
+          className="notif-bell"
+          title="Notificações — ver prazos"
+          aria-label="Ver prazos e notificações"
+          onClick={() => router.push('/dashboard/prazos')}
+        >
           <Bell size={16} strokeWidth={1.75} aria-hidden />
           <span className="notif-dot" />
         </button>

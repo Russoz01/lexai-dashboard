@@ -37,6 +37,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
+import { confirmDialog } from '@/components/ConfirmDialog'
 
 interface Lancamento {
   id: string
@@ -417,7 +418,14 @@ export default function FinanceiroPage() {
   }
 
   async function deletar(id: string) {
-    if (!confirm('Excluir este lançamento?')) return
+    const ok = await confirmDialog({
+      title: 'Excluir este lançamento',
+      description: 'O registro financeiro será removido da sua base. Essa ação não pode ser desfeita.',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Manter',
+      variant: 'danger',
+    })
+    if (!ok) return
     await supabase.from('financeiro').delete().eq('id', id); await carregar()
   }
 

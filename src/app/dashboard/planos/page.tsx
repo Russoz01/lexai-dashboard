@@ -7,9 +7,10 @@
  * Segue padrão visual da landing / dashboard / CRM.
  * ═════════════════════════════════════════════════════════════ */
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
-  Check, CheckCircle2, Clock, CreditCard, Gem, Headphones, MinusCircle,
+  AlertCircle, Check, CheckCircle2, Clock, CreditCard, Gem, Headphones, Loader2, MinusCircle,
   Rocket, RotateCcw, ShieldCheck, Smile, Sparkles, Star, TrendingUp, X,
   XCircle, Zap, type LucideIcon,
 } from 'lucide-react'
@@ -21,7 +22,6 @@ interface Plano {
   nome: string
   tagline: string
   precoMensal: number
-  stripeLink: string
   economiaReal: string
   features: { label: string; disponivel: boolean }[]
 }
@@ -30,7 +30,6 @@ const PLANOS_BASE: Plano[] = [
   {
     id: 'starter', nome: 'Escritório', tagline: '1–5 advogados',
     precoMensal: 1399,
-    stripeLink: 'https://buy.stripe.com/test_dRm4gy6gG1Nb2T14ZA2oE01',
     economiaReal: 'Recupere 12h por semana em pesquisas por advogado',
     features: [
       { label: '5 agentes (Resumidor, Pesquisador, Redator, Calculador, Monitor Legislativo)', disponivel: true },
@@ -45,7 +44,6 @@ const PLANOS_BASE: Plano[] = [
   {
     id: 'pro', nome: 'Firma', tagline: '6–15 advogados · Mais escolhido',
     precoMensal: 1459,
-    stripeLink: 'https://buy.stripe.com/test_9B69ASawWajH5192Rs2oE02',
     economiaReal: 'Capacidade de atendimento +40% sem contratar',
     features: [
       { label: 'Todos os 22 agentes especializados', disponivel: true },
@@ -60,7 +58,6 @@ const PLANOS_BASE: Plano[] = [
   {
     id: 'enterprise', nome: 'Enterprise', tagline: '16+ advogados',
     precoMensal: 1599,
-    stripeLink: 'https://buy.stripe.com/test_cNicN434u0J7fFN1No2oE03',
     economiaReal: 'ROI de 8x sobre o investimento mensal',
     features: [
       { label: 'Agentes customizados para o escritório', disponivel: true },
@@ -114,22 +111,88 @@ function getCtaLabel(planoId: PlanoId, planoAtual: PlanoId, precoPlano: number, 
   return 'Mudar para este plano'
 }
 
-export default function PlanosPage() {
-  const [planoAtual, setPlanoAtual] = useState<PlanoId>('enterprise')
+function PlanosPageInner() {
+  const searchParams = useSearchParams()
+  const [planoAtual, setPlanoAtual] = useState<PlanoId>('starter')
+  const [loadingPlan, setLoadingPlan] = useState<PlanoId | null>(null)
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [toast, setToast] = useState<{ kind: 'success' | 'error' | 'info'; msg: string } | null>(null)
 
+  // Server-side plan source of truth (antes era localStorage exploitavel)
   useEffect(() => {
-    const saved = localStorage.getItem('lexai-plano') as PlanoId | null
-    if (saved === 'starter' || saved === 'pro' || saved === 'enterprise') setPlanoAtual(saved)
-    else localStorage.setItem('lexai-plano', 'enterprise')
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/user/plan', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json() as { plan?: string }
+        const normalized = data.plan === 'firma' ? 'pro'
+          : data.plan === 'escritorio' ? 'starter'
+          : data.plan === 'enterprise' ? 'enterprise'
+          : data.plan === 'pro' ? 'pro'
+          : data.plan === 'starter' ? 'starter'
+          : null
+        if (!cancelled && normalized) setPlanoAtual(normalized as PlanoId)
+      } catch { /* silent */ }
+    })()
+    return () => { cancelled = true }
   }, [])
 
+  // Feedback Stripe Checkout via querystring
+  useEffect(() => {
+    const checkout = searchParams.get('checkout')
+    if (checkout === 'success') {
+      setToast({ kind: 'success', msg: 'Assinatura criada. Obrigado por confiar na LexAI.' })
+    } else if (checkout === 'cancelled') {
+      setToast({ kind: 'info', msg: 'Checkout cancelado. Pode tentar de novo quando quiser.' })
+    }
+    if (!checkout) return
+    const t = setTimeout(() => setToast(null), 5000)
+    return () => clearTimeout(t)
+  }, [searchParams])
+
+  async function iniciarCheckout(plano: PlanoId) {
+    setLoadingPlan(plano)
+    setToast(null)
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: plano }),
+      })
+      const data = await res.json() as { url?: string; error?: string }
+      if (res.ok && data.url) {
+        window.location.href = data.url
+        return
+      }
+      if (data.error === 'unauthenticated') {
+        window.location.href = `/login?next=${encodeURIComponent('/dashboard/planos')}`
+        return
+      }
+      setToast({ kind: 'error', msg: 'Não foi possível abrir o checkout. Tente novamente em instantes.' })
+    } catch {
+      setToast({ kind: 'error', msg: 'Erro de conexão. Verifique sua internet e tente de novo.' })
+    } finally {
+      setLoadingPlan(null)
+    }
+  }
+
   async function abrirPortal() {
+    setPortalLoading(true)
+    setToast(null)
     try {
       const res = await fetch('/api/stripe/portal', { method: 'POST' })
-      const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else alert('Não foi possível abrir o portal. Tente novamente.')
-    } catch { alert('Erro ao abrir portal de pagamento') }
+      const data = await res.json() as { url?: string }
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+      setToast({ kind: 'error', msg: 'Não foi possível abrir o portal. Tente novamente.' })
+    } catch {
+      setToast({ kind: 'error', msg: 'Erro ao abrir o portal de pagamento.' })
+    } finally {
+      setPortalLoading(false)
+    }
   }
 
   const precoAtual = PLANOS_BASE.find(p => p.id === planoAtual)?.precoMensal || 0
@@ -137,6 +200,33 @@ export default function PlanosPage() {
 
   return (
     <div style={{ padding: '32px 36px 56px', maxWidth: 1400, margin: '0 auto' }}>
+      {/* TOAST INLINE (checkout feedback + portal erro) */}
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed', top: 96, left: '50%', transform: 'translateX(-50%)',
+            zIndex: 50, maxWidth: 460, padding: '12px 18px', borderRadius: 12,
+            background: toast.kind === 'success'
+              ? 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.05))'
+              : toast.kind === 'error'
+                ? 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.05))'
+                : 'linear-gradient(135deg, rgba(212,174,106,0.18), rgba(212,174,106,0.05))',
+            border: `1px solid ${toast.kind === 'success' ? 'rgba(16,185,129,0.35)' : toast.kind === 'error' ? 'rgba(239,68,68,0.35)' : 'rgba(212,174,106,0.35)'}`,
+            color: 'var(--text-primary)',
+            display: 'flex', alignItems: 'center', gap: 10, fontSize: 13,
+            backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
+            boxShadow: '0 20px 48px rgba(0,0,0,0.4)',
+          }}
+        >
+          {toast.kind === 'success' && <CheckCircle2 size={16} strokeWidth={2} style={{ color: '#10b981', flexShrink: 0 }} aria-hidden />}
+          {toast.kind === 'error' && <AlertCircle size={16} strokeWidth={2} style={{ color: '#ef4444', flexShrink: 0 }} aria-hidden />}
+          {toast.kind === 'info' && <Sparkles size={16} strokeWidth={2} style={{ color: 'var(--accent)', flexShrink: 0 }} aria-hidden />}
+          <span>{toast.msg}</span>
+        </div>
+      )}
+
       {/* HEADER */}
       <header style={{ textAlign: 'center', marginBottom: 36 }}>
         <div style={{
@@ -339,21 +429,14 @@ export default function PlanosPage() {
 
                 {/* CTA */}
                 <button
-                  disabled={isCurrentPlan}
-                  onClick={() => {
-                    if (!isCurrentPlan) {
-                      if (plano.stripeLink) {
-                        window.open(plano.stripeLink, '_blank')
-                        setPlanoAtual(plano.id)
-                        localStorage.setItem('lexai-plano', plano.id)
-                      }
-                    }
-                  }}
+                  type="button"
+                  disabled={isCurrentPlan || loadingPlan !== null}
+                  onClick={() => { if (!isCurrentPlan) void iniciarCheckout(plano.id) }}
                   style={{
                     width: '100%', padding: '13px 16px', borderRadius: 10,
                     fontFamily: 'var(--font-mono, ui-monospace), monospace',
                     fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700,
-                    cursor: isCurrentPlan ? 'default' : 'pointer',
+                    cursor: isCurrentPlan || loadingPlan !== null ? 'default' : 'pointer',
                     transition: 'all 0.2s ease',
                     background: isCurrentPlan
                       ? 'rgba(191,166,142,0.06)'
@@ -372,10 +455,16 @@ export default function PlanosPage() {
                         : '1px solid rgba(212,174,106,0.38)',
                     boxShadow: isDestaque && !isCurrentPlan ? '0 12px 32px rgba(212,174,106,0.22)' : 'none',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    opacity: loadingPlan !== null && loadingPlan !== plano.id ? 0.5 : 1,
                   }}
                 >
-                  {isCurrentPlan && <CheckCircle2 size={13} strokeWidth={2} aria-hidden />}
-                  {getCtaLabel(plano.id, planoAtual, plano.precoMensal, precoAtual)}
+                  {loadingPlan === plano.id ? (
+                    <><Loader2 size={13} strokeWidth={2} className="animate-spin" aria-hidden /> Redirecionando...</>
+                  ) : isCurrentPlan ? (
+                    <><CheckCircle2 size={13} strokeWidth={2} aria-hidden /> {getCtaLabel(plano.id, planoAtual, plano.precoMensal, precoAtual)}</>
+                  ) : (
+                    <>{getCtaLabel(plano.id, planoAtual, plano.precoMensal, precoAtual)}</>
+                  )}
                 </button>
               </div>
             </div>
@@ -413,19 +502,20 @@ export default function PlanosPage() {
           </div>
         </div>
         <button
-          type="button" onClick={abrirPortal}
+          type="button" onClick={abrirPortal} disabled={portalLoading}
           style={{
             padding: '12px 18px', borderRadius: 10, flexShrink: 0,
             background: 'linear-gradient(135deg, #f5e8d3, #bfa68e)',
             color: '#0a0a0a', border: '1px solid rgba(212,174,106,0.5)',
             fontFamily: 'var(--font-mono, ui-monospace), monospace',
             fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700,
-            cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
+            cursor: portalLoading ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
             boxShadow: '0 10px 28px rgba(212,174,106,0.22)',
+            opacity: portalLoading ? 0.7 : 1,
           }}
         >
-          <CreditCard size={13} strokeWidth={2} aria-hidden />
-          Abrir portal Stripe
+          {portalLoading ? <Loader2 size={13} strokeWidth={2} className="animate-spin" aria-hidden /> : <CreditCard size={13} strokeWidth={2} aria-hidden />}
+          {portalLoading ? 'Abrindo...' : 'Abrir portal Stripe'}
         </button>
       </div>
 
@@ -549,7 +639,7 @@ export default function PlanosPage() {
         </div>
       </div>
 
-      {/* TESTIMONIALS */}
+      {/* OFICIO INTERNO — trust block honesto (substituiu testemunhos fake) */}
       <div style={{
         padding: 28, borderRadius: 14, marginBottom: 24,
         background: 'rgba(15,15,15,0.82)',
@@ -562,71 +652,83 @@ export default function PlanosPage() {
             color: 'var(--accent)', marginBottom: 8,
             display: 'inline-flex', alignItems: 'center', gap: 8,
           }}>
-            <Sparkles size={11} strokeWidth={2} aria-hidden /> Quem já usa
+            <Sparkles size={11} strokeWidth={2} aria-hidden /> Ofício interno
           </div>
           <div style={{
             fontFamily: "'Playfair Display', Georgia, serif",
             fontSize: 28, fontStyle: 'italic', fontWeight: 500,
             color: 'var(--text-primary)', letterSpacing: '-0.01em',
           }}>
-            resultados reais de quem testou
+            como o atelier funciona por dentro
+          </div>
+          <div style={{
+            marginTop: 10, fontSize: 13, color: 'var(--text-muted)', maxWidth: 560, margin: '10px auto 0',
+          }}>
+            LexAI é nova. No lugar de depoimentos, estes são os três pactos que sustentam o produto hoje — os mesmos que você poderá auditar a qualquer momento dentro da conta.
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="lp-test-grid">
           {[
             {
-              nome: 'Mariana Castro',
-              cargo: 'Advogada Civil · SP',
-              foto: 'MC',
-              texto: 'Em 2 semanas economizei mais de 20 horas que eu gastava em pesquisa de jurisprudência. O Pesquisador encontra acórdãos que eu nem sabia que existiam.',
+              numero: 'I',
+              titulo: 'Ferramenta de apoio',
+              corpo: 'Toda saída termina com revisão humana obrigatória por profissional habilitado. O fluxo se recusa quando a confiança cai abaixo do limite — exatamente como o Provimento 205 exige.',
+              icon: ShieldCheck,
             },
             {
-              nome: 'Dr. Pedro Henrique',
-              cargo: 'Sócio · PHM Advogados',
-              foto: 'PH',
-              texto: 'O Calculador e o Monitor Legislativo mudaram a forma como gerenciamos prazos. Zero perda processual desde que adotamos a plataforma no escritório.',
+              numero: 'II',
+              titulo: 'Seus dados ficam seus',
+              corpo: 'Nenhum documento enviado treina o modelo. Isolamento por sessão, AES-256 em repouso, TLS 1.3 em trânsito e servidor em São Paulo (AWS sa-east-1). DPA assinado conforme LGPD.',
+              icon: Gem,
             },
             {
-              nome: 'Renata Lima',
-              cargo: 'Sócia · Lima Advocacia',
-              foto: 'RL',
-              texto: 'Substituiu 2 estagiários e ainda entrega mais rápido. O Redator gera petições que só precisam de pequenos ajustes. Investimento que se pagou em 1 mês.',
+              numero: 'III',
+              titulo: 'Compliance validado saída a saída',
+              corpo: 'Claims proibidos pela OAB são bloqueados antes da entrega. Audit log completo por usuário — você pode conferir cada validação quando quiser.',
+              icon: CheckCircle2,
             },
-          ].map((t, i) => (
-            <div key={i} style={{
-              padding: 20, borderRadius: 12,
-              background: 'rgba(10,10,10,0.55)',
-              border: '1px solid rgba(191,166,142,0.12)',
-              display: 'flex', flexDirection: 'column', gap: 14,
-            }}>
-              <div style={{ display: 'flex', gap: 2, color: 'var(--accent)' }}>
-                {Array.from({ length: 5 }).map((_, j) => (
-                  <Star key={j} size={12} strokeWidth={2} fill="currentColor" aria-hidden />
-                ))}
-              </div>
-              <div style={{
-                fontFamily: "'Playfair Display', Georgia, serif", fontStyle: 'italic',
-                fontSize: 15, color: 'var(--text-primary)', lineHeight: 1.55, fontWeight: 400,
+          ].map((t, i) => {
+            const Ico = t.icon
+            return (
+              <div key={i} style={{
+                padding: 22, borderRadius: 12,
+                background: 'rgba(10,10,10,0.55)',
+                border: '1px solid rgba(191,166,142,0.12)',
+                display: 'flex', flexDirection: 'column', gap: 14,
               }}>
-                &ldquo;{t.texto}&rdquo;
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 'auto' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{
+                    fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
+                    color: 'var(--accent)',
+                  }}>
+                    N° {t.numero}
+                  </div>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 999,
+                    background: 'rgba(191,166,142,0.08)',
+                    border: '1px solid rgba(191,166,142,0.28)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--accent)',
+                  }}>
+                    <Ico size={14} strokeWidth={2} aria-hidden />
+                  </div>
+                </div>
                 <div style={{
-                  width: 38, height: 38, borderRadius: 10,
-                  background: 'linear-gradient(135deg, #f5e8d3, #bfa68e)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#0a0a0a', fontWeight: 700, fontSize: 13,
-                  letterSpacing: '0.04em',
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: 20, fontWeight: 500, letterSpacing: '-0.01em',
+                  color: 'var(--text-primary)',
                 }}>
-                  {t.foto}
+                  {t.titulo}
                 </div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{t.nome}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.cargo}</div>
+                <div style={{
+                  fontSize: 13.5, color: 'var(--text-muted)', lineHeight: 1.6,
+                }}>
+                  {t.corpo}
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
@@ -710,10 +812,8 @@ export default function PlanosPage() {
         </div>
         <button
           type="button"
-          onClick={() => {
-            const link = PLANOS_BASE.find(p => p.id === destaqueId)?.stripeLink
-            if (link) window.open(link, '_blank')
-          }}
+          onClick={() => void iniciarCheckout(destaqueId)}
+          disabled={loadingPlan !== null}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
             padding: '16px 30px', borderRadius: 12,
@@ -723,10 +823,16 @@ export default function PlanosPage() {
             fontSize: 12, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase',
             border: '1px solid rgba(212,174,106,0.5)',
             boxShadow: '0 16px 42px rgba(212,174,106,0.28)',
-            cursor: 'pointer',
+            cursor: loadingPlan ? 'progress' : 'pointer',
+            opacity: loadingPlan ? 0.7 : 1,
+            transition: 'opacity 0.2s ease',
           }}
         >
-          <Rocket size={15} strokeWidth={1.75} aria-hidden />
+          {loadingPlan === destaqueId ? (
+            <Loader2 size={15} strokeWidth={1.75} aria-hidden className="anim-spin" />
+          ) : (
+            <Rocket size={15} strokeWidth={1.75} aria-hidden />
+          )}
           Começar 7 dias grátis
         </button>
         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 16 }}>
@@ -801,5 +907,13 @@ export default function PlanosPage() {
         }
       `}</style>
     </div>
+  )
+}
+
+export default function PlanosPage() {
+  return (
+    <Suspense fallback={<div className="page-content" aria-hidden />}>
+      <PlanosPageInner />
+    </Suspense>
   )
 }

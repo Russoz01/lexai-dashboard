@@ -1,0 +1,505 @@
+/* ══════════════════════════════════════════════════════════════
+   OC Advogados — Equipe (Team) page
+   Showcase page — push design to the max
+   ══════════════════════════════════════════════════════════════ */
+
+.root {
+  position: relative;
+  z-index: 1;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.section {
+  padding: 96px 0;
+  position: relative;
+}
+
+.sectionHead {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 64px;
+}
+
+.sectionRule {
+  max-width: 720px;
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(191, 166, 142, 0.22) 30%,
+    rgba(191, 166, 142, 0.22) 70%,
+    transparent
+  );
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 22px;
+}
+
+.eyebrowRule {
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--stone);
+  opacity: 0.55;
+}
+
+.h1 {
+  font-size: clamp(2.2rem, 5.2vw, 4.2rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 30px;
+}
+
+.h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.h2 {
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.lede {
+  font-size: clamp(16px, 1.5vw, 18px);
+  line-height: 1.75;
+  color: var(--text-secondary);
+  max-width: 660px;
+  letter-spacing: 0.005em;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.revealVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  padding: 180px 0 100px;
+  overflow: hidden;
+}
+
+.heroGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      ellipse 60% 50% at 30% 40%,
+      rgba(191, 166, 142, 0.08),
+      transparent 65%
+    );
+  pointer-events: none;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.heroStats {
+  display: flex;
+  gap: 48px;
+  margin-top: 56px;
+  padding-top: 36px;
+  border-top: 1px solid rgba(191, 166, 142, 0.12);
+}
+
+.heroStat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.heroStatVal {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--stone);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.heroStatLbl {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEADERSHIP GRID (2 large cards)
+   ══════════════════════════════════════════════════════════════ */
+.leadershipGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.leadershipCard {
+  position: relative;
+  padding: 56px 48px;
+  background: linear-gradient(
+    180deg,
+    rgba(24, 40, 46, 0.72) 0%,
+    rgba(14, 24, 28, 0.82) 100%
+  );
+  border: 1px solid rgba(191, 166, 142, 0.18);
+  border-radius: 6px;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease, box-shadow 0.35s ease;
+  overflow: hidden;
+}
+
+.leadershipCard:hover {
+  transform: translateY(-6px);
+  border-color: rgba(191, 166, 142, 0.35);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(191, 166, 142, 0.12) inset;
+}
+
+.leadershipCardGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 50% at 0% 0%,
+    rgba(191, 166, 142, 0.12),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.leadershipCard > *:not(.leadershipCardGlow) {
+  position: relative;
+  z-index: 1;
+}
+
+.leadershipAvatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2e464f, #18282e 55%, #0a1418);
+  border: 1px solid rgba(191, 166, 142, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(191, 166, 142, 0.14);
+  position: relative;
+}
+
+.leadershipAvatar::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(191, 166, 142, 0.12);
+}
+
+.leadershipAvatar span {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--stone);
+}
+
+.leadershipName {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  color: var(--text-primary);
+  margin: 12px 0 0;
+  line-height: 1.2;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REGULAR TEAM GRID (3 per row)
+   ══════════════════════════════════════════════════════════════ */
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.teamCard {
+  padding: 40px 32px 36px;
+  background: rgba(24, 40, 46, 0.52);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(191, 166, 142, 0.12);
+  border-radius: 6px;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease, background 0.3s ease;
+}
+
+.teamCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(191, 166, 142, 0.3);
+  background: rgba(24, 40, 46, 0.72);
+}
+
+.teamAvatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a3f47, #18282e 60%, #0e181c);
+  border: 1px solid rgba(191, 166, 142, 0.26);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(191, 166, 142, 0.12);
+  position: relative;
+}
+
+.teamAvatar::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(191, 166, 142, 0.1);
+}
+
+.teamAvatar span {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--stone);
+  letter-spacing: 0.02em;
+}
+
+.teamName {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 10px 0 0;
+  line-height: 1.3;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SHARED CARD PRIMITIVES (role, rule, brief)
+   ══════════════════════════════════════════════════════════════ */
+.cardRole {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(191, 166, 142, 0.08);
+  border: 1px solid rgba(191, 166, 142, 0.2);
+  border-radius: 2px;
+}
+
+.cardRule {
+  width: 48px;
+  height: 1px;
+  background: var(--stone);
+  opacity: 0.38;
+  margin: 18px 0 18px;
+}
+
+.cardBrief {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FINAL CTA
+   ══════════════════════════════════════════════════════════════ */
+.finalCta {
+  position: relative;
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 72px 48px;
+  background: linear-gradient(
+    180deg,
+    rgba(24, 40, 46, 0.72) 0%,
+    rgba(14, 24, 28, 0.82) 100%
+  );
+  border: 1px solid rgba(191, 166, 142, 0.18);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.finalCtaGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 60% at 50% 0%,
+    rgba(191, 166, 142, 0.12),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.finalCta > *:not(.finalCtaGlow) {
+  position: relative;
+  z-index: 1;
+}
+
+.finalCtaTitle {
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 18px;
+}
+
+.finalCtaTitle em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.finalCtaLede {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto 32px;
+}
+
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 30px;
+  background: #25D366;
+  color: #0a1a10;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: transform 0.22s ease, box-shadow 0.24s ease, filter 0.2s ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 6px 18px rgba(37, 211, 102, 0.3);
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.ctaPrimary > i {
+  font-size: 18px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .section {
+    padding: 72px 0;
+  }
+  .hero {
+    padding: 140px 0 72px;
+  }
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .leadershipGrid {
+    gap: 28px;
+  }
+  .leadershipCard {
+    padding: 44px 36px;
+  }
+  .leadershipAvatar {
+    width: 96px;
+    height: 96px;
+  }
+  .leadershipAvatar span {
+    font-size: 28px;
+  }
+  .leadershipName {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+  .section {
+    padding: 56px 0;
+  }
+  .hero {
+    padding: 120px 0 56px;
+  }
+  .heroInner {
+    padding: 0 20px;
+  }
+  .heroStats {
+    gap: 28px;
+    margin-top: 40px;
+    padding-top: 28px;
+  }
+  .heroStatVal {
+    font-size: 32px;
+  }
+  .leadershipGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .leadershipCard {
+    padding: 36px 28px;
+  }
+  .teamGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .teamCard {
+    padding: 32px 24px 28px;
+  }
+  .finalCta {
+    padding: 52px 24px;
+  }
+}

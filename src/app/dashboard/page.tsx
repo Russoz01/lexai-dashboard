@@ -219,17 +219,46 @@ export default function DashboardPage() {
   return (
     <div className={`page-content ${s.dashAtelier}`}>
 
-      <header className={s.dashHeader}>
-        <div className={s.dashSerial}>
+      <motion.header
+        className={s.dashHeader}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <motion.div
+          className={s.dashSerial}
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.05, duration: 0.4 }}
+        >
           <span className={s.dashSerialDot} />
           <span>N° 001 · GABINETE · MMXXVI</span>
-        </div>
-        <h1 className={s.dashAtelierH1}>
+        </motion.div>
+        <motion.h1
+          className={s.dashAtelierH1}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        >
           {greeting}, <em>advogado</em>.
-        </h1>
-        <p className={s.dashHeaderSub}>{todayCapitalized}</p>
-        <div className={s.dashHairline} aria-hidden />
-      </header>
+        </motion.h1>
+        <motion.p
+          className={s.dashHeaderSub}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25, duration: 0.5 }}
+        >
+          {todayCapitalized}
+        </motion.p>
+        <motion.div
+          className={s.dashHairline}
+          aria-hidden
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 0.85 }}
+          transition={{ delay: 0.35, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformOrigin: 'left center' }}
+        />
+      </motion.header>
 
       <section className={s.dashProvas} aria-label="Indicadores do gabinete">
         <ProvaCell
@@ -445,8 +474,8 @@ export default function DashboardPage() {
 
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                  gap: 14,
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))',
+                  gap: 22,
                 }}>
                   {group.items.map((ag, i) => {
                     const Icon = ag.Icon
@@ -675,6 +704,28 @@ export default function DashboardPage() {
   )
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * ProvaCell (v10 editorial · count-up + scroll reveal + ambient glow)
+ * ───────────────────────────────────────────────────────────────────────── */
+function useCountUp(target: number, active: boolean, durationMs = 900): number {
+  const [n, setN] = useState(0)
+  useEffect(() => {
+    if (!active) return
+    if (target === 0) { setN(0); return }
+    const start = performance.now()
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3)
+    let raf: number
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / durationMs)
+      setN(Math.round(target * ease(p)))
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, active, durationMs])
+  return n
+}
+
 function ProvaCell({
   roman, value, moneyValue, label, caption, href, warning,
 }: {
@@ -686,16 +737,35 @@ function ProvaCell({
   href: string
   warning?: boolean
 }) {
+  const [visible, setVisible] = useState(false)
+  const counted = useCountUp(value ?? 0, visible)
+  const displayValue = moneyValue !== undefined ? moneyValue : counted.toLocaleString('pt-BR')
+
+  function onMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    e.currentTarget.style.setProperty('--mx', `${e.clientX - rect.left}px`)
+    e.currentTarget.style.setProperty('--my', `${e.clientY - rect.top}px`)
+  }
+
   return (
-    <Link href={href} className={s.provaCell}>
-      <span className={s.provaRoman}>{roman}</span>
-      {moneyValue !== undefined ? (
-        <div className={s.provaValueMoney}>{moneyValue}</div>
-      ) : (
-        <div className={s.provaValue}>{value ?? 0}</div>
-      )}
-      <div className={s.provaLabel}>{label}</div>
-      <div className={warning ? s.provaCaptionWarn : s.provaCaption}>{caption}</div>
-    </Link>
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      onViewportEnter={() => setVisible(true)}
+      style={{ height: '100%' }}
+    >
+      <Link href={href} className={s.provaCell} onMouseMove={onMouseMove}>
+        <span className={s.provaRoman}>{roman}</span>
+        {moneyValue !== undefined ? (
+          <div className={s.provaValueMoney}>{displayValue}</div>
+        ) : (
+          <div className={s.provaValue}>{displayValue}</div>
+        )}
+        <div className={s.provaLabel}>{label}</div>
+        <div className={warning ? s.provaCaptionWarn : s.provaCaption}>{caption}</div>
+      </Link>
+    </motion.div>
   )
 }

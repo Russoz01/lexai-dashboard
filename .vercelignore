@@ -1,0 +1,23 @@
+# Screenshots/artefatos de teste no root (não vão para o deploy)
+dan-*.png
+dan-*.jpg
+original-*.png
+*-screenshot.png
+
+# Backups deixados durante iteração
+src/app/page.backup.tsx
+src/app/page-b2b.tsx
+
+# Pastas locais de ferramentas
+.playwright-mcp/
+.claude/
+.vscode/
+
+# Documentação longa
+*.md
+!README.md
+
+# Artefatos de teste/coverage
+coverage/
+playwright-report/
+test-results/

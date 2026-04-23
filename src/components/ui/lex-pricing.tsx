@@ -61,7 +61,7 @@ const planos: Plano[] = [
     pitch: 'Os 22 agentes + CRM + jurimetria. No lugar de 5 contratos diferentes.',
     popular: true,
     features: [
-      'Todos os 22 agentes (14 prontos + 8 em onda)',
+      'Todos os 22 agentes ativos',
       'CRM jurídico sem limite de leads',
       'Jurimetria · taxa de êxito por tribunal',
       'Histórico 90 dias + exportação .docx',

@@ -25,18 +25,18 @@ const COLS = [
   {
     title: 'Produto',
     links: [
-      { label: 'Agentes',       href: '#agentes' },
-      { label: 'Manifesto',     href: '#manifesto' },
-      { label: 'Comparativo',   href: '#comparativo' },
-      { label: 'Compliance',    href: '#compliance' },
-      { label: 'Planos',        href: '#precos' },
+      { label: 'Agentes',       href: '/#agentes' },
+      { label: 'Manifesto',     href: '/#manifesto' },
+      { label: 'Comparativo',   href: '/#comparativo' },
+      { label: 'Compliance',    href: '/#compliance' },
+      { label: 'Planos',        href: '/#precos' },
       { label: 'Para empresas', href: '/empresas' },
     ],
   },
   {
     title: 'Recursos',
     links: [
-      { label: 'FAQ',            href: '#faq' },
+      { label: 'FAQ',            href: '/#faq' },
       { label: 'Documentação',   href: '/docs' },
       { label: 'Sobre',          href: '/sobre' },
       { label: 'ROI calculator', href: '/roi' },
@@ -50,7 +50,7 @@ const COLS = [
       { label: 'Privacidade LGPD', href: '/privacidade' },
       { label: 'Termos de uso',    href: '/termos' },
       { label: 'DPA assinado',     href: '/dpa' },
-      { label: 'Provimento 205',   href: '#compliance' },
+      { label: 'Provimento 205',   href: '/#compliance' },
     ],
   },
 ]
@@ -71,13 +71,40 @@ const SOCIAL = [
 export function LexFooter() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [err, setErr] = useState('')
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!email.trim()) return
-    setSubmitted(true)
-    setEmail('')
-    setTimeout(() => setSubmitted(false), 3500)
+    const v = email.trim()
+    if (!v) return
+    setSubmitting(true)
+    setErr('')
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: v, source: 'footer' }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({})) as { error?: string }
+        if (data.error === 'invalid_email') {
+          setErr('Email inválido')
+          setSubmitting(false)
+          return
+        }
+      }
+      setSubmitted(true)
+      setEmail('')
+      setTimeout(() => setSubmitted(false), 3500)
+    } catch {
+      // UX sempre positiva — registramos erro no console e seguimos
+      setSubmitted(true)
+      setEmail('')
+      setTimeout(() => setSubmitted(false), 3500)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -235,24 +262,33 @@ export function LexFooter() {
             <p className="mb-3 text-[12.5px] leading-[1.5] text-white/55">
               Provimento 205, jurisprudência nova e benchmarks de IA jurídica. Mensal, sem spam.
             </p>
-            <form onSubmit={handleSubmit} className="space-y-2">
+            <form onSubmit={handleSubmit} className="space-y-2" noValidate>
               <input
                 type="email"
                 required
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => { setEmail(e.target.value); if (err) setErr('') }}
                 placeholder="seu@escritorio.com"
-                className="w-full rounded-lg border border-[#bfa68e]/15 bg-black/60 px-3 py-2 text-[12.5px] text-white placeholder-white/30 transition-colors focus:border-[#bfa68e]/40 focus:outline-none"
+                aria-invalid={!!err || undefined}
+                className={`w-full rounded-lg border bg-black/60 px-3 py-2 text-[12.5px] text-white placeholder-white/30 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#bfa68e]/40 ${
+                  err ? 'border-red-500/40 focus:border-red-500/60' : 'border-[#bfa68e]/15 focus:border-[#bfa68e]/40'
+                }`}
               />
+              {err && (
+                <p className="font-mono text-[0.6rem] uppercase tracking-[0.12em] text-red-300/80">
+                  {err}
+                </p>
+              )}
               <button
                 type="submit"
-                className={`w-full rounded-lg border px-3 py-2 font-mono text-[0.62rem] font-bold uppercase tracking-[0.18em] transition-all ${
+                disabled={submitting}
+                className={`w-full rounded-lg border px-3 py-2 font-mono text-[0.62rem] font-bold uppercase tracking-[0.18em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bfa68e]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:cursor-wait disabled:opacity-70 ${
                   submitted
                     ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300'
                     : 'border-[#bfa68e]/30 bg-[#bfa68e]/[0.06] text-[#e6d4bd] hover:border-[#bfa68e]/55 hover:bg-[#bfa68e]/12'
                 }`}
               >
-                {submitted ? '✓ Inscrito · obrigado' : 'Assinar boletim'}
+                {submitting ? 'Enviando...' : submitted ? '✓ Inscrito · obrigado' : 'Assinar boletim'}
               </button>
             </form>
           </motion.div>

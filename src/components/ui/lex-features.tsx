@@ -81,9 +81,9 @@ const features: Feature[] = [
   },
   {
     icon: Sparkles,
-    title: '14 agentes especializados',
+    title: '22 agentes especializados',
     blurb:
-      'Redator, Pesquisador, Estrategista, Negociador, Parecerista, Calculador, Tradutor Jurídico e mais 7 — cada um afinado para uma função específica.',
+      'Redator, Pesquisador, Estrategista, Negociador, Parecerista, Calculador, Tradutor Jurídico e mais 15 — cada um afinado para uma função específica do Direito brasileiro.',
     bullets: [
       'Modelos treinados em direito BR',
       'Custom fine-tune para Enterprise',

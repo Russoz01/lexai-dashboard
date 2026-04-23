@@ -142,7 +142,7 @@ export default async function OpenGraphImage() {
               display: 'flex',
             }}
           >
-            12 agentes de IA para escritorios de advocacia &mdash; analise de documentos,
+            22 agentes de IA para escritorios de advocacia &mdash; analise de documentos,
             jurisprudencia, pecas processuais, calculos e mais.
           </div>
         </div>

@@ -1,0 +1,563 @@
+/* ══════════════════════════════════════════════════════════════
+   OC Advogados — Sobre (About) page
+   ══════════════════════════════════════════════════════════════ */
+
+.root {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Shared primitives ──────────────────────────────────────── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.section {
+  padding: 96px 0;
+  position: relative;
+}
+
+.sectionHead {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 56px;
+}
+
+.sectionRule {
+  max-width: 720px;
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(191, 166, 142, 0.22) 30%,
+    rgba(191, 166, 142, 0.22) 70%,
+    transparent
+  );
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 22px;
+}
+
+.eyebrowRule {
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--stone);
+  opacity: 0.55;
+}
+
+.h1 {
+  font-size: clamp(2.2rem, 5.2vw, 4.2rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+  color: var(--text-primary);
+  margin-bottom: 30px;
+}
+
+.h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.h2 {
+  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.lede {
+  font-size: clamp(16px, 1.55vw, 18px);
+  line-height: 1.75;
+  color: var(--text-secondary);
+  max-width: 680px;
+  letter-spacing: 0.005em;
+}
+
+.p {
+  font-size: 15.5px;
+  line-height: 1.78;
+  color: var(--text-secondary);
+  margin-top: 18px;
+}
+
+.p strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.revealVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  padding: 180px 0 120px;
+  overflow: hidden;
+}
+
+.heroGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      ellipse 70% 45% at 20% 30%,
+      rgba(191, 166, 142, 0.07),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 45% 40% at 85% 70%,
+      rgba(191, 166, 142, 0.04),
+      transparent 70%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NARRATIVE (mission)
+   ══════════════════════════════════════════════════════════════ */
+.narrative {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 80px;
+  align-items: flex-start;
+}
+
+.narrativeBlock {
+  position: sticky;
+  top: 140px;
+}
+
+.narrativeBody {
+  max-width: 620px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AREAS LIST (expanded)
+   ══════════════════════════════════════════════════════════════ */
+.areasList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.areaRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 48px;
+  padding: 40px 0;
+  border-bottom: 1px solid rgba(191, 166, 142, 0.1);
+}
+
+.areaRow:first-child {
+  border-top: 1px solid rgba(191, 166, 142, 0.1);
+}
+
+.areaIndex {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 4px;
+}
+
+.areaIndex span {
+  font-size: 32px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--stone);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  opacity: 0.85;
+}
+
+.areaBody {
+  min-width: 0;
+}
+
+.areaHead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.areaIcon {
+  font-size: 22px;
+  color: var(--stone);
+  opacity: 0.85;
+}
+
+.areaTitle {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.areaBadge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  padding: 4px 10px;
+  background: rgba(191, 166, 142, 0.1);
+  border: 1px solid rgba(191, 166, 142, 0.22);
+  border-radius: 2px;
+}
+
+.areaDesc {
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  max-width: 620px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NATIONAL SCOPE
+   ══════════════════════════════════════════════════════════════ */
+.scopeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: flex-start;
+}
+
+.scopeContent {
+  max-width: 520px;
+}
+
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--stone);
+  text-decoration: none;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(191, 166, 142, 0.4);
+  transition: gap 0.25s ease, border-color 0.22s ease, color 0.2s ease;
+}
+
+.inlineLink:hover {
+  gap: 12px;
+  border-color: var(--stone);
+  color: var(--text-primary);
+}
+
+.inlineLink > i {
+  font-size: 13px;
+}
+
+.cityList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid rgba(191, 166, 142, 0.12);
+}
+
+.cityItem {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(191, 166, 142, 0.1);
+  transition: padding-left 0.3s ease;
+}
+
+.cityItem:hover {
+  padding-left: 12px;
+}
+
+.cityNum {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cityBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cityName {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--text-primary);
+}
+
+.cityHq {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  padding: 3px 8px;
+  background: rgba(191, 166, 142, 0.08);
+  border: 1px solid rgba(191, 166, 142, 0.2);
+  border-radius: 2px;
+}
+
+.cityMeta {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INSTAGRAM CARD
+   ══════════════════════════════════════════════════════════════ */
+.igCard {
+  position: relative;
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 72px 48px;
+  background: linear-gradient(
+    180deg,
+    rgba(24, 40, 46, 0.68) 0%,
+    rgba(14, 24, 28, 0.78) 100%
+  );
+  border: 1px solid rgba(191, 166, 142, 0.16);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.igGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 80% at 50% 0%,
+    rgba(191, 166, 142, 0.1),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.igCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+.igCard .p {
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.igCard .ctaGhost {
+  margin-top: 32px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CTA BUTTONS (local)
+   ══════════════════════════════════════════════════════════════ */
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  background: #25D366;
+  color: #0a1a10;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: transform 0.22s ease, box-shadow 0.24s ease, filter 0.2s ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 6px 18px rgba(37, 211, 102, 0.3);
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.ctaPrimary > i {
+  font-size: 18px;
+}
+
+.ctaGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: rgba(191, 166, 142, 0.06);
+  border: 1px solid rgba(191, 166, 142, 0.28);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: background 0.22s ease, border-color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.ctaGhost:hover {
+  background: rgba(191, 166, 142, 0.12);
+  border-color: var(--stone);
+  transform: translateY(-1px);
+}
+
+.ctaGhost > i {
+  font-size: 16px;
+  color: var(--stone);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FINAL CTA
+   ══════════════════════════════════════════════════════════════ */
+.finalCta {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 56px 32px;
+  border-top: 1px solid rgba(191, 166, 142, 0.18);
+  border-bottom: 1px solid rgba(191, 166, 142, 0.18);
+}
+
+.finalCtaTitle {
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 18px;
+}
+
+.finalCtaTitle em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--stone);
+}
+
+.finalCtaLede {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin: 0 auto 32px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .section {
+    padding: 72px 0;
+  }
+  .hero {
+    padding: 140px 0 80px;
+  }
+  .narrative {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .narrativeBlock {
+    position: static;
+  }
+  .scopeGrid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+  .section {
+    padding: 56px 0;
+  }
+  .hero {
+    padding: 120px 0 56px;
+  }
+  .heroInner {
+    padding: 0 20px;
+  }
+  .areaRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 32px 0;
+  }
+  .areaIndex {
+    padding-top: 0;
+  }
+  .areaIndex span {
+    font-size: 24px;
+  }
+  .areaTitle {
+    font-size: 20px;
+  }
+  .cityItem {
+    grid-template-columns: 40px 1fr;
+    gap: 16px;
+    padding: 18px 0;
+  }
+  .cityName {
+    font-size: 16px;
+  }
+  .igCard {
+    padding: 48px 24px;
+  }
+  .finalCta {
+    padding: 40px 20px;
+  }
+}

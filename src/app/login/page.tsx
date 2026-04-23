@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, Check, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { ArrowLeft, Check, Eye, EyeOff, Loader2, MailCheck } from 'lucide-react'
 
 /* ═════════════════════════════════════════════════════════════
  * /login — Atelier Login (migrado para Tailwind em 2026-04-17)
@@ -22,11 +22,12 @@ const VALUE_PROPS = [
   { n: 'IV', title: 'Feito à mão', desc: 'Não somos mais um SaaS genérico. Somos um atelier.' },
 ]
 
-const TESTIMONIAL = {
-  initials: 'MC',
-  name: 'Mariana Castro',
-  cargo: 'Advogada Civil · OAB/SP',
-  quote: 'Em duas semanas economizei mais de vinte horas de pesquisa. O Pesquisador encontra acórdãos que eu nem sabia que existiam.',
+const FOUNDER_NOTE = {
+  initials: 'VC',
+  signature: 'Vanix Corp',
+  cargo: 'Ofício do atelier · MMXXVI',
+  quote:
+    'Escrevi cada agente do zero pensando em um sócio-gestor brasileiro — que vive entre audiência, boletim de compliance e prazo de segunda-feira. Nenhum dos 22 aprende com o seu caso. É um instrumento, não um estagiário digital.',
 }
 
 type Strength = 'fraca' | 'media' | 'forte'
@@ -106,8 +107,9 @@ function Field({ id, label, type, value, onChange, placeholder, autoComplete, re
   )
 }
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
 
   const [mode, setMode] = useState<'login' | 'signup'>('login')
@@ -122,9 +124,34 @@ export default function LoginPage() {
   const [emailLoading, setEmailLoading] = useState(false)
   const [erro, setErro] = useState('')
   const [success, setSuccess] = useState(false)
+  const [signupSent, setSignupSent] = useState<string | null>(null)
 
   const anyLoading = oauthLoading !== null || emailLoading || success
   const strength = useMemo(() => scorePassword(senha), [senha])
+
+  // Se já logado, redireciona pro dashboard imediatamente
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!cancelled && session) {
+        router.replace('/dashboard')
+      }
+    })()
+    return () => { cancelled = true }
+  }, [router, supabase])
+
+  // Mostra erro de OAuth/callback vindo de ?error=...
+  useEffect(() => {
+    const err = searchParams.get('error')
+    if (!err) return
+    const map: Record<string, string> = {
+      oauth_error: 'Falha ao autenticar com o provedor. Tente novamente.',
+      session_expired: 'Sua sessão expirou. Faça login novamente.',
+      invalid_request: 'Requisição inválida. Tente novamente.',
+    }
+    setErro(map[err] ?? 'Algo deu errado na autenticação. Tente novamente.')
+  }, [searchParams])
 
   const leftRef = useRef<HTMLDivElement>(null)
   const asideRef = useRef<HTMLDivElement>(null)
@@ -195,8 +222,9 @@ export default function LoginPage() {
         return
       }
       setEmailLoading(false)
+      setSignupSent(email)
       setMode('login')
-      alert('Conta criada! Verifique seu email para confirmar.')
+      setSenha('')
       return
     }
 
@@ -265,6 +293,19 @@ export default function LoginPage() {
               className="mb-5 rounded-lg border border-red-500/30 bg-red-500/[0.08] px-4 py-3 text-sm text-red-200"
             >
               {erro}
+            </div>
+          )}
+
+          {signupSent && (
+            <div
+              role="status"
+              className="mb-5 flex items-start gap-3 rounded-lg border border-green-400/25 bg-green-400/[0.06] px-4 py-3 text-sm text-green-100"
+            >
+              <MailCheck size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-green-300" />
+              <div>
+                <div className="font-medium text-green-50">Conta criada</div>
+                <div className="text-green-200/80">Enviamos um link para <strong className="text-white">{signupSent}</strong>. Confirme o email para entrar.</div>
+              </div>
             </div>
           )}
 
@@ -364,7 +405,7 @@ export default function LoginPage() {
 
               {!isSignUp && (
                 <div className="mt-2 flex justify-end">
-                  <Link href="/login" className="text-xs text-white/50 transition hover:text-[#bfa68e]">
+                  <Link href="/reset-password" className="text-xs text-white/50 underline-offset-4 transition hover:text-[#bfa68e] hover:underline focus-visible:outline-none focus-visible:text-[#bfa68e] focus-visible:underline">
                     Esqueceu a senha?
                   </Link>
                 </div>
@@ -470,22 +511,37 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <figure className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-6">
-            <blockquote className="text-sm italic leading-relaxed text-white/75">
-              &ldquo;{TESTIMONIAL.quote}&rdquo;
+          <figure className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-6">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#bfa68e]/60 to-transparent"
+            />
+            <div className="mb-3 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/45">
+              Nota do atelier
+            </div>
+            <blockquote className="font-serif text-[0.98rem] italic leading-relaxed text-white/80">
+              &ldquo;{FOUNDER_NOTE.quote}&rdquo;
             </blockquote>
-            <figcaption className="mt-4 flex items-center gap-3">
+            <figcaption className="mt-5 flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-full border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-xs tracking-wider text-[#bfa68e]">
-                {TESTIMONIAL.initials}
+                {FOUNDER_NOTE.initials}
               </div>
               <div>
-                <div className="text-sm font-medium text-white">{TESTIMONIAL.name}</div>
-                <div className="text-xs text-white/50">{TESTIMONIAL.cargo}</div>
+                <div className="text-sm font-medium text-white">{FOUNDER_NOTE.signature}</div>
+                <div className="text-xs text-white/50">{FOUNDER_NOTE.cargo}</div>
               </div>
             </figcaption>
           </figure>
         </div>
       </aside>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" aria-hidden />}>
+      <LoginPageInner />
+    </Suspense>
   )
 }
