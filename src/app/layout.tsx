@@ -77,9 +77,52 @@ const faqJsonLd = {
   ],
 }
 
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://lexai.com.br/#organization',
+  name: 'Vanix Corp',
+  legalName: 'Vanix Corp',
+  url: 'https://lexai.com.br',
+  logo: 'https://lexai.com.br/apple-icon',
+  description: 'Vanix Corp e o estudio por tras da LexAI, plataforma de inteligencia artificial para escritorios de advocacia brasileiros.',
+  foundingDate: '2025',
+  sameAs: [
+    'https://lexai.com.br',
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'contato@vanixcorp.com',
+    contactType: 'customer support',
+    areaServed: 'BR',
+    availableLanguage: ['Portuguese'],
+  },
+  areaServed: { '@type': 'Country', name: 'Brasil' },
+}
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': 'https://lexai.com.br/#website',
+  name: 'LexAI',
+  alternateName: 'LexAI · Vanix Corp',
+  url: 'https://lexai.com.br',
+  inLanguage: 'pt-BR',
+  publisher: { '@id': 'https://lexai.com.br/#organization' },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://lexai.com.br/empresas?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
+  '@id': 'https://lexai.com.br/#software',
   name: 'LexAI',
   applicationCategory: 'BusinessApplication',
   applicationSubCategory: 'LegalTech',
@@ -87,10 +130,11 @@ const jsonLd = {
   inLanguage: 'pt-BR',
   url: 'https://lexai.com.br',
   description: 'Plataforma de inteligencia artificial para advogados brasileiros. 22 agentes IA especializados em analise de documentos, pesquisa jurisprudencial, redacao de pecas, calculos juridicos e mais.',
-  publisher: {
-    '@type': 'Organization',
-    name: 'Vanix Corp',
-    url: 'https://vanix.com.br',
+  publisher: { '@id': 'https://lexai.com.br/#organization' },
+  audience: {
+    '@type': 'Audience',
+    audienceType: 'Advogados e escritorios de advocacia brasileiros',
+    geographicArea: { '@type': 'Country', name: 'Brasil' },
   },
   offers: {
     '@type': 'AggregateOffer',
@@ -98,22 +142,25 @@ const jsonLd = {
     lowPrice: '1399',
     highPrice: '1599',
     offerCount: 3,
+    availability: 'https://schema.org/InStock',
     offers: [
-      { '@type': 'Offer', name: 'Escritorio', price: '1399', priceCurrency: 'BRL', category: 'subscription', description: '1-5 advogados · 5 agentes essenciais' },
-      { '@type': 'Offer', name: 'Firma', price: '1459', priceCurrency: 'BRL', category: 'subscription', description: '6-15 advogados · 22 agentes' },
-      { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', category: 'subscription', description: '16+ advogados · 22 agentes + agentes customizados' },
+      { '@type': 'Offer', name: 'Escritorio', price: '1399', priceCurrency: 'BRL', category: 'subscription', description: '1-5 advogados · 5 agentes essenciais', availability: 'https://schema.org/InStock' },
+      { '@type': 'Offer', name: 'Firma',      price: '1459', priceCurrency: 'BRL', category: 'subscription', description: '6-15 advogados · 22 agentes',         availability: 'https://schema.org/InStock' },
+      { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', category: 'subscription', description: '16+ advogados · agentes customizados', availability: 'https://schema.org/InStock' },
     ],
   },
   featureList: [
     'Analise de documentos juridicos',
-    'Pesquisa de jurisprudencia',
+    'Pesquisa de jurisprudencia STF/STJ',
     'Redacao de pecas processuais',
-    'Calculo de prazos',
-    'Resumo automatico',
-    'Traducao juridica',
-    'Simulado OAB',
-    'Conformidade LGPD',
+    'Calculo de prazos e correcao monetaria',
+    'Resumo automatico de contratos',
+    'Traducao juridica PT/EN/ES',
+    'Simulado OAB adaptativo',
+    'Compliance LGPD + Provimento 205 OAB',
   ],
+  softwareRequirements: 'Navegador moderno · conexao de internet',
+  permissions: 'Nao requer instalacao local',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -131,6 +178,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }
           })();
         `}} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
