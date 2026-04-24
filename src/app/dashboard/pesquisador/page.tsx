@@ -5,6 +5,7 @@ import { Search, AlertTriangle, BookOpen, Calendar, ExternalLink, ChevronDown, C
 import ConfidenceBadge, { PoweredByPralvex, VerifiedBadge } from '@/components/ConfidenceBadge'
 import { SkeletonResult } from '@/components/Skeleton'
 import { AgentHero } from '@/components/AgentHero'
+import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 import s from './page.module.css'
 
 const TRIBUNAIS = ['Todos','STF','STJ','TST','TSE','TRF 1ª','TRF 2ª','TRF 3ª','TRF 4ª','TRF 5ª','TJSP','TJRJ','TJMG']
@@ -53,11 +54,13 @@ export default function PesquisadorPage() {
   const [expandido, setExpandido] = useState<string | null>(null)
   const [erro, setErro]         = useState('')
   const [copied, setCopied]     = useState<string | null>(null)
+  const [fontes, setFontes]     = useState<Fonte[]>([])
+  const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
 
   async function buscar(e: React.FormEvent) {
     e.preventDefault()
     if (!query.trim()) return
-    setBuscando(true); setBuscou(false); setPesquisa(null); setErro('')
+    setBuscando(true); setBuscou(false); setPesquisa(null); setErro(''); setFontes([]); setGroundingStats(null)
 
     try {
       const res = await fetch('/api/pesquisar', {
@@ -68,6 +71,8 @@ export default function PesquisadorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro na pesquisa')
       setPesquisa(data.pesquisa)
+      if (Array.isArray(data.fontes)) setFontes(data.fontes)
+      if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro ao pesquisar')
     } finally {
@@ -325,6 +330,7 @@ export default function PesquisadorPage() {
               )}
             </div>
           )}
+          <FontesCitadas fontes={fontes} stats={groundingStats} title="Fontes da pesquisa" />
           <div className={s.poweredRow}>
             <PoweredByPralvex />
           </div>

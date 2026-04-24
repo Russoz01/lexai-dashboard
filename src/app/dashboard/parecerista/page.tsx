@@ -18,6 +18,7 @@ import {
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
+import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface Parecer {
   titulo?: string
@@ -43,12 +44,16 @@ export default function PareceristaPage() {
   const [area, setArea] = useState('')
   const [loading, setLoading] = useState(false)
   const [parecer, setParecer] = useState<Parecer | null>(null)
+  const [fontes, setFontes] = useState<Fonte[]>([])
+  const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
   const [copiado, setCopiado] = useState(false)
 
   async function gerar() {
     if (!consulta.trim() || loading) return
     setLoading(true)
     setParecer(null)
+    setFontes([])
+    setGroundingStats(null)
     try {
       const res = await fetch('/api/parecerista', {
         method: 'POST',
@@ -58,6 +63,8 @@ export default function PareceristaPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar parecer')
       setParecer(data.parecer)
+      if (Array.isArray(data.fontes)) setFontes(data.fontes)
+      if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
       toast('error', e instanceof Error ? e.message : 'Erro ao gerar parecer')
     } finally {
@@ -318,6 +325,7 @@ export default function PareceristaPage() {
                   <p style={{ ...paraStyle, fontSize: 13 }}>{parecer.ressalvas}</p>
                 </div>
               )}
+              <FontesCitadas fontes={fontes} stats={groundingStats} title="Fundamentacao verificada" />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {parecer.confianca && <ConfidenceBadge confianca={parecer.confianca} />}
                 <PoweredByPralvex />

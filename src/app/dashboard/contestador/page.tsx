@@ -15,6 +15,7 @@ import {
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
+import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface Preliminar {
   nome?: string; fundamento?: string; argumentacao?: string; pedido?: string
@@ -50,11 +51,15 @@ export default function ContestadorPage() {
   const [loading, setLoading] = useState(false)
   const [contestacao, setContestacao] = useState<Contestacao | null>(null)
   const [copiado, setCopiado] = useState(false)
+  const [fontes, setFontes] = useState<Fonte[]>([])
+  const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
 
   async function gerar() {
     if (teseInicial.trim().length < 30 || teseDefesa.trim().length < 30 || loading) return
     setLoading(true)
     setContestacao(null)
+    setFontes([])
+    setGroundingStats(null)
     try {
       const res = await fetch('/api/contestador', {
         method: 'POST',
@@ -64,6 +69,8 @@ export default function ContestadorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar contestacao')
       setContestacao(data.contestacao)
+      if (Array.isArray(data.fontes)) setFontes(data.fontes)
+      if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
       toast('error', e instanceof Error ? e.message : 'Erro ao gerar contestacao')
     } finally {
@@ -312,12 +319,20 @@ export default function ContestadorPage() {
                 </div>
               )}
 
+              {fontes.length > 0 && (
+                <FontesCitadas
+                  fontes={fontes}
+                  stats={groundingStats}
+                  title="Fundamentos da defesa"
+                />
+              )}
+
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {contestacao.confianca && <ConfidenceBadge confianca={contestacao.confianca} />}
                 <PoweredByPralvex />
               </div>
               <button
-                onClick={() => { setContestacao(null); setTeseInicial(''); setTeseDefesa('') }}
+                onClick={() => { setContestacao(null); setTeseInicial(''); setTeseDefesa(''); setFontes([]); setGroundingStats(null) }}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   padding: 10, borderRadius: 8, background: 'transparent',

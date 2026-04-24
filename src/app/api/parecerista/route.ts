@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -72,6 +73,10 @@ export async function POST(req: NextRequest) {
     let userMessage = `Consulta para parecer juridico:\n\n${consulta}`
     if (area.trim()) userMessage += `\n\nArea do Direito: ${area}`
 
+    const grounding = buildGroundingContext(`${consulta} ${area}`, { area: area || undefined, topK: 10 })
+    const gstats = groundingStats(grounding)
+    console.log('[API /parecerista] grounding:', gstats)
+
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8192,
@@ -81,7 +86,12 @@ export async function POST(req: NextRequest) {
           text: SYSTEM_PROMPT,
           cache_control: { type: 'ephemeral' as const },
         },
+        {
+          type: 'text' as const,
+          text: grounding.contextBlock,
+        },
       ],
+      tools: [WEB_SEARCH_TOOL],
       messages: [{ role: 'user', content: userMessage }],
     })
 
@@ -106,8 +116,15 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    const validation = validateCitations(responseText)
+    console.log('[API /parecerista] validation:', validation.stats, 'warnings:', validation.warnings.length)
+
     events.agentUsed(user.id, 'parecerista', 'unknown').catch(() => {})
-    return NextResponse.json({ parecer })
+    return NextResponse.json({
+      parecer,
+      fontes: validation.sources,
+      grounding_stats: { ...gstats, ...validation.stats },
+    })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Erro interno'
     console.error('[API /parecerista]', msg)

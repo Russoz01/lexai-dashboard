@@ -18,6 +18,7 @@ import {
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
+import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface Issue {
   titulo?: string
@@ -49,11 +50,15 @@ export default function RevisorPage() {
   const [loading, setLoading] = useState(false)
   const [revisao, setRevisao] = useState<Revisao | null>(null)
   const [copiado, setCopiado] = useState(false)
+  const [fontes, setFontes] = useState<Fonte[]>([])
+  const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
 
   async function revisar() {
     if (documento.trim().length < 100 || loading) return
     setLoading(true)
     setRevisao(null)
+    setFontes([])
+    setGroundingStats(null)
     try {
       const res = await fetch('/api/revisor', {
         method: 'POST',
@@ -63,6 +68,8 @@ export default function RevisorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro na revisao')
       setRevisao(data.revisao)
+      if (Array.isArray(data.fontes)) setFontes(data.fontes)
+      if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
       toast('error', e instanceof Error ? e.message : 'Erro na revisao')
     } finally {
@@ -293,12 +300,20 @@ export default function RevisorPage() {
                 </div>
               )}
 
+              {fontes.length > 0 && (
+                <FontesCitadas
+                  fontes={fontes}
+                  stats={groundingStats}
+                  title="Fundamentos da revisão"
+                />
+              )}
+
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
                 {revisao.confianca && <ConfidenceBadge confianca={revisao.confianca} />}
                 <PoweredByPralvex />
               </div>
               <button
-                onClick={() => { setRevisao(null); setDocumento(''); setTipo('') }}
+                onClick={() => { setRevisao(null); setDocumento(''); setTipo(''); setFontes([]); setGroundingStats(null) }}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   padding: 10, borderRadius: 8, background: 'transparent',

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -82,6 +83,11 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const userMessage = `TESE DA INICIAL (autor):\n${teseInicial}\n\nTESE DE DEFESA (reu):\n${teseDefesa}\n\nElabore um esboco tecnico e completo de contestacao.`
 
+    const groundingQuery = `${teseInicial.slice(0, 1500)} ${teseDefesa.slice(0, 1500)}`
+    const grounding = buildGroundingContext(groundingQuery, { topK: 12 })
+    const gstats = groundingStats(grounding)
+    console.log('[API /contestador] grounding:', gstats)
+
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8192,
@@ -90,6 +96,10 @@ export async function POST(req: NextRequest) {
           type: 'text' as const,
           text: SYSTEM_PROMPT,
           cache_control: { type: 'ephemeral' as const },
+        },
+        {
+          type: 'text' as const,
+          text: grounding.contextBlock,
         },
       ],
       messages: [{ role: 'user', content: userMessage }],
@@ -116,8 +126,15 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    const validation = validateCitations(responseText)
+    console.log('[API /contestador] validation:', validation.stats)
+
     events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
-    return NextResponse.json({ contestacao })
+    return NextResponse.json({
+      contestacao,
+      fontes: validation.sources,
+      grounding_stats: { ...gstats, ...validation.stats },
+    })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Erro interno'
     console.error('[API /contestador]', msg)

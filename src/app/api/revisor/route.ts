@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -71,6 +72,12 @@ export async function POST(req: NextRequest) {
     let userMessage = `Documento para revisao:\n\n${documento}`
     if (tipo.trim()) userMessage = `Tipo de documento: ${tipo}\n\n${userMessage}`
 
+    // Use first 2000 chars of the document as query for retrieval (enough for topic match)
+    const groundingQuery = documento.slice(0, 2000) + (tipo ? ` ${tipo}` : '')
+    const grounding = buildGroundingContext(groundingQuery, { topK: 10 })
+    const gstats = groundingStats(grounding)
+    console.log('[API /revisor] grounding:', gstats)
+
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8192,
@@ -79,6 +86,10 @@ export async function POST(req: NextRequest) {
           type: 'text' as const,
           text: SYSTEM_PROMPT,
           cache_control: { type: 'ephemeral' as const },
+        },
+        {
+          type: 'text' as const,
+          text: grounding.contextBlock,
         },
       ],
       messages: [{ role: 'user', content: userMessage }],
@@ -105,8 +116,15 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    const validation = validateCitations(responseText)
+    console.log('[API /revisor] validation:', validation.stats)
+
     events.agentUsed(user.id, 'revisor', 'unknown').catch(() => {})
-    return NextResponse.json({ revisao })
+    return NextResponse.json({
+      revisao,
+      fontes: validation.sources,
+      grounding_stats: { ...gstats, ...validation.stats },
+    })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Erro interno'
     console.error('[API /revisor]', msg)

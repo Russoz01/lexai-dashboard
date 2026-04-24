@@ -3,6 +3,7 @@ import { useState } from 'react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { Search, BookOpen, Landmark, ShieldAlert, FileText, NotebookText, Gavel, Briefcase, ShoppingBag, Coins, CheckSquare, ShieldCheck, Globe, Bookmark, ExternalLink, RotateCcw, Clock, Gauge } from 'lucide-react'
 import { AgentHero } from '@/components/AgentHero'
+import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 export default function LegislacaoPage() {
   const [consulta, setConsulta] = useState('')
@@ -10,10 +11,12 @@ export default function LegislacaoPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resultado, setResultado] = useState<any>(null)
   const [erro, setErro] = useState('')
+  const [fontes, setFontes] = useState<Fonte[]>([])
+  const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
 
   async function pesquisar() {
     if (!consulta.trim() || loading) return
-    setLoading(true); setErro(''); setResultado(null)
+    setLoading(true); setErro(''); setResultado(null); setFontes([]); setGroundingStats(null)
     try {
       const res = await fetch('/api/legislacao', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -22,6 +25,8 @@ export default function LegislacaoPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setResultado(data.resultado)
+      if (Array.isArray(data.fontes)) setFontes(data.fontes)
+      if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro na pesquisa')
     } finally { setLoading(false) }
@@ -164,7 +169,15 @@ export default function LegislacaoPage() {
             {resultado.exemplos_praticos.map((ex: string, i: number) => <p key={i} style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 8, paddingLeft: 12, borderLeft: '2px solid var(--border)' }}>{ex}</p>)}
           </div>}
 
-          <button type="button" onClick={() => { setResultado(null); setConsulta('') }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 8 }}>
+          {fontes.length > 0 && (
+            <FontesCitadas
+              fontes={fontes}
+              stats={groundingStats}
+              title="Fontes do dispositivo"
+            />
+          )}
+
+          <button type="button" onClick={() => { setResultado(null); setConsulta(''); setFontes([]); setGroundingStats(null) }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 10, color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: 8 }}>
             <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Nova pesquisa
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>

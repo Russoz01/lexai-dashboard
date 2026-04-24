@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { AgentHero } from '@/components/AgentHero'
+import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface Parecer {
   titulo: string
@@ -51,6 +52,8 @@ export default function ConsultorPage() {
   const [contexto, setContexto] = useState('')
   const [loading, setLoading] = useState(false)
   const [parecer, setParecer] = useState<Parecer | null>(null)
+  const [fontes, setFontes] = useState<Fonte[]>([])
+  const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
   const [erro, setErro] = useState('')
   const [copiado, setCopiado] = useState(false)
 
@@ -59,6 +62,8 @@ export default function ConsultorPage() {
     setLoading(true)
     setErro('')
     setParecer(null)
+    setFontes([])
+    setGroundingStats(null)
 
     try {
       const res = await fetch('/api/consultor', {
@@ -73,6 +78,8 @@ export default function ConsultorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setParecer(data.parecer)
+      if (Array.isArray(data.fontes)) setFontes(data.fontes)
+      if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro ao gerar parecer')
     } finally {
@@ -495,6 +502,8 @@ export default function ConsultorPage() {
                 </p>
               </div>
             )}
+
+            <FontesCitadas fontes={fontes} stats={groundingStats} title="Fundamentacao verificada" />
           </div>
 
           {/* Reset + branding */}

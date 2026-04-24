@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
+import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -112,6 +113,11 @@ export async function POST(req: NextRequest) {
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
 
+    // Build grounding context - retrieves real legal provisions + sumulas from corpus.
+    const grounding = buildGroundingContext(`${pergunta} ${area} ${contexto}`, { area: area || undefined, topK: 8 })
+    const gstats = groundingStats(grounding)
+    console.log('[API /consultor] grounding:', gstats)
+
     let userMessage = `Questao juridica para parecer:\n\n${pergunta}`
     if (area.trim()) {
       userMessage += `\n\nArea do Direito: ${area}`
@@ -138,7 +144,12 @@ export async function POST(req: NextRequest) {
             text: SYSTEM_PROMPT,
             cache_control: { type: 'ephemeral' as const },
           },
+          {
+            type: 'text' as const,
+            text: grounding.contextBlock,
+          },
         ],
+        tools: [WEB_SEARCH_TOOL],
         messages: [{ role: 'user', content: userMessage }],
       }, { signal: controller.signal })
     } finally {
@@ -162,6 +173,10 @@ export async function POST(req: NextRequest) {
     // Normalize: if the model returned { parecer: { ... } }, extract the inner object
     const parecerData = parecer?.parecer ?? parecer
 
+    // Validate citations against verified corpus and extract URLs.
+    const validation = validateCitations(responseText)
+    console.log('[API /consultor] validation:', validation.stats, 'warnings:', validation.warnings.length)
+
     if (usuarioId) {
       const { error: histErr } = await supabase.from('historico').insert({
         usuario_id: usuarioId,
@@ -176,7 +191,11 @@ export async function POST(req: NextRequest) {
 
     events.agentUsed(user.id, 'consultor', plano).catch(() => {})
 
-    return NextResponse.json({ parecer: parecerData })
+    return NextResponse.json({
+      parecer: parecerData,
+      fontes: validation.sources,
+      grounding_stats: { ...gstats, ...validation.stats },
+    })
   } catch (err: unknown) {
     const errName = err instanceof Error ? err.name : 'Unknown'
     const errMsg = err instanceof Error ? err.message : String(err)
