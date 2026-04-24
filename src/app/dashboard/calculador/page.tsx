@@ -12,8 +12,11 @@ import {
   ArrowLeftRight,
   Calculator,
   RotateCcw,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
+import { AgentHero } from '@/components/AgentHero'
 import {
   addDiasUteisForenses,
   breakdownPeriodo,
@@ -190,16 +193,31 @@ export default function CalculadorPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: '100%' }}>
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA
-          </span>
-        </div>
-        <h1 className="page-title">Calculador Jurídico</h1>
-        <p className="page-subtitle">Calcule prazos processuais, correção monetária, juros e custas</p>
-      </div>
+      <AgentHero
+        edition="Nº XXV"
+        Icon={Calculator}
+        name="Calculador"
+        discipline="Prazos, juros e correção"
+        description="Calcula prazos processuais com feriados e recesso forense (art. 220 CPC), correção monetária por IPCA/SELIC/CDI, juros contratuais e custas de tribunal. Inclui calculadora offline de dias úteis com histórico local e taxas BC em tempo real."
+        accent="sand"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~25s' },
+          { Icon: Gauge, label: 'Escopo', value: 'Prazos · juros · custas' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Feriados 2025-2027' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Prazo rápido ou cálculo IA', desc: 'Use a calculadora offline de dias úteis ou descreva o cálculo em linguagem natural.' },
+          { n: 'II', title: 'Informe parâmetros', desc: 'Data, valor, índice, tipo de prazo, tribunal — quanto mais preciso, melhor o resultado.' },
+          { n: 'III', title: 'Receba o cálculo', desc: 'Resultado principal, valores por linha e passos de memória de cálculo auditáveis.' },
+        ]}
+        examples={[
+          { label: 'Prazo para contestação CPC', prompt: 'Calcular prazo para contestação em procedimento comum, começando a contar de 2026-04-22 (terça), com prazo de 15 dias úteis. Considerar feriados e recesso forense.' },
+          { label: 'Correção monetária IPCA-E', prompt: 'Valor original R$ 85.000, inadimplemento em 15/03/2020. Calcular correção monetária por IPCA-E até hoje, somando juros de mora de 1% ao mês desde a citação (12/05/2022).' },
+          { label: 'Custas processuais TJSP', prompt: 'Calcular custas iniciais no TJSP para ação de cobrança com valor da causa R$ 180.000. Incluir taxa mandato, porte de remessa e custas de distribuição.' },
+        ]}
+        onExampleClick={setConsulta}
+        shortcut="⌘⏎ calcular"
+      />
 
       {/* ════ Taxas atuais do Banco Central ════ */}
       {taxas && (

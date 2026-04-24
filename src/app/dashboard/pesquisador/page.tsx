@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, AlertTriangle, BookOpen, Calendar, ExternalLink, ChevronDown, ChevronUp, User, Clipboard, Check, CheckCircle2, NotebookText, Layers, Hourglass, FileX } from 'lucide-react'
+import { Search, AlertTriangle, BookOpen, Calendar, ExternalLink, ChevronDown, ChevronUp, User, Clipboard, Check, CheckCircle2, NotebookText, Layers, Hourglass, FileX, Clock, ShieldCheck, Gauge } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex, VerifiedBadge } from '@/components/ConfidenceBadge'
 import { SkeletonResult } from '@/components/Skeleton'
+import { AgentHero } from '@/components/AgentHero'
 import s from './page.module.css'
 
 const TRIBUNAIS = ['Todos','STF','STJ','TST','TSE','TRF 1ª','TRF 2ª','TRF 3ª','TRF 4ª','TRF 5ª','TJSP','TJRJ','TJMG']
@@ -85,17 +86,31 @@ export default function PesquisadorPage() {
 
   return (
     <div className={`page-content ${s.pageWrap}`}>
-      {/* Header */}
-      <div className={s.headerWrap}>
-        <div className={s.headerRow}>
-          <span className={s.agentBadge}>
-            <span className={s.agentDot} />
-            Agente IA
-          </span>
-        </div>
-        <h1 className="page-title">Pesquisador Jurídico</h1>
-        <p className="page-subtitle">Pesquise jurisprudência com inteligência artificial</p>
-      </div>
+      <AgentHero
+        edition="Nº XXIII"
+        Icon={Search}
+        name="Pesquisador"
+        discipline="Jurisprudência cruzada"
+        description="Pesquisa de jurisprudência em tribunais superiores, TRFs e TJs com filtro por tribunal, área e período. Retorna ementas, teses fixadas, fundamentação, termos relacionados e verifica em tempo real contra a base JusBrasil quando disponível."
+        accent="copper"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~30s' },
+          { Icon: Gauge, label: 'Cobertura', value: 'STF · STJ · TRF · TJ' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Verificação JusBrasil' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Digite o tema', desc: 'Termo jurídico, tese ou instituto — aceita linguagem natural.' },
+          { n: 'II', title: 'Aplique filtros', desc: 'Tribunal, área do Direito e recorte temporal para focar a busca.' },
+          { n: 'III', title: 'Receba as decisões', desc: 'Resultados ordenados por relevância com ementa, tese fixada, termos relacionados e legislação aplicável.' },
+        ]}
+        examples={[
+          { label: 'Responsabilidade do fornecedor', prompt: 'responsabilidade civil do fornecedor por vício do produto' },
+          { label: 'Dano moral por negativação', prompt: 'dano moral por negativação indevida após pagamento' },
+          { label: 'Prescrição em ação de cobrança', prompt: 'prescrição trienal em ação de cobrança de aluguel' },
+        ]}
+        onExampleClick={setQuery}
+        shortcut="↵ pesquisar"
+      />
 
       {/* Barra de busca */}
       <form onSubmit={buscar}>

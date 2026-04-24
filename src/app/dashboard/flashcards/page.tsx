@@ -7,8 +7,11 @@ import {
   RefreshCcw,
   BookMarked,
   Target,
+  Clock,
+  ShieldCheck,
 } from 'lucide-react'
 import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
+import { AgentHero } from '@/components/AgentHero'
 
 /* /dashboard/flashcards — v1 preview stage · 2026-04-23
  * SM-2 spaced repetition igual Anki. Professor gera flashcard de
@@ -17,7 +20,26 @@ import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
 
 export default function FlashcardsPage() {
   return (
-    <AgentPreviewStage
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <AgentHero
+        edition="Nº XI"
+        Icon={Layers}
+        name="Flashcards"
+        discipline="Repetição espaçada SM-2"
+        description="Transforma qualquer aula ou súmula em deck de flashcards com algoritmo SM-2 (padrão Anki). Carta difícil volta no dia seguinte, carta dominada volta em 3 meses. Retenção 3–5x maior que releitura."
+        accent="sand"
+        meta={[
+          { Icon: Clock, label: 'Revisão', value: '~15 min/dia' },
+          { Icon: Brain, label: 'Algoritmo', value: 'SM-2 exato' },
+          { Icon: ShieldCheck, label: 'Compatível', value: 'Export .apkg' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha a fonte', desc: 'Aula do Professor, súmula ou texto colado no campo de matéria.' },
+          { n: 'II', title: 'Agente gera o deck', desc: 'Cartas frente e verso criadas automaticamente por tópico e dificuldade.' },
+          { n: 'III', title: 'Revise diariamente', desc: 'SM-2 calcula intervalos por carta. Streak e foco em fraqueza acompanham o progresso.' },
+        ]}
+      />
+      <AgentPreviewStage
       Icon={Layers}
       kicker="Nº 027 · Agente Flashcards"
       name="Flashcards"
@@ -89,5 +111,6 @@ Programação SM-2:
 Todas entram na fila de revisão · próximo study em 8h.`,
       }}
     />
+    </div>
   )
 }

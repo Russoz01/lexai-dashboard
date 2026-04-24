@@ -24,7 +24,11 @@ import {
   GitBranch,
   TrendingUp,
   CheckSquare,
+  GraduationCap,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
+import { AgentHero } from '@/components/AgentHero'
 
 const AREAS_PRATICA = [
   { id: 'civil', label: 'Direito Civil', Icon: FileText, color: '#44372b' },
@@ -92,17 +96,31 @@ export default function MonitorLegislativoPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 1200 }}>
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA
-          </span>
-        </div>
-        <h1 className="page-title">Monitor Legislativo</h1>
-        <p className="page-subtitle">Acompanhe mudanças legislativas, novos precedentes e atualizações regulatórias relevantes para suas áreas de atuação</p>
-      </div>
+      <AgentHero
+        edition="Nº XXI"
+        Icon={GraduationCap}
+        name="Professor"
+        discipline="Monitor legislativo curado"
+        description="Acompanhamento de mudanças legislativas, novos precedentes e atualizações regulatórias por área de atuação. Cruza Diário Oficial, STF, STJ, CNJ, ANPD e órgãos setoriais em relatório editorial pronto para o briefing semanal."
+        accent="rose"
+        meta={[
+          { Icon: Clock, label: 'Janela', value: 'Últimos 30 dias' },
+          { Icon: Gauge, label: 'Cobertura', value: '10 áreas do Direito' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Fontes oficiais' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha as áreas', desc: 'Marque uma ou mais áreas de prática para calibrar o recorte do monitor.' },
+          { n: 'II', title: 'Opcional: tópicos específicos', desc: 'Anexe tese, projeto de lei ou tema específico que deve ser priorizado.' },
+          { n: 'III', title: 'Receba o relatório', desc: 'Legislação, precedentes, regulatório, análise de impacto e ações recomendadas.' },
+        ]}
+        examples={[
+          { label: 'Marco Civil da IA', prompt: 'PL 2338/2023 e regulamentação da inteligência artificial no Brasil. Impacto para prestadores de serviço jurídico e escritórios que usam IA generativa. Comparar com AI Act da União Europeia.' },
+          { label: 'Reforma tributária 2026', prompt: 'Mudanças em CBS e IBS após a EC 132/2023. Impacto para empresas de serviços, honorários advocatícios e recolhimento por escritórios. Regulamentação da LC 214/2025.' },
+          { label: 'ANPD e sandbox regulatório', prompt: 'Novos entendimentos da ANPD sobre transferência internacional de dados, dados sensíveis e sandbox regulatório para startups. Relatórios de fiscalização 2025-2026.' },
+        ]}
+        onExampleClick={setTopicos}
+        shortcut="⌘⏎ monitorar"
+      />
 
       {/* Area selection */}
       {!relatorio && !loading && (

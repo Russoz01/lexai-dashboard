@@ -17,7 +17,12 @@ import {
   Book,
   Building2,
   CheckCircle2,
+  GraduationCap,
+  Clock,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
+import { AgentHero } from '@/components/AgentHero'
 
 interface Parecer {
   ementa: string
@@ -161,19 +166,31 @@ export default function PareceristaPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 1200 }}>
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA
-          </span>
-        </div>
-        <h1 className="page-title">Parecerista</h1>
-        <p className="page-subtitle" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 16, color: 'var(--text-muted)' }}>
-          Pareceres jurídicos estruturados
-        </p>
-      </div>
+      <AgentHero
+        edition="Nº VI"
+        Icon={GraduationCap}
+        name="Simulado"
+        discipline="Casos práticos treinados"
+        description="Simulação de casos jurídicos com parecer completo: fatos, questão, fundamentação, doutrina, jurisprudência e conclusão. Útil para treinamento, banca interna e revisão de teses."
+        accent="gold"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~60s' },
+          { Icon: Gauge, label: 'Profundidade', value: '7 blocos' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Fundamentação exigível' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha área e tema', desc: 'Selecione o ramo do Direito e delimite a tese a ser simulada.' },
+          { n: 'II', title: 'Descreva o contexto', desc: 'Fatos concretos, partes envolvidas, disputa e documentos relevantes.' },
+          { n: 'III', title: 'Receba o parecer', desc: 'Ementa, fundamentação, doutrina, jurisprudência e recomendação técnica.' },
+        ]}
+        examples={[
+          { label: 'Vazamento de dados + ANPD', prompt: 'Empresa de tecnologia sofreu incidente de segurança que expôs dados pessoais de 5.000 clientes. A empresa notificou a ANPD em 48h, mas não comunicou os titulares afetados. Um grupo de clientes acionou o Procon e ameaça ação coletiva.' },
+          { label: 'Rescisão indireta por assédio', prompt: 'Funcionário com 8 anos de empresa relata situações reiteradas de humilhação pelo superior hierárquico, incluindo exposição pública de erros, ameaças veladas de demissão e isolamento da equipe. Possui prints de mensagens e duas testemunhas.' },
+          { label: 'Exclusão de sócio minoritário', prompt: 'Sociedade limitada com 3 sócios. Sócio minoritário (15%) descobriu que os majoritários desviaram R$ 400 mil em contratos simulados com empresa de fachada. O contrato social prevê cláusula de arbitragem, mas não há cláusula específica sobre exclusão.' },
+        ]}
+        onExampleClick={setContexto}
+        shortcut="⌘⏎ simular"
+      />
 
       {/* Formulario */}
       {!parecer && !loading && (

@@ -10,9 +10,14 @@ import {
   XCircle,
   Info,
   Sparkles,
+  ScrollText,
+  Clock,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { AgentHero } from '@/components/AgentHero'
 
 interface Parecer {
   titulo?: string
@@ -88,29 +93,31 @@ export default function PareceristaPage() {
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-      {/* Hero */}
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{
-            background: 'rgba(191,166,142,0.1)',
-            border: '1px solid rgba(191,166,142,0.3)',
-            borderRadius: 12, padding: 12,
-          }}>
-            <FileCheck2 size={24} style={{ color: 'var(--accent)' }} aria-hidden />
-          </div>
-          <div>
-            <h1 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: 32, color: 'var(--text-primary)', margin: 0, fontWeight: 700,
-            }}>
-              Parecerista
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Pareceres juridicos fundamentados com legislacao, jurisprudencia e recomendacoes
-            </p>
-          </div>
-        </div>
-      </div>
+      <AgentHero
+        edition="Nº XIX"
+        Icon={ScrollText}
+        name="Parecerista"
+        discipline="Pareceres institucionais"
+        description="Parecer jurídico estruturado: ementa, questão analisada, fundamentação legal, jurisprudência, argumentos favoráveis e contrários, conclusão, recomendações e ressalvas. Pronto para banca interna, assessoria de empresa ou órgão público."
+        accent="gold"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~55s' },
+          { Icon: Gauge, label: 'Profundidade', value: '9 blocos' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Fundamentação exigível' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Descreva a consulta', desc: 'Questão jurídica, partes envolvidas, fatos relevantes e documentos de referência.' },
+          { n: 'II', title: 'Escolha a área', desc: 'Ramo do Direito que calibra o vocabulário técnico e o repertório de fundamentos.' },
+          { n: 'III', title: 'Receba o parecer', desc: 'Ementa, questão, fundamentação, jurisprudência, argumentos, conclusão e ressalvas.' },
+        ]}
+        examples={[
+          { label: 'Responsabilidade de plataforma', prompt: 'Parecer sobre responsabilidade de marketplace por produto defeituoso vendido por terceiro. Plataforma intermedeia pagamento e logística, mas não estoca. Consumidor sofreu lesão corporal com produto elétrico. Há ação judicial em curso. Plataforma quer saber se deve ou não assumir a defesa do vendedor.' },
+          { label: 'Licitação e conflito de interesses', prompt: 'Parecer sobre participação de empresa familiar em licitação de prefeitura. Sócio da empresa é irmão de vereador da situação, mas o vereador não tem função executiva nem está em comissão de licitação. Há dúvida sobre aplicação da Lei 14.133/2021 e da Lei de Improbidade.' },
+          { label: 'LGPD e dados de menores', prompt: 'Parecer sobre tratamento de dados pessoais de menores de 12 anos por escola infantil. Coleta inclui fotos, vídeos de atividades e dados biométricos (catraca facial). Há termo de consentimento assinado pelos responsáveis, mas não específico por finalidade. ANPD emitiu orientativo recente que afeta a operação.' },
+        ]}
+        onExampleClick={setConsulta}
+        shortcut="⌘⏎ gerar"
+      />
 
       {/* Columns */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="parec-grid">

@@ -11,9 +11,12 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
+  Clock,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { AgentHero } from '@/components/AgentHero'
 
 interface Variacao {
   nome?: string; titulo?: string; corpo?: string; cta?: string
@@ -90,21 +93,31 @@ export default function MarketingIaPage() {
         <a href="/dashboard/planos" className="demo-ribbon-link">Solicitar acesso completo</a>
       </div>
 
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{ background: 'rgba(191,166,142,0.1)', border: '1px solid rgba(191,166,142,0.3)', borderRadius: 12, padding: 12 }}>
-            <Megaphone size={24} style={{ color: 'var(--accent)' }} aria-hidden />
-          </div>
-          <div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
-              Marketing IA
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Conteúdo OAB-compliant (Provimento 205/2021) com 3 variações + checklist
-            </p>
-          </div>
-        </div>
-      </div>
+      <AgentHero
+        edition="Nº XIV"
+        Icon={Sparkles}
+        name="Marketing IA"
+        discipline="Posts com checklist OAB"
+        description="Gera três variações de post jurídico por plataforma (Instagram, LinkedIn, blog, Facebook, Threads) com checklist de compliance contra o Provimento 205/2021 e o Código de Ética. Cada item tem status verde, amarelo ou vermelho com justificativa."
+        accent="copper"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~35s' },
+          { Icon: Gauge, label: 'Formato', value: '3 variações + SEO' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Provimento 205 + CED' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha a plataforma', desc: 'Instagram, LinkedIn, blog, Facebook ou Threads para calibrar formato e tom.' },
+          { n: 'II', title: 'Descreva o tópico', desc: 'Tema do post, público-alvo e ângulo que quer explorar.' },
+          { n: 'III', title: 'Receba as variações', desc: 'Três versões com título, corpo, CTA, hashtags, visual e checklist compliance.' },
+        ]}
+        examples={[
+          { label: 'STF e guarda compartilhada', prompt: 'Explicar a decisão recente do STF sobre guarda compartilhada em caso de violência doméstica. Público: pais e mães em processo de separação. Tom editorial e sóbrio, sem opinar politicamente.' },
+          { label: 'Pensão alimentícia ex-cônjuge', prompt: 'Análise técnica do julgamento do STJ sobre pensão alimentícia entre ex-cônjuges. 3 pontos principais do acórdão, sem citar partes. Público: advogados de família e clientes em processo de divórcio.' },
+          { label: 'LGPD para pequenos negócios', prompt: 'Mitos sobre LGPD em pequenos negócios que ainda cobram dados sem base legal. Formato: carrossel com 5 mitos desmontados. Público: donos de e-commerce e profissionais liberais.' },
+        ]}
+        onExampleClick={setTopico}
+        shortcut="⌘⏎ gerar"
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="mkt-grid">
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>

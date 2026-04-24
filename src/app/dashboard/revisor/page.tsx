@@ -10,9 +10,14 @@ import {
   Sparkles,
   Check,
   Clipboard,
+  Search,
+  Clock,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { AgentHero } from '@/components/AgentHero'
 
 interface Issue {
   titulo?: string
@@ -75,28 +80,31 @@ export default function RevisorPage() {
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{
-            background: 'rgba(191,166,142,0.1)',
-            border: '1px solid rgba(191,166,142,0.3)',
-            borderRadius: 12, padding: 12,
-          }}>
-            <FileEdit size={24} style={{ color: 'var(--accent)' }} aria-hidden />
-          </div>
-          <div>
-            <h1 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: 32, color: 'var(--text-primary)', margin: 0, fontWeight: 700,
-            }}>
-              Revisor
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Revisao tecnica de contratos e pecas — criticos, atencao, sugestoes
-            </p>
-          </div>
-        </div>
-      </div>
+      <AgentHero
+        edition="Nº XX"
+        Icon={Search}
+        name="Revisor"
+        discipline="Auditoria técnica de peças"
+        description="Revisão técnica de contratos, petições, pareceres e notificações. Classifica achados em críticos, atenção e sugestões, aponta cláusulas faltantes e devolve reescrita sugerida com fundamento legal por trecho."
+        accent="copper"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~50s' },
+          { Icon: Gauge, label: 'Classificação', value: 'Crítico · atenção · sugestão' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Fundamento por trecho' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha o tipo', desc: 'Contrato, petição, parecer, notificação, recurso ou acordo.' },
+          { n: 'II', title: 'Cole o documento', desc: 'Texto íntegro a partir de 100 caracteres para revisão.' },
+          { n: 'III', title: 'Receba a revisão', desc: 'Score, issues classificados, cláusulas faltantes e reescrita sugerida.' },
+        ]}
+        examples={[
+          { label: 'Contrato de prestação de serviço', prompt: 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS\n\nPartes: CONTRATANTE (empresa XYZ) e CONTRATADA (pessoa física fornecedora).\n\nCláusula 1 – Objeto. A CONTRATADA prestará serviços de consultoria em marketing digital.\n\nCláusula 2 – Valor. R$ 5.000 mensais, pagos no dia 10 de cada mês.\n\nCláusula 3 – Prazo. Vigência por 12 meses a partir da assinatura.\n\nCláusula 4 – Rescisão. Qualquer parte pode rescindir sem aviso prévio.\n\nCláusula 5 – Foro. Fica eleito o foro da capital do estado.' },
+          { label: 'Petição inicial de cobrança', prompt: 'EXCELENTÍSSIMO SENHOR DOUTOR JUIZ DE DIREITO\n\nFulano de Tal, brasileiro, casado, empresário, portador do CPF 000.000.000-00, vem propor AÇÃO DE COBRANÇA contra Beltrano, com base nos seguintes fatos:\n\n1. O autor prestou serviços de consultoria ao réu entre março e agosto de 2025.\n2. O valor total contratado foi R$ 50.000.\n3. O réu pagou apenas R$ 20.000, restando em aberto R$ 30.000.\n\nDiante disso, requer a condenação do réu ao pagamento de R$ 30.000 acrescidos de juros e correção.\n\nDá à causa o valor de R$ 30.000.' },
+          { label: 'Notificação extrajudicial', prompt: 'NOTIFICAÇÃO EXTRAJUDICIAL\n\nPrezado Senhor,\n\nVimos por meio desta notificá-lo para pagamento da dívida em aberto no valor de R$ 15.000, vencida em 15/03/2025.\n\nCaso o pagamento não seja realizado em 5 dias, tomaremos as medidas judiciais cabíveis.\n\nAtenciosamente,\n\nCredor' },
+        ]}
+        onExampleClick={setDocumento}
+        shortcut="⌘⏎ revisar"
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="rev-grid">
         <div style={{

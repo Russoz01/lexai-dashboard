@@ -9,9 +9,12 @@ import {
   Sparkles,
   Clock,
   AlertCircle,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { AgentHero } from '@/components/AgentHero'
 
 interface PontoChave {
   ordem?: number; titulo?: string; argumentacao?: string
@@ -88,21 +91,31 @@ export default function AudienciaPage() {
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{ background: 'rgba(191,166,142,0.1)', border: '1px solid rgba(191,166,142,0.3)', borderRadius: 12, padding: 12 }}>
-            <Mic size={24} style={{ color: 'var(--accent)' }} aria-hidden />
-          </div>
-          <div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
-              Audiencia
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Roteiro de sustentacao oral e performance em audiencia
-            </p>
-          </div>
-        </div>
-      </div>
+      <AgentHero
+        edition="Nº XVI"
+        Icon={Mic}
+        name="Audiência"
+        discipline="Roteiros de sustentação oral"
+        description="Roteiro completo para audiência de instrução, conciliação, sustentação no tribunal ou júri: abertura, pontos-chave com tempo, antecipação de contrargumentos, fechamento e material de apoio. Foco em performance oral real."
+        accent="bronze"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~45s' },
+          { Icon: Gauge, label: 'Profundidade', value: 'Abertura → fechamento' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Fundamentação exigível' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha o tipo', desc: 'Instrução, conciliação, justificação, sustentação oral ou tribunal do júri.' },
+          { n: 'II', title: 'Descreva o caso', desc: 'Tese, partes, provas disponíveis e objetivo da audiência.' },
+          { n: 'III', title: 'Receba o roteiro', desc: 'Abertura, pontos-chave com tempo, contrargumentos e fechamento pronto para ensaio.' },
+        ]}
+        examples={[
+          { label: 'Sustentação trabalhista', prompt: 'Audiência de instrução em ação trabalhista. Cliente reclama R$ 380 mil em horas extras, adicional noturno e dano moral por assédio. Provas: 3 testemunhas (2 ex-colegas + 1 atual), planilhas de controle de ponto falsas emitidas pela empresa, prints de WhatsApp com supervisor. Juiz é conhecido por ser rigoroso com prova testemunhal.' },
+          { label: 'Conciliação no cível', prompt: 'Audiência de conciliação em ação de rescisão contratual com pedido de R$ 120 mil por quebra de contrato B2B. Cliente quer acordo entre R$ 70k e R$ 90k, com parcelamento em até 6x. Parte contrária ofereceu R$ 40k à vista na última tentativa extrajudicial. Juiz valoriza acordos.' },
+          { label: 'Sustentação oral STJ', prompt: 'Sustentação oral de 15 minutos no STJ em recurso especial sobre responsabilidade civil de provedor de aplicação por conteúdo ofensivo de terceiro. Tese: Marco Civil + precedente do STF no Tema 987. Relator já votou contra, precisamos virar 2 ministros.' },
+        ]}
+        onExampleClick={setCaso}
+        shortcut="⌘⏎ gerar"
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="aud-grid">
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>

@@ -9,9 +9,13 @@ import {
   Sparkles,
   AlertTriangle,
   Clock,
+  Brain,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { AgentHero } from '@/components/AgentHero'
 
 interface Acao {
   acao?: string; prazo?: string; fundamento?: string; entregavel?: string; responsavel?: string
@@ -88,21 +92,31 @@ export default function EstrategistaPage() {
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{ background: 'rgba(191,166,142,0.1)', border: '1px solid rgba(191,166,142,0.3)', borderRadius: 12, padding: 12 }}>
-            <Target size={24} style={{ color: 'var(--accent)' }} aria-hidden />
-          </div>
-          <div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
-              Estrategista
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Plano estrategico do caso em 3 fases: imediato, medio e longo prazo
-            </p>
-          </div>
-        </div>
-      </div>
+      <AgentHero
+        edition="Nº XV"
+        Icon={Brain}
+        name="Estrategista"
+        discipline="Plano em três horizontes"
+        description="Estratégia processual do caso em três fases: imediato, médio e longo prazo. Cada fase traz ações, prazos, KPIs, riscos, cenários e matriz de mitigação. Útil para briefing interno, reunião com cliente e plano de honorário de êxito."
+        accent="rose"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~60s' },
+          { Icon: Gauge, label: 'Profundidade', value: '3 fases + cenários' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Fundamentação exigível' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Descreva o caso', desc: 'Fatos, partes, disputa, documentos e status atual do processo.' },
+          { n: 'II', title: 'Declare o objetivo', desc: 'O que o cliente quer alcançar, com prazo e critério de sucesso claros.' },
+          { n: 'III', title: 'Receba o plano', desc: 'Três fases com ações, prazos, KPIs, riscos e recomendação final.' },
+        ]}
+        examples={[
+          { label: 'Ação trabalhista de alto valor', prompt: 'Cliente ex-diretor de multinacional pleiteia rescisão indireta com pedido de R$ 2.8M (equiparação, horas extras, danos morais por assédio moral sistêmico). Empresa é ré solvente com 50 funcionários. Já há prints de mensagens e 4 testemunhas. Cliente está desempregado há 5 meses.' },
+          { label: 'Sociedade em conflito', prompt: 'Sociedade limitada de 3 sócios, meu cliente é minoritário (20%). Majoritários desviaram R$ 600 mil em operações simuladas e agora tentam expulsá-lo via exclusão judicial. Contrato social prevê arbitragem. Há laudo pericial contratado pelo cliente apontando o desvio.' },
+          { label: 'Contrato B2B em risco', prompt: 'Cliente é distribuidora que firmou exclusividade com fabricante por 5 anos. Ao 14° mês, fabricante reduziu 70% o volume entregue sem justificar. Cliente já investiu R$ 400 mil em estrutura. Objetivo: restabelecer fornecimento ou indenização. Fabricante é grupo econômico solvente.' },
+        ]}
+        onExampleClick={setCaso}
+        shortcut="⌘⏎ gerar"
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="est-grid">
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>

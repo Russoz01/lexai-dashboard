@@ -7,8 +7,11 @@ import {
   TrendingUp,
   FileWarning,
   Presentation,
+  Clock,
+  ShieldCheck,
 } from 'lucide-react'
 import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
+import { AgentHero } from '@/components/AgentHero'
 
 /* /dashboard/risco — v1 preview stage · 2026-04-23
  * Risk Score: 0-100 de risco jurídico em qualquer documento. Com
@@ -17,7 +20,26 @@ import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
 
 export default function RiscoPage() {
   return (
-    <AgentPreviewStage
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <AgentHero
+        edition="Nº X"
+        Icon={AlertTriangle}
+        name="Risco"
+        discipline="Score executivo de contratos"
+        description="Análise 0–100 de risco jurídico em documentos contratuais. Top 3 pontos de atenção com peso, probabilidade estimada de sucesso em contencioso e comparação com padrão de mercado. Com disclaimer firme: a IA erra, a decisão é do advogado."
+        accent="bronze"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~30s' },
+          { Icon: Gauge, label: 'Formato', value: 'Score + gauge + PDF' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Disclaimer assinado' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Cole o documento', desc: 'Contrato, aditivo ou peça em texto, DOCX ou PDF.' },
+          { n: 'II', title: 'Análise ponderada', desc: 'Agente atribui peso explícito a cada ponto e calcula risco global.' },
+          { n: 'III', title: 'Slide 1-page', desc: 'Score, top 3 riscos, recomendação e benchmarks em layout pronto para reunião.' },
+        ]}
+      />
+      <AgentPreviewStage
       Icon={AlertTriangle}
       kicker="Nº 026 · Agente Risco"
       name="Risco"
@@ -89,5 +111,6 @@ Precisão desta análise: IA alucina. Este relatório não substitui
 seu parecer. Disclaimer completo no rodapé do PDF.`,
       }}
     />
+    </div>
   )
 }

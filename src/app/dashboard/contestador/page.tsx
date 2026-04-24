@@ -7,9 +7,14 @@ import {
   Check,
   Clipboard,
   Sparkles,
+  Shield,
+  Clock,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { AgentHero } from '@/components/AgentHero'
 
 interface Preliminar {
   nome?: string; fundamento?: string; argumentacao?: string; pedido?: string
@@ -87,28 +92,31 @@ export default function ContestadorPage() {
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{
-            background: 'rgba(191,166,142,0.1)',
-            border: '1px solid rgba(191,166,142,0.3)',
-            borderRadius: 12, padding: 12,
-          }}>
-            <Scale size={24} style={{ color: 'var(--accent)' }} aria-hidden />
-          </div>
-          <div>
-            <h1 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: 32, color: 'var(--text-primary)', margin: 0, fontWeight: 700,
-            }}>
-              Contestador
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Esboco tecnico de contestacao com preliminares, merito e replicas
-            </p>
-          </div>
-        </div>
-      </div>
+      <AgentHero
+        edition="Nº XVIII"
+        Icon={Shield}
+        name="Contestador"
+        discipline="Defesa técnica completa"
+        description="Esboço de contestação com endereçamento, qualificação, preliminares, impugnações específicas, teses defensivas, réplicas previstas e pedidos. Antecipa o ataque do autor e calibra a defesa com fundamento e jurisprudência."
+        accent="pearl"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~60s' },
+          { Icon: Gauge, label: 'Profundidade', value: 'Preliminares + mérito' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'CPC + Provimento 205' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Cole a tese inicial', desc: 'Petição inicial ou síntese dos pedidos e causa de pedir do autor.' },
+          { n: 'II', title: 'Apresente a defesa', desc: 'Tese do seu cliente, provas disponíveis e circunstâncias favoráveis.' },
+          { n: 'III', title: 'Receba a contestação', desc: 'Preliminares, impugnações, teses, réplicas previstas e pedidos formatados.' },
+        ]}
+        examples={[
+          { label: 'Ação de dano moral online', prompt: 'Autor alega dano moral por mensagens ofensivas publicadas em grupo privado de WhatsApp com 40 membros. Pede R$ 80k. Junta prints parciais. Tese de defesa: cliente nunca publicou tais mensagens, prints são montagens. Perícia em grupo dependeria de quebra de sigilo. Autor já tem histórico de 3 ações similares contra outros réus.' },
+          { label: 'Reclamação trabalhista', prompt: 'Ex-funcionária alega rescisão indireta por assédio moral da supervisora. Pede R$ 150k entre indenização e verbas rescisórias. Reclamada tem defesa: cliente trabalhou 11 meses, tinha histórico de baixa performance documentado em PDI, saiu por conta própria após receber feedback formal. Empresa tem política anti-assédio ativa desde 2020, com canal de denúncia não utilizado pela autora.' },
+          { label: 'Ação de cobrança B2B', prompt: 'Autora cobra R$ 230k por prestação de serviço de consultoria não paga. Cliente entende que serviço foi entregue com atraso de 6 meses e qualidade aquém do contratado. Há e-mails documentando insatisfação, contratação de terceiro para refazer trabalho, custo extra R$ 90k. Quer compensação em reconvenção pelo prejuízo.' },
+        ]}
+        onExampleClick={setTeseDefesa}
+        shortcut="⌘⏎ gerar"
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="cont-grid">
         <div style={{

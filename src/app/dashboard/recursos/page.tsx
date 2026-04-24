@@ -7,9 +7,14 @@ import {
   Check,
   Clipboard,
   Sparkles,
+  FileUp,
+  Clock,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
+import { AgentHero } from '@/components/AgentHero'
 
 interface FundamentoReforma {
   ponto?: string; argumentacao?: string; fundamento_legal?: string; jurisprudencia?: string
@@ -89,21 +94,31 @@ export default function RecursosPage() {
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{ background: 'rgba(191,166,142,0.1)', border: '1px solid rgba(191,166,142,0.3)', borderRadius: 12, padding: 12 }}>
-            <Gavel size={24} style={{ color: 'var(--accent)' }} aria-hidden />
-          </div>
-          <div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
-              Recursos
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Apelacao, agravo, embargos e recursos excepcionais
-            </p>
-          </div>
-        </div>
-      </div>
+      <AgentHero
+        edition="Nº XVII"
+        Icon={FileUp}
+        name="Recursos"
+        discipline="Apelação, agravo e excepcionais"
+        description="Minuta completa de recurso com cabimento, prequestionamento, síntese do julgado, fundamentos de reforma e divergência jurisprudencial. Cobre apelação, agravo, embargos, recurso especial e extraordinário com checagem de pressupostos."
+        accent="sand"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~60s' },
+          { Icon: Gauge, label: 'Profundidade', value: 'Cabimento → pedidos' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Pressupostos auditados' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha o recurso', desc: 'Apelação, agravo, embargos, REsp ou RE — cada um com rito e pressupostos próprios.' },
+          { n: 'II', title: 'Cole a decisão', desc: 'Íntegra da sentença ou acórdão recorrido, com data de intimação se houver.' },
+          { n: 'III', title: 'Receba a minuta', desc: 'Cabimento, prequestionamento, razões por ponto, pedidos e fechamento formatado.' },
+        ]}
+        examples={[
+          { label: 'Apelação civil', prompt: 'Sentença de improcedência em ação de dano moral por negativação indevida (valor R$ 25.000). Juiz entendeu que cliente não comprovou o dano, apesar de juntar prints do cadastro no Serasa e declaração de testemunhas. Houve cerceamento de defesa: pedido de prova pericial grafotécnica foi indeferido sem fundamentação adequada.' },
+          { label: 'Agravo de instrumento', prompt: 'Decisão interlocutória em ação trabalhista negou tutela de urgência para reintegração de diretor estatutário demitido sem processo administrativo. Juiz entendeu que não há verossimilhança. Cliente é diretor há 14 anos, rescisão foi comunicada por e-mail às 23h, em desacordo com estatuto social que exige deliberação em assembleia.' },
+          { label: 'Embargos de declaração', prompt: 'Acórdão do TJSP manteve procedência de ação de cobrança, mas foi omisso sobre o pedido de compensação com débito reconhecido do autor na reconvenção. Também foi contraditório: no corpo do acórdão menciona ressarcimento de R$ 80k mas na dispositiva fixa R$ 120k.' },
+        ]}
+        onExampleClick={setDecisao}
+        shortcut="⌘⏎ gerar"
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="rec-grid">
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>

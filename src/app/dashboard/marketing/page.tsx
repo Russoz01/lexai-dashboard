@@ -7,8 +7,12 @@ import {
   Images,
   TrendingUp,
   Hash,
+  Megaphone,
+  Clock,
+  ShieldCheck,
 } from 'lucide-react'
 import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
+import { AgentHero } from '@/components/AgentHero'
 
 /* /dashboard/marketing — v1 preview stage · 2026-04-23
  * Calendário editorial compliant com Provimento 205/2021 OAB. Agenda
@@ -17,7 +21,26 @@ import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
 
 export default function MarketingPage() {
   return (
-    <AgentPreviewStage
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <AgentHero
+        edition="Nº XIII"
+        Icon={Megaphone}
+        name="Marketing"
+        discipline="Calendário compliant OAB"
+        description="Calendário editorial de 30 dias pré-validado contra o Provimento 205/2021 e o Código de Ética. Pautas cruzadas com atualidade jurídica, briefing visual e semáforo de compliance em cada post, com artigo do CED citado."
+        accent="gold"
+        meta={[
+          { Icon: Clock, label: 'Horizonte', value: '30 dias' },
+          { Icon: Sparkles, label: 'Formato', value: 'Posts · reels · carrosséis' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Provimento 205 + CED' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Descreva o escritório', desc: 'Área de atuação, público e tom editorial preferido.' },
+          { n: 'II', title: 'Agente gera agenda', desc: 'Pautas com ganchos de atualidade, roteiro e briefing visual por post.' },
+          { n: 'III', title: 'Aprovação por semáforo', desc: 'Verde publica, amarelo ajusta, vermelho reescreve — com artigo do CED na justificativa.' },
+        ]}
+      />
+      <AgentPreviewStage
       Icon={Sparkles}
       kicker="Nº 030 · Módulo Marketing"
       name="Marketing"
@@ -100,5 +123,6 @@ Total semana · 5 posts · 0 vermelho · 1 amarelo (ajustável)
 Semana 2 desbloqueia ao publicar 3 desses.`,
       }}
     />
+    </div>
   )
 }

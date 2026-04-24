@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
-import { Search, BookOpen, Landmark, ShieldAlert, FileText, NotebookText, Gavel, Briefcase, ShoppingBag, Coins, CheckSquare, ShieldCheck, Globe, Bookmark, ExternalLink, RotateCcw } from 'lucide-react'
+import { Search, BookOpen, Landmark, ShieldAlert, FileText, NotebookText, Gavel, Briefcase, ShoppingBag, Coins, CheckSquare, ShieldCheck, Globe, Bookmark, ExternalLink, RotateCcw, Clock, Gauge } from 'lucide-react'
+import { AgentHero } from '@/components/AgentHero'
 
 export default function LegislacaoPage() {
   const [consulta, setConsulta] = useState('')
@@ -28,16 +29,31 @@ export default function LegislacaoPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 1200 }}>
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA
-          </span>
-        </div>
-        <h1 className="page-title">Legislação</h1>
-        <p className="page-subtitle">Pesquise e entenda artigos de lei, códigos e normas brasileiras</p>
-      </div>
+      <AgentHero
+        edition="Nº XXII"
+        Icon={BookOpen}
+        name="Legislação"
+        discipline="Código comentado sob demanda"
+        description="Pesquisa e interpretação de artigos de lei, códigos e normas brasileiras. Localiza o dispositivo, traz redação, entendimento doutrinário e jurisprudencial consolidado e relaciona com súmulas e precedentes vinculantes quando aplicável."
+        accent="bronze"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~25s' },
+          { Icon: Gauge, label: 'Cobertura', value: 'CF · CC · CPC · CLT · CDC' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Texto oficial atualizado' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Digite o dispositivo', desc: 'Artigo, código, lei ou termo livre — aceita tanto Art. 927 CC quanto busca textual.' },
+          { n: 'II', title: 'Agente localiza', desc: 'Cruza texto oficial, doutrina consolidada e jurisprudência dos tribunais superiores.' },
+          { n: 'III', title: 'Receba o enxerto', desc: 'Redação, comentário técnico, súmulas relacionadas e casos-exemplo para argumentação.' },
+        ]}
+        examples={[
+          { label: 'Art. 927 CC — resp. civil objetiva', prompt: 'Art. 927 CC' },
+          { label: 'Art. 300 CPC — tutela de urgência', prompt: 'Art. 300 CPC' },
+          { label: 'Lei 8.078/90 — vício do produto', prompt: 'Art. 18 CDC' },
+        ]}
+        onExampleClick={setConsulta}
+        shortcut="↵ pesquisar"
+      />
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
         <div style={{ flex: 1, position: 'relative' }}>

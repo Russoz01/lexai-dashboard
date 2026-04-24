@@ -7,8 +7,12 @@ import {
   Building2,
   FileSearch,
   History,
+  Scale,
+  Clock,
+  ShieldCheck,
 } from 'lucide-react'
 import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
+import { AgentHero } from '@/components/AgentHero'
 
 /* /dashboard/cnj — v1 preview stage · 2026-04-23
  * Integração com DataJud (API pública do CNJ). Consulta andamentos em 20
@@ -17,7 +21,26 @@ import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
 
 export default function CnjPage() {
   return (
-    <AgentPreviewStage
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <AgentHero
+        edition="Nº VIII"
+        Icon={Scale}
+        name="CNJ"
+        discipline="Movimentação em tempo real"
+        description="Integração com a API DataJud do CNJ para acompanhar processos em 20 tribunais. Um número só, monitoramento automático e alerta no WhatsApp quando tem despacho novo."
+        accent="copper"
+        meta={[
+          { Icon: Clock, label: 'Atualização', value: 'A cada 6h' },
+          { Icon: Network, label: 'Cobertura', value: '20 tribunais' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'API pública CNJ' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Digite o CNJ', desc: 'Número único do processo no padrão 0000000-00.0000.0.00.0000.' },
+          { n: 'II', title: 'Consulta automática', desc: 'Agente puxa partes, movimentações e última atualização dos tribunais conectados.' },
+          { n: 'III', title: 'Receba alertas', desc: 'Dashboard + WhatsApp avisam quando houver andamento novo.' },
+        ]}
+      />
+      <AgentPreviewStage
       Icon={Network}
       kicker="Nº 024 · Agente CNJ"
       name="CNJ"
@@ -82,5 +105,6 @@ Movimento novo detectado desde 2026-04-21 (seu último check)
 → Notificação enviada: WhatsApp · 14:23`,
       }}
     />
+    </div>
   )
 }

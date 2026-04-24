@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Languages, Zap, ArrowRight, AlertTriangle, Clipboard, Check, RotateCcw, Info } from 'lucide-react'
+import { Languages, Zap, ArrowRight, AlertTriangle, Clipboard, Check, RotateCcw, Info, Clock, ShieldCheck, FileText } from 'lucide-react'
+import { AgentHero } from '@/components/AgentHero'
 
 interface TradutorResult {
   traducao: string
@@ -137,19 +138,31 @@ export default function TradutorPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 1200 }}>
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA
-          </span>
-        </div>
-        <h1 className="page-title">Tradutor Jurídico</h1>
-        <p className="page-subtitle" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 16, color: 'var(--text-muted)' }}>
-          Tradução técnica de contratos, tratados e documentos internacionais
-        </p>
-      </div>
+      <AgentHero
+        edition="Nº IV"
+        Icon={Languages}
+        name="Tradutor"
+        discipline="Versões técnicas entre idiomas"
+        description="Tradução jurídica de contratos, tratados e decisões estrangeiras com notas terminológicas e alertas de conflito. Mantém o sentido técnico sem suavizar cláusulas críticas."
+        accent="bronze"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~40s' },
+          { Icon: FileText, label: 'Formato', value: 'Texto + notas' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Terminologia jurídica' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha origem e destino', desc: 'Selecione idiomas e o tipo de documento para calibrar o vocabulário técnico.' },
+          { n: 'II', title: 'Cole o texto', desc: 'Trecho ou documento completo até 8 mil caracteres por tradução.' },
+          { n: 'III', title: 'Receba a versão', desc: 'Tradução fiel, notas terminológicas e alertas sobre cláusulas sensíveis.' },
+        ]}
+        examples={[
+          { label: 'Cláusula de confidencialidade', prompt: 'The receiving party agrees to hold all Confidential Information in strict confidence and shall not disclose such information to any third party without the prior written consent of the disclosing party.' },
+          { label: 'Cláusula de arbitragem', prompt: 'Any dispute arising out of or in connection with this contract shall be referred to and finally resolved by arbitration under the ICC Rules. The seat of arbitration shall be São Paulo, Brazil.' },
+          { label: 'Force Majeure', prompt: "Neither party shall be liable for failure to perform its obligations if such failure is caused by circumstances beyond the party reasonable control, including acts of God, war, terrorism, or government actions." },
+        ]}
+        onExampleClick={setTexto}
+        shortcut="⌘⏎ traduzir"
+      />
 
       {/* Formulario */}
       {!resultado && !loading && (

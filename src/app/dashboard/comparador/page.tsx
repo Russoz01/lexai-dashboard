@@ -7,8 +7,12 @@ import {
   MessageCircleQuestion,
   Download,
   Clock4,
+  Clock,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
+import { AgentHero } from '@/components/AgentHero'
 
 /* /dashboard/comparador — v1 preview stage · 2026-04-23
  * Diff visual entre 2 versões de contrato/peça + explicação IA do que
@@ -17,7 +21,26 @@ import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
 
 export default function ComparadorPage() {
   return (
-    <AgentPreviewStage
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <AgentHero
+        edition="Nº IX"
+        Icon={GitCompare}
+        name="Comparador"
+        discipline="Diff jurídico explicado"
+        description="Duas versões do mesmo contrato, peça ou minuta, lado a lado. Adições, remoções e mudanças significativas destacadas com análise jurídica por cláusula. Exporta PDF colorido para cliente revisar."
+        accent="rose"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~35s' },
+          { Icon: Gauge, label: 'Cobertura', value: 'Cláusula a cláusula' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'DOCX · PDF · TXT' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Cole v1 e v2', desc: 'As duas versões do documento em qualquer formato comum.' },
+          { n: 'II', title: 'Escolha visualização', desc: 'Inline ou side-by-side, com destaque palavra a palavra.' },
+          { n: 'III', title: 'Receba o diff + análise', desc: 'Mudanças agrupadas por cláusula com comentário jurídico e PDF exportável.' },
+        ]}
+      />
+      <AgentPreviewStage
       Icon={GitCompare}
       kicker="Nº 025 · Agente Comparador"
       name="Comparador"
@@ -86,5 +109,6 @@ CLÁUSULA 18 (Foro)
 PDF comparativo disponível em /dashboard/comparador/r-0042`,
       }}
     />
+    </div>
   )
 }

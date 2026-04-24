@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { ShieldCheck, Zap, ArrowRight, AlertTriangle, Info, Clipboard, Check, RotateCcw } from 'lucide-react'
+import { ShieldCheck, Zap, ArrowRight, AlertTriangle, Info, Clipboard, Check, RotateCcw, Clock, Gauge } from 'lucide-react'
+import { AgentHero } from '@/components/AgentHero'
 
 interface ComplianceResult {
   exposicoes: string
@@ -159,19 +160,31 @@ export default function CompliancePage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 1200 }}>
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA
-          </span>
-        </div>
-        <h1 className="page-title">Compliance</h1>
-        <p className="page-subtitle" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 16, color: 'var(--text-muted)' }}>
-          Mapeamento de risco regulatório, LGPD e anticorrupção
-        </p>
-      </div>
+      <AgentHero
+        edition="Nº V"
+        Icon={ShieldCheck}
+        name="Compliance"
+        discipline="Mapeamento regulatório integrado"
+        description="Diagnóstico de exposição regulatória com foco em LGPD, anticorrupção e obrigações setoriais. Devolve score, pontos críticos e plano de ação priorizado."
+        accent="pearl"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~50s' },
+          { Icon: Gauge, label: 'Profundidade', value: '5 blocos' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'LGPD + Lei 12.846' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Contextualize a operação', desc: 'Descreva atividade, dados tratados e setor regulado com o máximo de concretude.' },
+          { n: 'II', title: 'Selecione foco', desc: 'Escolha área e tipo de análise para calibrar o recorte regulatório.' },
+          { n: 'III', title: 'Receba o raio-X', desc: 'Exposições, riscos LGPD e anticorrupção, score e ações priorizadas.' },
+        ]}
+        examples={[
+          { label: 'Fintech com dados sensíveis', prompt: 'Fintech de crédito consignado que coleta CPF, dados bancários e folha de pagamento de servidores públicos. Armazena em nuvem AWS São Paulo, compartilha com bureaus de crédito. Não possui DPO nomeado.' },
+          { label: 'Clínica médica com prontuário digital', prompt: 'Clínica multidisciplinar com prontuário eletrônico, integração com operadoras de saúde e telemedicina. Coleta dados de saúde de pacientes (dados sensíveis LGPD). Sem política formal de retenção.' },
+          { label: 'Distribuidor com pregão público', prompt: 'Distribuidora de equipamentos médicos que participa de pregões eletrônicos federais e estaduais. Intermediação comercial com hospitais públicos. Sem programa de integridade formalizado.' },
+        ]}
+        onExampleClick={setDescricao}
+        shortcut="⌘⏎ analisar"
+      />
 
       {/* Formulario */}
       {!resultado && !loading && (

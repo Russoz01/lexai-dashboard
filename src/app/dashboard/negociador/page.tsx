@@ -17,10 +17,14 @@ import {
   X,
   Inbox,
   Trash2,
+  Handshake,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
+import { AgentHero } from '@/components/AgentHero'
 
 export default function NegociadorPage() {
   const [situacao, setSituacao] = useState('')
@@ -109,17 +113,32 @@ export default function NegociadorPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: '100%' }}>
-      <div style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-              Agente IA
-            </span>
-          </div>
-          <h1 className="page-title">Negociador</h1>
-          <p className="page-subtitle">Estratégia de negociação e mediação de conflitos jurídicos</p>
-        </div>
+      <AgentHero
+        edition="Nº XXIV"
+        Icon={Handshake}
+        name="Negociador"
+        discipline="Estratégia de acordo real"
+        description="Análise de conflitos jurídicos com foco em negociação e mediação. Mapeia ZOPA, sugere estratégia por tipo de disputa, prevê cenários por probabilidade e risco, e devolve proposta de acordo calibrada com base em BATNA e critérios objetivos."
+        accent="rose"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~45s' },
+          { Icon: Gauge, label: 'Cenários', value: '3 probabilidades' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'BATNA + ZOPA' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Descreva o conflito', desc: 'Partes, objeto, valor em disputa, histórico de acordo e posição do seu cliente.' },
+          { n: 'II', title: 'Cenário comum ou custom', desc: 'Use um dos 6 modelos (trabalhista, aluguel, dívida, civil, empresarial, família) como base.' },
+          { n: 'III', title: 'Receba a estratégia', desc: 'ZOPA, abordagem recomendada, cenários probabilísticos e proposta de acordo pronta.' },
+        ]}
+        examples={[
+          { label: 'Rescisão contratual B2B', prompt: 'Cliente fornecedor descumpriu prazo de entrega causando perda de R$ 200 mil ao adquirente. Multa contratual prevista de 10%. Adquirente já contratou terceiro por R$ 90 mil. Buscamos acordo com pagamento parcelado da multa + ressarcimento dos danos, evitando ação judicial.' },
+          { label: 'Revisão de dívida bancária', prompt: 'Cliente devedor de R$ 45 mil em cartão com juros abusivos aplicados ao longo de 24 meses. Banco ofereceu parcelar em 24x sem desconto. Buscamos revisão de juros (limite 2x SELIC), descontos progressivos e parcelamento em 36x para preservar capacidade financeira do cliente.' },
+          { label: 'Pensão alimentícia após perda de emprego', prompt: 'Pai busca reduzir pensão de R$ 3.500 para R$ 1.800 após perda de emprego formal há 4 meses. Mãe quer manter valor atual. Filho de 8 anos. Renda atual do pai caiu 60% (está prestando serviço autônomo). Buscamos acordo proporcional à renda, com cláusula de revisão em 12 meses.' },
+        ]}
+        onExampleClick={setSituacao}
+        shortcut="⌘⏎ analisar"
+      />
+      <div style={{ marginBottom: 28, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {savedBadge && (
             <span style={{

@@ -7,8 +7,12 @@ import {
   Trophy,
   MapPinned,
   Scale,
+  Clock,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
+import { AgentHero } from '@/components/AgentHero'
 
 /* /dashboard/jurimetria — v1 preview stage · 2026-04-23
  * Métricas processuais + benchmarks. O que tribunal X decide em ações
@@ -17,7 +21,26 @@ import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
 
 export default function JurimetriaPage() {
   return (
-    <AgentPreviewStage
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <AgentHero
+        edition="Nº XII"
+        Icon={BarChart3}
+        name="Jurimetria"
+        discipline="Dados reais de decisões"
+        description="Métricas processuais e benchmarks por tribunal, vara, relator e tipo de ação. Tempo médio, taxa de procedência, valor mediano de condenação e precedentes aplicáveis. Dados para fundamentar expectativa de cliente, honorário de êxito e estratégia."
+        accent="pearl"
+        meta={[
+          { Icon: Clock, label: 'Amostra', value: 'Milhares de decisões' },
+          { Icon: Gauge, label: 'Granularidade', value: 'Vara · relator · causa' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Decisões públicas' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Descreva a ação', desc: 'Tipo de causa, comarca, valor pretendido e recorte temporal.' },
+          { n: 'II', title: 'Escolha o corte', desc: 'Por tribunal, vara, relator ou benchmark comparativo.' },
+          { n: 'III', title: 'Receba o dashboard', desc: 'Procedência, valores, tempo processual e recomendação estratégica em PDF.' },
+        ]}
+      />
+      <AgentPreviewStage
       Icon={BarChart3}
       kicker="Nº 029 · Módulo Jurimetria"
       name="Jurimetria"
@@ -94,5 +117,6 @@ Recomendação estratégica
   sinalizar litigância exagerada).`,
       }}
     />
+    </div>
   )
 }
