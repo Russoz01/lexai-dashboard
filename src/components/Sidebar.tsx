@@ -9,6 +9,7 @@ import {
   LayoutDashboard, Folder, History, CalendarCheck, Wallet,
   Gem, Settings, LogOut, Sparkles, Lock, Crown,
 } from 'lucide-react'
+import { PralvexMark } from '@/components/PralvexMark'
 import s from './Sidebar.module.css'
 
 /* ═════════════════════════════════════════════════════════════
@@ -45,14 +46,10 @@ const CONTA = [
   { href: '/dashboard/configuracoes', Icon: Settings, label: 'Configurações' },
 ] as const
 
-function LexLogo() {
+function SidebarBrandMark() {
   return (
     <div className="logo">
-      <svg viewBox="0 0 28 24" fill="none" width="22" height="19" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 3 L3 21 L11 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M13 3 L25 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
-        <path d="M25 3 L13 21" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
-      </svg>
+      <PralvexMark variant="bare" size={36} />
     </div>
   )
 }
@@ -113,7 +110,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   return (
     <aside className="sidebar" id="sidebar">
       <div className="sidebar-brand">
-        <LexLogo />
+        <SidebarBrandMark />
         <div className={s.brandCol}>
           <span>Pralvex</span>
           <span className={s.brandSub}>Inteligência jurídica</span>

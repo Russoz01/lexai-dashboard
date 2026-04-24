@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-// App icon — replaces the default Next.js favicon
+// App icon — favicon Pralvex (PX monograma em caixa champagne sobre noir)
 export const runtime = 'edge'
 export const size = { width: 64, height: 64 }
 export const contentType = 'image/png'
@@ -15,15 +15,25 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #132025, #18282e)',
+          background: 'linear-gradient(135deg, #1a1410 0%, #0a0807 100%)',
           borderRadius: 14,
+          border: '1px solid rgba(191,166,142,0.34)',
+          boxShadow: 'inset 0 1px 0 rgba(230,212,189,0.12)',
         }}
       >
-        <svg width="40" height="34" viewBox="0 0 28 24" fill="none">
-          <path d="M3 3 L3 21 L11 21" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M13 3 L25 21" stroke="white" strokeWidth="2.8" strokeLinecap="round" />
-          <path d="M25 3 L13 21" stroke="white" strokeWidth="2.8" strokeLinecap="round" />
-        </svg>
+        <div
+          style={{
+            display: 'flex',
+            fontFamily: 'monospace',
+            fontSize: 26,
+            fontWeight: 800,
+            letterSpacing: 3,
+            color: '#e6d4bd',
+            paddingLeft: 3,
+          }}
+        >
+          PX
+        </div>
       </div>
     ),
     { ...size }

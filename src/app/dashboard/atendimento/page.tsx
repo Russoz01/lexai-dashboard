@@ -9,10 +9,14 @@ import {
   Sparkles,
   AlertCircle,
   Flag,
+  Clock,
+  ListChecks,
+  ShieldCheck,
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { LEGAL_AREAS_LABEL_MAP } from '@/lib/agents/taxonomy'
+import { AgentHero } from '@/components/AgentHero'
 
 interface Pergunta {
   pergunta?: string; racional?: string; red_flags?: string[]; followups?: string[]
@@ -87,21 +91,31 @@ export default function AtendimentoPage() {
 
   return (
     <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{ background: 'rgba(191,166,142,0.1)', border: '1px solid rgba(191,166,142,0.3)', borderRadius: 12, padding: 12 }}>
-            <UserRound size={24} style={{ color: 'var(--accent)' }} aria-hidden />
-          </div>
-          <div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
-              Atendimento
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '4px 0 0' }}>
-              Roteiro de entrevista inicial em 4 blocos: abertura, fatos, objetivos, fechamento
-            </p>
-          </div>
-        </div>
-      </div>
+      <AgentHero
+        edition="Nº VII"
+        Icon={UserRound}
+        name="Atendimento"
+        discipline="Roteiros de entrevista"
+        description="Monta o roteiro da primeira consulta em 4 blocos — abertura, fatos, objetivos, fechamento. Inclui red flags éticas, documentos a pedir e prazos críticos."
+        accent="rose"
+        meta={[
+          { Icon: Clock, label: 'Duração estimada', value: '45-60 min' },
+          { Icon: ListChecks, label: 'Estrutura', value: '4 blocos + followups' },
+          { Icon: ShieldCheck, label: 'Provimento 205', value: 'Observações éticas' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha a área', desc: 'Cível, trabalhista, tributário, família... a pauta muda por área.' },
+          { n: 'II', title: 'Perfil do cliente', desc: 'Quem é, qual o contexto do problema, o que trouxe até você.' },
+          { n: 'III', title: 'Roteiro completo', desc: 'Perguntas + racional + red flags + documentos + prazos.' },
+        ]}
+        examples={[
+          { label: 'Sócio cobrando haveres', prompt: 'PJ de pequeno porte em SP, recebeu notificação extrajudicial de ex-sócio cobrando haveres. Primeira consulta, ainda não contratou advogado. Contrato social antigo, sem cláusula de apuração.' },
+          { label: 'Rescisão indireta suspeita', prompt: 'Funcionário CLT de 4 anos em empresa de tecnologia. Relata atrasos de salário há 3 meses, ambiente tóxico, quer rescisão indireta mas tem medo de retaliação.' },
+          { label: 'Divórcio com filhos menores', prompt: 'Mulher, 38, casada há 12 anos em comunhão parcial. Dois filhos menores (8 e 5). Marido empresário, suspeita de ocultação patrimonial em offshore.' },
+        ]}
+        onExampleClick={setPerfil}
+        shortcut="⌘⏎ gerar"
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="aten-grid">
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>

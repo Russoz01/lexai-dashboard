@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, Check, Loader2, Mail } from 'lucide-react'
+import { PralvexMark } from '@/components/PralvexMark'
 
 /* ═════════════════════════════════════════════════════════════
  * /reset-password — Atelier Reset Flow (v10.9 · 2026-04-22)
@@ -13,16 +14,8 @@ import { ArrowLeft, Check, Loader2, Mail } from 'lucide-react'
  * Noir + champagne, coerente com /login.
  * ═════════════════════════════════════════════════════════════ */
 
-function LexLogoMark() {
-  return (
-    <div className="flex size-10 items-center justify-center rounded-lg border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black text-[#bfa68e] shadow-[0_0_16px_rgba(191,166,142,0.2)]">
-      <svg viewBox="0 0 28 24" fill="none" width="22" height="19">
-        <path d="M3 3 L3 21 L11 21" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M13 3 L25 21" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-        <path d="M25 3 L13 21" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-      </svg>
-    </div>
-  )
+function ResetBrandMark() {
+  return <PralvexMark variant="seal" size={40} />
 }
 
 export default function ResetPasswordPage() {
@@ -92,7 +85,7 @@ export default function ResetPasswordPage() {
 
         <div className="relative z-10 mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center">
           <div className="mb-7 flex items-center gap-3">
-            <LexLogoMark />
+            <ResetBrandMark />
             <div>
               <div className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[#bfa68e]">
                 Nº 002 · Pralvex · MMXXVI
@@ -123,12 +116,12 @@ export default function ResetPasswordPage() {
 
               <form onSubmit={submit} noValidate className="space-y-4">
                 <div>
-                  <label htmlFor="lx-reset-email" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em] text-white/50">
+                  <label htmlFor="px-reset-email" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em] text-white/50">
                     Email
                   </label>
                   <div className="relative">
                     <input
-                      id="lx-reset-email"
+                      id="px-reset-email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}

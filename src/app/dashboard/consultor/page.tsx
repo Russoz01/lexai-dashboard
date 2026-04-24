@@ -11,8 +11,13 @@ import {
   FileText,
   Info,
   XCircle,
+  BookText,
+  Clock,
+  ShieldCheck,
+  Gauge,
 } from 'lucide-react'
 import { PoweredByPralvex } from '@/components/ConfidenceBadge'
+import { AgentHero } from '@/components/AgentHero'
 
 interface Parecer {
   titulo: string
@@ -200,20 +205,31 @@ export default function ConsultorPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 1200 }}>
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Agente IA
-          </span>
-        </div>
-        <h1 className="page-title">Estrategista</h1>
-        <p className="consultor-subtitle">Pareceres Jurídicos</p>
-        <p className="page-subtitle" style={{ marginTop: 4 }}>
-          Elabore pareceres jurídicos fundamentados com análise multifacetada, legislação, doutrina e recomendações estratégicas
-        </p>
-      </div>
+      <AgentHero
+        edition="Nº I"
+        Icon={BookText}
+        name="Estrategista"
+        discipline="Pareceres fundamentados"
+        description="Análise multifacetada com legislação, doutrina, argumentos favoráveis e contrários. Ideal para responder consultas internas ou fundamentar posicionamento antes de uma peça."
+        accent="gold"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~55s' },
+          { Icon: Gauge, label: 'Profundidade', value: '8 blocos' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Provimento 205' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Descreva a questão', desc: 'Em 2-5 linhas, coloque a pergunta central e os fatos essenciais.' },
+          { n: 'II', title: 'Opcional: contexto', desc: 'Anexe jurisprudência conhecida, documentos, prazos ou contratos envolvidos.' },
+          { n: 'III', title: 'Receba o parecer', desc: 'Ementa, fundamentação, doutrina, argumentos e conclusão formatados.' },
+        ]}
+        examples={[
+          { label: 'Marketplace responde por vendedor?', prompt: 'Uma empresa de e-commerce pode ser responsabilizada por danos causados por produto vendido por terceiro em seu marketplace?' },
+          { label: 'Multa por mudança de regulamento', prompt: 'Condomínio pode aplicar multa com base em regulamento interno alterado depois da compra do imóvel?' },
+          { label: 'Rescisão com justa causa remota', prompt: 'Empresa pode rescindir por justa causa funcionário 100% remoto que não cumpre horário? Quais os requisitos probatórios?' },
+        ]}
+        onExampleClick={setPergunta}
+        shortcut="⌘⏎ gerar"
+      />
 
       {/* Form */}
       {!parecer && !loading && (

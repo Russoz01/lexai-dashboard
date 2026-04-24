@@ -13,6 +13,7 @@ import { generateDocx, downloadBlob } from '@/lib/word-export'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 import { SkeletonResult } from '@/components/Skeleton'
 import { toast } from '@/components/Toast'
+import { AgentHero } from '@/components/AgentHero'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement> & { size?: number | string }>
 
@@ -402,22 +403,27 @@ export default function RedatorPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: '100%' }}>
-      {/* Header */}
-      <div style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: 12, fontWeight: 600, color: 'var(--accent)',
-              letterSpacing: '0.5px', textTransform: 'uppercase',
-            }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-              Agente IA
-            </span>
-          </div>
-          <h1 className="page-title">Redator Jurídico</h1>
-          <p className="page-subtitle">Gere peças processuais completas com inteligência artificial</p>
-        </div>
+      <AgentHero
+        edition="Nº II"
+        Icon={FileSignature}
+        name="Redator"
+        discipline="Peças processuais"
+        description="Petição, recurso, contestação, parecer, contrato ou notificação. Modo guiado (wizard campo-a-campo) ou livre (instruções abertas). Export .docx pronto pra protocolar."
+        accent="copper"
+        meta={[
+          { Icon: Clock, label: 'Tempo médio', value: '~90s' },
+          { Icon: FileText, label: '6 templates', value: 'Petição · Recurso · Contestação · Parecer · Contrato · Notificação' },
+          { Icon: ShieldCheck, label: 'Export', value: '.docx OAB-ready' },
+        ]}
+        steps={[
+          { n: 'I', title: 'Escolha o template', desc: 'Petição inicial, contestação, recurso, contrato, notificação ou parecer.' },
+          { n: 'II', title: 'Guiado ou livre', desc: 'Wizard campo-a-campo (seguro) ou instruções abertas (rápido).' },
+          { n: 'III', title: 'Revise e exporte', desc: 'Preview em tela, confiança aferida, download .docx formatado.' },
+        ]}
+        shortcut="⌘S salvar"
+      />
+      {/* Header — controles de rascunhos */}
+      <div style={{ marginBottom: 28, display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {savedBadge && (
             <span style={{

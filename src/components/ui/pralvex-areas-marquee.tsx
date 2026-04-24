@@ -2,31 +2,31 @@
 
 import { Marquee } from '@/components/ui/marquee'
 
-/* LexAreasMarquee — strip com areas do Direito cobertas.
- * Substitui logos de customers (que nao temos publicamente). */
+/* PralvexAreasMarquee — strip com áreas do Direito cobertas pelos 27 agentes.
+ * Substitui logos de customers (que não temos publicamente). */
 
 const areas = [
   'Civil',
   'Trabalhista',
-  'Tributario',
+  'Tributário',
   'Penal',
   'Empresarial',
-  'Familia',
-  'Previdenciario',
+  'Família',
+  'Previdenciário',
   'Consumidor',
   'Constitucional',
   'Administrativo',
   'Ambiental',
-  'Imobiliario',
-  'Bancario',
+  'Imobiliário',
+  'Bancário',
 ]
 
-export function LexAreasMarquee() {
+export function PralvexAreasMarquee() {
   return (
     <section className="relative border-y border-white/5 bg-black py-10">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-6 text-center font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/40">
-          9 areas do Direito cobertas pelos agentes
+          9 áreas do Direito cobertas pelos agentes
         </div>
         <div className="relative [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
           <Marquee>

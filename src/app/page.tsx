@@ -13,7 +13,7 @@ import {
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ExitIntent } from '@/components/ExitIntent'
 import { LexAgentsBento } from '@/components/ui/lex-agents-bento'
-import { LexAreasMarquee } from '@/components/ui/lex-areas-marquee'
+import { PralvexAreasMarquee } from '@/components/ui/pralvex-areas-marquee'
 import { LexPricing } from '@/components/ui/lex-pricing'
 import { LexFaq } from '@/components/ui/lex-faq'
 import { LexFinalCta } from '@/components/ui/lex-final-cta'
@@ -345,7 +345,7 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ AREAS MARQUEE ═════════════════════════════════════════════ */}
-      <LexAreasMarquee />
+      <PralvexAreasMarquee />
 
       {/* ═══ MANIFESTO — editorial divider ═══════════════════════════ */}
       <div id="manifesto">

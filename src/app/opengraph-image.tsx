@@ -63,18 +63,27 @@ export default async function OpenGraphImage() {
               width: 88,
               height: 88,
               borderRadius: 22,
-              background: 'linear-gradient(135deg, #bfa68e, #a08970)',
+              background: 'linear-gradient(135deg, #1a1410 0%, #0a0807 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 10px 40px rgba(191,166,142,0.42)',
+              border: '1px solid rgba(191,166,142,0.48)',
+              boxShadow: 'inset 0 1px 0 rgba(230,212,189,0.18), 0 10px 40px rgba(191,166,142,0.35)',
             }}
           >
-            <svg width="52" height="44" viewBox="0 0 28 24" fill="none">
-              <path d="M3 3 L3 21 L11 21" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M13 3 L25 21" stroke="white" strokeWidth="2.8" strokeLinecap="round" />
-              <path d="M25 3 L13 21" stroke="white" strokeWidth="2.8" strokeLinecap="round" />
-            </svg>
+            <div
+              style={{
+                display: 'flex',
+                fontFamily: 'monospace',
+                fontSize: 42,
+                fontWeight: 800,
+                letterSpacing: 5,
+                color: '#e6d4bd',
+                paddingLeft: 5,
+              }}
+            >
+              PX
+            </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div

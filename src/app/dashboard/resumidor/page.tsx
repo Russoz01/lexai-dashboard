@@ -16,6 +16,8 @@ import { generateDocx, downloadBlob } from '@/lib/word-export'
 import { extractPdfWithMeta } from '@/lib/pdf-parser'
 import { anonymize, deAnonymize, type AnonymizeResult } from '@/lib/anonymizer'
 import { SkeletonResult } from '@/components/Skeleton'
+import { AgentHero } from '@/components/AgentHero'
+import { FileText as FileTextIcon, Clock as ClockIcon, Gauge as GaugeIcon, ShieldCheck as ShieldIcon } from 'lucide-react'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Analise = any
@@ -545,25 +547,25 @@ export default function ResumidorPage() {
       <div className="page-content" style={{ maxWidth: '1200px' }}>
 
         {/* ── Page Header ── */}
-        <div style={{ marginBottom: '28px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: '6px',
-              fontSize: '12px', fontWeight: 600, color: 'var(--accent)',
-              letterSpacing: '0.5px', textTransform: 'uppercase',
-            }}>
-              <span style={{
-                width: '6px', height: '6px', borderRadius: '50%',
-                background: 'var(--accent)', display: 'inline-block',
-                animation: 'pulse 2s infinite',
-              }} />
-              Agente IA
-            </span>
-          </div>
-          <h1 className="page-title">Resumidor Jurídico</h1>
-          <p className="page-subtitle">
-            Cole qualquer documento jurídico e a IA retornará uma análise estruturada completa
-          </p>
+        <AgentHero
+          edition="Nº III"
+          Icon={FileTextIcon}
+          name="Resumidor"
+          discipline="Síntese de documentos"
+          description="Cole ou faça upload de qualquer peça, contrato ou sentença. Recebe resumo executivo, pontos críticos, datas, partes e próximos passos em ~40s."
+          accent="sand"
+          meta={[
+            { Icon: ClockIcon, label: 'Tempo médio', value: '~40s' },
+            { Icon: GaugeIcon, label: 'Limite', value: 'Até 50k caracteres' },
+            { Icon: ShieldIcon, label: 'Anonimização', value: 'Opcional · LGPD' },
+          ]}
+          steps={[
+            { n: 'I', title: 'Cole ou anexe PDF', desc: 'Sentença, contrato, petição, laudo — texto livre também serve.' },
+            { n: 'II', title: 'Escolha o modo', desc: 'Análise única ou comparar dois documentos lado a lado.' },
+            { n: 'III', title: 'Síntese estruturada', desc: 'Resumo + pontos críticos + partes + datas + sugestões.' },
+          ]}
+          shortcut="⌘⏎ gerar"
+        />
 
           {/* Mode toggle */}
           <div style={{ display: 'flex', gap: '8px', marginTop: '14px', flexWrap: 'wrap' }}>
@@ -609,7 +611,6 @@ export default function ResumidorPage() {
               Comparar 2 documentos
             </button>
           </div>
-        </div>
 
         {/* ── Split-view grid (single document mode) ── */}
         {!modoComparar && (
