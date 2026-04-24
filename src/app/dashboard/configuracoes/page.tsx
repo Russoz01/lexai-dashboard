@@ -13,7 +13,6 @@ import {
   RotateCw,
   Check,
   MapPin,
-  Sun,
   Moon,
   ArrowUpCircle,
   Receipt,
@@ -28,7 +27,6 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
-import { useTheme } from '@/context/ThemeContext'
 import { AreaSelector } from '@/components/AreaSelector'
 
 type Tab = 'perfil' | 'preferencias' | 'integracoes' | 'contato'
@@ -76,7 +74,6 @@ function maskTel(v: string) {
 
 export default function ConfiguracoesPage() {
   const supabase = createClient()
-  const { theme, toggleTheme } = useTheme()
   const fileRef = useRef<HTMLInputElement>(null)
 
   const [tab, setTab]         = useState<Tab>('perfil')
@@ -387,32 +384,23 @@ export default function ConfiguracoesPage() {
 
           <div className="section-card" style={{ padding:'20px 24px' }}>
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Aparência</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {[
-                { value:'light', label:'Modo Claro',  Icon: Sun,  desc:'Interface clara para ambientes bem iluminados' },
-                { value:'dark',  label:'Modo Escuro', Icon: Moon, desc:'Interface escura para reduzir o cansaço visual' },
-              ].map(opt => {
-                const OptIcon = opt.Icon
-                return (
-                  <div key={opt.value} onClick={() => { if (theme !== opt.value) toggleTheme() }} style={{
-                    display:'flex', alignItems:'center', gap:14, padding:'14px 16px', borderRadius:10, cursor:'pointer',
-                    border:`2px solid ${theme === opt.value ? 'var(--accent)' : 'var(--border)'}`,
-                    background: theme === opt.value ? 'var(--accent-light)' : 'transparent',
-                    transition:'all 0.15s',
-                  }}>
-                    <div style={{ width:36, height:36, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center',
-                      background: theme === opt.value ? 'var(--accent)' : 'var(--hover)',
-                      color: theme === opt.value ? '#fff' : 'var(--text-secondary)' }}>
-                      <OptIcon size={16} strokeWidth={1.75} aria-hidden />
-                    </div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)' }}>{opt.label}</div>
-                      <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:2 }}>{opt.desc}</div>
-                    </div>
-                    {theme === opt.value && <CheckCircle2 size={18} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} />}
-                  </div>
-                )
-              })}
+            <div style={{
+              display:'flex', alignItems:'center', gap:14, padding:'14px 16px', borderRadius:10,
+              border:'1px solid var(--border)', background:'var(--accent-light)',
+            }}>
+              <div style={{
+                width:36, height:36, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center',
+                background:'var(--accent)', color:'#fff',
+              }}>
+                <Moon size={16} strokeWidth={1.75} aria-hidden />
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)' }}>Interface editorial noir</div>
+                <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:2 }}>
+                  Tema fixo · paleta champagne sobre noir calibrada para leitura jurídica prolongada
+                </div>
+              </div>
+              <CheckCircle2 size={18} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} />
             </div>
           </div>
 
