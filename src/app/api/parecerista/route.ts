@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+const REQUEST_TIMEOUT_MS = 90_000
 
 const SYSTEM_PROMPT = `You are an elite Brazilian attorney with 20+ years of experience before superior courts (STF, STJ, TST). You produce formal legal opinions ("pareceres juridicos") at the standard expected by appellate ministers.
 
@@ -75,25 +76,35 @@ export async function POST(req: NextRequest) {
 
     const grounding = buildGroundingContext(`${consulta} ${area}`, { area: area || undefined, topK: 10 })
     const gstats = groundingStats(grounding)
-    console.log('[API /parecerista] grounding:', gstats)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /parecerista] grounding:', gstats)
+    }
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-        {
-          type: 'text' as const,
-          text: grounding.contextBlock,
-        },
-      ],
-      tools: [WEB_SEARCH_TOOL],
-      messages: [{ role: 'user', content: userMessage }],
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    let message: Anthropic.Messages.Message
+    try {
+      message = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8192,
+        system: [
+          {
+            type: 'text' as const,
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' as const },
+          },
+          {
+            type: 'text' as const,
+            text: grounding.contextBlock,
+          },
+        ],
+        tools: [WEB_SEARCH_TOOL],
+        messages: [{ role: 'user', content: userMessage }],
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
@@ -117,7 +128,10 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = validateCitations(responseText)
-    console.log('[API /parecerista] validation:', validation.stats, 'warnings:', validation.warnings.length)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /parecerista] validation:', validation.stats, 'warnings:', validation.warnings.length)
+    }
 
     events.agentUsed(user.id, 'parecerista', 'unknown').catch(() => {})
     return NextResponse.json({
@@ -126,17 +140,26 @@ export async function POST(req: NextRequest) {
       grounding_stats: { ...gstats, ...validation.stats },
     })
   } catch (err: unknown) {
+    const errName = err instanceof Error ? err.name : 'Unknown'
     const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /parecerista]', msg)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error('[API /parecerista]', errName, msg)
+    }
+    if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
+      return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente uma consulta mais curta.' }, { status: 504 })
+    }
     if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {
       return NextResponse.json({
         error: 'Agente temporariamente sobrecarregado. Aguarde 30 segundos e tente novamente.',
         retry: true,
       }, { status: 503 })
     }
-    return NextResponse.json({
-      error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
-      details: msg,
-    }, { status: 500 })
+    return NextResponse.json(
+      process.env.NODE_ENV === 'production'
+        ? { error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }
+        : { error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.', details: msg },
+      { status: 500 }
+    )
   }
 }

@@ -38,13 +38,23 @@ export async function resolveUsuarioIdServer(
     }
   }
 
-  // Last resort: create the row (trigger should have done this)
+  // Last resort: create the row (trigger should have done this).
+  // Sem email não faz sentido criar — gera duplicata fantasma quando o user
+  // real entrar (constraint unique(email) com '' colide depois). Bail.
+  if (!email || !email.trim()) {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.warn('[resolveUsuarioIdServer] no email available — skipping insert to avoid ghost row')
+    }
+    return null
+  }
+
   const { data: created, error } = await supabase
     .from('usuarios')
     .insert({
       auth_user_id: authUserId,
-      email: email || '',
-      nome: nome || (email ? email.split('@')[0] : 'Usuario'),
+      email,
+      nome: nome || email.split('@')[0],
       plano: 'free',
       subscription_status: 'trialing',
     })
@@ -52,8 +62,10 @@ export async function resolveUsuarioIdServer(
     .single()
 
   if (error || !created?.id) {
-    // eslint-disable-next-line no-console
-    console.error('[resolveUsuarioIdServer] Failed to create usuarios row:', error?.message)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error('[resolveUsuarioIdServer] Failed to create usuarios row:', error?.message)
+    }
     return null
   }
   return created.id

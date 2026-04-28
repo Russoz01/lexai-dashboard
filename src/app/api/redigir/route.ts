@@ -6,6 +6,7 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+const REQUEST_TIMEOUT_MS = 90_000
 
 const TEMPLATES: Record<string, string> = {
   peticao: 'Peticao Inicial',
@@ -85,18 +86,28 @@ export async function POST(req: NextRequest) {
     }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-      ],
-      messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
-    })
+    // 90s hard cap — Anthropic Sonnet 4 com 8192 tokens leva ate ~60s.
+    // Sem AbortController, lambda travada consome funcao-segundos ate
+    // Vercel matar em 300s e usuario ve 504 sem mensagem util.
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    let message: Anthropic.Messages.Message
+    try {
+      message = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8192,
+        system: [
+          {
+            type: 'text' as const,
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' as const },
+          },
+        ],
+        messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
@@ -121,17 +132,26 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ peca })
   } catch (err: unknown) {
+    const errName = err instanceof Error ? err.name : 'Unknown'
     const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /redigir]', msg)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error('[API /redigir]', errName, msg)
+    }
+    if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
+      return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente instrucoes mais curtas.' }, { status: 504 })
+    }
     if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {
       return NextResponse.json({
         error: 'Agente temporariamente sobrecarregado. Aguarde 30 segundos e tente novamente.',
         retry: true,
       }, { status: 503 })
     }
-    return NextResponse.json({
-      error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
-      details: msg,
-    }, { status: 500 })
+    return NextResponse.json(
+      process.env.NODE_ENV === 'production'
+        ? { error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }
+        : { error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.', details: msg },
+      { status: 500 }
+    )
   }
 }

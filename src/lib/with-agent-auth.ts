@@ -110,11 +110,20 @@ export function withAgentAuth(
         )
       }
 
+      // AbortError / timeout
+      if (err instanceof Error && (err.name === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout'))) {
+        return NextResponse.json(
+          { error: 'O servico de IA demorou muito para responder. Tente uma entrada mais curta.' },
+          { status: 504 },
+        )
+      }
+
+      // Production: nunca vazar `details: msg` — pode revelar nome de tabela,
+      // stack do SDK, query DB, env paths etc. Em dev mantém pra debug local.
       return NextResponse.json(
-        {
-          error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
-          details: msg,
-        },
+        process.env.NODE_ENV === 'production'
+          ? { error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }
+          : { error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.', details: msg },
         { status: 500 },
       )
     }

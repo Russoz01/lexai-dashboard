@@ -3,18 +3,15 @@ import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
-/** Founder email — Leonardo tem acesso lifetime ao tier supremo */
-const FOUNDER_EMAILS = new Set<string>([
-  'luizfernandoleonardoleonardo@gmail.com',
-])
-
 /**
  * Server-side plan verification.
  * Returns the authenticated user's plan + trial status from the database.
  * Replaces the previous localStorage-based approach which was exploitable.
  *
- * Founder override: emails em FOUNDER_EMAILS ganham enterprise lifetime,
- * ignorando subscription_status e trial — garante que Leonardo nunca perca acesso.
+ * Founder override: usuarios.is_founder = true (DB flag, gravável só com
+ * service-role) ganha enterprise lifetime, ignorando subscription/trial.
+ * Antes era allowlist por email — vetor de spoofing via Supabase Auth com
+ * confirm_email off. is_founder no DB elimina esse risco completamente.
  */
 export async function GET() {
   try {
@@ -24,26 +21,20 @@ export async function GET() {
       return NextResponse.json({ plano: 'free', authenticated: false }, { status: 401 })
     }
 
-    const email = user.email?.toLowerCase?.() ?? ''
-    // Founder bypass requer email confirmado — se Supabase Auth tiver
-    // confirm_email off, qualquer um pode signupar com o email do founder.
-    // email_confirmed_at é setado pela Supabase Auth ao confirmar via link no
-    // email, não é gravável pelo cliente. Sem isso, ataque trivial:
-    //   1. atacante signupa luizfernandoleonardoleonardo@gmail.com
-    //   2. /api/user/plan retorna enterprise lifetime → bypass total de billing.
-    const isFounder = FOUNDER_EMAILS.has(email) && Boolean(user.email_confirmed_at)
-
-    // Fetch from usuarios table (linked via auth_user_id)
+    // Fetch from usuarios table (linked via auth_user_id) + is_founder
     const { data: usuario, error: dbError } = await supabase
       .from('usuarios')
-      .select('plano, subscription_status, trial_started_at, trial_ended_at, current_period_end, stripe_customer_id')
+      .select('plano, subscription_status, trial_started_at, trial_ended_at, current_period_end, stripe_customer_id, is_founder')
       .eq('auth_user_id', user.id)
       .maybeSingle()
 
-    if (dbError) {
+    if (dbError && process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       console.error('[api/user/plan] db error:', dbError.message)
     }
+
+    // Founder flag vem direto da DB — não há vetor de spoofing
+    const isFounder = Boolean(usuario?.is_founder)
 
     // Founder bypass — retorna enterprise lifetime sem depender do banco
     if (isFounder) {
@@ -80,8 +71,10 @@ export async function GET() {
       stripe_customer_id: usuario?.stripe_customer_id || null,
     })
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error('[api/user/plan] error:', e)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error('[api/user/plan] error:', e)
+    }
     return NextResponse.json({ plano: 'free', authenticated: false, error: 'internal' }, { status: 500 })
   }
 }

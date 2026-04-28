@@ -81,10 +81,12 @@ export default function TradutorPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      if (!data.parecer) {
+      // API contract atualizado: a chave correta é `traducao` (antes era `parecer`)
+      const traducao = data.traducao ?? data.parecer
+      if (!traducao) {
         throw new Error('A tradução não foi gerada corretamente. Tente novamente.')
       }
-      setResultado(data.parecer as TradutorResult)
+      setResultado(traducao as TradutorResult)
       setActiveTab('traducao')
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro ao traduzir documento')

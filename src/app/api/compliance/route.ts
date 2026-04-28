@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
+import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -93,6 +94,13 @@ export async function POST(req: NextRequest) {
 
     const userMessage = `Analise a seguinte operacao para fins de compliance regulatorio:\n\nAREA DE ATUACAO: ${area}${tipo ? `\nTIPO DE ANALISE: ${tipo}` : ''}\n\nDESCRICAO DA OPERACAO:\n${descricao}\n\nRetorne a analise completa no formato JSON especificado, com todas as secoes preenchidas de forma detalhada e fundamentada.`
 
+    // Legal grounding — LGPD (Lei 13.709), Lei Anticorrupção (12.846), CC, CDC,
+    // CF/88 estão no corpus local. Adicionar grounding evita o agente
+    // alucinar artigos e fortalece citações em parecer de compliance.
+    const groundingQuery = `LGPD compliance ${tipo} ${area} ${descricao.slice(0, 1500)}`
+    const grounding = buildGroundingContext(groundingQuery, { topK: 8 })
+    const gstats = groundingStats(grounding)
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
@@ -106,6 +114,10 @@ export async function POST(req: NextRequest) {
             type: 'text' as const,
             text: SYSTEM_PROMPT,
             cache_control: { type: 'ephemeral' as const },
+          },
+          {
+            type: 'text' as const,
+            text: grounding.contextBlock,
           },
         ],
         messages: [{ role: 'user', content: userMessage }],
@@ -141,7 +153,12 @@ export async function POST(req: NextRequest) {
 
     events.agentUsed(user.id, 'compliance', plano).catch(() => {})
 
-    return NextResponse.json({ parecer: resultado.erro_parse ? null : resultado })
+    const validation = validateCitations(responseText)
+    return NextResponse.json({
+      parecer: resultado.erro_parse ? null : resultado,
+      fontes: validation.sources,
+      grounding_stats: { ...gstats, ...validation.stats },
+    })
   } catch (err: unknown) {
     const errName = err instanceof Error ? err.name : 'Unknown'
     const errMsg = err instanceof Error ? err.message : String(err)

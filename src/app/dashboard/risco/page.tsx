@@ -1,116 +1,305 @@
 'use client'
 
+import { useState } from 'react'
 import {
   AlertTriangle,
   Gauge,
-  ShieldAlert,
-  TrendingUp,
-  FileWarning,
-  Presentation,
-  Clock,
   ShieldCheck,
+  Clock,
+  TrendingUp,
+  Search,
 } from 'lucide-react'
-import { AgentPreviewStage } from '@/components/ui/agent-preview-stage'
+import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
+import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
-/* /dashboard/risco — v1 preview stage · 2026-04-23
- * Risk Score: 0-100 de risco jurídico em qualquer documento. Com
- * disclaimer, sem marketing de 'precisão 100%'. Produção gráfica pra
- * levar pra reunião com cliente. */
+interface PontoRisco {
+  peso?: number
+  titulo?: string
+  trecho?: string
+  problema?: string
+  fundamento?: string
+  padrao_mercado?: string
+  sugestao?: string
+}
+
+interface RiscoResult {
+  score_global?: number
+  nivel?: 'BAIXO' | 'MEDIO' | 'ALTO' | 'CRITICO'
+  tipo_documento?: string
+  sucesso_contencioso_pct?: number
+  sucesso_contencioso_justificativa?: string
+  top_3_pontos?: PontoRisco[]
+  comparacao_mercado?: string
+  recomendacao?: string
+  confianca?: { nivel?: string; nota?: string }
+  disclaimer?: string
+}
+
+const TIPOS = ['Contrato', 'Aditivo', 'Acordo', 'NDA', 'Termo de uso', 'Outro']
+
+function nivelColor(nivel?: string): { bg: string; fg: string; label: string } {
+  switch (nivel) {
+    case 'BAIXO': return { bg: 'rgba(15, 122, 74, 0.18)', fg: '#0f7a4a', label: 'BAIXO' }
+    case 'MEDIO': return { bg: 'rgba(168, 138, 0, 0.18)', fg: '#a88a00', label: 'MÉDIO' }
+    case 'ALTO': return { bg: 'rgba(168, 90, 0, 0.18)', fg: '#a85a00', label: 'ALTO' }
+    case 'CRITICO': return { bg: 'rgba(168, 52, 52, 0.18)', fg: '#a83434', label: 'CRÍTICO' }
+    default: return { bg: 'rgba(120, 120, 120, 0.18)', fg: '#666', label: '—' }
+  }
+}
 
 export default function RiscoPage() {
+  const [documento, setDocumento] = useState('')
+  const [tipo, setTipo] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [risco, setRisco] = useState<RiscoResult | null>(null)
+  const [fontes, setFontes] = useState<Fonte[]>([])
+  const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
+
+  async function analisar() {
+    if (documento.trim().length < 100 || loading) return
+    setLoading(true)
+    setRisco(null)
+    setFontes([])
+    setGroundingStats(null)
+    try {
+      const res = await fetch('/api/risco', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documento, tipo: tipo || undefined }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erro na análise')
+      setRisco(data.risco)
+      if (Array.isArray(data.fontes)) setFontes(data.fontes)
+      if (data.grounding_stats) setGroundingStats(data.grounding_stats)
+    } catch (e: unknown) {
+      toast('error', e instanceof Error ? e.message : 'Erro na análise')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function reset() {
+    setDocumento('')
+    setTipo('')
+    setRisco(null)
+    setFontes([])
+    setGroundingStats(null)
+  }
+
+  const cores = nivelColor(risco?.nivel)
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
       <AgentHero
-        edition="Nº X"
+        edition="Nº XXVI"
         Icon={AlertTriangle}
         name="Risco"
         discipline="Score executivo de contratos"
-        description="Análise 0–100 de risco jurídico em documentos contratuais. Top 3 pontos de atenção com peso, probabilidade estimada de sucesso em contencioso e comparação com padrão de mercado. Com disclaimer firme: a IA erra, a decisão é do advogado."
+        description="Análise 0–100 de risco jurídico em contratos. Top 3 pontos com peso explícito, probabilidade de sucesso em contencioso e comparação com padrão de mercado. Pronto pra reunião com cliente em 30 segundos."
         accent="bronze"
         meta={[
           { Icon: Clock, label: 'Tempo médio', value: '~30s' },
-          { Icon: Gauge, label: 'Formato', value: 'Score + gauge + PDF' },
-          { Icon: ShieldCheck, label: 'Compliance', value: 'Disclaimer assinado' },
+          { Icon: Gauge, label: 'Formato', value: 'Score + top 3 + recomendação' },
+          { Icon: ShieldCheck, label: 'Compliance', value: 'Disclaimer obrigatório' },
         ]}
         steps={[
-          { n: 'I', title: 'Cole o documento', desc: 'Contrato, aditivo ou peça em texto, DOCX ou PDF.' },
-          { n: 'II', title: 'Análise ponderada', desc: 'Agente atribui peso explícito a cada ponto e calcula risco global.' },
-          { n: 'III', title: 'Slide 1-page', desc: 'Score, top 3 riscos, recomendação e benchmarks em layout pronto para reunião.' },
+          { n: 'I', title: 'Cole o documento', desc: 'Contrato, aditivo, acordo ou termo a partir de 100 caracteres.' },
+          { n: 'II', title: 'Análise ponderada', desc: 'IA atribui peso explícito a cada ponto e calcula score global.' },
+          { n: 'III', title: 'Recomendação', desc: 'Score, top 3 riscos, prob. de sucesso e comparação com mercado.' },
         ]}
       />
-      <AgentPreviewStage
-      Icon={AlertTriangle}
-      kicker="Nº 026 · Agente Risco"
-      name="Risco"
-      tagline="Nota 0 a 100 de risco jurídico. Gráfico pronto pra reunião. Zero marketing de 'precisão absoluta'."
-      description="Cliente entrega contrato e pergunta 'vale fechar?'. Você precisa de 30 segundos pra formar opinião executiva, não de 2 horas lendo. Risco analisa o documento e devolve score + top 3 pontos de atenção + probabilidade estimada de sucesso em contencioso. Tudo com disclaimer: a IA erra, a decisão é do advogado."
-      statusLabel="Beta fechado · Release 2026-05"
-      planBadge="Pro"
-      glowTint="#d4a574"
-      capabilities={[
-        {
-          Icon: Gauge,
-          title: 'Score 0-100 transparente',
-          body: 'Cada ponto de risco contribui com peso explícito. Você vê a matemática, não só o número.',
-          featured: true,
-        },
-        {
-          Icon: ShieldAlert,
-          title: 'Top 3 pontos de atenção',
-          body: 'Não é lista de 40 itens genéricos. Top 3 que realmente mudariam sua posição jurídica.',
-        },
-        {
-          Icon: TrendingUp,
-          title: 'Probabilidade de sucesso',
-          body: 'Estimativa contencioso — baseada em jurisprudência majoritária em casos análogos. Com disclaimer firme.',
-        },
-        {
-          Icon: FileWarning,
-          title: 'Comparação com padrão de mercado',
-          body: '"Cláusula de multa está 3x acima da média dos contratos B2B comparáveis." Benchmarks reais.',
-        },
-        {
-          Icon: Presentation,
-          title: 'Slide 1-page pra cliente',
-          body: 'Export visual pronto pra apresentar: score, gauge, top 3, recomendação. PDF ou PNG.',
-        },
-        {
-          Icon: AlertTriangle,
-          title: 'Disclaimer assinado',
-          body: 'Cada relatório sai com rodapé: "análise assistida por IA · decisão final do advogado responsável".',
-        },
-      ]}
-      example={{
-        prompt:
-          'Avalia o risco desse contrato de distribuição exclusiva com a Varejista Sul Ltda. Cliente quer fechar amanhã.',
-        outputLabel: 'Risco · análise executiva',
-        response: `Risk Score · contrato Varejista Sul Ltda
-─────────────────────────────────────────
-Risco global      72 / 100   ALTO
-Sucesso estimado  ~38%       em contencioso
 
-Top 3 pontos de atenção
-  1. [Peso 28] Exclusividade sem cláusula de performance.
-     Seu cliente fica travado 5 anos mesmo se a Varejista não
-     atingir volumes mínimos. Padrão de mercado exige metas.
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24, marginTop: 24 }}>
+        {/* INPUT */}
+        <div style={{
+          background: 'var(--card-bg)', border: '1px solid var(--border)',
+          borderRadius: 14, padding: 24,
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Search size={12} strokeWidth={2} /> Documento
+          </div>
 
-  2. [Peso 22] Foro em SP + lei do estado indefinida.
-     Disputa obriga cliente (de MG) a litigar em capital paulista
-     sem custo fixado. Custo operacional estimado 2-4x maior.
+          <label className="form-label" style={{ marginBottom: 6 }}>Tipo (opcional)</label>
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="form-input"
+            style={{ marginBottom: 14 }}
+          >
+            <option value="">Sem tipo específico</option>
+            {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
 
-  3. [Peso 22] Multa por quebra 20% do contrato total (~R$ 1.2M).
-     Jurisprudência do TJ-SP em casos análogos: 60% das vezes o
-     juiz reduz pra 10-15% (art. 413 CC). Mas não tem garantia.
+          <label className="form-label" style={{ marginBottom: 6 }}>Texto do documento</label>
+          <textarea
+            value={documento}
+            onChange={(e) => setDocumento(e.target.value)}
+            placeholder="Cole o texto completo do contrato, aditivo ou acordo aqui (mínimo 100 caracteres)…"
+            className="form-input"
+            style={{ minHeight: 280, resize: 'vertical', fontFamily: 'ui-monospace, Menlo, Consolas, monospace', fontSize: 13, lineHeight: 1.55 }}
+          />
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>
+            {documento.length.toLocaleString('pt-BR')} / 50.000 caracteres
+          </div>
 
-Recomendação
-  Não assinar sem renegociar itens 1 e 3. Item 2 é menos crítico
-  mas vale tentar.
+          <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
+            <button
+              onClick={analisar}
+              disabled={loading || documento.trim().length < 100}
+              className="btn-primary"
+              style={{ flex: 1 }}
+            >
+              {loading ? 'Analisando…' : 'Analisar risco'}
+            </button>
+            {(documento || risco) && (
+              <button onClick={reset} className="btn-ghost" type="button">
+                Limpar
+              </button>
+            )}
+          </div>
+        </div>
 
-Precisão desta análise: IA alucina. Este relatório não substitui
-seu parecer. Disclaimer completo no rodapé do PDF.`,
-      }}
-    />
+        {/* RESULT */}
+        <div style={{
+          background: 'var(--card-bg)', border: '1px solid var(--border)',
+          borderRadius: 14, padding: 24, minHeight: 380,
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Gauge size={12} strokeWidth={2} /> Análise executiva
+          </div>
+
+          {!risco && !loading && (
+            <div style={{ color: 'var(--text-muted)', fontSize: 13, lineHeight: 1.7, fontStyle: 'italic' }}>
+              Cole o documento e clique em <strong>Analisar risco</strong>. Você recebe score 0-100, top 3 pontos com peso, probabilidade de sucesso em contencioso e comparação com padrão de mercado.
+            </div>
+          )}
+
+          {loading && (
+            <div style={{ color: 'var(--text-muted)', fontSize: 13, lineHeight: 1.7 }}>
+              Calculando score ponderado e identificando top 3 pontos críticos…
+            </div>
+          )}
+
+          {risco && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+              {/* Score gauge */}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, padding: '14px 18px', borderRadius: 12, background: cores.bg, border: `1px solid ${cores.fg}40` }}>
+                <div style={{ fontSize: 44, fontWeight: 600, color: cores.fg, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+                  {risco.score_global ?? '—'}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: cores.fg }}>
+                    Risco {cores.label}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                    {risco.tipo_documento || 'Documento'} · score 0-100
+                  </div>
+                </div>
+                {typeof risco.sucesso_contencioso_pct === 'number' && (
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <TrendingUp size={11} strokeWidth={2.2} /> Contencioso
+                    </div>
+                    <div style={{ fontSize: 22, fontWeight: 500, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+                      {risco.sucesso_contencioso_pct}%
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Sucesso justificativa */}
+              {risco.sucesso_contencioso_justificativa && (
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                  {risco.sucesso_contencioso_justificativa}
+                </div>
+              )}
+
+              {/* Top 3 pontos */}
+              {Array.isArray(risco.top_3_pontos) && risco.top_3_pontos.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                    Top 3 pontos de atenção
+                  </div>
+                  {risco.top_3_pontos.slice(0, 3).map((p, i) => (
+                    <div key={i} style={{
+                      padding: '12px 14px', borderRadius: 10,
+                      border: '1px solid var(--border)', background: 'var(--bg-card)',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 6 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
+                          {i + 1}. {p.titulo || 'Ponto sem título'}
+                        </div>
+                        {typeof p.peso === 'number' && (
+                          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: cores.fg, padding: '2px 8px', borderRadius: 6, background: cores.bg }}>
+                            PESO {p.peso}
+                          </span>
+                        )}
+                      </div>
+                      {p.problema && (
+                        <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.55, marginBottom: 6 }}>
+                          {p.problema}
+                        </div>
+                      )}
+                      {p.fundamento && (
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>
+                          <strong>Fundamento:</strong> {p.fundamento}
+                        </div>
+                      )}
+                      {p.padrao_mercado && (
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>
+                          <strong>Padrão de mercado:</strong> {p.padrao_mercado}
+                        </div>
+                      )}
+                      {p.sugestao && (
+                        <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 6, paddingTop: 6, borderTop: '1px dashed var(--border)' }}>
+                          <strong>Sugestão:</strong> {p.sugestao}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Recomendação */}
+              {risco.recomendacao && (
+                <div style={{ padding: '12px 14px', borderRadius: 10, border: `1px solid ${cores.fg}40`, background: cores.bg }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: cores.fg, marginBottom: 6 }}>
+                    Recomendação
+                  </div>
+                  <div style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.6 }}>
+                    {risco.recomendacao}
+                  </div>
+                </div>
+              )}
+
+              {/* Comparação mercado */}
+              {risco.comparacao_mercado && (
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                  <strong>Vs. padrão de mercado: </strong>{risco.comparacao_mercado}
+                </div>
+              )}
+
+              {/* Disclaimer obrigatório */}
+              {risco.disclaimer && (
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 12px', borderRadius: 8, background: 'var(--hover)', border: '1px dashed var(--border)' }}>
+                  ⚠ {risco.disclaimer}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Fontes citadas */}
+      {fontes.length > 0 && (
+        <FontesCitadas
+          fontes={fontes}
+          stats={groundingStats}
+          title="Fundamentos legais"
+        />
+      )}
     </div>
   )
 }

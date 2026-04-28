@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { ok, fail, unauthorized, notFound, serverError } from '@/lib/api-response'
 import { audit } from '@/lib/audit'
 
@@ -65,26 +66,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Resolve usuario row (create if first login via invite)
-    let usuarioId: string
-    const { data: existing } = await admin
-      .from('usuarios')
-      .select('id')
-      .eq('id', user.id)
-      .maybeSingle()
-
-    if (existing) {
-      usuarioId = existing.id
-    } else {
-      const { data: created, error: createErr } = await admin
-        .from('usuarios')
-        .insert({ id: user.id, email: user.email })
-        .select('id')
-        .single()
-      if (createErr || !created) {
-        return serverError('equipe/aceitar', createErr || new Error('create_user_failed'))
-      }
-      usuarioId = created.id
+    // Resolve usuario row via auth_user_id (NÃO confundir com auth.users.id).
+    // Bug crítico anterior: eq('id', user.id) e insert({ id: user.id }) tratavam
+    // auth.users.id como se fosse usuarios.id — quebrava FKs em todo o resto
+    // do app. resolveUsuarioIdServer faz o mapeamento correto + lazy-create
+    // se trigger missed.
+    const usuarioId = await resolveUsuarioIdServer(admin, user.id, user.email, user.user_metadata?.nome as string | undefined)
+    if (!usuarioId) {
+      return serverError('equipe/aceitar', new Error('failed_to_resolve_usuario_id'))
     }
 
     // Idempotent membership insert

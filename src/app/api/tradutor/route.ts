@@ -135,7 +135,9 @@ export async function POST(req: NextRequest) {
 
     events.agentUsed(user.id, 'tradutor', plano).catch(() => {})
 
-    return NextResponse.json({ parecer: resultado.erro_parse ? null : resultado })
+    // API contract: response key é `traducao` (não `parecer`).
+    // Antes era `parecer` por copy-paste inconsistente que confundia o front.
+    return NextResponse.json({ traducao: resultado.erro_parse ? null : resultado })
   } catch (err: unknown) {
     const errName = err instanceof Error ? err.name : 'Unknown'
     const errMsg = err instanceof Error ? err.message : String(err)

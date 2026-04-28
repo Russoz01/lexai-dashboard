@@ -10,101 +10,54 @@ export interface RateLimitResult {
 }
 
 /**
- * Sliding window rate limiter backed by Supabase `rate_limits` table.
+ * Sliding window rate limiter backed por SECURITY DEFINER RPC atômica.
  *
- * Schema expected:
- *   id, chave, requisicoes, janela_inicio, bloqueado_ate
+ * Antes (read-modify-write): 5 reqs paralelos liam requisicoes=10 e todos
+ * escreviam 11 — janela inteira passava com 1 contagem. Bypass simples.
  *
- * Fails open: if the limiter itself errors, the caller is NOT blocked — we
- * never want a transient Supabase hiccup to take the product offline. The
- * error is logged so it can be fixed.
+ * Agora: RPC `increment_rate_limit_atomic` faz UPDATE...RETURNING dentro
+ * de uma transação serializada via PK lock. Replay safe + race safe.
+ *
+ * Fail-open mantido: se RPC errar (Supabase down), libera — nunca bloquear
+ * por transient infra. Erro é logado pra ser fixado.
  */
 export async function checkRateLimit(
   supabase: SupabaseClient,
   key: string // e.g. `user:${userId}:agent:${agent}` or `ip:${ip}`
 ): Promise<RateLimitResult> {
   try {
-    const now = new Date()
+    const { data, error } = await supabase
+      .rpc('increment_rate_limit_atomic', {
+        p_chave: key,
+        p_window_secs: WINDOW_SECONDS,
+        p_max: MAX_REQUESTS_PER_WINDOW,
+      })
 
-    const { data: existing, error: selectErr } = await supabase
-      .from('rate_limits')
-      .select('requisicoes, janela_inicio, bloqueado_ate')
-      .eq('chave', key)
-      .maybeSingle()
-
-    if (selectErr) {
-      // eslint-disable-next-line no-console
-      console.error('[rate-limit] select error:', selectErr.message)
+    if (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.error('[rate-limit] RPC error:', error.message)
+      }
+      // Fail open
       return { ok: true, remaining: MAX_REQUESTS_PER_WINDOW, resetIn: WINDOW_SECONDS }
     }
 
-    if (existing) {
-      const windowStartTime = new Date(existing.janela_inicio).getTime()
-      const elapsed = now.getTime() - windowStartTime
-
-      if (elapsed > WINDOW_SECONDS * 1000) {
-        // Window expired — reset counter
-        await supabase
-          .from('rate_limits')
-          .update({
-            requisicoes: 1,
-            janela_inicio: now.toISOString(),
-            bloqueado_ate: null,
-          })
-          .eq('chave', key)
-        return {
-          ok: true,
-          remaining: MAX_REQUESTS_PER_WINDOW - 1,
-          resetIn: WINDOW_SECONDS,
-        }
-      }
-
-      if (existing.requisicoes >= MAX_REQUESTS_PER_WINDOW) {
-        const resetIn = Math.max(
-          1,
-          Math.ceil((windowStartTime + WINDOW_SECONDS * 1000 - now.getTime()) / 1000)
-        )
-        return { ok: false, remaining: 0, resetIn }
-      }
-
-      // Increment within active window
-      await supabase
-        .from('rate_limits')
-        .update({ requisicoes: existing.requisicoes + 1 })
-        .eq('chave', key)
-
-      return {
-        ok: true,
-        remaining: MAX_REQUESTS_PER_WINDOW - existing.requisicoes - 1,
-        resetIn: Math.max(
-          1,
-          Math.ceil((windowStartTime + WINDOW_SECONDS * 1000 - now.getTime()) / 1000)
-        ),
-      }
-    }
-
-    // First request for this key
-    const { error: insertErr } = await supabase.from('rate_limits').insert({
-      chave: key,
-      requisicoes: 1,
-      janela_inicio: now.toISOString(),
-    })
-
-    if (insertErr) {
-      // eslint-disable-next-line no-console
-      console.error('[rate-limit] insert error:', insertErr.message)
+    // RPC returns SETOF — Supabase JS retorna array
+    const row = Array.isArray(data) ? data[0] : data
+    if (!row) {
       return { ok: true, remaining: MAX_REQUESTS_PER_WINDOW, resetIn: WINDOW_SECONDS }
     }
 
     return {
-      ok: true,
-      remaining: MAX_REQUESTS_PER_WINDOW - 1,
-      resetIn: WINDOW_SECONDS,
+      ok: Boolean(row.ok),
+      remaining: Number(row.remaining ?? 0),
+      resetIn: Number(row.reset_in ?? WINDOW_SECONDS),
     }
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('[rate-limit] unexpected error:', err instanceof Error ? err.message : err)
-    // Fail open
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error('[rate-limit] unexpected error:', err instanceof Error ? err.message : err)
+    }
     return { ok: true, remaining: MAX_REQUESTS_PER_WINDOW, resetIn: WINDOW_SECONDS }
   }
 }

@@ -93,7 +93,7 @@ export const CATALOG: CatalogItem[] = [
   // os 5 abaixo + 3 módulos como STUB visual sem backend.
   { slug: 'cnj',          label: 'CNJ',          href: '/dashboard/cnj',          Icon: Network,        desc: 'Consulta processual via DataJud · monitora',    kind: 'agent', minPlan: 'pro', implemented: false },
   { slug: 'comparador',   label: 'Comparador',   href: '/dashboard/comparador',   Icon: GitCompare,     desc: 'Diff v1 × v2 de contratos e peças',             kind: 'agent', minPlan: 'pro', implemented: false },
-  { slug: 'risco',        label: 'Risco',        href: '/dashboard/risco',        Icon: AlertTriangle,  desc: 'Score 0-100 de risco processual',               kind: 'agent', minPlan: 'pro', implemented: false },
+  { slug: 'risco',        label: 'Risco',        href: '/dashboard/risco',        Icon: AlertTriangle,  desc: 'Score 0-100 de risco contratual',               kind: 'agent', minPlan: 'pro', implemented: true  },
   { slug: 'flashcards',   label: 'Flashcards',   href: '/dashboard/flashcards',   Icon: Layers,         desc: 'Memorização SM-2 · spaced repetition',          kind: 'agent', minPlan: 'pro', implemented: false },
   { slug: 'plano',        label: 'Plano',        href: '/dashboard/plano',        Icon: CalendarDays,   desc: 'Plano de estudos IA · cronograma OAB',          kind: 'agent', minPlan: 'pro', implemented: false },
 

@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+const REQUEST_TIMEOUT_MS = 90_000
 
 const SYSTEM_PROMPT = `You are an elite Brazilian litigation attorney with 20+ years of experience drafting defenses. You master Arts. 336-342 CPC (contestacao), preliminares (Art. 337 CPC), impugnacao especifica (Art. 341 CPC), and replicas.
 
@@ -86,24 +87,34 @@ export async function POST(req: NextRequest) {
     const groundingQuery = `${teseInicial.slice(0, 1500)} ${teseDefesa.slice(0, 1500)}`
     const grounding = buildGroundingContext(groundingQuery, { topK: 12 })
     const gstats = groundingStats(grounding)
-    console.log('[API /contestador] grounding:', gstats)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /contestador] grounding:', gstats)
+    }
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-        {
-          type: 'text' as const,
-          text: grounding.contextBlock,
-        },
-      ],
-      messages: [{ role: 'user', content: userMessage }],
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    let message: Anthropic.Messages.Message
+    try {
+      message = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8192,
+        system: [
+          {
+            type: 'text' as const,
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' as const },
+          },
+          {
+            type: 'text' as const,
+            text: grounding.contextBlock,
+          },
+        ],
+        messages: [{ role: 'user', content: userMessage }],
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
@@ -127,7 +138,10 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = validateCitations(responseText)
-    console.log('[API /contestador] validation:', validation.stats)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /contestador] validation:', validation.stats)
+    }
 
     events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
     return NextResponse.json({
@@ -136,17 +150,26 @@ export async function POST(req: NextRequest) {
       grounding_stats: { ...gstats, ...validation.stats },
     })
   } catch (err: unknown) {
+    const errName = err instanceof Error ? err.name : 'Unknown'
     const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /contestador]', msg)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error('[API /contestador]', errName, msg)
+    }
+    if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
+      return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente teses mais curtas.' }, { status: 504 })
+    }
     if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {
       return NextResponse.json({
         error: 'Agente temporariamente sobrecarregado. Aguarde 30 segundos e tente novamente.',
         retry: true,
       }, { status: 503 })
     }
-    return NextResponse.json({
-      error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
-      details: msg,
-    }, { status: 500 })
+    return NextResponse.json(
+      process.env.NODE_ENV === 'production'
+        ? { error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.' }
+        : { error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.', details: msg },
+      { status: 500 }
+    )
   }
 }

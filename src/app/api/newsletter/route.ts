@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -10,9 +11,14 @@ export const runtime = 'nodejs'
  *
  * Captura emails do footer/landing em tabela `leads_newsletter` do Supabase.
  * Idempotente: email duplicado retorna 200 (silent success).
+ *
+ * Rate-limit por IP — endpoint publico sem auth, atacante poderia floodar
+ * a tabela leads_newsletter sem isso. 5 req/min por IP é suficiente pra
+ * subscribers reais e bloqueia bots.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const NEWSLETTER_MAX_PER_MIN = 5
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,6 +31,16 @@ export async function POST(req: NextRequest) {
     }
 
     const supabase = createClient()
+
+    // Rate-limit por IP — fail-open se Supabase down
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+               req.headers.get('x-real-ip') ||
+               'unknown'
+    const rl = await checkRateLimit(supabase, `ip:${ip}:newsletter`)
+    if (!rl.ok) {
+      // Resposta neutra — não revela rate-limit pra evitar enumeração
+      return NextResponse.json({ ok: true, queued: false })
+    }
     // upsert para evitar duplicatas sem vazar existência
     const { error } = await supabase
       .from('leads_newsletter')

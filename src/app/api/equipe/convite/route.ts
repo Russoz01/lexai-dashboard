@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { ok, fail, unauthorized, forbidden, serverError } from '@/lib/api-response'
 import { audit } from '@/lib/audit'
 import { sendInviteEmail } from '@/lib/email'
@@ -53,12 +54,18 @@ export async function POST(req: NextRequest) {
 
     const admin = createAdminClient()
 
+    // Resolve usuario_id correto (auth.users.id !== usuarios.id em geral)
+    const callerUsuarioId = await resolveUsuarioIdServer(admin, user.id, user.email, user.user_metadata?.nome as string | undefined)
+    if (!callerUsuarioId) {
+      return serverError('equipe/convite', new Error('failed_to_resolve_caller_id'))
+    }
+
     // 1. Confirm caller is owner/admin of the equipe
     const { data: membership } = await admin
       .from('equipe_membros')
       .select('role')
       .eq('equipe_id', body.equipeId)
-      .eq('usuario_id', user.id)
+      .eq('usuario_id', callerUsuarioId)
       .maybeSingle()
 
     if (!membership || !['owner', 'admin'].includes(membership.role)) {
@@ -119,7 +126,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 4. Create the invite
+    // 4. Create the invite — invited_by usa usuarios.id resolvido (FK aponta lá)
     const token = crypto.randomBytes(32).toString('hex')
     const { data: invite, error: insertErr } = await admin
       .from('equipe_convites')
@@ -127,7 +134,7 @@ export async function POST(req: NextRequest) {
         equipe_id: body.equipeId,
         email,
         role,
-        invited_by: user.id,
+        invited_by: callerUsuarioId,
         token,
       })
       .select('id, token, expires_at')
@@ -138,7 +145,7 @@ export async function POST(req: NextRequest) {
     }
 
     await audit({
-      usuarioId: user.id,
+      usuarioId: callerUsuarioId,
       action: 'team.member_invite',
       entityType: 'equipe',
       entityId: body.equipeId,
@@ -149,12 +156,11 @@ export async function POST(req: NextRequest) {
     const origin = req.headers.get('origin') || 'https://pralvex.com.br'
     const acceptUrl = `${origin}/equipe/aceitar?token=${invite.token}`
 
-    // Fetch caller display name for the email salutation. Falls back to
-    // email local-part if nome is unset.
+    // Fetch caller display name (já resolvido o usuarios.id correto)
     const { data: inviter } = await admin
       .from('usuarios')
       .select('nome, email')
-      .eq('id', user.id)
+      .eq('id', callerUsuarioId)
       .maybeSingle()
     const invitedByName =
       inviter?.nome?.trim() || inviter?.email?.split('@')[0] || 'Um colega'

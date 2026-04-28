@@ -43,6 +43,41 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient()
 
+  // Idempotency check — Stripe retenta eventos em network failures.
+  // Tabela stripe_events tem PK em event_id; INSERT ON CONFLICT DO NOTHING
+  // garante que cada evento é processado uma única vez. Sem isso, eventos
+  // out-of-order (subscription.deleted depois de updated, ou created
+  // duplicado) corrompiam o plano em prod.
+  const { error: idempErr, data: insertData } = await supabase
+    .from('stripe_events')
+    .insert({
+      event_id: event.id,
+      event_type: event.type,
+      api_version: event.api_version ?? null,
+      payload: event.data.object as object,
+    })
+    .select('event_id')
+    .maybeSingle()
+
+  if (idempErr) {
+    // PG unique violation = duplicate event already processed (23505)
+    const code = (idempErr as { code?: string }).code
+    if (code === '23505') {
+      // eslint-disable-next-line no-console
+      console.log('[stripe webhook] duplicate event ignored:', event.id, event.type)
+      return NextResponse.json({ received: true, duplicate: true })
+    }
+    // Outro erro de DB — log e segue (fail-open evita travar webhook crítico)
+    // eslint-disable-next-line no-console
+    console.error('[stripe webhook] idempotency insert failed:', idempErr.message)
+  }
+
+  // Sanity log — só em dev
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.log('[stripe webhook] processing', event.type, insertData?.event_id || event.id)
+  }
+
   try {
     switch (event.type) {
       case 'customer.subscription.created':

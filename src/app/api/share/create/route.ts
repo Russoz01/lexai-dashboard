@@ -93,8 +93,11 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Generate secure random token (24 chars, URL-safe hex)
-    const token = crypto.randomUUID().replace(/-/g, '').slice(0, 24)
+    // Generate secure random token — 32 chars hex (128 bits puros).
+    // Antes: UUIDv4 truncado pra 24 chars (~88 bits efetivos por bits fixos
+    // do UUID). 128 bits = padrão do setor + zero ambiguidade de entropia.
+    const { randomBytes } = await import('crypto')
+    const token = randomBytes(16).toString('hex')
 
     // Calculate expires_at
     const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
