@@ -86,18 +86,24 @@ export const CATALOG: CatalogItem[] = [
   { slug: 'atendimento',  label: 'Atendimento',  href: '/dashboard/atendimento',  Icon: UserRound,      desc: 'Roteiro de entrevista inicial',                 kind: 'agent', minPlan: 'pro', implemented: true  },
   { slug: 'marketing-ia', label: 'Marketing IA', href: '/dashboard/marketing-ia', Icon: Megaphone,      desc: 'Conteúdo OAB-compliant para redes',             kind: 'agent', minPlan: 'pro', implemented: true  },
 
-  // ───────── 6 novos agentes v10.8 (2026-04-23 · Pralvex expansion) ─────────
-  { slug: 'cnj',          label: 'CNJ',          href: '/dashboard/cnj',          Icon: Network,        desc: 'Consulta processual via DataJud · monitora',    kind: 'agent', minPlan: 'pro', implemented: true  },
-  { slug: 'comparador',   label: 'Comparador',   href: '/dashboard/comparador',   Icon: GitCompare,     desc: 'Diff v1 × v2 de contratos e peças',             kind: 'agent', minPlan: 'pro', implemented: true  },
-  { slug: 'risco',        label: 'Risco',        href: '/dashboard/risco',        Icon: AlertTriangle,  desc: 'Score 0-100 de risco processual',               kind: 'agent', minPlan: 'pro', implemented: true  },
-  { slug: 'flashcards',   label: 'Flashcards',   href: '/dashboard/flashcards',   Icon: Layers,         desc: 'Memorização SM-2 · spaced repetition',          kind: 'agent', minPlan: 'pro', implemented: true  },
-  { slug: 'plano',        label: 'Plano',        href: '/dashboard/plano',        Icon: CalendarDays,   desc: 'Plano de estudos IA · cronograma OAB',          kind: 'agent', minPlan: 'pro', implemented: true  },
+  // ───────── 5 agentes v10.8 (preview-only — 2026-04-28: catalog honest fix) ─────────
+  // Estavam todos como implemented:true mas as page.tsx são <AgentPreviewStage>
+  // puro sem API correspondente. Sidebar consumindo isUnlocked() vai redirecionar
+  // pra /dashboard/em-breve até que tenham handler real. Auditoria identificou
+  // os 5 abaixo + 3 módulos como STUB visual sem backend.
+  { slug: 'cnj',          label: 'CNJ',          href: '/dashboard/cnj',          Icon: Network,        desc: 'Consulta processual via DataJud · monitora',    kind: 'agent', minPlan: 'pro', implemented: false },
+  { slug: 'comparador',   label: 'Comparador',   href: '/dashboard/comparador',   Icon: GitCompare,     desc: 'Diff v1 × v2 de contratos e peças',             kind: 'agent', minPlan: 'pro', implemented: false },
+  { slug: 'risco',        label: 'Risco',        href: '/dashboard/risco',        Icon: AlertTriangle,  desc: 'Score 0-100 de risco processual',               kind: 'agent', minPlan: 'pro', implemented: false },
+  { slug: 'flashcards',   label: 'Flashcards',   href: '/dashboard/flashcards',   Icon: Layers,         desc: 'Memorização SM-2 · spaced repetition',          kind: 'agent', minPlan: 'pro', implemented: false },
+  { slug: 'plano',        label: 'Plano',        href: '/dashboard/plano',        Icon: CalendarDays,   desc: 'Plano de estudos IA · cronograma OAB',          kind: 'agent', minPlan: 'pro', implemented: false },
 
   // ───────── 4 módulos de plataforma ─────────
-  { slug: 'casos',        label: 'Casos',        href: '/dashboard/casos',        Icon: FolderKanban,   desc: 'Pastas de casos · timeline por cliente',        kind: 'module', minPlan: 'pro',        implemented: true  },
+  // CRM segue implemented:true porque é DEMO funcional intencional (página
+  // declara isso explicitamente em page.tsx:1-9). Os outros 3 são preview-only.
+  { slug: 'casos',        label: 'Casos',        href: '/dashboard/casos',        Icon: FolderKanban,   desc: 'Pastas de casos · timeline por cliente',        kind: 'module', minPlan: 'pro',        implemented: false },
   { slug: 'crm',          label: 'CRM',          href: '/dashboard/crm',          Icon: Users,          desc: 'Leads, clientes e funil de atendimento · DEMO', kind: 'module', minPlan: 'pro',        implemented: true  },
-  { slug: 'jurimetria',   label: 'Jurimetria',   href: '/dashboard/jurimetria',   Icon: BarChart3,      desc: 'Métricas processuais e benchmarks',             kind: 'module', minPlan: 'pro',        implemented: true  },
-  { slug: 'marketing',    label: 'Marketing',    href: '/dashboard/marketing',    Icon: Sparkles,       desc: 'Agenda de conteúdo compliant · calendário',     kind: 'module', minPlan: 'enterprise', implemented: true  },
+  { slug: 'jurimetria',   label: 'Jurimetria',   href: '/dashboard/jurimetria',   Icon: BarChart3,      desc: 'Métricas processuais e benchmarks',             kind: 'module', minPlan: 'pro',        implemented: false },
+  { slug: 'marketing',    label: 'Marketing',    href: '/dashboard/marketing',    Icon: Sparkles,       desc: 'Agenda de conteúdo compliant · calendário',     kind: 'module', minPlan: 'enterprise', implemented: false },
 ]
 
 const PLAN_RANK: Record<Plan, number> = { free: 0, starter: 1, pro: 2, enterprise: 3 }

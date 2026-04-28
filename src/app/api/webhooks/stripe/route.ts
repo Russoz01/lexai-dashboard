@@ -51,17 +51,24 @@ export async function POST(req: NextRequest) {
         const priceId = sub.items.data[0]?.price.id
         const plano = planFromPriceId(priceId || '')
         const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id
+        // auth_user_id é setado em subscription_data.metadata em checkout/route.ts:75.
+        // Filtrar por auth_user_id é IDOR-safe (UUID v4 do Supabase Auth, não
+        // gravável pelo cliente). Fallback p/ stripe_customer_id mantém
+        // compat com subs criadas antes deste fix.
+        const authUserId = (sub.metadata?.auth_user_id as string | undefined) || null
+        const filterCol = authUserId ? 'auth_user_id' : 'stripe_customer_id'
+        const filterVal = authUserId ?? customerId
 
-        // Find user by stripe_customer_id (must have been set during checkout)
         const { error } = await supabase
           .from('usuarios')
           .update({
             plano,
+            stripe_customer_id: customerId,
             stripe_subscription_id: sub.id,
             subscription_status: sub.status,
             current_period_end: new Date((sub as unknown as { current_period_end: number }).current_period_end * 1000).toISOString(),
           })
-          .eq('stripe_customer_id', customerId)
+          .eq(filterCol, filterVal)
 
         if (error) throw error
         break
@@ -70,10 +77,13 @@ export async function POST(req: NextRequest) {
       case 'customer.subscription.deleted': {
         const sub = event.data.object as Stripe.Subscription
         const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id
+        const authUserId = (sub.metadata?.auth_user_id as string | undefined) || null
+        const filterCol = authUserId ? 'auth_user_id' : 'stripe_customer_id'
+        const filterVal = authUserId ?? customerId
         const { error } = await supabase
           .from('usuarios')
           .update({ plano: 'free', subscription_status: 'canceled', stripe_subscription_id: null })
-          .eq('stripe_customer_id', customerId)
+          .eq(filterCol, filterVal)
         if (error) throw error
         break
       }
@@ -81,14 +91,23 @@ export async function POST(req: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
-        const userEmail = session.customer_email || session.customer_details?.email
-        if (customerId && userEmail) {
-          // Link the customer id to the usuarios row matched by email
+        // auth_user_id agora é setado em metadata + client_reference_id em
+        // checkout/route.ts. Linkagem por EMAIL foi removida (vetor de
+        // sequestro de billing). Se metadata ausente em sessão legada, log
+        // e ignora — checkout/route.ts já fez upsert do customer_id antes.
+        const authUserId =
+          (session.metadata?.auth_user_id as string | undefined) ||
+          (session.client_reference_id as string | undefined) ||
+          null
+        if (customerId && authUserId) {
           const { error } = await supabase
             .from('usuarios')
             .update({ stripe_customer_id: customerId })
-            .eq('email', userEmail)
+            .eq('auth_user_id', authUserId)
           if (error) throw error
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn('[stripe webhook] checkout.session.completed without auth_user_id metadata — skipping link')
         }
         break
       }

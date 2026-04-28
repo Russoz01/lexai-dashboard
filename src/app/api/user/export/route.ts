@@ -33,12 +33,14 @@ export async function GET(req: NextRequest) {
       .eq('id', usuarioId)
       .maybeSingle()
 
-    // Fetch every related collection — each filtered by user_id
+    // Fetch every related collection — each filtered by usuario_id (FK real).
+    // Bug anterior: eq('user_id', ...) retornava arrays vazios pra todo mundo,
+    // violando LGPD Art. 18 II (portabilidade) silenciosamente.
     const [historico, oauthTokens, financeiro, sharedDocuments] = await Promise.all([
-      supabase.from('historico').select('*').eq('user_id', usuarioId),
-      supabase.from('oauth_tokens').select('provider, scope, created_at, updated_at').eq('user_id', usuarioId),
-      supabase.from('financeiro').select('*').eq('user_id', usuarioId),
-      supabase.from('shared_documents').select('*').eq('user_id', usuarioId),
+      supabase.from('historico').select('*').eq('usuario_id', usuarioId),
+      supabase.from('oauth_tokens').select('provider, scope, created_at, updated_at').eq('usuario_id', usuarioId),
+      supabase.from('financeiro').select('*').eq('usuario_id', usuarioId),
+      supabase.from('shared_documents').select('*').eq('usuario_id', usuarioId),
     ])
 
     const bundle = {

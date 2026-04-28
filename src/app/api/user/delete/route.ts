@@ -58,7 +58,11 @@ export async function POST(req: NextRequest) {
 
     const errors: string[] = []
     for (const table of cascadeTables) {
-      const { error } = await admin.from(table).delete().eq('user_id', usuarioId)
+      // FK em todas essas tabelas é `usuario_id` (não user_id) — confirma com
+      // chat/route.ts:258, share/create/route.ts:103, financeiro/import/route.ts:96.
+      // Bug anterior fazia eq('user_id', ...) → 0 rows afetadas em todas as 4
+      // tabelas e retornava { deleted: true } mentindo. Violação direta LGPD Art. 18 VI.
+      const { error } = await admin.from(table).delete().eq('usuario_id', usuarioId)
       if (error) errors.push(`${table}: ${error.message}`)
     }
 

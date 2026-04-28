@@ -69,6 +69,12 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer: customerId!,
+      // client_reference_id + metadata.auth_user_id pro webhook conseguir
+      // mapear o customer ao usuario PELO ID e nunca por email — antes era
+      // eq('email', ...) que permitia sequestro de billing via spoofing de
+      // email no Supabase Auth quando email_confirm está off.
+      client_reference_id: user.id,
+      metadata: { auth_user_id: user.id, plan },
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
         trial_period_days: 7,

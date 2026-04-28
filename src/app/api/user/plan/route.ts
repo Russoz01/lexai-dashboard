@@ -18,14 +18,20 @@ const FOUNDER_EMAILS = new Set<string>([
  */
 export async function GET() {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ plano: 'free', authenticated: false }, { status: 401 })
     }
 
     const email = user.email?.toLowerCase?.() ?? ''
-    const isFounder = FOUNDER_EMAILS.has(email)
+    // Founder bypass requer email confirmado — se Supabase Auth tiver
+    // confirm_email off, qualquer um pode signupar com o email do founder.
+    // email_confirmed_at é setado pela Supabase Auth ao confirmar via link no
+    // email, não é gravável pelo cliente. Sem isso, ataque trivial:
+    //   1. atacante signupa luizfernandoleonardoleonardo@gmail.com
+    //   2. /api/user/plan retorna enterprise lifetime → bypass total de billing.
+    const isFounder = FOUNDER_EMAILS.has(email) && Boolean(user.email_confirmed_at)
 
     // Fetch from usuarios table (linked via auth_user_id)
     const { data: usuario, error: dbError } = await supabase

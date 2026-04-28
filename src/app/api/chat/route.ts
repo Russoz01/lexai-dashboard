@@ -173,7 +173,10 @@ export async function POST(req: NextRequest) {
     const mensagem: string = typeof body?.mensagem === 'string' ? body.mensagem : ''
     const arquivoTexto: string | undefined = typeof body?.arquivoTexto === 'string' ? body.arquivoTexto : undefined
     const arquivoNome: string | undefined = typeof body?.arquivoNome === 'string' ? body.arquivoNome : undefined
-    const historico: ChatMessage[] = Array.isArray(body?.historico) ? body.historico.slice(-8) : []
+    // Hard-cap em 6 mensagens × 1500 chars (era 8×4000 = 32k chars). Cliente
+    // malicioso conseguia fazer 8 turnos de 4000 chars + arquivo de 40k pra
+    // forçar ~70k tokens de input por request — burn de quota Anthropic em $$.
+    const historico: ChatMessage[] = Array.isArray(body?.historico) ? body.historico.slice(-6) : []
 
     if (!mensagem || mensagem.trim().length < 2) {
       if (!arquivoTexto) {
@@ -181,19 +184,26 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Reject early se arquivo for grotesco — antes era cap silencioso de 40k
+    // que ainda assim estourava budget. Agora rejeita explícito acima de 25k.
+    if (arquivoTexto && arquivoTexto.length > 25000) {
+      return NextResponse.json({
+        error: 'Arquivo muito grande pro chat (máximo ~25.000 caracteres). Use o Resumidor para documentos longos.',
+      }, { status: 413 })
+    }
+
     // Monta o conteudo da mensagem do usuario (mensagem + arquivo se houver)
     let userContent = mensagem.trim()
     if (arquivoTexto && arquivoTexto.length > 0) {
-      // Limite de seguranca — 40k chars pra nao estourar contexto na rota do chat
-      const snippet = arquivoTexto.slice(0, 40000)
-      userContent = `${userContent || 'Analise o documento a seguir.'}\n\n---\nDocumento anexado${arquivoNome ? ` (${arquivoNome})` : ''}:\n\n${snippet}${arquivoTexto.length > 40000 ? '\n\n[...texto truncado para caber no chat]' : ''}`
+      const snippet = arquivoTexto.slice(0, 25000)
+      userContent = `${userContent || 'Analise o documento a seguir.'}\n\n---\nDocumento anexado${arquivoNome ? ` (${arquivoNome})` : ''}:\n\n${snippet}`
     }
 
-    // Monta o array de mensagens incluindo historico
+    // Monta o array de mensagens incluindo historico — cap por mensagem em 1500 chars
     const messages: Anthropic.MessageParam[] = [
       ...historico.map((m): Anthropic.MessageParam => ({
         role: m.role,
-        content: m.content.slice(0, 4000),
+        content: m.content.slice(0, 1500),
       })),
       { role: 'user', content: userContent },
     ]

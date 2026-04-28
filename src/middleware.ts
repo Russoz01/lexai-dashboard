@@ -55,10 +55,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // Admin guard — role === 'admin' no user_metadata
+  // Admin guard — role === 'admin' EXCLUSIVAMENTE em app_metadata.
+  // user_metadata é gravável pelo cliente via supabase.auth.updateUser({ data: ... })
+  // — qualquer usuário poderia se promover a admin se lêssemos dali. app_metadata
+  // só é gravável com service-role key (server-only).
   const isAdminPath = ADMIN_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))
   if (isAdminPath) {
-    const role = (user.user_metadata?.role as string | undefined) ?? (user.app_metadata?.role as string | undefined)
+    const role = user.app_metadata?.role as string | undefined
     if (role !== 'admin') {
       const dashUrl = new URL('/dashboard', origin)
       dashUrl.searchParams.set('error', 'forbidden')
