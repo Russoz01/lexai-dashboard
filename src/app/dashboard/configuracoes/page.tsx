@@ -242,7 +242,7 @@ export default function ConfiguracoesPage() {
         </div>
         <h1 style={{
           fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: 38, fontWeight: 500,
+          fontSize: 'clamp(28px, 5.5vw, 38px)', fontWeight: 500,
           lineHeight: 1.08, letterSpacing: '-1px',
           color: 'var(--text-primary)', margin: 0,
         }}>
@@ -317,7 +317,7 @@ export default function ConfiguracoesPage() {
             <form onSubmit={salvarPerfil} style={{ display:'flex', flexDirection:'column', gap:14 }}>
               {msg  && <div style={{ padding:'10px 14px', borderRadius:8, background:'var(--accent-light)', color:'var(--accent)', fontSize:13, display:'flex', alignItems:'center', gap:8 }}><CheckCircle2 size={14} strokeWidth={1.75} aria-hidden /> {msg}</div>}
               {erro && <div style={{ padding:'10px 14px', borderRadius:8, background:'var(--danger-light)', color:'var(--danger)', fontSize:13, display:'flex', alignItems:'center', gap:8 }}><AlertCircle size={14} strokeWidth={1.75} aria-hidden /> {erro}</div>}
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:14 }}>
                 <div>
                   <label className="form-label">Nome completo</label>
                   <input type="text" value={nome} onChange={e => setNome(e.target.value)} placeholder="Seu nome" className="form-input" />
@@ -412,7 +412,7 @@ export default function ConfiguracoesPage() {
           <div
             className="section-card"
             style={{
-              padding: '28px 32px',
+              padding: 'clamp(20px, 4vw, 28px) clamp(20px, 4vw, 32px)',
               background:
                 'radial-gradient(120% 100% at 50% 0%, rgba(191,166,142,0.08), transparent 68%), rgba(10,10,10,0.82)',
               border: '1px solid rgba(191,166,142,0.18)',
@@ -449,7 +449,7 @@ export default function ConfiguracoesPage() {
                 <div
                   style={{
                     fontFamily: 'var(--font-playfair), "Playfair Display", Georgia, serif',
-                    fontSize: 34,
+                    fontSize: 'clamp(26px, 5vw, 34px)',
                     fontStyle: 'italic',
                     fontWeight: 400,
                     lineHeight: 1.04,
@@ -478,7 +478,7 @@ export default function ConfiguracoesPage() {
               <div style={{ textAlign: 'right' }}>
                 <div
                   style={{
-                    fontSize: 36,
+                    fontSize: 'clamp(28px, 5.5vw, 36px)',
                     fontWeight: 300,
                     color: '#f0e6d4',
                     fontVariantNumeric: 'tabular-nums',
@@ -664,7 +664,7 @@ export default function ConfiguracoesPage() {
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
           <div className="section-card" style={{ padding:'20px 24px' }}>
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Canais de Atendimento</div>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:10 }}>
               {[
                 { Icon: Mail,  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'contato@pralvex.com', href:'mailto:contato@pralvex.com' },
               ].map(ch => {
