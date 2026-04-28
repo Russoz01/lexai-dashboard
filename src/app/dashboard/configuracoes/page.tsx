@@ -33,36 +33,39 @@ type Tab = 'perfil' | 'preferencias' | 'integracoes' | 'contato'
 
 type IconComp = LucideIcon
 
+// Paleta monochromatic noir-friendly — antes brand colors hardcoded (Google
+// blue/WhatsApp green/Drive green/etc) destoavam do DNA editorial. Brand
+// identity vem do Icon, nao da cor. Tons de champagne com leve variacao.
 const INTEGRACOES: { id: string; label: string; Icon: IconComp; desc: string; color: string; bg: string }[] = [
   {
     id: 'gcalendar', label: 'Google Calendar', Icon: Calendar,
     desc: 'Sincronize prazos e compromissos com seu Google Calendar automaticamente.',
-    color: '#4285F4', bg: '#eff6ff',
+    color: '#bfa68e', bg: 'rgba(191,166,142,0.08)',
   },
   {
     id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle,
     desc: 'Receba alertas de prazos e lembretes diretamente no WhatsApp.',
-    color: '#25D366', bg: '#f0fdf4',
+    color: '#c78a61', bg: 'rgba(199,138,97,0.08)',
   },
   {
     id: 'gdrive', label: 'Google Drive', Icon: Cloud,
     desc: 'Salve documentos analisados automaticamente no seu Drive.',
-    color: '#0F9D58', bg: '#f0fdf4',
+    color: '#a8855c', bg: 'rgba(168,133,92,0.08)',
   },
   {
     id: 'email', label: 'Notificações por E-mail', Icon: Mail,
     desc: 'Receba resumos semanais e alertas de prazos por e-mail.',
-    color: '#4f46e5', bg: '#eef2ff',
+    color: '#d4ae6a', bg: 'rgba(212,174,106,0.08)',
   },
   {
     id: 'notion', label: 'Notion', Icon: BookMarked,
     desc: 'Exporte resumos e pesquisas diretamente para páginas do Notion.',
-    color: '#000', bg: '#f8f8f8',
+    color: '#bfa68e', bg: 'rgba(191,166,142,0.08)',
   },
   {
     id: 'telegram', label: 'Telegram', Icon: Send,
     desc: 'Receba notificações e interaja com o agente via Telegram.',
-    color: '#0088cc', bg: '#eff8ff',
+    color: '#c78a61', bg: 'rgba(199,138,97,0.08)',
   },
 ]
 
@@ -152,8 +155,11 @@ export default function ConfiguracoesPage() {
   }
 
   useEffect(() => {
+    // cleanup flag — antes setState rodava após unmount se user navegasse
+    // rápido entre tabs. React warning + memory leak.
+    let cancelled = false
     supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) return
+      if (cancelled || !data.user) return
       const meta = data.user.user_metadata
       setEmail(data.user.email ?? '')
       setNome(meta?.nome ?? meta?.full_name ?? '')
@@ -162,6 +168,7 @@ export default function ConfiguracoesPage() {
       setAvatarUrl(meta?.avatar_url ?? '')
       setAtivos(meta?.integracoes ?? {})
     })
+    return () => { cancelled = true }
   }, [supabase])
 
   async function salvarPerfil(e: React.FormEvent) {

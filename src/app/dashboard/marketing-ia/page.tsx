@@ -83,7 +83,7 @@ export default function MarketingIaPage() {
   }
 
   return (
-    <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+    <div className="agent-page">
       <div className="demo-ribbon" style={{ position: 'relative', top: 'auto', borderRadius: 12, marginBottom: 24, borderBottom: '1px solid rgba(212,174,106,0.28)' }}>
         <strong style={{ fontWeight: 700, letterSpacing: '0.22em' }}>Modo demonstração</strong>
         <span style={{ opacity: 0.7 }}>·</span>

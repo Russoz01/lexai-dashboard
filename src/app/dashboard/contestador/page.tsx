@@ -98,7 +98,7 @@ export default function ContestadorPage() {
   }
 
   return (
-    <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+    <div className="agent-page">
       <AgentHero
         edition="Nº XVIII"
         Icon={Shield}

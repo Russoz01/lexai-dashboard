@@ -971,7 +971,13 @@ input[type="date"] { cursor: pointer; }
 /* ══════════════════════════════════════════════════════════════
    TABS
    ══════════════════════════════════════════════════════════════ */
-.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.tabs {
+  display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  /* Mobile: scroll horizontal sem barra visivel — antes os 4 tabs estouravam <360px */
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn { white-space: nowrap; flex-shrink: 0; }
 
 .tab-btn {
   padding: 10px 18px; font-size: 14px; font-weight: 500;
@@ -1028,13 +1034,23 @@ input[type="date"] { cursor: pointer; }
   box-shadow: 0 25px 60px rgba(19,32,37,0.16);
 }
 [data-theme="dark"] .btn-primary {
-  background: var(--accent);
-  color: var(--bg-base);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  /* Gradient gold editorial — antes era flat var(--accent) que destoava
+     dos CTAs das outras pages que ja tinham linear-gradient atelier */
+  background: linear-gradient(135deg, #f5e8d3 0%, #bfa68e 55%, #8a6f55 100%);
+  color: #0a0807;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(191,166,142,0.28), inset 0 1px 0 rgba(255,255,255,0.18);
+  border: 1px solid rgba(191,166,142,0.35);
 }
 [data-theme="dark"] .btn-primary:hover {
-  background: var(--accent-light2);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  background: linear-gradient(135deg, #fdf2dd 0%, #d8bf9f 55%, #9c7e62 100%);
+  box-shadow: 0 8px 28px rgba(191,166,142,0.42), inset 0 1px 0 rgba(255,255,255,0.22);
+}
+[data-theme="dark"] .btn-primary:disabled {
+  background: rgba(191,166,142,0.18);
+  color: rgba(240,230,212,0.5);
+  box-shadow: none;
+  cursor: not-allowed;
 }
 [data-theme="light"] .btn-primary {
   background: var(--text-primary);
@@ -1131,20 +1147,22 @@ input[type="date"] { cursor: pointer; }
   width: 6px; height: 6px; border-radius: 50%;
   box-shadow: 0 0 8px currentColor;
 }
-.confidence-badge.alta { color: #10B981; border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.08); }
-.confidence-badge.media { color: #F59E0B; border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.08); }
-.confidence-badge.baixa { color: #EF4444; border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.08); }
-.confidence-badge .dot.alta { background: #10B981; }
-.confidence-badge .dot.media { background: #F59E0B; }
-.confidence-badge .dot.baixa { background: #EF4444; }
+/* Confidence badge — paleta noir-friendly (era Tailwind verde/amber/red,
+   destoava do DNA editorial. Agora champagne/copper/rose stone) */
+.confidence-badge.alta  { color: #9ec28b; border-color: rgba(158,194,139,0.30); background: rgba(158,194,139,0.10); }
+.confidence-badge.media { color: #d4ae6a; border-color: rgba(212,174,106,0.30); background: rgba(212,174,106,0.10); }
+.confidence-badge.baixa { color: #d88977; border-color: rgba(216,137,119,0.30); background: rgba(216,137,119,0.10); }
+.confidence-badge .dot.alta  { background: #9ec28b; }
+.confidence-badge .dot.media { background: #d4ae6a; }
+.confidence-badge .dot.baixa { background: #d88977; }
 
-/* Verified source badge */
+/* Verified source badge — mesmo tratamento noir-friendly */
 .verified-badge {
   display: inline-flex; align-items: center; gap: 4px;
   font-size: 10px; font-weight: 600; letter-spacing: 0.3px;
   padding: 3px 8px; border-radius: 10px;
-  color: #10B981; background: rgba(16,185,129,0.08);
-  border: 1px solid rgba(16,185,129,0.25);
+  color: #9ec28b; background: rgba(158,194,139,0.10);
+  border: 1px solid rgba(158,194,139,0.30);
   text-transform: uppercase;
 }
 .verified-badge i { font-size: 11px; }
@@ -1170,15 +1188,15 @@ input[type="date"] { cursor: pointer; }
   }
 }
 
-/* Urgent deadline highlight */
+/* Urgent deadline highlight — paleta noir-friendly (era red Tailwind) */
 .urgent-deadline {
-  background: linear-gradient(90deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));
-  border-left: 3px solid #EF4444 !important;
+  background: linear-gradient(90deg, rgba(216,137,119,0.14), rgba(216,137,119,0.04));
+  border-left: 3px solid #d88977 !important;
   padding: 12px 16px; border-radius: 0 8px 8px 0;
   margin-bottom: 10px;
 }
 .urgent-deadline .deadline-label {
-  font-size: 10px; font-weight: 700; color: #EF4444;
+  font-size: 10px; font-weight: 700; color: #d88977;
   text-transform: uppercase; letter-spacing: 0.5px;
   margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
 }
@@ -1266,6 +1284,30 @@ input[type="date"] { cursor: pointer; }
   [style*="grid-template-columns: repeat(2, 1fr)"] { grid-template-columns: 1fr !important; }
   [style*="grid-template-columns: repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
   [style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: 1fr !important; }
+
+  /* Agent page wrapper — antes 15+ agentes tinham `padding: 32, maxWidth: 1200`
+     inline sem responsivo. Agora classe util consumida via `<div className="agent-page">` */
+  .agent-page { padding: 24px 16px 40px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AGENT PAGE WRAPPER (consumido por todos os agentes)
+   ══════════════════════════════════════════════════════════════ */
+.agent-page {
+  padding: clamp(20px, 3.5vw, 32px) clamp(16px, 3vw, 36px) clamp(36px, 5vw, 56px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+@media (max-width: 480px) {
+  .agent-page { padding: 16px 12px 32px; }
+}
+
+/* Editorial divider — hairline gold pra separar AgentHero de content */
+.editorial-divider {
+  height: 1px;
+  margin: clamp(20px, 3vw, 28px) 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(191,166,142,0.32) 50%, transparent 100%);
+  border: none;
 }
 
 /* ══════════════════════════════════════════════════════════════

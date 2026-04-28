@@ -39,12 +39,15 @@ interface RiscoResult {
 const TIPOS = ['Contrato', 'Aditivo', 'Acordo', 'NDA', 'Termo de uso', 'Outro']
 
 function nivelColor(nivel?: string): { bg: string; fg: string; label: string } {
+  // Paleta noir-friendly — antes saturada (verde/amber/laranja/vermelho)
+  // que ficava berrante no noir. Agora gradiente champagne→copper→rose stone
+  // que escala visualmente com a severidade.
   switch (nivel) {
-    case 'BAIXO': return { bg: 'rgba(15, 122, 74, 0.18)', fg: '#0f7a4a', label: 'BAIXO' }
-    case 'MEDIO': return { bg: 'rgba(168, 138, 0, 0.18)', fg: '#a88a00', label: 'MÉDIO' }
-    case 'ALTO': return { bg: 'rgba(168, 90, 0, 0.18)', fg: '#a85a00', label: 'ALTO' }
-    case 'CRITICO': return { bg: 'rgba(168, 52, 52, 0.18)', fg: '#a83434', label: 'CRÍTICO' }
-    default: return { bg: 'rgba(120, 120, 120, 0.18)', fg: '#666', label: '—' }
+    case 'BAIXO':   return { bg: 'rgba(158,194,139,0.14)', fg: '#9ec28b', label: 'BAIXO' }
+    case 'MEDIO':   return { bg: 'rgba(212,174,106,0.16)', fg: '#d4ae6a', label: 'MÉDIO' }
+    case 'ALTO':    return { bg: 'rgba(199,138,97,0.18)',  fg: '#c78a61', label: 'ALTO' }
+    case 'CRITICO': return { bg: 'rgba(216,137,119,0.20)', fg: '#d88977', label: 'CRÍTICO' }
+    default:        return { bg: 'rgba(191,166,142,0.10)', fg: '#bfa68e', label: '—' }
   }
 }
 
@@ -91,7 +94,7 @@ export default function RiscoPage() {
   const cores = nivelColor(risco?.nivel)
 
   return (
-    <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+    <div className="agent-page">
       <AgentHero
         edition="Nº XXVI"
         Icon={AlertTriangle}

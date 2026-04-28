@@ -507,7 +507,9 @@ export default function DashboardPage() {
 
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))',
+                  // minmax(min(100%, 270px), 1fr) é safe pattern — antes 270px fixo
+                  // gerava overflow em viewports <340px (devices ultra-small).
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 270px), 1fr))',
                   gap: 22,
                 }}>
                   {group.items.map((ag, i) => {

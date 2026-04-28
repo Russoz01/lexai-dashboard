@@ -63,16 +63,22 @@ const CAT_ICON: Record<string, LucideIcon> = {
   outro: MoreHorizontal,
 }
 
-const EMPTY = {
-  descricao: '',
-  valor: '',
-  tipo: 'receita',
-  categoria: 'honorarios',
-  data: new Date().toISOString().split('T')[0],
-  recorrente: false,
-  recorrencia_freq: 'mensal',
-  recorrencia_fim: '',
+// Factory ao inves de const — antes `data: new Date().toISOString()` calculava
+// uma vez no module load. Usuario que ficava 8h no painel e abria modal via
+// reset(EMPTY) recebia data do inicio da sessao, nao do dia atual.
+function emptyForm() {
+  return {
+    descricao: '',
+    valor: '',
+    tipo: 'receita',
+    categoria: 'honorarios',
+    data: new Date().toISOString().split('T')[0],
+    recorrente: false,
+    recorrencia_freq: 'mensal',
+    recorrencia_fim: '',
+  }
 }
+const EMPTY = emptyForm()
 
 // Helper: compute next occurrence date from a frequency and starting date
 function proximaData(data: string, freq: string): string {
@@ -412,7 +418,7 @@ export default function FinanceiroPage() {
     }
 
     setModal(false)
-    setForm(EMPTY)
+    setForm(emptyForm())
     await carregar()
     setSalvando(false)
   }

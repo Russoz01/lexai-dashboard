@@ -206,8 +206,9 @@ export function AgentHero({
           />
         </div>
 
-        {/* title block */}
-        <div style={{ flex: 1, minWidth: 260 }}>
+        {/* title block — minWidth defensivo p/ mobile (era 260 fixo,
+            estourava em <360px com emblem 68 + gap 20) */}
+        <div style={{ flex: '1 1 220px', minWidth: 'min(220px, 100%)' }}>
           <div
             style={{
               fontFamily: "'DM Mono', ui-monospace, monospace",

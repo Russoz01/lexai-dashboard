@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ShieldCheck, Zap, ArrowRight, AlertTriangle, Info, Clipboard, Check, RotateCcw, Clock, Gauge } from 'lucide-react'
 import { AgentHero } from '@/components/AgentHero'
+import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface ComplianceResult {
   exposicoes: string
@@ -63,11 +64,13 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'score', label: 'Score de Risco' },
 ]
 
+// Paleta noir-friendly — antes era light pastel Tailwind (mint/amber/rose/pink)
+// que ficava ilegivel sobre noir. Agora champagne→copper→rose stone.
 const SCORE_COLORS: Record<string, { bg: string; color: string; border: string }> = {
-  BAIXO:   { bg: '#d1fae5', color: '#065f46', border: '#6ee7b7' },
-  MEDIO:   { bg: '#fef3c7', color: '#92400e', border: '#fcd34d' },
-  ALTO:    { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5' },
-  CRITICO: { bg: '#fce7f3', color: '#831843', border: '#f9a8d4' },
+  BAIXO:   { bg: 'rgba(158,194,139,0.12)', color: '#9ec28b', border: 'rgba(158,194,139,0.35)' },
+  MEDIO:   { bg: 'rgba(212,174,106,0.12)', color: '#d4ae6a', border: 'rgba(212,174,106,0.35)' },
+  ALTO:    { bg: 'rgba(199,138,97,0.14)',  color: '#c78a61', border: 'rgba(199,138,97,0.40)'  },
+  CRITICO: { bg: 'rgba(216,137,119,0.14)', color: '#d88977', border: 'rgba(216,137,119,0.40)' },
 }
 
 export default function CompliancePage() {
@@ -79,12 +82,20 @@ export default function CompliancePage() {
   const [resultado, setResultado] = useState<ComplianceResult | null>(null)
   const [activeTab, setActiveTab] = useState<TabKey>('exposicoes')
   const [copied, setCopied] = useState(false)
+  // /api/compliance agora retorna { parecer, fontes, grounding_stats } com
+  // legal-grounding wired (LGPD Lei 13.709 + Lei 12.846 + CC + CDC + CF/88
+  // do corpus). Antes a UI ignorava fontes/stats — feature de grounding ficava
+  // invisivel pro usuario.
+  const [fontes, setFontes] = useState<Fonte[]>([])
+  const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
 
   async function analisar() {
     if (loading || !descricao.trim()) return
     setLoading(true)
     setErro('')
     setResultado(null)
+    setFontes([])
+    setGroundingStats(null)
 
     try {
       const res = await fetch('/api/compliance', {
@@ -98,6 +109,8 @@ export default function CompliancePage() {
         throw new Error('A análise não foi gerada corretamente. Tente novamente.')
       }
       setResultado(data.parecer as ComplianceResult)
+      if (Array.isArray(data.fontes)) setFontes(data.fontes)
+      if (data.grounding_stats) setGroundingStats(data.grounding_stats)
       setActiveTab('exposicoes')
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro ao gerar análise')
@@ -109,6 +122,8 @@ export default function CompliancePage() {
   function novaAnalise() {
     setResultado(null)
     setErro('')
+    setFontes([])
+    setGroundingStats(null)
   }
 
   function preencherExemplo(ex: typeof EXEMPLOS[number]) {
@@ -434,8 +449,17 @@ export default function CompliancePage() {
             </p>
           </div>
 
+          {/* Fontes legais (legal-grounding) */}
+          {fontes.length > 0 && (
+            <FontesCitadas
+              fontes={fontes}
+              stats={groundingStats}
+              title="Fundamentos regulatórios"
+            />
+          )}
+
           {/* Botao final */}
-          <div style={{ textAlign: 'center', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', marginTop: 32 }}>
             <button type="button" onClick={novaAnalise} className="btn-primary" style={{ padding: '10px 24px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               <RotateCcw size={14} strokeWidth={1.75} aria-hidden />
               Nova análise

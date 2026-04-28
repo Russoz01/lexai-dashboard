@@ -30,17 +30,24 @@ import {
 } from 'lucide-react'
 import { AgentHero } from '@/components/AgentHero'
 
+// Paleta monochromatic noir-friendly — antes 10 cores Tailwind aleatorias
+// (red/amber/emerald/pink/etc) destoavam do DNA editorial atelier. Agora 4
+// tons de champagne/copper ciclando — diferenca visual entre areas vem do
+// Icon, nao da cor.
+const NOIR_TONES = ['#bfa68e', '#c78a61', '#a8855c', '#d4ae6a'] as const
+const tonAt = (i: number) => NOIR_TONES[i % NOIR_TONES.length]
+
 const AREAS_PRATICA = [
-  { id: 'civil', label: 'Direito Civil', Icon: FileText, color: '#44372b' },
-  { id: 'penal', label: 'Direito Penal', Icon: ShieldAlert, color: '#EF4444' },
-  { id: 'trabalhista', label: 'Direito Trabalhista', Icon: Briefcase, color: '#F59E0B' },
-  { id: 'tributario', label: 'Direito Tributário', Icon: Coins, color: '#10B981' },
-  { id: 'empresarial', label: 'Direito Empresarial', Icon: Building2, color: '#EC4899' },
-  { id: 'ambiental', label: 'Direito Ambiental', Icon: TreePine, color: '#22C55E' },
-  { id: 'digital', label: 'Direito Digital', Icon: Laptop, color: '#0EA5E9' },
-  { id: 'consumidor', label: 'Direito do Consumidor', Icon: ShoppingBag, color: '#8B5CF6' },
-  { id: 'administrativo', label: 'Direito Administrativo', Icon: Landmark, color: '#06B6D4' },
-  { id: 'constitucional', label: 'Direito Constitucional', Icon: Building, color: '#6366F1' },
+  { id: 'civil', label: 'Direito Civil', Icon: FileText, color: tonAt(0) },
+  { id: 'penal', label: 'Direito Penal', Icon: ShieldAlert, color: tonAt(1) },
+  { id: 'trabalhista', label: 'Direito Trabalhista', Icon: Briefcase, color: tonAt(2) },
+  { id: 'tributario', label: 'Direito Tributário', Icon: Coins, color: tonAt(3) },
+  { id: 'empresarial', label: 'Direito Empresarial', Icon: Building2, color: tonAt(0) },
+  { id: 'ambiental', label: 'Direito Ambiental', Icon: TreePine, color: tonAt(1) },
+  { id: 'digital', label: 'Direito Digital', Icon: Laptop, color: tonAt(2) },
+  { id: 'consumidor', label: 'Direito do Consumidor', Icon: ShoppingBag, color: tonAt(3) },
+  { id: 'administrativo', label: 'Direito Administrativo', Icon: Landmark, color: tonAt(0) },
+  { id: 'constitucional', label: 'Direito Constitucional', Icon: Building, color: tonAt(1) },
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,12 +93,13 @@ export default function MonitorLegislativoPage() {
     }
   }
 
+  // 5 secoes em monochrome champagne — antes era indigo/emerald/orange/red puro
   const SECOES = [
-    { key: 'legislacao' as const, label: 'Legislação', Icon: NotebookText, color: '#44372b' },
-    { key: 'precedentes' as const, label: 'Precedentes', Icon: Landmark, color: '#4f46e5' },
-    { key: 'regulatorio' as const, label: 'Regulatório', Icon: GitBranch, color: '#10B981' },
-    { key: 'impacto' as const, label: 'Análise de Impacto', Icon: TrendingUp, color: '#e67e22' },
-    { key: 'acoes' as const, label: 'Ações Recomendadas', Icon: CheckSquare, color: '#c0392b' },
+    { key: 'legislacao' as const, label: 'Legislação', Icon: NotebookText, color: '#bfa68e' },
+    { key: 'precedentes' as const, label: 'Precedentes', Icon: Landmark, color: '#c78a61' },
+    { key: 'regulatorio' as const, label: 'Regulatório', Icon: GitBranch, color: '#a8855c' },
+    { key: 'impacto' as const, label: 'Análise de Impacto', Icon: TrendingUp, color: '#d4ae6a' },
+    { key: 'acoes' as const, label: 'Ações Recomendadas', Icon: CheckSquare, color: '#d88977' },
   ]
 
   return (
