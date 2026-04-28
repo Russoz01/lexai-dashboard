@@ -234,7 +234,7 @@ const CHAPTERS: Chapter[] = [
           </div>
           <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.65] text-white/80">
 {`curl -X POST https://api.pralvex.com.br/v1/agents/pesquisador \\
-  -H "Authorization: Bearer px_live_xxx" \\
+  -H "Authorization: Bearer lx_live_xxx" \\
   -H "Content-Type: application/json" \\
   -d '{
     "query": "responsabilidade civil em queda em supermercado",
