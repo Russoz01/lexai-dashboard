@@ -142,14 +142,17 @@ export function LexHeroStage() {
           return (
             <div
               key={a.label}
-              className="lex-stage-card absolute left-1/2 top-1/2"
+              className="lex-stage-card absolute"
               style={{
                 animationDelay: `${a.delay}s`,
-                // Transform direto em inline — antes a versao usava var(--fx,0)
-                // dentro de @keyframes que colapsava todos cards em (0,0,0)
-                // = centro. Agora vw/vh + mouse parallax (--mx/--my do parent)
-                // sao resolvidos no contexto do elemento, no momento do paint.
-                transform: `translate(-50%, -50%) translate3d(calc(${a.x}vw + (var(--mx, 0px) * ${a.parallax})), calc(${a.y}vh + (var(--my, 0px) * ${a.parallax})), ${a.z}px) rotate3d(0,1,0,${a.rot}deg)`,
+                // Posicionamento via left/top com calc — abordagem mais robusta
+                // que translate3d(vw,vh). vw/vh aqui sao % de viewport,
+                // resolvidos pelo browser direto sem passar por matriz transform.
+                // Plus mouse parallax via var(--mx,--my) do parent.
+                left: `calc(50% + ${a.x}vw + (var(--mx, 0px) * ${a.parallax}))`,
+                top: `calc(50% + ${a.y}vh + (var(--my, 0px) * ${a.parallax}))`,
+                // Transform agora SO faz centering self + Z-depth + Y-rotation.
+                transform: `translate(-50%, -50%) translateZ(${a.z}px) rotate3d(0,1,0,${a.rot}deg)`,
               }}
             >
               {/* Wrapper interno tem o idle-bob (translateY relativo). Combina
