@@ -6,6 +6,8 @@ import { motion } from 'framer-motion'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ArrowRight, Link2, Sparkles } from 'lucide-react'
 import { heroContainer, heroItem, EASE_EDITORIAL } from '@/lib/motion-variants'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
+import { ScrollProgress } from '@/components/ui/scroll-progress'
 
 /* ═════════════════════════════════════════════════════════════
  * /roi — calculadora pública (v10.8 Editorial · 2026-04-23)
@@ -90,7 +92,9 @@ export default function RoiCalculator() {
     'mt-3 w-full accent-[#bfa68e]'
 
   return (
-    <div className="relative min-h-screen bg-[#0a0807] text-white antialiased">
+    <div className="relative isolate min-h-screen overflow-hidden bg-[#0a0807] text-white antialiased">
+      <ScrollProgress />
+      <AmbientMesh dust dustCount={9} intensity={0.55} />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[620px] overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_65%_45%_at_50%_0%,rgba(191,166,142,0.13),transparent_72%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:96px_96px] [mask-image:radial-gradient(ellipse_70%_55%_at_50%_0%,black,transparent_75%)]" />

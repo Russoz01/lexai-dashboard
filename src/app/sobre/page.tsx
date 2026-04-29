@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ArrowRight } from 'lucide-react'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
+import { ScrollProgress } from '@/components/ui/scroll-progress'
 
 /* ═════════════════════════════════════════════════════════════
  * /sobre — página institucional (migrado para Tailwind em 2026-04-17)
@@ -37,7 +39,9 @@ const pillars = [
 
 export default function SobrePage() {
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
+    <div className="relative isolate min-h-screen overflow-hidden bg-black text-white antialiased">
+      <ScrollProgress />
+      <AmbientMesh dust dustCount={8} intensity={0.5} />
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur-md md:px-10">
         <Link href="/" className="font-mono text-sm uppercase tracking-[0.3em] text-white">
           Pralvex

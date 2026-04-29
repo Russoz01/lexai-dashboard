@@ -182,14 +182,23 @@ export default function RecursosPage() {
               Esboco do recurso
             </h2>
             {recurso && (
-              <button onClick={copiar} style={{
-                display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 6,
-                background: 'transparent', border: '1px solid var(--border)',
-                color: 'var(--text-secondary)', fontSize: 12, cursor: 'pointer',
-              }}>
-                {copiado ? <Check size={13} /> : <Clipboard size={13} />}
-                {copiado ? 'Copiado' : 'Copiar'}
-              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={gerar} disabled={loading} title="Gerar novo recurso com a mesma decisão" style={{
+                  display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 6,
+                  background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--text-secondary)', fontSize: 12, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
+                }}>
+                  <RotateCcw size={13} /> Regenerar
+                </button>
+                <button onClick={copiar} style={{
+                  display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 6,
+                  background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--text-secondary)', fontSize: 12, cursor: 'pointer',
+                }}>
+                  {copiado ? <Check size={13} /> : <Clipboard size={13} />}
+                  {copiado ? 'Copiado' : 'Copiar'}
+                </button>
+              </div>
             )}
           </div>
 

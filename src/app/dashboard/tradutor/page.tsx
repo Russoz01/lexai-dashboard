@@ -333,7 +333,18 @@ export default function TradutorPage() {
                 </div>
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={traduzir}
+                disabled={loading}
+                title="Gerar nova tradução do mesmo texto"
+                className="btn-secondary"
+                style={{ fontSize: 12, padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: 6, opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+              >
+                <RotateCcw size={14} strokeWidth={1.75} aria-hidden />
+                Regenerar
+              </button>
               <button
                 type="button"
                 onClick={copiarResultado}

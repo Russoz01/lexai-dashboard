@@ -8,6 +8,8 @@ import {
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ExitIntent } from '@/components/ExitIntent'
 import { LexPricingGrid } from '@/components/ui/lex-pricing-grid'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
+import { ScrollProgress } from '@/components/ui/scroll-progress'
 import { agents } from '@/lib/catalog'
 
 /* ═════════════════════════════════════════════════════════════════════
@@ -121,6 +123,9 @@ export default function EmpresasPage() {
 
       {/* HERO */}
       <section id="main-content" className="relative overflow-hidden">
+        {/* Ambient mesh + scroll progress — soma movimento ao radial estatico */}
+        <ScrollProgress />
+        <AmbientMesh dust dustCount={10} intensity={0.6} />
         <div className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(60%_50%_at_50%_0%,#bfa68e1a,transparent_60%)]" />
         <div className="relative mx-auto max-w-4xl px-4 pb-20 pt-20 text-center sm:pt-28">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">

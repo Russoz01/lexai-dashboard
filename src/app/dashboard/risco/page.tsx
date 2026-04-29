@@ -8,6 +8,7 @@ import {
   Clock,
   TrendingUp,
   Search,
+  RotateCcw,
 } from 'lucide-react'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
@@ -156,6 +157,11 @@ export default function RiscoPage() {
             >
               {loading ? 'Analisando…' : 'Analisar risco'}
             </button>
+            {risco && !loading && (
+              <button onClick={analisar} className="btn-ghost" type="button" title="Gerar nova análise do mesmo documento" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <RotateCcw size={13} strokeWidth={1.75} /> Regenerar
+              </button>
+            )}
             {(documento || risco) && (
               <button onClick={reset} className="btn-ghost" type="button">
                 Limpar
