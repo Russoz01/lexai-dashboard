@@ -143,18 +143,18 @@ export function LexHeroStage() {
             <div
               key={a.label}
               className="lex-stage-card absolute left-1/2 top-1/2"
-              style={
-                {
-                  '--fx': `calc(${a.x}vw + (var(--mx) * ${a.parallax}))`,
-                  '--fy': `calc(${a.y}vh + (var(--my) * ${a.parallax}))`,
-                  '--fz': `${a.z}px`,
-                  '--frot': `${a.rot}deg`,
-                  animationDelay: `${a.delay}s`,
-                  transform: `translate(-50%, -50%) translate3d(calc(${a.x}vw + (var(--mx) * ${a.parallax})), calc(${a.y}vh + (var(--my) * ${a.parallax})), ${a.z}px) rotate3d(0,1,0,${a.rot}deg)`,
-                } as React.CSSProperties
-              }
+              style={{
+                animationDelay: `${a.delay}s`,
+                // Transform direto em inline — antes a versao usava var(--fx,0)
+                // dentro de @keyframes que colapsava todos cards em (0,0,0)
+                // = centro. Agora vw/vh + mouse parallax (--mx/--my do parent)
+                // sao resolvidos no contexto do elemento, no momento do paint.
+                transform: `translate(-50%, -50%) translate3d(calc(${a.x}vw + (var(--mx, 0px) * ${a.parallax})), calc(${a.y}vh + (var(--my, 0px) * ${a.parallax})), ${a.z}px) rotate3d(0,1,0,${a.rot}deg)`,
+              }}
             >
-              <div className="relative flex w-[10rem] items-center gap-2.5 rounded-2xl border border-[#bfa68e]/25 bg-gradient-to-br from-white/[0.10] to-white/[0.025] p-3 shadow-[0_18px_60px_-12px_rgba(0,0,0,0.85),0_0_24px_-4px_rgba(191,166,142,0.18),inset_0_1px_0_rgba(255,255,255,0.10)] backdrop-blur-2xl md:w-[14.5rem] md:gap-3 md:p-3.5">
+              {/* Wrapper interno tem o idle-bob (translateY relativo). Combina
+                  com o transform 3D do wrapper externo sem var() em keyframe. */}
+              <div className="lex-stage-card-inner relative flex w-[10rem] items-center gap-2.5 rounded-2xl border border-[#bfa68e]/25 bg-gradient-to-br from-white/[0.10] to-white/[0.025] p-3 shadow-[0_18px_60px_-12px_rgba(0,0,0,0.85),0_0_24px_-4px_rgba(191,166,142,0.18),inset_0_1px_0_rgba(255,255,255,0.10)] backdrop-blur-2xl md:w-[14.5rem] md:gap-3 md:p-3.5" style={{ animationDelay: `${a.delay + 1.4}s` }}>
                 {/* gold corner glint */}
                 <span
                   aria-hidden
