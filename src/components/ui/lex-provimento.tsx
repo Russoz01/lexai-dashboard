@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowUpRight, FileSearch, Lock, ScanLine } from 'lucide-react'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 /* ════════════════════════════════════════════════════════════════════
  * LexProvimento (v9 · 2026-04-19)
@@ -23,6 +24,8 @@ import { ArrowUpRight, FileSearch, Lock, ScanLine } from 'lucide-react'
 export function LexProvimento() {
   return (
     <section className="relative isolate overflow-hidden bg-black py-28">
+      {/* Ambient mesh leve pra dar respiração visual */}
+      <AmbientMesh intensity={0.55} dust dustCount={8} />
       {/* radial glow */}
       <div
         aria-hidden

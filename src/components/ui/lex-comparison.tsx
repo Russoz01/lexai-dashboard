@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import { Reveal } from '@/components/ui/reveal'
 import { Check, X, Minus, Crown, Shield, Cpu, Banknote, Scale, type LucideIcon } from 'lucide-react'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 /* ════════════════════════════════════════════════════════════════
  * LexComparison — matriz definitiva v10.9 (2026-04-22)
@@ -155,6 +156,8 @@ export function LexComparison() {
       id="comparativo"
       className="relative mx-auto w-full overflow-hidden bg-black py-24"
     >
+      {/* Ambient mesh — bem sutil para nao competir com tabela densa */}
+      <AmbientMesh intensity={0.35} />
       {/* faint radial behind table */}
       <div
         aria-hidden

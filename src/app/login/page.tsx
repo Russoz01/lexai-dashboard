@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, Check, Eye, EyeOff, Loader2, MailCheck } from 'lucide-react'
 import { PralvexMark } from '@/components/PralvexMark'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 /* ═════════════════════════════════════════════════════════════
  * /login — Atelier Login (migrado para Tailwind em 2026-04-17)
@@ -462,6 +463,10 @@ function LoginPageInner() {
         className="relative hidden min-h-screen overflow-hidden border-l border-white/10 bg-gradient-to-br from-[#0f0b08] via-[#0a0807] to-black lg:block"
         style={{ '--mx': '60%', '--my': '40%' } as React.CSSProperties}
       >
+        {/* Ambient mesh — blobs champagne flutuando + dust dourado.
+            Soma o movimento ambiente ao cursor-follow glow ja existente. */}
+        <AmbientMesh dust dustCount={10} intensity={0.6} />
+
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"

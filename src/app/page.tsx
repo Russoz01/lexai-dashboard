@@ -23,6 +23,7 @@ import { LexProvimento } from '@/components/ui/lex-provimento'
 import { LexHeroStage, GlyphReveal } from '@/components/ui/lex-hero-stage'
 import { Reveal, WordReveal } from '@/components/ui/reveal'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
+import { ScrollProgress } from '@/components/ui/scroll-progress'
 
 /* ════════════════════════════════════════════════════════════════════
  * Pralvex — Landing v9 "Editorial 3D" (2026-04-19)
@@ -73,6 +74,9 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-black text-white antialiased">
+      {/* Scroll progress — barra fina dourada no topo */}
+      <ScrollProgress />
+
       {/* ═══ NAV ═══════════════════════════════════════════════════════ */}
       <header
         className={

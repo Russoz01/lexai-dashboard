@@ -275,19 +275,29 @@ export default function RevisorPage() {
 
               {revisao.reescrita_sugerida && (
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
                     <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent)' }}>
                       Reescrita sugerida
                     </div>
-                    <button onClick={copiarReescrita} style={{
-                      display: 'flex', alignItems: 'center', gap: 6,
-                      padding: '4px 10px', borderRadius: 6,
-                      background: 'transparent', border: '1px solid var(--border)',
-                      color: 'var(--text-secondary)', fontSize: 11, cursor: 'pointer',
-                    }}>
-                      {copiado ? <Check size={12} /> : <Clipboard size={12} />}
-                      {copiado ? 'Copiado' : 'Copiar'}
-                    </button>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={revisar} disabled={loading} title="Gerar nova versão com o mesmo documento" style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        padding: '4px 10px', borderRadius: 6,
+                        background: 'transparent', border: '1px solid var(--border)',
+                        color: 'var(--text-secondary)', fontSize: 11, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
+                      }}>
+                        <RotateCcw size={12} /> Regenerar
+                      </button>
+                      <button onClick={copiarReescrita} style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        padding: '4px 10px', borderRadius: 6,
+                        background: 'transparent', border: '1px solid var(--border)',
+                        color: 'var(--text-secondary)', fontSize: 11, cursor: 'pointer',
+                      }}>
+                        {copiado ? <Check size={12} /> : <Clipboard size={12} />}
+                        {copiado ? 'Copiado' : 'Copiar'}
+                      </button>
+                    </div>
                   </div>
                   <div style={{
                     padding: 14, borderRadius: 8, background: 'var(--bg-base)',

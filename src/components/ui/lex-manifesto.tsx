@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Quote, Compass, Scale, MapPin } from 'lucide-react'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 /* ════════════════════════════════════════════════════════════════════
  * LexManifesto (v9 · 2026-04-19)
@@ -21,6 +22,9 @@ import { Quote, Compass, Scale, MapPin } from 'lucide-react'
 export function LexManifesto() {
   return (
     <section className="relative isolate overflow-hidden bg-[#080606] py-32">
+      {/* Ambient mesh sutil — adiciona movimento orgânico atrás da tipografia */}
+      <AmbientMesh intensity={0.45} />
+
       {/* Decorative orbit ring */}
       <div
         aria-hidden

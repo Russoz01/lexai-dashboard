@@ -352,7 +352,10 @@ export default function ConsultorPage() {
       {parecer && (
         <>
           {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 16, justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: 10, marginBottom: 16, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+            <button type="button" onClick={gerarParecer} disabled={loading} className="consultor-action-btn" title="Gerar nova versão com a mesma pergunta">
+              <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Regenerar
+            </button>
             <button type="button" onClick={copiarParecer} className="consultor-action-btn" title="Copiar parecer">
               {copiado ? <Check size={14} strokeWidth={1.75} aria-hidden /> : <Clipboard size={14} strokeWidth={1.75} aria-hidden />}
               {copiado ? 'Copiado' : 'Copiar'}
