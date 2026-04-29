@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { Reveal } from '@/components/ui/reveal'
 import { RetroGrid } from '@/components/ui/retro-grid'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 /* ════════════════════════════════════════════════════════════════════
  * LexFinalCta (v9 · 2026-04-19)
@@ -19,6 +20,7 @@ import { RetroGrid } from '@/components/ui/retro-grid'
 export function LexFinalCta() {
   return (
     <section className="relative isolate overflow-hidden bg-black py-32">
+      <AmbientMesh dust dustCount={10} intensity={0.7} />
       <div className="absolute inset-0 -z-10">
         <RetroGrid opacity={0.22} />
       </div>
@@ -55,15 +57,11 @@ export function LexFinalCta() {
           <div className="mt-12 flex flex-col items-center justify-center gap-3 md:flex-row">
             <Link
               href="/login"
-              className="lex-magnetic group relative inline-flex h-14 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-9 text-[14px] font-medium text-black transition hover:brightness-110"
+              className="lex-magnetic lex-cta-shimmer group relative inline-flex h-14 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-9 text-[14px] font-medium text-black transition hover:brightness-110"
             >
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.55)_50%,transparent_75%)] bg-[length:200%_100%] animate-shimmer"
-              />
-              <span className="relative">Começar 7 dias grátis</span>
+              <span className="relative z-10">Começar 7 dias grátis</span>
               <ArrowRight
-                className="relative size-4 transition-transform group-hover:translate-x-0.5"
+                className="relative z-10 size-4 transition-transform group-hover:translate-x-0.5"
                 strokeWidth={2}
               />
             </Link>

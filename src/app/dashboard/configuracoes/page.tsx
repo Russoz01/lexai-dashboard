@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import {
   User,
   SlidersHorizontal,
-  Plug,
   Mail,
   Camera,
   ChevronDown,
@@ -16,12 +15,7 @@ import {
   Moon,
   ArrowUpCircle,
   Receipt,
-  Calendar,
-  MessageCircle,
-  Cloud,
-  BookMarked,
   Send,
-  Info,
   ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
@@ -29,45 +23,12 @@ import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import { AreaSelector } from '@/components/AreaSelector'
 
-type Tab = 'perfil' | 'preferencias' | 'integracoes' | 'contato'
+// Removida aba 'integracoes' por hora — toggles ainda nao tem backend wired
+// (Google Calendar/WhatsApp/Drive/Notion/Telegram). Reentra quando handlers
+// reais existirem.
+type Tab = 'perfil' | 'preferencias' | 'contato'
 
 type IconComp = LucideIcon
-
-// Paleta monochromatic noir-friendly — antes brand colors hardcoded (Google
-// blue/WhatsApp green/Drive green/etc) destoavam do DNA editorial. Brand
-// identity vem do Icon, nao da cor. Tons de champagne com leve variacao.
-const INTEGRACOES: { id: string; label: string; Icon: IconComp; desc: string; color: string; bg: string }[] = [
-  {
-    id: 'gcalendar', label: 'Google Calendar', Icon: Calendar,
-    desc: 'Sincronize prazos e compromissos com seu Google Calendar automaticamente.',
-    color: '#bfa68e', bg: 'rgba(191,166,142,0.08)',
-  },
-  {
-    id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle,
-    desc: 'Receba alertas de prazos e lembretes diretamente no WhatsApp.',
-    color: '#c78a61', bg: 'rgba(199,138,97,0.08)',
-  },
-  {
-    id: 'gdrive', label: 'Google Drive', Icon: Cloud,
-    desc: 'Salve documentos analisados automaticamente no seu Drive.',
-    color: '#a8855c', bg: 'rgba(168,133,92,0.08)',
-  },
-  {
-    id: 'email', label: 'Notificações por E-mail', Icon: Mail,
-    desc: 'Receba resumos semanais e alertas de prazos por e-mail.',
-    color: '#d4ae6a', bg: 'rgba(212,174,106,0.08)',
-  },
-  {
-    id: 'notion', label: 'Notion', Icon: BookMarked,
-    desc: 'Exporte resumos e pesquisas diretamente para páginas do Notion.',
-    color: '#bfa68e', bg: 'rgba(191,166,142,0.08)',
-  },
-  {
-    id: 'telegram', label: 'Telegram', Icon: Send,
-    desc: 'Receba notificações e interaja com o agente via Telegram.',
-    color: '#c78a61', bg: 'rgba(199,138,97,0.08)',
-  },
-]
 
 function maskTel(v: string) {
   v = v.replace(/\D/g, '').slice(0, 11)
@@ -115,8 +76,7 @@ export default function ConfiguracoesPage() {
   const [avatarUrl, setAvatarUrl] = useState('')
   const [avatarLoading, setAvatarLoading] = useState(false)
 
-  // Integrações
-  const [ativos, setAtivos]   = useState<Record<string, boolean>>({})
+  // Integrações state removido junto com a aba — sem backend wired ainda.
 
   // Contato
   const [assunto, setAssunto] = useState('')
@@ -166,7 +126,6 @@ export default function ConfiguracoesPage() {
       setTelefone(meta?.telefone ?? '')
       setEmpresa(meta?.empresa ?? '')
       setAvatarUrl(meta?.avatar_url ?? '')
-      setAtivos(meta?.integracoes ?? {})
     })
     return () => { cancelled = true }
   }, [supabase])
@@ -199,11 +158,7 @@ export default function ConfiguracoesPage() {
     setAvatarLoading(false)
   }
 
-  async function toggleIntegracao(id: string) {
-    const novo = { ...ativos, [id]: !ativos[id] }
-    setAtivos(novo)
-    await supabase.auth.updateUser({ data: { integracoes: novo } })
-  }
+  // toggleIntegracao removida junto com a aba — sem handlers reais wired.
 
   async function enviarContato(e: React.FormEvent) {
     e.preventDefault()
@@ -223,7 +178,6 @@ export default function ConfiguracoesPage() {
   const TABS: { id: Tab; label: string; Icon: IconComp }[] = [
     { id: 'perfil',       label: 'Perfil',        Icon: User              },
     { id: 'preferencias', label: 'Preferências',  Icon: SlidersHorizontal },
-    { id: 'integracoes',  label: 'Integrações',   Icon: Plug              },
     { id: 'contato',      label: 'Contato',       Icon: Mail              },
   ]
 
@@ -611,60 +565,9 @@ export default function ConfiguracoesPage() {
         </div>
       )}
 
-      {/* ── Integrações ── */}
-      {tab === 'integracoes' && (
-        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-          <div className="section-card" style={{ padding:'20px 24px' }}>
-            <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:4 }}>Conectar Serviços</div>
-            <div style={{ fontSize:13, color:'var(--text-muted)', marginBottom:18 }}>Ative integrações para estender as funcionalidades da Pralvex com suas ferramentas favoritas.</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {INTEGRACOES.map(intg => {
-                const IntIcon = intg.Icon
-                return (
-                  <div key={intg.id} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 16px', borderRadius:10, border:'1px solid var(--border)', transition:'all 0.15s',
-                    background: ativos[intg.id] ? 'var(--accent-light)' : 'var(--card-bg)' }}>
-                    <div style={{ width:40, height:40, borderRadius:10, background:intg.bg, display:'flex', alignItems:'center', justifyContent:'center', color:intg.color, flexShrink:0 }}>
-                      <IntIcon size={18} strokeWidth={1.75} aria-hidden />
-                    </div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)', marginBottom:2 }}>{intg.label}</div>
-                      <div style={{ fontSize:12, color:'var(--text-muted)' }}>{intg.desc}</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                      {ativos[intg.id] && (
-                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--success)', padding: '2px 8px', borderRadius: 10, background: 'var(--success-light)' }}>
-                          Conectado
-                        </span>
-                      )}
-                      {/* Toggle switch */}
-                      <button type="button" onClick={() => toggleIntegracao(intg.id)} style={{
-                        width:44, height:24, borderRadius:12, border:'none', cursor:'pointer', flexShrink:0,
-                        background: ativos[intg.id] ? 'var(--accent)' : 'var(--border)',
-                        position:'relative', transition:'background 0.2s',
-                      }}>
-                        <span style={{
-                          position:'absolute', top:3, left: ativos[intg.id] ? 23 : 3,
-                          width:18, height:18, borderRadius:'50%', background:'#fff',
-                          transition:'left 0.2s', boxShadow:'0 1px 4px rgba(0,0,0,0.2)',
-                        }} />
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          <div className="section-card" style={{ padding:'16px 20px' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <Info size={16} strokeWidth={1.75} aria-hidden style={{ color:'var(--accent)' }} />
-              <div style={{ fontSize:13, color:'var(--text-secondary)' }}>
-                As integrações ainda estão em desenvolvimento. Ao ativar, você será avisado quando estiverem disponíveis.
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Aba Integrações removida temporariamente — toggles ainda nao tem
+          handlers reais wired (Google Calendar/WhatsApp/Drive/Notion/Telegram).
+          Reentra quando os adapters existirem. */}
 
       {/* ── Contato ── */}
       {tab === 'contato' && (

@@ -22,6 +22,7 @@ import { LexManifesto } from '@/components/ui/lex-manifesto'
 import { LexProvimento } from '@/components/ui/lex-provimento'
 import { LexHeroStage, GlyphReveal } from '@/components/ui/lex-hero-stage'
 import { Reveal, WordReveal } from '@/components/ui/reveal'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 /* ════════════════════════════════════════════════════════════════════
  * Pralvex — Landing v9 "Editorial 3D" (2026-04-19)
@@ -220,18 +221,26 @@ export default function LandingPage() {
           className="pointer-events-none absolute inset-0 -z-30 bg-gradient-to-b from-[#0a0f12] via-black to-black"
         />
 
+        {/* Ambient mesh — 3 blobs champagne flutuando lento + dust dourado.
+            Anima sempre, mesmo sem mouse (mobile-friendly). */}
+        <AmbientMesh dust dustCount={14} intensity={0.85} />
+
         {/* 3D stage atras do conteudo */}
         <LexHeroStage />
 
-        {/* radial overlay pra dar foco no centro */}
+        {/* radial overlay pra dar foco no centro — opacity reduzida pra
+            nao sufocar os blobs e cards do stage no fundo */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(50%_45%_at_50%_45%,rgba(0,0,0,0.7)_0%,transparent_70%)]"
+          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(50%_45%_at_50%_45%,rgba(0,0,0,0.45)_0%,transparent_70%)]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(60%_40%_at_50%_0%,rgba(191,166,142,0.10)_0%,transparent_70%)]"
+          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(60%_40%_at_50%_0%,rgba(191,166,142,0.14)_0%,transparent_70%)]"
         />
+
+        {/* Headline glow — pulsa sutil por tras do titulo */}
+        <div aria-hidden className="lex-headline-glow -z-10" style={{ top: '32%' }} />
 
         <div className="relative mx-auto max-w-5xl px-6 text-center">
           {/* Eyebrow */}
@@ -273,15 +282,11 @@ export default function LandingPage() {
             <div className="mt-11 flex flex-col items-center justify-center gap-3 md:flex-row">
               <Link
                 href="/login"
-                className="lex-magnetic group relative inline-flex h-13 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-8 py-3.5 text-[14px] font-medium text-black transition hover:brightness-110"
+                className="lex-magnetic lex-cta-shimmer group relative inline-flex h-13 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-8 py-3.5 text-[14px] font-medium text-black transition hover:brightness-110"
               >
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.55)_50%,transparent_75%)] bg-[length:200%_100%] animate-shimmer"
-                />
-                <span className="relative">Começar 7 dias grátis</span>
+                <span className="relative z-10">Começar 7 dias grátis</span>
                 <ArrowRight
-                  className="relative size-4 transition-transform group-hover:translate-x-0.5"
+                  className="relative z-10 size-4 transition-transform group-hover:translate-x-0.5"
                   strokeWidth={2}
                 />
               </Link>

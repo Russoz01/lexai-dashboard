@@ -19,6 +19,9 @@ import {
   CalendarDays,
   FileSpreadsheet,
   Sparkles,
+  Settings2,
+  Brain,
+  Gauge,
   type LucideIcon,
 } from 'lucide-react'
 import { extractPdfWithMeta } from '@/lib/pdf-parser'
@@ -36,6 +39,11 @@ import { confirmDialog } from '@/components/ConfirmDialog'
  * ──────────────────────────────────────────────────────────────────────────── */
 
 type Role = 'user' | 'assistant'
+type Fidelidade = 'profissional' | 'parceiro' | 'casual'
+type Modo = 'simples' | 'complexo'
+
+const LS_FIDELIDADE = 'pralvex-chat-fidelidade'
+const LS_MODO = 'pralvex-chat-modo'
 
 interface AgenteSugerido {
   key: string
@@ -87,9 +95,34 @@ export default function ChatPage() {
   const [erro, setErro] = useState('')
   const [parsingPdf, setParsingPdf] = useState(false)
 
+  // Configuracoes do chat — persistem em localStorage
+  // fidelidade: como o assistente trata voce (profissional/parceiro/casual)
+  // modo: profundidade da resposta (simples=Haiku rapido / complexo=Sonnet aprofundado)
+  const [fidelidade, setFidelidade] = useState<Fidelidade>('parceiro')
+  const [modo, setModo] = useState<Modo>('simples')
+  const [showSettings, setShowSettings] = useState(false)
+
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Hidrata as preferencias do localStorage no mount
+  useEffect(() => {
+    try {
+      const f = localStorage.getItem(LS_FIDELIDADE) as Fidelidade | null
+      if (f && ['profissional', 'parceiro', 'casual'].includes(f)) setFidelidade(f)
+      const m = localStorage.getItem(LS_MODO) as Modo | null
+      if (m && ['simples', 'complexo'].includes(m)) setModo(m)
+    } catch { /* localStorage indisponivel — silent */ }
+  }, [])
+
+  // Persiste em mudanca
+  useEffect(() => {
+    try { localStorage.setItem(LS_FIDELIDADE, fidelidade) } catch { /* silent */ }
+  }, [fidelidade])
+  useEffect(() => {
+    try { localStorage.setItem(LS_MODO, modo) } catch { /* silent */ }
+  }, [modo])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -184,6 +217,8 @@ export default function ChatPage() {
           arquivoTexto: arquivoSnapshot?.texto,
           arquivoNome: arquivoSnapshot?.nome,
           historico: historicoPayload,
+          fidelidade,
+          modo,
         }),
       })
 
@@ -378,6 +413,91 @@ export default function ChatPage() {
             </button>
           </div>
         )}
+
+        {/* Settings bar — fidelidade + modo */}
+        <div className="chat-settings">
+          <button
+            type="button"
+            className="chat-settings-toggle"
+            onClick={() => setShowSettings(s => !s)}
+            aria-expanded={showSettings}
+            aria-label="Configurar chat"
+          >
+            <Settings2 size={13} strokeWidth={1.75} aria-hidden />
+            <span className="chat-settings-summary">
+              <strong>{modo === 'complexo' ? 'Complexo' : 'Simples'}</strong>
+              <span className="chat-settings-sep">·</span>
+              <span>
+                {fidelidade === 'profissional' ? 'Profissional' : fidelidade === 'casual' ? 'Casual' : 'Parceiro'}
+              </span>
+            </span>
+            <span className="chat-settings-caret">{showSettings ? '▴' : '▾'}</span>
+          </button>
+
+          {showSettings && (
+            <div className="chat-settings-panel">
+              {/* Modo */}
+              <div className="chat-settings-group">
+                <div className="chat-settings-label">
+                  <Gauge size={11} strokeWidth={2} aria-hidden />
+                  Profundidade
+                </div>
+                <div className="chat-settings-segments" role="radiogroup">
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={modo === 'simples'}
+                    onClick={() => setModo('simples')}
+                    className={`chat-settings-seg ${modo === 'simples' ? 'is-active' : ''}`}
+                  >
+                    <Zap size={11} strokeWidth={2} aria-hidden />
+                    Simples
+                    <small>resposta rapida</small>
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={modo === 'complexo'}
+                    onClick={() => setModo('complexo')}
+                    className={`chat-settings-seg ${modo === 'complexo' ? 'is-active' : ''}`}
+                  >
+                    <Brain size={11} strokeWidth={2} aria-hidden />
+                    Complexo
+                    <small>raciocinio profundo</small>
+                  </button>
+                </div>
+              </div>
+
+              {/* Fidelidade — tom */}
+              <div className="chat-settings-group">
+                <div className="chat-settings-label">
+                  <Sparkles size={11} strokeWidth={2} aria-hidden />
+                  Tom
+                </div>
+                <div className="chat-settings-segments" role="radiogroup">
+                  {(['profissional', 'parceiro', 'casual'] as const).map(f => (
+                    <button
+                      key={f}
+                      type="button"
+                      role="radio"
+                      aria-checked={fidelidade === f}
+                      onClick={() => setFidelidade(f)}
+                      className={`chat-settings-seg ${fidelidade === f ? 'is-active' : ''}`}
+                    >
+                      {f === 'profissional' ? 'Profissional' : f === 'parceiro' ? 'Parceiro' : 'Casual'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="chat-settings-hint">
+                {modo === 'complexo'
+                  ? 'Modo complexo usa raciocinio mais profundo — leva alguns segundos a mais.'
+                  : 'Modo simples e otimizado pra respostas em segundos.'}
+              </div>
+            </div>
+          )}
+        </div>
 
         {(arquivo || parsingPdf) && (
           <div className="chat-attached">
@@ -942,12 +1062,132 @@ export default function ChatPage() {
         .chat-spin { animation: chat-spin 0.9s linear infinite; display: inline-block; }
         @keyframes chat-spin { to { transform: rotate(360deg); } }
 
+        /* ── Settings bar (fidelidade + modo) ────────────── */
+        .chat-settings {
+          margin-bottom: 10px;
+        }
+        .chat-settings-toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 7px 12px;
+          background: var(--stone-soft, var(--hover));
+          border: 1px solid var(--stone-line, var(--border));
+          color: var(--text-secondary);
+          font-family: inherit;
+          font-size: 11px;
+          letter-spacing: 0.5px;
+          cursor: pointer;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+        }
+        .chat-settings-toggle:hover {
+          border-color: var(--accent);
+          color: var(--text-primary);
+        }
+        .chat-settings-summary {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-family: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
+          font-size: 10.5px;
+          letter-spacing: 0.06em;
+        }
+        .chat-settings-summary strong {
+          color: var(--accent);
+          font-weight: 700;
+        }
+        .chat-settings-sep { opacity: 0.4; }
+        .chat-settings-caret {
+          font-size: 9px;
+          opacity: 0.6;
+          margin-left: 4px;
+        }
+        .chat-settings-panel {
+          margin-top: 10px;
+          padding: 14px 16px;
+          background: var(--card-bg, rgba(10,10,10,0.6));
+          border: 1px solid var(--stone-line, var(--border));
+          border-radius: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          animation: chat-rise 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .chat-settings-group {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .chat-settings-label {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-family: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
+          font-size: 9.5px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+        }
+        .chat-settings-segments {
+          display: flex;
+          gap: 4px;
+          flex-wrap: wrap;
+        }
+        .chat-settings-seg {
+          flex: 1;
+          min-width: 90px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          padding: 8px 10px;
+          background: transparent;
+          border: 1px solid var(--stone-line, var(--border));
+          color: var(--text-secondary);
+          font-family: inherit;
+          font-size: 11.5px;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+          cursor: pointer;
+          border-radius: 8px;
+          transition: all 0.18s ease;
+          flex-direction: column;
+          line-height: 1.3;
+        }
+        .chat-settings-seg small {
+          font-size: 9.5px;
+          color: var(--text-muted);
+          font-weight: 400;
+          letter-spacing: 0.04em;
+        }
+        .chat-settings-seg:hover {
+          border-color: rgba(191,166,142,0.3);
+          color: var(--text-primary);
+        }
+        .chat-settings-seg.is-active {
+          border-color: var(--accent);
+          background: rgba(191,166,142,0.1);
+          color: var(--text-primary);
+          box-shadow: inset 0 0 0 1px rgba(191,166,142,0.18);
+        }
+        .chat-settings-seg.is-active small { color: var(--accent); }
+        .chat-settings-hint {
+          font-size: 11px;
+          color: var(--text-muted);
+          font-style: italic;
+          line-height: 1.5;
+        }
+
         /* ── Responsive ────────────────────────────────── */
         @media (max-width: 720px) {
           .chat-root { padding: 24px 20px 0; }
           .chat-head { flex-direction: column; gap: 14px; }
           .chat-msg--user, .chat-msg--assistant { padding-left: 20px; }
           .chat-suggestions { grid-template-columns: 1fr; }
+          .chat-settings-segments { flex-direction: column; }
+          .chat-settings-seg { flex-direction: row; min-width: 0; }
         }
       `}</style>
     </div>

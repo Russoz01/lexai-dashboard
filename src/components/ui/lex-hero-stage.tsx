@@ -154,7 +154,7 @@ export function LexHeroStage() {
                 } as React.CSSProperties
               }
             >
-              <div className="relative flex w-[14.5rem] items-center gap-3 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.06] to-white/[0.015] p-3.5 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl">
+              <div className="relative flex w-[10rem] items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.06] to-white/[0.015] p-3 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl md:w-[14.5rem] md:gap-3 md:p-3.5">
                 {/* gold corner glint */}
                 <span
                   aria-hidden

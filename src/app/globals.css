@@ -1424,12 +1424,113 @@ input[type="date"] { cursor: pointer; }
   60%  { opacity: 1; }
   100% { opacity: 1; transform: translate(-50%, -50%) translate3d(var(--fx,0), var(--fy,0), var(--fz,0)) rotate3d(0,1,0,var(--frot,0deg)); }
 }
+/* Idle floating apos entrada — funciona em mobile (sem mouse parallax) e
+   mantem o stage vivo. Cada card tem delay diferente pra parecer organico. */
+@keyframes lex-stage-idle-float {
+  0%, 100% { transform: translate(-50%, -50%) translate3d(var(--fx,0), var(--fy,0), var(--fz,0)) rotate3d(0,1,0,var(--frot,0deg)); }
+  50%      { transform: translate(-50%, -50%) translate3d(calc(var(--fx,0) + 6px), calc(var(--fy,0) - 8px), calc(var(--fz,0) + 12px)) rotate3d(0,1,0,calc(var(--frot,0deg) + 1.2deg)); }
+}
 .lex-stage-card {
   opacity: 0;
   transform-style: preserve-3d;
-  animation: lex-stage-float-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation:
+    lex-stage-float-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    lex-stage-idle-float 7s ease-in-out 1.4s infinite;
   will-change: transform, opacity;
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── AMBIENT MESH — gradient blobs flutuando atras do conteudo ────── */
+@keyframes lex-mesh-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(8vw, -5vh) scale(1.12); }
+  66%      { transform: translate(-6vw, 7vh) scale(0.94); }
+}
+@keyframes lex-mesh-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-7vw, 6vh) scale(1.18); }
+}
+@keyframes lex-mesh-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%      { transform: translate(5vw, 5vh) scale(0.88); }
+  80%      { transform: translate(-4vw, -3vh) scale(1.08); }
+}
+.lex-mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  will-change: transform;
+}
+.lex-mesh-blob-1 {
+  top: -10%; left: -10%; width: 50vw; height: 50vw; max-width: 700px; max-height: 700px;
+  background: radial-gradient(circle, rgba(191,166,142,0.18) 0%, transparent 65%);
+  animation: lex-mesh-drift-1 22s ease-in-out infinite;
+}
+.lex-mesh-blob-2 {
+  top: 30%; right: -15%; width: 55vw; height: 55vw; max-width: 760px; max-height: 760px;
+  background: radial-gradient(circle, rgba(199,138,97,0.14) 0%, transparent 65%);
+  animation: lex-mesh-drift-2 28s ease-in-out infinite;
+  animation-delay: -8s;
+}
+.lex-mesh-blob-3 {
+  bottom: -10%; left: 30%; width: 45vw; height: 45vw; max-width: 620px; max-height: 620px;
+  background: radial-gradient(circle, rgba(212,174,106,0.12) 0%, transparent 65%);
+  animation: lex-mesh-drift-3 26s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+/* ── DUST PARTICLES — pequenos pontos dourados subindo ───────────── */
+@keyframes lex-dust-rise {
+  0%   { opacity: 0; transform: translateY(20vh) translateX(0); }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { opacity: 0; transform: translateY(-110vh) translateX(var(--dx, 0vw)); }
+}
+.lex-dust {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(212, 174, 106, 0.6);
+  box-shadow: 0 0 6px rgba(191, 166, 142, 0.55);
+  animation: lex-dust-rise var(--dur, 18s) linear infinite;
+  pointer-events: none;
+}
+
+/* ── CTA SHIMMER PULSE — mais notavel que so brightness:hover ───── */
+@keyframes lex-cta-shimmer {
+  0%   { background-position: -150% 0; }
+  100% { background-position: 250% 0; }
+}
+.lex-cta-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.lex-cta-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: lex-cta-shimmer 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── HEADLINE GLOW — pulsa por tras do titulo ──────────────────── */
+@keyframes lex-headline-glow {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 0.7; transform: translate(-50%, -50%) scale(1.08); }
+}
+.lex-headline-glow {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 70%; height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(191,166,142,0.18) 0%, transparent 65%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: lex-headline-glow 6s ease-in-out infinite;
 }
 
 /* Marquee analog ticker — light underline pulse a cada 4s */
@@ -1523,7 +1624,13 @@ input[type="date"] { cursor: pointer; }
   .lex-magnetic,
   .lex-orbit,
   .lex-digit-pulse,
-  .lex-tick-pulse { animation: none !important; }
+  .lex-tick-pulse,
+  .lex-mesh-blob-1,
+  .lex-mesh-blob-2,
+  .lex-mesh-blob-3,
+  .lex-dust,
+  .lex-cta-shimmer::after,
+  .lex-headline-glow { animation: none !important; }
   .lex-tilt:hover { transform: none !important; }
 }
 
