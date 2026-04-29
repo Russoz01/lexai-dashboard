@@ -84,7 +84,7 @@ export default function MonitorLegislativoPage() {
         body: JSON.stringify({ areas: areasTexto, topicos }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Erro ao gerar relatório')
       setRelatorio(data.relatorio)
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro ao gerar relatório')

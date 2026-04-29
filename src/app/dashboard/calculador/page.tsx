@@ -75,11 +75,15 @@ export default function CalculadorPage() {
   const [taxas, setTaxas] = useState<{ selic: TaxaBC | null; cdi: TaxaBC | null; ipca: number | null } | null>(null)
 
   useEffect(() => {
-    (async () => {
+    // cleanup flag — antes Promise.all chamava setTaxas em componente
+    // desmontado se usuario navegasse rapido. React warning + memory leak.
+    let cancelled = false
+    ;(async () => {
       const { getTaxaSELIC, getTaxaCDI, getIPCA12m } = await import('@/lib/brasil-api')
       const [selic, cdi, ipca] = await Promise.all([getTaxaSELIC(), getTaxaCDI(), getIPCA12m()])
-      setTaxas({ selic, cdi, ipca })
+      if (!cancelled) setTaxas({ selic, cdi, ipca })
     })().catch(() => {})
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
@@ -184,7 +188,7 @@ export default function CalculadorPage() {
         body: JSON.stringify({ consulta }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Erro no cálculo. Tente novamente.')
       setResultado(data.resultado)
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro no cálculo')

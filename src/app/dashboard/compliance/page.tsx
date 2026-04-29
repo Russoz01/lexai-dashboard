@@ -104,7 +104,7 @@ export default function CompliancePage() {
         body: JSON.stringify({ area, tipo, descricao: descricao.trim() }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Erro ao gerar análise de compliance.')
       if (!data.parecer) {
         throw new Error('A análise não foi gerada corretamente. Tente novamente.')
       }

@@ -182,6 +182,13 @@ export default function ResumidorPage() {
       toast('error', 'Selecione um arquivo PDF')
       return
     }
+    // Limite de tamanho — antes PDF de 50MB+ travava UI por 30s+ no parse.
+    // 10MB cobre 99% de pecas/contratos juridicos reais.
+    const MAX_PDF_BYTES = 10 * 1024 * 1024
+    if (file.size > MAX_PDF_BYTES) {
+      toast('error', `PDF muito grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Limite: 10MB.`)
+      return
+    }
     setCarregandoPdf(target)
     try {
       const { text, numPages } = await extractPdfWithMeta(file)

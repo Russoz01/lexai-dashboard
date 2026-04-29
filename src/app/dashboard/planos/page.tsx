@@ -120,7 +120,7 @@ function PlanosPageInner() {
         : 'enterprise'
 
   return (
-    <div style={{ padding: '32px 36px 56px', maxWidth: 1400, margin: '0 auto' }}>
+    <div className="agent-page" style={{ maxWidth: 1400 }}>
       {/* TOAST INLINE (checkout feedback + portal erro) */}
       {toast && (
         <div

@@ -72,6 +72,14 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   async function handleLogout() {
     await supabase.auth.signOut()
     sessionStorage.removeItem('pralvex-plan-cache')
+    // Limpar drafts + caches client-side antes de redirecionar — antes outro
+    // user logando no mesmo browser via dados antigos por alguns segundos.
+    try {
+      const keysToWipe = Object.keys(localStorage).filter(k =>
+        k.startsWith('pralvex-draft-') || k.startsWith('lexai-')
+      )
+      keysToWipe.forEach(k => localStorage.removeItem(k))
+    } catch { /* localStorage indisponivel — silent */ }
     router.push('/login')
     router.refresh()
   }

@@ -74,7 +74,7 @@ export default function CrmPage() {
   const blockAction = () => toast('info', 'Modo demonstração · funcionalidade completa libera no release oficial')
 
   return (
-    <div style={{ padding: 32, maxWidth: 1400, margin: '0 auto' }}>
+    <div className="agent-page" style={{ maxWidth: 1400 }}>
       {/* DEMO ribbon */}
       <div className="demo-ribbon" style={{ position: 'relative', top: 'auto', borderRadius: 12, marginBottom: 28 }}>
         <strong style={{ fontWeight: 700, letterSpacing: '0.22em' }}>Modo demonstração</strong>

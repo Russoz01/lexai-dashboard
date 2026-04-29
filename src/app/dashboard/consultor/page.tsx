@@ -76,7 +76,7 @@ export default function ConsultorPage() {
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Erro ao gerar parecer.')
       setParecer(data.parecer)
       if (Array.isArray(data.fontes)) setFontes(data.fontes)
       if (data.grounding_stats) setGroundingStats(data.grounding_stats)

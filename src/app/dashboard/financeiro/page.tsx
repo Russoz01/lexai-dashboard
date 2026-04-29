@@ -432,7 +432,15 @@ export default function FinanceiroPage() {
       variant: 'danger',
     })
     if (!ok) return
-    await supabase.from('financeiro').delete().eq('id', id); await carregar()
+    // Antes nao checava erro — RLS ou network failure deletava 0 rows e o
+    // carregar() refetch fazia o item "voltar" sem feedback ao usuario.
+    const { error } = await supabase.from('financeiro').delete().eq('id', id)
+    if (error) {
+      const { toast } = await import('@/components/Toast')
+      toast('error', 'Não foi possível excluir o lançamento. Tente de novo.')
+      return
+    }
+    await carregar()
   }
 
   async function abrirImportModal() {

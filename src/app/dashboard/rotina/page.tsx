@@ -87,11 +87,19 @@ export default function RotinaPage() {
           if (cancelled) return
           try {
             const saved = localStorage.getItem(LS_COMPROMISSOS)
-            if (saved) setCompromissos(JSON.parse(saved))
+            if (saved) {
+              const parsed = JSON.parse(saved)
+              // Validar tipo — antes JSON corrompido (devtools edit, versao
+              // antiga) quebrava render em compromissos.filter(...)
+              if (Array.isArray(parsed)) setCompromissos(parsed)
+            }
           } catch (e) { console.error('[rotina] parse compromissos LS:', e) }
           try {
             const savedPlanos = localStorage.getItem(LS_PLANOS)
-            if (savedPlanos) setPlanosFuturos(JSON.parse(savedPlanos))
+            if (savedPlanos) {
+              const parsedPlanos = JSON.parse(savedPlanos)
+              if (Array.isArray(parsedPlanos)) setPlanosFuturos(parsedPlanos)
+            }
           } catch (e) { console.error('[rotina] parse planos LS:', e) }
           setSincronizando(false)
           return
@@ -598,8 +606,11 @@ export default function RotinaPage() {
             {compHoje.map(c => (
               <div key={c.id} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 14px', borderRadius:10, background:'var(--hover)', borderLeft:`3px solid ${c.cor}` }}>
                 <div style={{ textAlign:'center', minWidth:60 }}>
-                  <div style={{ fontSize:13, fontWeight:700, color: c.cor, fontVariantNumeric:'tabular-nums' }}>{c.horario.split('–')[0]}</div>
-                  <div style={{ fontSize:10, color:'var(--text-muted)' }}>{c.horario.split('–')[1] ?? ''}</div>
+                  {/* Aceitar tanto em-dash (–) quanto hifen comum (-). Antes split
+                      era so '–' e usuario que digitava '08:00-10:00' via mostrar
+                      a string inteira no slot inicial e nada no fim. */}
+                  <div style={{ fontSize:13, fontWeight:700, color: c.cor, fontVariantNumeric:'tabular-nums' }}>{c.horario.split(/[–-]/)[0]?.trim() ?? c.horario}</div>
+                  <div style={{ fontSize:10, color:'var(--text-muted)' }}>{c.horario.split(/[–-]/)[1]?.trim() ?? ''}</div>
                 </div>
                 <div style={{ flex:1 }}>
                   <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)', marginBottom:2 }}>{c.titulo}</div>

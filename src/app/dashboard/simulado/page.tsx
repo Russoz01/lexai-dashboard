@@ -90,7 +90,7 @@ export default function PareceristaPage() {
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Erro ao gerar simulado.')
       if (!data.parecer) {
         throw new Error('O parecer não foi gerado corretamente. Tente novamente.')
       }

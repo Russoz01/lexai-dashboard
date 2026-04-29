@@ -59,7 +59,7 @@ export default function NegociadorPage() {
         body: JSON.stringify({ situacao }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Erro na análise de negociação')
       setResultado(data.resultado)
       clearDraft('pralvex-draft-negociador')
 

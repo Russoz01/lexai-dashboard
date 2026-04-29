@@ -98,9 +98,10 @@ export default function HistoricoPage() {
   const [filtro, setFiltro] = useState('')
   const [filtroAgente, setFiltroAgente] = useState<string>('todos')
 
-  const carregar = useCallback(async () => {
+  const carregar = useCallback(async (signal?: AbortSignal) => {
     setErro('')
     const usuarioId = await resolveUsuarioId()
+    if (signal?.aborted) return
     if (!usuarioId) {
       setErro('Sessão expirada. Faça login novamente.')
       setLoading(false)
@@ -114,6 +115,7 @@ export default function HistoricoPage() {
       .order('created_at', { ascending: false })
       .limit(100)
 
+    if (signal?.aborted) return
     if (dataErr) {
       setErro('Não foi possível carregar o histórico. Tente novamente.')
       setLoading(false)
@@ -125,7 +127,11 @@ export default function HistoricoPage() {
   }, [supabase])
 
   useEffect(() => {
-    carregar()
+    // AbortController previne setState em componente desmontado se o user
+    // navegar antes do select retornar.
+    const ac = new AbortController()
+    carregar(ac.signal)
+    return () => ac.abort()
   }, [carregar])
 
   const historicoFiltrado = useMemo(() => {

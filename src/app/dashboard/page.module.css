@@ -830,6 +830,11 @@
     grid-template-columns: 22px 80px 1fr 32px;
     gap: 10px;
   }
+  .dashBarLabel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .dashBarCount { font-size: 12px; }
   .dashFinanceValue { font-size: 34px; }
   .dashPanelsRow {
@@ -839,4 +844,16 @@
   .provaValue { font-size: 38px; }
   .provaValueMoney { font-size: 22px; }
   .provaCell:nth-child(2) { border-right: none; }
+}
+
+/* Phones pequenos — ProvaCells em coluna unica + fonte menor pra
+   "R$ -1.234.567,89" nao estourar largura (acontecia em iPhone SE) */
+@media (max-width: 480px) {
+  .dashProvas { grid-template-columns: 1fr; }
+  .provaCell { padding: 22px 18px; border-right: none; border-bottom: 1px solid var(--border); }
+  .provaCell:last-child { border-bottom: none; }
+  .provaValue { font-size: 28px; }
+  .provaValueMoney { font-size: 18px; }
+  .dashAtelierH1 { font-size: clamp(26px, 7vw, 32px); }
+  .dashFinanceValue { font-size: 26px; }
 }

@@ -326,7 +326,15 @@ export default function RedatorPage() {
 
   function loadDraft(d: DraftRow) {
     try {
-      setPeca(d.conteudo as PecaResponse)
+      // Validar shape antes de cast — rascunhos antigos podem ter schema
+      // diferente. Se conteudo nao tem `documento` (string), o render quebra
+      // depois com peca.documento undefined.
+      const c = d.conteudo as Partial<PecaResponse> | null | undefined
+      if (!c || typeof c.documento !== 'string') {
+        setErro('Rascunho corrompido — schema antigo. Crie uma peça nova.')
+        return
+      }
+      setPeca(c as PecaResponse)
       setCurrentDraftId(d.id)
       setShowDraftsModal(false)
       setErro('')

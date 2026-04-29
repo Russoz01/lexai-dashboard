@@ -80,7 +80,7 @@ export default function TradutorPage() {
         body: JSON.stringify({ origem, destino, tipo, texto: texto.trim() }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Erro ao traduzir documento.')
       // API contract atualizado: a chave correta é `traducao` (antes era `parecer`)
       const traducao = data.traducao ?? data.parecer
       if (!traducao) {

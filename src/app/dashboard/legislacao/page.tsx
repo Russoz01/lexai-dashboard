@@ -23,7 +23,7 @@ export default function LegislacaoPage() {
         body: JSON.stringify({ consulta }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Erro ao consultar dispositivo.')
       setResultado(data.resultado)
       if (Array.isArray(data.fontes)) setFontes(data.fontes)
       if (data.grounding_stats) setGroundingStats(data.grounding_stats)
