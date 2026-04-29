@@ -154,31 +154,31 @@ export function LexHeroStage() {
                 } as React.CSSProperties
               }
             >
-              <div className="relative flex w-[10rem] items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.06] to-white/[0.015] p-3 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl md:w-[14.5rem] md:gap-3 md:p-3.5">
+              <div className="relative flex w-[10rem] items-center gap-2.5 rounded-2xl border border-[#bfa68e]/25 bg-gradient-to-br from-white/[0.10] to-white/[0.025] p-3 shadow-[0_18px_60px_-12px_rgba(0,0,0,0.85),0_0_24px_-4px_rgba(191,166,142,0.18),inset_0_1px_0_rgba(255,255,255,0.10)] backdrop-blur-2xl md:w-[14.5rem] md:gap-3 md:p-3.5">
                 {/* gold corner glint */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute -left-px -top-px size-3 rounded-tl-2xl border-l border-t border-[#bfa68e]/40"
+                  className="pointer-events-none absolute -left-px -top-px size-3 rounded-tl-2xl border-l border-t border-[#bfa68e]/60"
                 />
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute -bottom-px -right-px size-3 rounded-br-2xl border-b border-r border-[#bfa68e]/40"
+                  className="pointer-events-none absolute -bottom-px -right-px size-3 rounded-br-2xl border-b border-r border-[#bfa68e]/60"
                 />
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[#bfa68e]/25 bg-gradient-to-br from-[#bfa68e]/[0.18] to-transparent">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[#bfa68e]/40 bg-gradient-to-br from-[#bfa68e]/[0.30] to-transparent">
                   <Icon className={`size-[17px] ${a.tint}`} strokeWidth={1.6} />
                 </div>
                 <div className="min-w-0">
                   <div className="text-[12.5px] font-medium tracking-tight text-white">
                     {a.label}
                   </div>
-                  <div className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-white/45">
+                  <div className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-[#bfa68e]/75">
                     {a.meta}
                   </div>
                 </div>
-                {/* status dot — agente "ativo" */}
-                <div className="absolute right-2.5 top-2.5 flex size-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#bfa68e]/60" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-[#bfa68e]" />
+                {/* status dot — agente "ativo" — mais visivel pra quem nao mexe o mouse */}
+                <div className="absolute right-2.5 top-2.5 flex size-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#bfa68e]/80" />
+                  <span className="relative inline-flex size-2 rounded-full bg-[#e6d4bd] shadow-[0_0_8px_rgba(230,212,189,0.8)]" />
                 </div>
               </div>
             </div>
@@ -197,7 +197,7 @@ export function LexHeroStage() {
           <defs>
             <linearGradient id="lex-stage-line" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#bfa68e" stopOpacity="0" />
-              <stop offset="50%" stopColor="#bfa68e" stopOpacity="0.18" />
+              <stop offset="50%" stopColor="#bfa68e" stopOpacity="0.32" />
               <stop offset="100%" stopColor="#bfa68e" stopOpacity="0" />
             </linearGradient>
           </defs>
@@ -206,7 +206,7 @@ export function LexHeroStage() {
             stroke="url(#lex-stage-line)"
             strokeWidth="1"
             strokeDasharray="2 6"
-            opacity="0.5"
+            opacity="0.7"
           />
         </svg>
       </div>

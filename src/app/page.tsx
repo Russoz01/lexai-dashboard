@@ -226,21 +226,22 @@ export default function LandingPage() {
         />
 
         {/* Ambient mesh — 3 blobs champagne flutuando lento + dust dourado.
-            Anima sempre, mesmo sem mouse (mobile-friendly). */}
-        <AmbientMesh dust dustCount={14} intensity={0.85} />
+            Anima sempre, mesmo sem mouse (mobile-friendly). Intensity boosted
+            de 0.85 → 1.1 pra blobs aparecerem visiveis em wide screen. */}
+        <AmbientMesh dust dustCount={18} intensity={1.1} />
 
         {/* 3D stage atras do conteudo */}
         <LexHeroStage />
 
         {/* radial overlay pra dar foco no centro — opacity reduzida pra
-            nao sufocar os blobs e cards do stage no fundo */}
+            0.20 (era 0.45) pra deixar os cards do stage e blobs respirarem */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(50%_45%_at_50%_45%,rgba(0,0,0,0.45)_0%,transparent_70%)]"
+          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(50%_45%_at_50%_45%,rgba(0,0,0,0.20)_0%,transparent_70%)]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(60%_40%_at_50%_0%,rgba(191,166,142,0.14)_0%,transparent_70%)]"
+          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(60%_40%_at_50%_0%,rgba(191,166,142,0.18)_0%,transparent_70%)]"
         />
 
         {/* Headline glow — pulsa sutil por tras do titulo */}

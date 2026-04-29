@@ -1425,10 +1425,11 @@ input[type="date"] { cursor: pointer; }
   100% { opacity: 1; transform: translate(-50%, -50%) translate3d(var(--fx,0), var(--fy,0), var(--fz,0)) rotate3d(0,1,0,var(--frot,0deg)); }
 }
 /* Idle floating apos entrada — funciona em mobile (sem mouse parallax) e
-   mantem o stage vivo. Cada card tem delay diferente pra parecer organico. */
+   mantem o stage vivo. Movimento amplificado (12px/16px/20px) pra ser
+   notavel em wide screen sem mouse parallax. */
 @keyframes lex-stage-idle-float {
   0%, 100% { transform: translate(-50%, -50%) translate3d(var(--fx,0), var(--fy,0), var(--fz,0)) rotate3d(0,1,0,var(--frot,0deg)); }
-  50%      { transform: translate(-50%, -50%) translate3d(calc(var(--fx,0) + 6px), calc(var(--fy,0) - 8px), calc(var(--fz,0) + 12px)) rotate3d(0,1,0,calc(var(--frot,0deg) + 1.2deg)); }
+  50%      { transform: translate(-50%, -50%) translate3d(calc(var(--fx,0) + 12px), calc(var(--fy,0) - 16px), calc(var(--fz,0) + 20px)) rotate3d(0,1,0,calc(var(--frot,0deg) + 2deg)); }
 }
 .lex-stage-card {
   opacity: 0;
@@ -1464,18 +1465,18 @@ input[type="date"] { cursor: pointer; }
 }
 .lex-mesh-blob-1 {
   top: -10%; left: -10%; width: 50vw; height: 50vw; max-width: 700px; max-height: 700px;
-  background: radial-gradient(circle, rgba(191,166,142,0.18) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(191,166,142,0.30) 0%, transparent 65%);
   animation: lex-mesh-drift-1 22s ease-in-out infinite;
 }
 .lex-mesh-blob-2 {
   top: 30%; right: -15%; width: 55vw; height: 55vw; max-width: 760px; max-height: 760px;
-  background: radial-gradient(circle, rgba(199,138,97,0.14) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(199,138,97,0.24) 0%, transparent 65%);
   animation: lex-mesh-drift-2 28s ease-in-out infinite;
   animation-delay: -8s;
 }
 .lex-mesh-blob-3 {
   bottom: -10%; left: 30%; width: 45vw; height: 45vw; max-width: 620px; max-height: 620px;
-  background: radial-gradient(circle, rgba(212,174,106,0.12) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(212,174,106,0.22) 0%, transparent 65%);
   animation: lex-mesh-drift-3 26s ease-in-out infinite;
   animation-delay: -14s;
 }
