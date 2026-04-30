@@ -124,13 +124,13 @@ function getCtaLabel(
   if (!currentPlanId) {
     // Landing / anônimo — CTAs promocionais
     if (planoId === 'starter') return 'Começar 7 dias grátis'
-    if (planoId === 'pro') return 'Agendar demonstração'
-    return 'Agendar demonstração'
+    if (planoId === 'pro') return 'Demo 30min por email'
+    return 'Demo 30min por email'
   }
   if (planoId === currentPlanId) return 'Você está aqui'
   if (precoAtual > precoPlano) return 'Mudar para este plano'
   if (planoId === 'starter') return 'Começar 7 dias grátis'
-  if (precoPlano > precoAtual) return 'Agendar demonstração'
+  if (precoPlano > precoAtual) return 'Demo 30min por email'
   return 'Mudar para este plano'
 }
 
@@ -152,8 +152,17 @@ export function LexPricingGrid({
       onCheckout(plano.id)
       return
     }
-    // Fallback landing: redireciona pro login com next=/dashboard/planos
-    window.location.href = `/login?next=${encodeURIComponent('/dashboard/planos')}`
+    // Fallback landing — starter vai pra login (trial 7 dias),
+    // pro/enterprise abrem mailto pra demo 30 min por email.
+    if (plano.id === 'starter') {
+      window.location.href = `/login?next=${encodeURIComponent('/dashboard/planos')}`
+      return
+    }
+    const subject = encodeURIComponent('Demo 30 min Pralvex')
+    const body = encodeURIComponent(
+      `Olá, gostaria de agendar uma demo de 30 minutos da Pralvex (plano ${plano.nome}).\n\nNome:\nEscritório:\nTelefone:\nMelhor horário:`,
+    )
+    window.location.href = `mailto:contato@pralvex.com?subject=${subject}&body=${body}`
   }
 
   return (

@@ -225,13 +225,13 @@ export default function SobrePage() {
         </ul>
 
         <div className="mt-12 flex flex-wrap gap-3">
-          <Link
-            href="/empresas"
+          <a
+            href="mailto:contato@pralvex.com?subject=Demo%2030%20min%20Pralvex&body=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20demo%20de%2030%20minutos%20da%20Pralvex.%0A%0ANome%3A%20%0AEscrit%C3%B3rio%3A%20%0ATelefone%3A%20%0AMelhor%20hor%C3%A1rio%3A%20"
             className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-5 py-2.5 text-sm font-medium text-[#0a0807] shadow-[0_0_28px_rgba(191,166,142,0.25)] transition hover:shadow-[0_0_40px_rgba(191,166,142,0.5)]"
           >
-            Agendar demonstração
+            Demo 30min por email
             <ArrowRight size={14} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
-          </Link>
+          </a>
           <Link
             href="/roi"
             className="inline-flex items-center rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm text-white/80 backdrop-blur transition hover:border-[#bfa68e]/40 hover:text-white"
