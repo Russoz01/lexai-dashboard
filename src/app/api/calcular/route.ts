@@ -80,21 +80,33 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
   const areaContext = buildAreaContext(profile?.area_juridica_padrao)
 
   const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
-  const message = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 4096,
-    system: [
-      {
-        type: 'text' as const,
-        text: buildSystemPrompt() + areaContext,
-        cache_control: { type: 'ephemeral' as const },
-      },
-    ],
-    messages: [{ role: 'user', content: `Calculation request:\n\n${consulta}` }],
-  })
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 60_000)
+  let message: Anthropic.Messages.Message
+  try {
+    message = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      // 6144 (era 4096) — calculos longos com passos[]+base_legal[]+valores{}
+      // estouravam o teto e cortavam JSON no meio.
+      max_tokens: 6144,
+      system: [
+        {
+          type: 'text' as const,
+          text: buildSystemPrompt() + areaContext,
+          cache_control: { type: 'ephemeral' as const },
+        },
+      ],
+      messages: [{ role: 'user', content: `Calculation request:\n\n${consulta}` }],
+    }, { signal: controller.signal })
+  } finally {
+    clearTimeout(timeoutId)
+  }
 
-  const textBlock = message.content.find(b => b.type === 'text')
-  const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
+  const responseText = message.content
+    .filter((b): b is Anthropic.Messages.TextBlock => b.type === 'text')
+    .map(b => b.text)
+    .join('\n')
+    .trim()
   let resultado
   try {
     resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())

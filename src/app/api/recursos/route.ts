@@ -89,21 +89,31 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const userMessage = `Tipo de recurso: ${TIPOS_RECURSO[tipo]}\n\nDecisao recorrida e contexto processual:\n${decisao}`
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-      ],
-      messages: [{ role: 'user', content: userMessage }],
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 90_000)
+    let message: Anthropic.Messages.Message
+    try {
+      message = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8192,
+        system: [
+          {
+            type: 'text' as const,
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' as const },
+          },
+        ],
+        messages: [{ role: 'user', content: userMessage }],
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
-    const textBlock = message.content.find(b => b.type === 'text')
-    const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
+    const responseText = message.content
+      .filter((b): b is Anthropic.Messages.TextBlock => b.type === 'text')
+      .map(b => b.text)
+      .join('\n')
+      .trim()
     let parsed
     try {
       const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()

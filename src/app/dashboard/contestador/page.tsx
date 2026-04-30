@@ -81,17 +81,76 @@ export default function ContestadorPage() {
   function copiar() {
     if (!contestacao) return
     const t = contestacao
-    const blocks = [
-      t.titulo, '', t.enderecamento, '', t.qualificacao, '',
-      'PRELIMINARES',
-      ...(t.preliminares ?? []).map(p => `- ${p.nome}\n${p.argumentacao}`),
-      '', 'MERITO',
-      t.merito?.sintese_fatica,
-      '', 'PEDIDOS',
-      ...(t.pedidos ?? []).map(p => `- ${p}`),
-      '', t.fechamento,
-    ].filter(Boolean).join('\n')
-    navigator.clipboard.writeText(blocks).then(() => {
+    const m = t.merito ?? {}
+    const blocks: string[] = [
+      t.titulo ?? '',
+      '',
+      t.enderecamento ?? '',
+      '',
+      t.qualificacao ?? '',
+      '',
+    ]
+    // Preliminares completas (nome + fundamento + argumentacao + pedido)
+    if ((t.preliminares ?? []).length > 0) {
+      blocks.push('PRELIMINARES', '')
+      for (const p of t.preliminares!) {
+        blocks.push(
+          `- ${p.nome ?? ''}`.trim(),
+          p.fundamento ? `  Fundamento: ${p.fundamento}` : '',
+          p.argumentacao ?? '',
+          p.pedido ? `  Pedido: ${p.pedido}` : '',
+          '',
+        )
+      }
+    }
+    // Merito completo: sintese_fatica + impugnacoes + teses (antes copiava
+    // so sintese, perdia 3 dos 6 blocos centrais da contestacao)
+    if (Object.keys(m).length > 0) {
+      blocks.push('MERITO', '')
+      if (m.sintese_fatica) blocks.push('Sintese fatica:', m.sintese_fatica, '')
+      if ((m.impugnacoes_especificas ?? []).length > 0) {
+        blocks.push('Impugnacoes especificas (Art. 341 CPC):', '')
+        for (const i of m.impugnacoes_especificas!) {
+          blocks.push(
+            `- Alegacao do autor: ${i.alegacao_autor ?? ''}`.trim(),
+            i.nossa_versao ? `  Nossa versao: ${i.nossa_versao}` : '',
+            i.fundamento ? `  Fundamento: ${i.fundamento}` : '',
+            '',
+          )
+        }
+      }
+      if ((m.teses_defensivas ?? []).length > 0) {
+        blocks.push('Teses defensivas:', '')
+        for (const tese of m.teses_defensivas!) {
+          blocks.push(
+            `- ${tese.tese ?? ''}`.trim(),
+            tese.fundamento_legal ? `  Fundamento legal: ${tese.fundamento_legal}` : '',
+            tese.jurisprudencia ? `  Jurisprudencia: ${tese.jurisprudencia}` : '',
+            tese.argumentacao ?? '',
+            '',
+          )
+        }
+      }
+    }
+    // Replicas previstas (antecipacao de contra-ataque do autor)
+    if ((t.replicas_previstas ?? []).length > 0) {
+      blocks.push('REPLICAS PREVISTAS', '')
+      for (const r of t.replicas_previstas!) {
+        blocks.push(
+          `Ataque autor: ${r.ataque_autor ?? ''}`.trim(),
+          `Nossa replica: ${r.nossa_replica ?? ''}`.trim(),
+          '',
+        )
+      }
+    }
+    if ((t.pedidos ?? []).length > 0) {
+      blocks.push('PEDIDOS', '')
+      for (const p of t.pedidos!) blocks.push(`- ${p}`)
+      blocks.push('')
+    }
+    if (t.fechamento) blocks.push(t.fechamento)
+
+    navigator.clipboard.writeText(blocks.filter(b => b !== undefined).join('\n')).then(() => {
       setCopiado(true)
       setTimeout(() => setCopiado(false), 2000)
     })

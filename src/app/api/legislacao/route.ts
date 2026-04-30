@@ -80,7 +80,9 @@ export async function POST(req: NextRequest) {
 
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4096,
+      // 6144 (era 4096): explicacao + texto_legal + exemplos + jurisprudencia
+      // + artigos_relacionados estourava o teto em artigos longos (CF, CPC).
+      max_tokens: 6144,
       system: [
         {
           type: 'text' as const,
@@ -96,8 +98,12 @@ export async function POST(req: NextRequest) {
       messages: [{ role: 'user', content: `Legal provision to explain:\n\n${consulta}` }],
     })
 
-    const textBlock = message.content.find(b => b.type === 'text')
-    const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
+    // Concatena TODOS os text blocks (WEB_SEARCH_TOOL gera preambulo + tool_use + JSON)
+    const responseText = message.content
+      .filter((b): b is Anthropic.Messages.TextBlock => b.type === 'text')
+      .map(b => b.text)
+      .join('\n')
+      .trim()
     let resultado
     try {
       resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
