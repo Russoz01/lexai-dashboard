@@ -72,19 +72,48 @@ export function isValidCnpj(cnpj: string): boolean {
   return d1 === Number(clean[12]) && d2 === Number(clean[13])
 }
 
+/**
+ * Result type pro client distinguir entre erros (CNPJ inexistente vs upstream down).
+ */
+export type CnpjLookupResult =
+  | { ok: true; data: CnpjData }
+  | { ok: false; error: string; code: 'invalid' | 'not_found' | 'upstream_down' | 'network' }
+
+/**
+ * Consulta CNPJ via /api/cnpj/[cnpj] (proxy server-side com fallback BrasilAPI -> ReceitaWS).
+ * Retorna null se algo deu errado (compat com codigo antigo) — use lookupCNPJStrict
+ * pra mensagem de erro especifica.
+ */
 export async function lookupCNPJ(cnpj: string): Promise<CnpjData | null> {
+  const r = await lookupCNPJStrict(cnpj)
+  return r.ok ? r.data : null
+}
+
+export async function lookupCNPJStrict(cnpj: string): Promise<CnpjLookupResult> {
   const clean = cleanCnpj(cnpj)
-  if (!isValidCnpj(clean)) return null
+  if (!isValidCnpj(clean)) {
+    return { ok: false, error: 'CNPJ inválido — verifique os dígitos.', code: 'invalid' }
+  }
 
   try {
-    const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${clean}`, {
+    // Proxy server-side: sem CORS, com cache 24h, fallback BrasilAPI -> ReceitaWS
+    const res = await fetch(`/api/cnpj/${clean}`, {
       headers: { Accept: 'application/json' },
     })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data as CnpjData
+    if (res.ok) {
+      const data = (await res.json()) as CnpjData
+      return { ok: true, data }
+    }
+    const body = (await res.json().catch(() => ({}))) as { error?: string; code?: string }
+    if (res.status === 404) {
+      return { ok: false, error: body.error || 'CNPJ não consta na Receita Federal.', code: 'not_found' }
+    }
+    if (res.status === 502) {
+      return { ok: false, error: body.error || 'Receita Federal fora do ar. Tente em 30s.', code: 'upstream_down' }
+    }
+    return { ok: false, error: body.error || 'Erro ao consultar CNPJ.', code: 'upstream_down' }
   } catch {
-    return null
+    return { ok: false, error: 'Sem conexão. Verifique sua internet.', code: 'network' }
   }
 }
 

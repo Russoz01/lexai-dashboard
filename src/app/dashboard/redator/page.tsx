@@ -386,19 +386,16 @@ export default function RedatorPage() {
     if (!cnpjLookup.trim()) return
     setCnpjLoading(true); setCnpjError('')
     try {
-      const { lookupCNPJ, isValidCnpj, formatCnpj } = await import('@/lib/brasil-api')
-      if (!isValidCnpj(cnpjLookup)) {
-        setCnpjError('CNPJ inválido')
+      const { lookupCNPJStrict, formatCnpj } = await import('@/lib/brasil-api')
+      const result = await lookupCNPJStrict(cnpjLookup)
+      if (!result.ok) {
+        // Mensagem especifica por codigo (era 'CNPJ não encontrado' generico)
+        setCnpjError(result.error)
         setCnpjLoading(false)
         return
       }
-      const data = await lookupCNPJ(cnpjLookup)
-      if (!data) {
-        setCnpjError('CNPJ não encontrado')
-        setCnpjLoading(false)
-        return
-      }
-      const qualificacao = `${data.razao_social}${data.nome_fantasia ? ` (${data.nome_fantasia})` : ''}, CNPJ ${formatCnpj(data.cnpj)}, com sede em ${data.logradouro}, ${data.numero}${data.complemento ? `, ${data.complemento}` : ''}, ${data.bairro}, ${data.municipio}/${data.uf}, CEP ${data.cep}`
+      const data = result.data
+      const qualificacao = `${data.razao_social}${data.nome_fantasia ? ` (${data.nome_fantasia})` : ''}, CNPJ ${formatCnpj(data.cnpj)}, com sede em ${data.logradouro || '[INFORMACAO A COMPLETAR]'}, ${data.numero || 's/n'}${data.complemento ? `, ${data.complemento}` : ''}, ${data.bairro || ''}, ${data.municipio || ''}/${data.uf || ''}, CEP ${data.cep || ''}`.replace(/\s+/g, ' ').replace(/, ,/g, ',').trim()
       setInstrucoes(prev => prev ? `${prev}\n\n${qualificacao}` : qualificacao)
       setCnpjLookup('')
       toast('success', `${data.razao_social} adicionado às instruções`)
