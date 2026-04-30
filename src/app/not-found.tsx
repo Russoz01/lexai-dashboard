@@ -1,108 +1,212 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { AmbientMesh } from '@/components/ui/ambient-mesh'
+import {
+  ArrowRight,
+  Home,
+  LayoutDashboard,
+  CreditCard,
+  Mail,
+  Phone,
+  Search,
+  Compass,
+  type LucideIcon,
+} from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Pagina nao encontrada · Pralvex',
   robots: { index: false, follow: false },
 }
 
+interface QuickLink {
+  href: string
+  Icon: LucideIcon
+  label: string
+  desc: string
+}
+
+const QUICK_LINKS: QuickLink[] = [
+  { href: '/', Icon: Home, label: 'Início', desc: 'Landing com 27 agentes' },
+  { href: '/dashboard', Icon: LayoutDashboard, label: 'Dashboard', desc: 'Seu gabinete jurídico' },
+  { href: '/dashboard/planos', Icon: CreditCard, label: 'Planos', desc: 'Escritório · Firma · Enterprise' },
+  { href: '/empresas', Icon: Compass, label: 'Para empresas', desc: 'B2B · ROI · casos de uso' },
+]
+
+const HOT_AGENTS: { href: string; label: string }[] = [
+  { href: '/dashboard/consultor', label: 'Consultor' },
+  { href: '/dashboard/redator', label: 'Redator' },
+  { href: '/dashboard/pesquisador', label: 'Pesquisador' },
+  { href: '/dashboard/risco', label: 'Risco' },
+  { href: '/dashboard/contestador', label: 'Contestador' },
+  { href: '/dashboard/parecerista', label: 'Parecerista' },
+]
+
 export default function NotFound() {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '48px 24px',
-        background: 'var(--bg-base)',
-        color: 'var(--text-primary)',
-        fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
-      }}
-    >
-      <span
-        style={{
-          fontSize: 11,
-          letterSpacing: '0.24em',
-          textTransform: 'uppercase',
-          color: 'var(--text-muted)',
-          marginBottom: 24,
-        }}
-      >
-        Erro · MMXXVI · Nº 404
-      </span>
+    <div className="relative isolate min-h-screen overflow-hidden bg-[#0a0807] text-white antialiased">
+      {/* Ambient mesh — blobs champagne flutuando + dust dourado */}
+      <AmbientMesh dust dustCount={14} intensity={0.85} />
 
-      <h1
-        style={{
-          fontFamily: 'var(--font-playfair), serif',
-          fontStyle: 'italic',
-          fontWeight: 700,
-          fontSize: 'clamp(40px, 6vw, 68px)',
-          lineHeight: 1.05,
-          letterSpacing: '-0.01em',
-          textAlign: 'center',
-          margin: 0,
-          maxWidth: 720,
-        }}
-      >
-        Esta pagina nao consta no sumario.
-      </h1>
+      {/* Headline glow pulsing atras do titulo */}
+      <div aria-hidden className="lex-headline-glow -z-10" style={{ top: '38%' }} />
 
+      {/* Radial top — soma profundidade */}
       <div
-        style={{
-          width: 48,
-          height: 1,
-          background: 'var(--stone-line)',
-          margin: '32px 0',
-        }}
         aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[480px]"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(191,166,142,0.12), transparent 70%)',
+        }}
       />
 
-      <p
-        style={{
-          fontSize: 17,
-          lineHeight: 1.6,
-          color: 'var(--text-secondary)',
-          textAlign: 'center',
-          maxWidth: 520,
-          margin: 0,
-        }}
-      >
-        O endereco que voce tentou acessar nao existe ou foi movido. Volte ao
-        inicio ou abra o dashboard.
-      </p>
+      <main className="relative mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center gap-10 px-6 py-16 md:py-24">
+        {/* Serial editorial */}
+        <div
+          className="lex-figure inline-flex items-center gap-3 font-mono text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#bfa68e]/80"
+          style={{ animationDelay: '0.05s' }}
+        >
+          <span className="h-px w-10 bg-[#bfa68e]/40" />
+          Erro · MMXXVI · Nº 404
+          <span className="h-px w-10 bg-[#bfa68e]/40" />
+        </div>
 
-      <div style={{ display: 'flex', gap: 16, marginTop: 40, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <Link
-          href="/"
+        {/* Headline */}
+        <h1
+          className="lex-figure max-w-3xl text-balance text-center font-serif italic"
           style={{
-            padding: '14px 28px',
-            background: 'var(--primary)',
-            color: 'var(--bg-base)',
-            borderRadius: 2,
-            fontSize: 14,
-            letterSpacing: '0.04em',
-            textDecoration: 'none',
+            fontSize: 'clamp(36px, 6.5vw, 72px)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.01em',
+            color: '#f5e8d3',
+            animationDelay: '0.18s',
+            textShadow: '0 0 60px rgba(191,166,142,0.18)',
           }}
         >
-          Ir para o inicio
-        </Link>
-        <Link
-          href="/dashboard"
+          Esta página{' '}
+          <span style={{ color: '#bfa68e' }}>não consta</span>
+          {' '}no sumário.
+        </h1>
+
+        {/* hairline */}
+        <div
+          aria-hidden
+          className="lex-figure h-px w-16"
           style={{
-            padding: '14px 28px',
-            border: '1px solid var(--stone-line)',
-            color: 'var(--text-primary)',
-            borderRadius: 2,
-            fontSize: 14,
-            letterSpacing: '0.04em',
-            textDecoration: 'none',
+            background: 'linear-gradient(90deg, transparent, rgba(191,166,142,0.5), transparent)',
+            animationDelay: '0.32s',
           }}
+        />
+
+        {/* Lede */}
+        <p
+          className="lex-figure max-w-xl text-balance text-center text-[15px] leading-[1.7] text-white/65"
+          style={{ animationDelay: '0.42s' }}
         >
-          Abrir dashboard
-        </Link>
-      </div>
+          O endereço que você tentou acessar não existe ou foi movido. Use os
+          atalhos abaixo para navegar pelo gabinete ou entre em contato direto.
+        </p>
+
+        {/* CTAs principais */}
+        <div
+          className="lex-figure flex flex-wrap items-center justify-center gap-3"
+          style={{ animationDelay: '0.55s' }}
+        >
+          <Link
+            href="/"
+            className="lex-magnetic group inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-7 text-[13px] font-medium text-[#0a0807] shadow-[0_8px_24px_rgba(191,166,142,0.28)] transition hover:shadow-[0_12px_36px_rgba(191,166,142,0.45)]"
+          >
+            Voltar ao início
+            <ArrowRight size={14} strokeWidth={2.2} className="transition-transform group-hover:translate-x-0.5" />
+          </Link>
+          <Link
+            href="/dashboard"
+            className="inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-7 text-[13px] font-medium text-white/85 backdrop-blur transition hover:border-[#bfa68e]/40 hover:bg-white/[0.05]"
+          >
+            <LayoutDashboard size={14} strokeWidth={1.75} />
+            Abrir dashboard
+          </Link>
+        </div>
+
+        {/* Quick links cards */}
+        <div className="mt-4 w-full max-w-3xl">
+          <div className="mb-5 flex items-center justify-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em] text-white/35">
+            <span className="h-px w-8 bg-white/15" />
+            Atalhos do atelier
+            <span className="h-px w-8 bg-white/15" />
+          </div>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {QUICK_LINKS.map((q, i) => {
+              const Icon = q.Icon
+              return (
+                <Link
+                  key={q.href}
+                  href={q.href}
+                  className="lex-figure group relative flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 backdrop-blur transition-all hover:-translate-y-0.5 hover:border-[#bfa68e]/30 hover:bg-white/[0.05]"
+                  style={{ animationDelay: `${0.65 + i * 0.06}s` }}
+                >
+                  <div className="flex size-9 items-center justify-center rounded-lg border border-[#bfa68e]/25 bg-gradient-to-br from-[#bfa68e]/[0.14] to-transparent text-[#e6d4bd] transition-colors group-hover:border-[#bfa68e]/45 group-hover:from-[#bfa68e]/[0.22]">
+                    <Icon size={15} strokeWidth={1.75} />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-medium text-white/90">{q.label}</div>
+                    <div className="mt-0.5 text-[11px] text-white/45">{q.desc}</div>
+                  </div>
+                  <ArrowRight
+                    size={11}
+                    strokeWidth={2}
+                    className="absolute right-3 top-3 text-white/25 transition-all group-hover:translate-x-0.5 group-hover:text-[#bfa68e]/80"
+                  />
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Hot agents — chips clickable */}
+        <div className="mt-2 w-full max-w-3xl">
+          <div className="mb-3 flex items-center justify-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em] text-white/35">
+            <Search size={11} strokeWidth={2} className="text-[#bfa68e]/60" />
+            Talvez você esteja procurando
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {HOT_AGENTS.map((a, i) => (
+              <Link
+                key={a.href}
+                href={a.href}
+                className="lex-figure inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.015] px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-white/55 transition hover:border-[#bfa68e]/35 hover:bg-[#bfa68e]/[0.08] hover:text-[#e6d4bd]"
+                style={{ animationDelay: `${0.95 + i * 0.04}s` }}
+              >
+                <span className="size-1 rounded-full bg-[#bfa68e]/40" />
+                {a.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Contato — telefone + email */}
+        <div
+          className="lex-figure mt-6 flex flex-wrap items-center justify-center gap-4 border-t border-white/[0.06] pt-6 font-mono text-[11px] uppercase tracking-[0.22em] text-white/40"
+          style={{ animationDelay: '1.25s' }}
+        >
+          <span className="text-white/30">Atendimento direto</span>
+          <a
+            href="tel:+553493026456"
+            className="inline-flex items-center gap-2 text-[#bfa68e]/85 transition hover:text-[#e6d4bd]"
+          >
+            <Phone size={11} strokeWidth={2.2} />
+            (34) 9302-6456
+          </a>
+          <span className="text-white/15">·</span>
+          <a
+            href="mailto:contato@pralvex.com"
+            className="inline-flex items-center gap-2 text-[#bfa68e]/85 transition hover:text-[#e6d4bd]"
+          >
+            <Mail size={11} strokeWidth={2.2} />
+            contato@pralvex.com
+          </a>
+        </div>
+      </main>
     </div>
   )
 }
