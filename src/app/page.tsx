@@ -310,8 +310,8 @@ export default function LandingPage() {
           <Reveal delay={1.15}>
             <div className="mt-20 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
               {[
-                { v: '22', k: 'agentes + 3 módulos' },
-                { v: '9', k: 'áreas do Direito' },
+                { v: '27', k: 'agentes + 4 módulos' },
+                { v: '13', k: 'áreas do Direito' },
                 { v: '4min', k: 'por documento' },
                 { v: '+40', k: 'escritórios em beta' },
               ].map((s, i) => (

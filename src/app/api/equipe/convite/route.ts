@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
       request: req,
     })
 
-    const origin = req.headers.get('origin') || 'https://pralvex.com.br'
+    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'https://lexai-ffinal.vercel.app'
     const acceptUrl = `${origin}/equipe/aceitar?token=${invite.token}`
 
     // Fetch caller display name (já resolvido o usuarios.id correto)

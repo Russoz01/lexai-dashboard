@@ -215,8 +215,8 @@ export default function ConsultorPage() {
       <AgentHero
         edition="Nº I"
         Icon={BookText}
-        name="Estrategista"
-        discipline="Pareceres fundamentados"
+        name="Consultor"
+        discipline="Pareceres e análise estratégica"
         description="Análise multifacetada com legislação, doutrina, argumentos favoráveis e contrários. Ideal para responder consultas internas ou fundamentar posicionamento antes de uma peça."
         accent="gold"
         meta={[

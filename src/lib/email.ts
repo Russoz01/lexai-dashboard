@@ -85,7 +85,7 @@ export function welcomeEmailHtml(nome: string): string {
       <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Comece pelo Resumidor</div>
       <div style="font-size:13px;color:#475569;line-height:1.5;">E o agente mais usado. Cole qualquer documento juridico e veja a magia acontecer em 45 segundos.</div>
     </div>
-    <a href="https://pralvex.com.br/dashboard/resumidor" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;">Acessar Dashboard</a>
+    <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://lexai-ffinal.vercel.app'}/dashboard/resumidor" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;margin-top:8px;">Acessar Dashboard</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Duvidas? Responda este email ou escreva para contato@pralvex.com.</p>
   `)
 }
@@ -98,7 +98,7 @@ export function trialEndingEmailHtml(nome: string, daysLeft: number): string {
       <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:6px;">Oferta de lancamento</div>
       <div style="font-size:13px;color:#78350f;line-height:1.5;">Plano anual com 16% de desconto. Garanta o preco fixo por 12 meses.</div>
     </div>
-    <a href="https://pralvex.com.br/dashboard/planos" style="display:inline-block;background:#132025;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ver planos</a>
+    <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://lexai-ffinal.vercel.app'}/dashboard/planos" style="display:inline-block;background:#132025;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ver planos</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Sem cobranca automatica. Voce so paga se escolher um plano.</p>
   `)
 }
@@ -144,7 +144,7 @@ export function paymentReceivedEmailHtml(nome: string, plano: string, valor: str
       <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:6px;">Detalhes do pagamento</div>
       <div style="font-size:13px;color:#047857;line-height:1.6;">Plano: ${plano}<br>Valor: ${valor}<br>Cobranca: mensal recorrente</div>
     </div>
-    <a href="https://pralvex.com.br/dashboard" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ir para o Dashboard</a>
+    <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://lexai-ffinal.vercel.app'}/dashboard" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ir para o Dashboard</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Gerencie sua assinatura, cancele ou baixe faturas em <strong>Configuracoes &gt; Pagamento</strong>.</p>
   `)
 }

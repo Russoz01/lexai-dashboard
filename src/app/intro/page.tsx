@@ -454,7 +454,7 @@ function DashboardPreviewScene({ reduced }: { reduced: boolean }) {
           <div className="mb-3 flex items-center gap-2">
             <Sparkles className="h-3.5 w-3.5 text-[#bfa68e]" strokeWidth={1.5} />
             <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#bfa68e]/70">
-              Trial
+              Demo
             </span>
           </div>
           <ul className="space-y-3">
