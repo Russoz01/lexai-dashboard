@@ -1,13 +1,14 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/site-url'
 
 export const metadata: Metadata = {
   title: 'Sobre | Pralvex',
   description: 'A Pralvex foi construida por quem vive o Direito brasileiro. Conheca o time, a missao e como pensamos automacao juridica.',
-  alternates: { canonical: 'https://pralvex.com.br/sobre' },
+  alternates: { canonical: `${SITE_URL}/sobre` },
   openGraph: {
     title: 'Sobre a Pralvex',
     description: 'Construido por quem vive o Direito brasileiro.',
-    url: 'https://pralvex.com.br/sobre',
+    url: `${SITE_URL}/sobre`,
     siteName: 'Pralvex',
     locale: 'pt_BR',
     type: 'website',

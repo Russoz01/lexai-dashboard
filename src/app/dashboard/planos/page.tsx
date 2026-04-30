@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /* ═════════════════════════════════════════════════════════════
  * PLANOS — v10 editorial dark
@@ -612,7 +612,7 @@ function PlanosPageInner() {
         fontSize: 11, letterSpacing: '0.12em',
         color: 'var(--text-muted)',
       }}>
-        dúvidas? contato@pralvex.com
+        dúvidas? contato@pralvex.com.br
       </div>
 
       <style>{`

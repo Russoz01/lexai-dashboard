@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -288,7 +288,7 @@ const CHAPTERS: Chapter[] = [
             </div>
             <p className="text-[13px] text-white/65">
               Clique em &ldquo;Nova consulta&rdquo; — reset do contexto. Se persistir,
-              fale com Renato: contato@pralvex.com, resposta em 24h.
+              fale com Renato: contato@pralvex.com.br, resposta em 24h.
             </p>
           </div>
         </div>
@@ -473,7 +473,7 @@ export default function DocsClient() {
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href="mailto:contato@pralvex.com?subject=Duvida%20sobre%20a%20documentacao%20Pralvex"
+              href="mailto:contato@pralvex.com.br?subject=Duvida%20sobre%20a%20documentacao%20Pralvex"
               className="group inline-flex items-center gap-3 rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#f5e8d3] via-[#bfa68e] to-[#7a5f48] px-7 py-3 font-mono text-[0.7rem] font-bold uppercase tracking-[0.2em] text-[#0a0a0a] shadow-[0_10px_40px_rgba(191,166,142,0.28)] transition-all hover:shadow-[0_14px_56px_rgba(191,166,142,0.45)]"
             >
               Escrever para Renato

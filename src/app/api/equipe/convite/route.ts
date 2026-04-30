@@ -1,10 +1,11 @@
-import { NextRequest } from 'next/server'
+﻿import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { ok, fail, unauthorized, forbidden, serverError } from '@/lib/api-response'
 import { audit } from '@/lib/audit'
 import { sendInviteEmail } from '@/lib/email'
+import { SITE_URL } from '@/lib/site-url'
 import crypto from 'crypto'
 
 export const dynamic = 'force-dynamic'
@@ -153,7 +154,7 @@ export async function POST(req: NextRequest) {
       request: req,
     })
 
-    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'https://lexai-ffinal.vercel.app'
+    const origin = req.headers.get('origin') || SITE_URL
     const acceptUrl = `${origin}/equipe/aceitar?token=${invite.token}`
 
     // Fetch caller display name (já resolvido o usuarios.id correto)

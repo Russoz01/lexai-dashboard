@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -86,7 +86,7 @@ const SECTIONS: Section[] = [
         </p>
         <p>
           <strong>DPO nomeado</strong>: Leonardo Luiz Fernando, Pralvex,
-          contato em <a href="mailto:dpo@pralvex.com" className="text-[#bfa68e] underline decoration-[#bfa68e]/40 underline-offset-2 hover:decoration-[#bfa68e]">dpo@pralvex.com</a>.
+          contato em <a href="mailto:dpo@pralvex.com.br" className="text-[#bfa68e] underline decoration-[#bfa68e]/40 underline-offset-2 hover:decoration-[#bfa68e]">dpo@pralvex.com.br</a>.
           Responde em 15 dias corridos a qualquer solicitacao LGPD art. 18.
         </p>
       </>
@@ -382,18 +382,18 @@ export default function DpaClient() {
           className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center"
         >
           <a
-            href="mailto:dpo@pralvex.com?subject=Solicitacao%20de%20copia%20assinada%20do%20DPA%20Pralvex&body=Ola%20Leonardo%2C%0A%0AGostaria%20de%20receber%20uma%20copia%20assinada%20do%20DPA%20para%20o%20nosso%20escritorio.%0A%0ARazao%20social%3A%0ACNPJ%3A%0AEndereco%3A%0APessoa%20responsavel%3A%0A%0AObrigado."
+            href="mailto:dpo@pralvex.com.br?subject=Solicitacao%20de%20copia%20assinada%20do%20DPA%20Pralvex&body=Ola%20Leonardo%2C%0A%0AGostaria%20de%20receber%20uma%20copia%20assinada%20do%20DPA%20para%20o%20nosso%20escritorio.%0A%0ARazao%20social%3A%0ACNPJ%3A%0AEndereco%3A%0APessoa%20responsavel%3A%0A%0AObrigado."
             className="group inline-flex items-center gap-3 rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#f5e8d3] via-[#bfa68e] to-[#7a5f48] px-6 py-3 font-mono text-[0.7rem] font-bold uppercase tracking-[0.2em] text-[#0a0a0a] shadow-[0_10px_40px_rgba(191,166,142,0.28)] transition-all hover:shadow-[0_14px_56px_rgba(191,166,142,0.45)]"
           >
             <Download className="size-4" strokeWidth={2} />
             Solicitar copia assinada
           </a>
           <a
-            href="mailto:dpo@pralvex.com"
+            href="mailto:dpo@pralvex.com.br"
             className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white/55 transition-colors hover:text-[#bfa68e]"
           >
             <Mail className="size-3" strokeWidth={1.8} />
-            dpo@pralvex.com
+            dpo@pralvex.com.br
           </a>
         </motion.div>
       </section>
@@ -456,7 +456,7 @@ export default function DpaClient() {
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href="mailto:dpo@pralvex.com?subject=DPA%20customizado%20-%20escritorio%20X"
+              href="mailto:dpo@pralvex.com.br?subject=DPA%20customizado%20-%20escritorio%20X"
               className="group inline-flex items-center gap-3 rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#f5e8d3] via-[#bfa68e] to-[#7a5f48] px-7 py-3 font-mono text-[0.7rem] font-bold uppercase tracking-[0.2em] text-[#0a0a0a] shadow-[0_10px_40px_rgba(191,166,142,0.28)] transition-all hover:shadow-[0_14px_56px_rgba(191,166,142,0.45)]"
             >
               Falar com o DPO

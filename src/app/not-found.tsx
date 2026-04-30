@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import type { Metadata } from 'next'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
 import {
@@ -199,11 +199,11 @@ export default function NotFound() {
           </a>
           <span className="text-white/15">·</span>
           <a
-            href="mailto:contato@pralvex.com"
+            href="mailto:contato@pralvex.com.br"
             className="inline-flex items-center gap-2 text-[#bfa68e]/85 transition hover:text-[#e6d4bd]"
           >
             <Mail size={11} strokeWidth={2.2} />
-            contato@pralvex.com
+            contato@pralvex.com.br
           </a>
         </div>
       </main>

@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { validateAuth } from '@/lib/api-utils'
 import { events } from '@/lib/analytics'
+import { SITE_URL } from '@/lib/site-url'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -129,7 +130,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       token,
-      url: `https://pralvex.com.br/share/${token}`,
+      url: `${SITE_URL}/share/${token}`,
       expires_at: expiresAt,
     })
   } catch (err: unknown) {

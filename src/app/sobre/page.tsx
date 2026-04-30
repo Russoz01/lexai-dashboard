@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { WhatsAppFloat } from '@/components/WhatsAppFloat'
@@ -205,10 +205,10 @@ export default function SobrePage() {
               E-mail
             </span>
             <a
-              href="mailto:contato@pralvex.com"
+              href="mailto:contato@pralvex.com.br"
               className="text-sm text-white transition hover:text-[#bfa68e]"
             >
-              contato@pralvex.com
+              contato@pralvex.com.br
             </a>
           </li>
           <li className="flex items-center justify-between px-5 py-4">
@@ -216,10 +216,10 @@ export default function SobrePage() {
               Imprensa
             </span>
             <a
-              href="mailto:imprensa@pralvex.com"
+              href="mailto:imprensa@pralvex.com.br"
               className="text-sm text-white transition hover:text-[#bfa68e]"
             >
-              imprensa@pralvex.com
+              imprensa@pralvex.com.br
             </a>
           </li>
         </ul>

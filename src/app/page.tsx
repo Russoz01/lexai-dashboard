@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -480,7 +480,7 @@ export default function LandingPage() {
           <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-white/[0.06] pt-6 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/45">
             <div>© MMXXVI · Pralvex</div>
             <div className="flex items-center gap-4">
-              <span>contato@pralvex.com</span>
+              <span>contato@pralvex.com.br</span>
               <span className="size-1 rounded-full bg-white/20" />
               <span>Ituverava, SP · Brasil</span>
             </div>

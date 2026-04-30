@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Google Calendar integration — OAuth + event creation for Rotina sync.
  *
  * Degrades gracefully: when GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are missing,
@@ -11,9 +11,11 @@
  *  - GOOGLE_REDIRECT_URI  (optional, defaults to production URL)
  */
 
+import { SITE_URL } from '@/lib/site-url'
+
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'https://pralvex.com.br/api/google/callback'
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${SITE_URL}/api/google/callback`
 
 export function isGoogleCalendarConfigured(): boolean {
   return !!(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET)

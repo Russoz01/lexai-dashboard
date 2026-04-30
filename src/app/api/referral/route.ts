@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { ok, unauthorized, serverError, fail } from '@/lib/api-response'
+import { SITE_URL } from '@/lib/site-url'
 import crypto from 'crypto'
 
 export const dynamic = 'force-dynamic'
@@ -49,7 +50,7 @@ export async function GET() {
 
     return ok({
       code,
-      shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://pralvex.com.br'}/login?ref=${code}`,
+      shareUrl: `${SITE_URL}/login?ref=${code}`,
       stats: { completed, pending, totalDaysEarned: completed * 15 },
       referrals: referrals ?? [],
     })
@@ -113,7 +114,7 @@ export async function POST() {
 
     return ok({
       code: inviteCode,
-      shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://pralvex.com.br'}/login?ref=${code}`,
+      shareUrl: `${SITE_URL}/login?ref=${code}`,
     })
   } catch (err) {
     return serverError('referral/post', err)

@@ -1,16 +1,15 @@
-import type { MetadataRoute } from 'next'
-
-const BASE_URL = 'https://pralvex.com.br'
+﻿import type { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/site-url'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
   return [
-    { url: `${BASE_URL}`,             lastModified: now, changeFrequency: 'weekly',  priority: 1.0 },
-    { url: `${BASE_URL}/empresas`,    lastModified: now, changeFrequency: 'weekly',  priority: 0.9 },
-    { url: `${BASE_URL}/roi`,         lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/sobre`,       lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/login`,       lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/privacidade`, lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
-    { url: `${BASE_URL}/termos`,      lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
+    { url: `${SITE_URL}`,             lastModified: now, changeFrequency: 'weekly',  priority: 1.0 },
+    { url: `${SITE_URL}/empresas`,    lastModified: now, changeFrequency: 'weekly',  priority: 0.9 },
+    { url: `${SITE_URL}/roi`,         lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/sobre`,       lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${SITE_URL}/login`,       lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${SITE_URL}/privacidade`, lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
+    { url: `${SITE_URL}/termos`,      lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
   ]
 }

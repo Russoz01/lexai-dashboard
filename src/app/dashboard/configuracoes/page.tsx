@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import {
@@ -576,7 +576,7 @@ export default function ConfiguracoesPage() {
             <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Canais de Atendimento</div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:10 }}>
               {[
-                { Icon: Mail,  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'contato@pralvex.com', href:'mailto:contato@pralvex.com' },
+                { Icon: Mail,  color:'#4f46e5', bg:'#eef2ff', label:'Email',     value:'contato@pralvex.com.br', href:'mailto:contato@pralvex.com.br' },
               ].map(ch => {
                 const ChIcon = ch.Icon
                 return (

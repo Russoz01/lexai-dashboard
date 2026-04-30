@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import {
@@ -504,7 +504,7 @@ const SECTIONS: Array<{
               <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/50">
                 E-mail
               </div>
-              <div className="mt-0.5 text-white">contato@pralvex.com</div>
+              <div className="mt-0.5 text-white">contato@pralvex.com.br</div>
             </div>
           </div>
           <div className="flex items-start gap-3 text-sm text-white/70">
@@ -759,7 +759,7 @@ export default function TermosClient() {
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 font-mono text-[0.65rem] uppercase tracking-[0.15em] text-white/45">
             <span>© MMXXVI · Pralvex</span>
-            <span className="text-white/35">contato@pralvex.com</span>
+            <span className="text-white/35">contato@pralvex.com.br</span>
           </div>
         </div>
       </footer>
