@@ -188,7 +188,7 @@ export default async function OpenGraphImage() {
                   display: 'flex',
                 }}
               />
-              7 dias gratis sem cartao
+              Demo 30 min gratis sem cartao
             </div>
             <div style={{ color: 'rgba(255,255,255,0.20)', display: 'flex' }}>·</div>
             <div style={{ display: 'flex' }}>LGPD compliant</div>

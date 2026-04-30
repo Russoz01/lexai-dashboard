@@ -37,8 +37,8 @@ const CHAPTERS: Chapter[] = [
     body: (
       <>
         <p>
-          Depois do signup a plataforma cria seu gabinete. Voce entra com 7 dias
-          de trial ilimitado e acesso aos 27 agentes. Nao exige cartao.
+          Depois do signup a plataforma cria seu gabinete. Voce entra com uma
+          demo de 30 minutos com acesso enterprise aos 27 agentes. Nao exige cartao.
         </p>
         <ol className="mt-4 space-y-2 pl-5 text-[14px] leading-[1.7] text-white/70 [counter-reset:step]">
           <li className="relative pl-8 before:absolute before:left-0 before:top-0 before:font-mono before:text-[11px] before:font-bold before:tracking-[0.22em] before:text-[#bfa68e] before:content-['01']">

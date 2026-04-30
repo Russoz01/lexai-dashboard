@@ -160,7 +160,7 @@ function PlanosPageInner() {
           color: 'var(--accent)', marginBottom: 18,
         }}>
           <Zap size={11} strokeWidth={2} aria-hidden />
-          Oferta de lançamento · 7 dias grátis
+          Oferta de lançamento · demo 30 min grátis
         </div>
         <h1 style={{
           fontFamily: "'Playfair Display', Georgia, serif",
@@ -553,10 +553,10 @@ function PlanosPageInner() {
           ) : (
             <Rocket size={15} strokeWidth={1.75} aria-hidden />
           )}
-          Começar 7 dias grátis
+          Demo 30 min grátis
         </button>
         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 16 }}>
-          Cancele a qualquer momento · Sem cobrança durante o período grátis · Suporte em português
+          Cancele a qualquer momento · Sem cobrança durante a demo · Suporte em português
         </div>
       </div>
 

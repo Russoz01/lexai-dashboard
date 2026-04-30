@@ -242,13 +242,16 @@ export default function SobrePage() {
 
         <footer className="mt-20 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-white/40 sm:flex-row sm:items-center">
           <span>© MMXXVI Pralvex</span>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <Link href="/privacidade" className="transition hover:text-white">
               Privacidade
             </Link>
             <Link href="/termos" className="transition hover:text-white">
               Termos
             </Link>
+            <a href="tel:+553493026456" className="text-[#bfa68e]/80 transition hover:text-[#e6d4bd]">
+              (34) 9302-6456
+            </a>
           </div>
         </footer>
       </main>

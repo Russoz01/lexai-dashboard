@@ -251,14 +251,14 @@ const SECTIONS: Array<{
             aviso previo.
           </li>
           <li>
-            <strong>Sem cobranca no trial:</strong> o trial nao exige cartao de credito
-            cadastrado. Ao final dos 7 dias, o acesso e limitado ate a contratacao de
-            um plano pago.
+            <strong>Sem cobranca na demo:</strong> a demo nao exige cartao de credito
+            cadastrado. Ao final dos 30 minutos, o acesso e limitado ate a contratacao
+            de um plano pago.
           </li>
           <li>
-            <strong>Limites:</strong> durante o trial, o Usuario tem acesso aos
-            recursos do plano Starter, respeitados os limites de uso descritos na
-            pagina de planos.
+            <strong>Limites:</strong> durante a demo de 30 minutos, o Usuario tem
+            acesso aos recursos do plano Enterprise, respeitados os limites de uso
+            descritos na pagina de planos.
           </li>
         </ul>
       </>

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://pralvex.com.br/empresas' },
   openGraph: {
     title: 'Pralvex para Escritórios | Doze especialistas, uma assinatura',
-    description: 'Agentes de IA para Direito brasileiro. R$1.399/adv/mês. 7 dias grátis.',
+    description: 'Agentes de IA para Direito brasileiro. R$1.399/adv/mês. Demo 30 min grátis.',
     url: 'https://pralvex.com.br/empresas',
     siteName: 'Pralvex',
     locale: 'pt_BR',

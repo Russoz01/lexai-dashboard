@@ -50,8 +50,8 @@ export function LexFinalCta() {
             .
           </h2>
           <p className="mx-auto mt-7 max-w-xl text-[15.5px] leading-relaxed text-white/65">
-            Sete dias grátis. Sem cartão. Cancela com um clique. Se não economizar
-            vinte horas na primeira semana, devolvemos integralmente.
+            Demo de 30 minutos grátis · Sem cartão · Cancela com um clique. Money-back
+            de 7 dias se não economizar vinte horas na primeira semana após assinar.
           </p>
 
           <div className="mt-12 flex flex-col items-center justify-center gap-3 md:flex-row">
@@ -59,7 +59,7 @@ export function LexFinalCta() {
               href="/login"
               className="lex-magnetic lex-cta-shimmer group relative inline-flex h-14 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-9 text-[14px] font-medium text-black transition hover:brightness-110"
             >
-              <span className="relative z-10">Começar 7 dias grátis</span>
+              <span className="relative z-10">Demo 30 min grátis</span>
               <ArrowRight
                 className="relative z-10 size-4 transition-transform group-hover:translate-x-0.5"
                 strokeWidth={2}

@@ -7,7 +7,13 @@ export interface PlanInfo {
   realPlano: string
   authenticated: boolean
   subscription_status: string
-  trial: { active: boolean; ends_at: string | null; days_left: number }
+  trial: {
+    active: boolean
+    ends_at: string | null
+    days_left: number
+    minutes_left: number
+    seconds_left: number
+  }
   stripe_customer_id: string | null
   founder: boolean
   loading: boolean
@@ -18,7 +24,7 @@ const DEFAULT: PlanInfo = {
   realPlano: 'free',
   authenticated: false,
   subscription_status: 'trialing',
-  trial: { active: false, ends_at: null, days_left: 0 },
+  trial: { active: false, ends_at: null, days_left: 0, minutes_left: 0, seconds_left: 0 },
   stripe_customer_id: null,
   founder: false,
   loading: true,
@@ -58,7 +64,13 @@ export function usePlan(): PlanInfo & { refresh: () => Promise<void> } {
         realPlano: data.realPlano || 'free',
         authenticated: !!data.authenticated,
         subscription_status: data.subscription_status || 'trialing',
-        trial: data.trial || { active: false, ends_at: null, days_left: 0 },
+        trial: {
+          active: data.trial?.active ?? false,
+          ends_at: data.trial?.ends_at ?? null,
+          days_left: data.trial?.days_left ?? 0,
+          minutes_left: data.trial?.minutes_left ?? 0,
+          seconds_left: data.trial?.seconds_left ?? 0,
+        },
         stripe_customer_id: data.stripe_customer_id || null,
         founder: !!data.founder,
         loading: false,

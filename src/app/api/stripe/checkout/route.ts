@@ -77,7 +77,9 @@ export async function POST(req: NextRequest) {
       metadata: { auth_user_id: user.id, plan },
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
-        trial_period_days: 7,
+        // Trial Pralvex e de 30 min DB-side antes do checkout. Quando user
+        // chega aqui ele ja decidiu pagar — Stripe cobra imediato. Nao tem
+        // trial duplo descoordenado (DB 30min vs Stripe 7 dias).
         metadata: { plan, auth_user_id: user.id },
       },
       allow_promotion_codes: true,

@@ -124,7 +124,13 @@
 /* ── Base reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; transition: background-color 0.2s ease; }
+html {
+  /* scroll-behavior + scroll-padding consolidados aqui (era duplicado mais abaixo).
+     Padding compensa nav fixed h-16 + folga pra anchors do nav nao colarem. */
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+  transition: background-color 0.2s ease;
+}
 
 /* ── Accessibility — WCAG AA keyboard focus ─────────────────── */
 *:focus { outline: none; }
@@ -1575,12 +1581,6 @@ input[type="date"] { cursor: pointer; }
   opacity: 0;
   animation: lex-figure-rise 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: transform, opacity;
-}
-
-/* Smooth scroll global pra anchors do nav (#manifesto, #precos, #faq, etc) */
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 80px;
 }
 
 /* Editorial hairline draw on scroll */

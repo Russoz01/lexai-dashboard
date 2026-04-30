@@ -122,15 +122,13 @@ function getCtaLabel(
   precoPlano: number, precoAtual: number,
 ): string {
   if (!currentPlanId) {
-    // Landing / anônimo — CTAs promocionais. Pro/Enterprise tambem
-    // entram via signup (sem cobrar cartao) e usam 30 min gratis.
-    if (planoId === 'starter') return 'Começar 7 dias grátis'
-    if (planoId === 'pro') return 'Demo 30 min grátis'
+    // Landing / anônimo — todos os 3 planos entram via signup (sem cartao)
+    // e usam demo de 30 min gratis. Money-back garantido por 7 dias apos
+    // assinar (separado do trial pre-checkout).
     return 'Demo 30 min grátis'
   }
   if (planoId === currentPlanId) return 'Você está aqui'
   if (precoAtual > precoPlano) return 'Mudar para este plano'
-  if (planoId === 'starter') return 'Começar 7 dias grátis'
   if (precoPlano > precoAtual) return 'Demo 30 min grátis'
   return 'Mudar para este plano'
 }

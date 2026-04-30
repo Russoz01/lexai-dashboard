@@ -19,7 +19,7 @@ import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 const VALUE_PROPS = [
   { n: 'I', title: 'Vinte e sete agentes afinados', desc: 'Treinados especificamente para o ordenamento jurídico brasileiro. 6 novos na v10.8.' },
-  { n: 'II', title: '7 dias grátis', desc: 'Experimente sem cartão, cancele em um clique, sem fidelidade.' },
+  { n: 'II', title: 'Demo 30 min grátis', desc: 'Experimente sem cartão. 30 minutos de acesso enterprise pra testar antes de assinar.' },
   { n: 'III', title: 'Segurança e LGPD', desc: 'Dados criptografados em trânsito e em repouso. Nunca utilizados em treinamento.' },
   { n: 'IV', title: 'Feito à mão', desc: 'Não somos mais um SaaS genérico. Somos um atelier.' },
 ]
@@ -277,7 +277,7 @@ function LoginPageInner() {
 
           <p className="mb-7 text-sm leading-relaxed text-white/60">
             {isSignUp
-              ? 'Crie sua conta. 7 dias gratuitos, sem cartão. Apenas um profissional por vez.'
+              ? 'Crie sua conta. Demo de 30 min grátis, sem cartão. Apenas um profissional por vez.'
               : 'Bem-vindo de volta ao atelier. Entre para retomar seu gabinete digital.'}
           </p>
 

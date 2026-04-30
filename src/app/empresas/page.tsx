@@ -317,7 +317,7 @@ export default function EmpresasPage() {
         </div>
 
         <p className="mx-auto mt-8 max-w-xl text-center text-xs text-white/40" data-reveal>
-          Todos os planos incluem 7 dias gratuitos · Cancelamento a qualquer momento · Sem taxa de setup
+          Todos os planos incluem demo de 30 min grátis · Cancelamento a qualquer momento · Sem taxa de setup
         </p>
       </section>
 

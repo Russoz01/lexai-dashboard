@@ -244,17 +244,17 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         ) : (
           <div
             className={`sidebar-plan-badge${trial?.active ? ' trial-glow' : ''}${
-              trial?.active && trial.days_left <= 1 ? ' trial-urgent' : ''
+              trial?.active && (trial.minutes_left ?? 0) <= 5 ? ' trial-urgent' : ''
             }`}
           >
             <div className={s.planLabel}>
-              <span className={trial?.active && trial.days_left <= 1 ? s.planDotUrgent : s.planDot} />
-              {trial?.active ? 'Trial ativo' : 'Plano ativo'}
+              <span className={trial?.active && (trial.minutes_left ?? 0) <= 5 ? s.planDotUrgent : s.planDot} />
+              {trial?.active ? 'Demo ativa' : 'Plano ativo'}
             </div>
             <div className="plan-name">{loading ? '...' : PLANOS[plano]?.nome || 'Free Trial'}</div>
             <div className="plan-price">
               {trial?.active
-                ? `${trial.days_left} dia${trial.days_left === 1 ? '' : 's'} restante${trial.days_left === 1 ? '' : 's'}`
+                ? `${trial.minutes_left ?? 0} min restante${(trial.minutes_left ?? 0) === 1 ? '' : 's'}`
                 : PLANOS[plano]?.preco || ''}
             </div>
           </div>
