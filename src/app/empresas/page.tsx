@@ -111,12 +111,12 @@ export default function EmpresasPage() {
             <Link href="/" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Início</Link>
             <Link href="/#precos" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Planos</Link>
             <Link href="/login" className="text-sm text-white/70 transition hover:text-white">Entrar</Link>
-            <a
-              href="mailto:contato@pralvex.com?subject=Demo%2030%20min%20Pralvex&body=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20demo%20de%2030%20minutos%20da%20Pralvex.%0A%0ANome%3A%20%0AEscrit%C3%B3rio%3A%20%0ATelefone%3A%20%0AMelhor%20hor%C3%A1rio%3A%20"
+            <Link
+              href="/login"
               className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium transition hover:bg-white/10"
             >
-              Demo 30min por email
-            </a>
+              Demo 30 min grátis
+            </Link>
           </div>
         </div>
       </nav>
@@ -144,13 +144,13 @@ export default function EmpresasPage() {
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-reveal>
-            <a
-              href="mailto:contato@pralvex.com?subject=Demo%2030%20min%20Pralvex&body=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20demo%20de%2030%20minutos%20da%20Pralvex.%0A%0ANome%3A%20%0AEscrit%C3%B3rio%3A%20%0ATelefone%3A%20%0AMelhor%20hor%C3%A1rio%3A%20"
+            <Link
+              href="/login"
               className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90"
             >
               <CalendarCheck size={16} />
-              Demo 30min por email
-            </a>
+              Demo 30 min grátis
+            </Link>
             <Link
               href="#casos"
               className="rounded-lg border border-white/15 bg-white/[0.02] px-5 py-3 text-sm text-white/80 transition hover:bg-white/[0.06]"
@@ -382,13 +382,13 @@ export default function EmpresasPage() {
               Demonstração ao vivo de 30 minutos. Nenhum compromisso de assinatura. Proposta no mesmo dia.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <a
-                href="mailto:contato@pralvex.com?subject=Demo%2030%20min%20Pralvex&body=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20demo%20de%2030%20minutos%20da%20Pralvex.%0A%0ANome%3A%20%0AEscrit%C3%B3rio%3A%20%0ATelefone%3A%20%0AMelhor%20hor%C3%A1rio%3A%20"
+              <Link
+                href="/login"
                 className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
               >
                 <CalendarCheck size={16} />
-                Demo 30min por email
-              </a>
+                Demo 30 min grátis
+              </Link>
               <Link
                 href="/"
                 className="rounded-lg border border-white/15 bg-white/[0.02] px-6 py-3 text-sm text-white/80 transition hover:bg-white/[0.06]"
@@ -418,6 +418,9 @@ export default function EmpresasPage() {
             <Link href="/empresas" className="transition hover:text-white">Para Empresas</Link>
             <Link href="/privacidade" className="transition hover:text-white">Privacidade (LGPD)</Link>
             <Link href="/termos" className="transition hover:text-white">Termos de Uso</Link>
+            <a href="tel:+553493026456" className="text-[#bfa68e]/80 transition hover:text-[#e6d4bd]">
+              (34) 9302-6456
+            </a>
           </div>
         </div>
       </footer>

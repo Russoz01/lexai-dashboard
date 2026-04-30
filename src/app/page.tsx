@@ -146,16 +146,16 @@ export default function LandingPage() {
             >
               Entrar
             </Link>
-            <a
-              href="mailto:contato@pralvex.com?subject=Demo%2030%20min%20Pralvex&body=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20demo%20de%2030%20minutos%20da%20Pralvex.%0A%0ANome%3A%20%0AEscrit%C3%B3rio%3A%20%0ATelefone%3A%20%0AMelhor%20hor%C3%A1rio%3A%20"
+            <Link
+              href="/login"
               className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-[#bfa68e]/30 bg-gradient-to-br from-[#bfa68e]/[0.18] to-transparent px-4 text-[12px] font-medium text-[#e6d4bd] transition hover:border-[#bfa68e]/60 hover:from-[#bfa68e]/[0.28]"
             >
-              Demo 30min por email
+              Demo 30 min grátis
               <ArrowRight
                 className="size-3 transition-transform group-hover:translate-x-0.5"
                 strokeWidth={2}
               />
-            </a>
+            </Link>
           </nav>
 
           <button
@@ -207,13 +207,13 @@ export default function LandingPage() {
                 {i.l}
               </a>
             ))}
-            <a
-              href="mailto:contato@pralvex.com?subject=Demo%2030%20min%20Pralvex&body=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20demo%20de%2030%20minutos%20da%20Pralvex.%0A%0ANome%3A%20%0AEscrit%C3%B3rio%3A%20%0ATelefone%3A%20%0AMelhor%20hor%C3%A1rio%3A%20"
+            <Link
+              href="/login"
               onClick={() => setMenuOpen(false)}
               className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] text-sm font-medium text-black"
             >
-              Demo 30min por email <ArrowRight className="size-4" />
-            </a>
+              Demo 30 min grátis <ArrowRight className="size-4" />
+            </Link>
           </nav>
         </div>
       )}
@@ -413,12 +413,18 @@ export default function LandingPage() {
                 Sistema operacional jurídico. 27 agentes + CRM + jurimetria em
                 uma única plataforma — no lugar de cinco contratos.
               </p>
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55">
-                <ShieldCheck
-                  className="size-3 text-[#bfa68e]"
-                  strokeWidth={2}
-                />
-                Dados processados em São Paulo
+              <div className="mt-6 flex flex-col gap-2.5">
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55">
+                  <ShieldCheck className="size-3 text-[#bfa68e]" strokeWidth={2} />
+                  Dados processados em São Paulo
+                </div>
+                <a
+                  href="tel:+553493026456"
+                  className="inline-flex w-fit items-center gap-2 rounded-full border border-[#bfa68e]/20 bg-[#bfa68e]/[0.04] px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-[#bfa68e]/80 transition hover:border-[#bfa68e]/40 hover:text-[#e6d4bd]"
+                >
+                  <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+                  Contato (34) 9302-6456
+                </a>
               </div>
             </div>
 
