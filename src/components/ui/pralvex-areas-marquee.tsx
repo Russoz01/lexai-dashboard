@@ -3,7 +3,8 @@
 import { Marquee } from '@/components/ui/marquee'
 
 /* PralvexAreasMarquee — strip com áreas do Direito cobertas pelos 27 agentes.
- * Substitui logos de customers (que não temos publicamente). */
+ * v2 (2026-04-29): paragens editoriais entre items (rombus champagne) +
+ * tipografia serif italic + mask gradient pra fade nas bordas. */
 
 const areas = [
   'Civil',
@@ -23,20 +24,28 @@ const areas = [
 
 export function PralvexAreasMarquee() {
   return (
-    <section className="relative border-y border-white/5 bg-black py-10">
+    <section className="relative border-y border-[#bfa68e]/[0.08] bg-black py-12">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-6 text-center font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/40">
-          9 áreas do Direito cobertas pelos agentes
+        <div className="mb-8 flex items-center justify-center gap-3">
+          <span className="h-px w-10 bg-[#bfa68e]/30" />
+          <span className="font-mono text-[0.62rem] uppercase tracking-[0.32em] text-[#bfa68e]/65">
+            13 áreas do Direito brasileiro
+          </span>
+          <span className="h-px w-10 bg-[#bfa68e]/30" />
         </div>
-        <div className="relative [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+        <div className="relative [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
           <Marquee>
             {areas.map((a) => (
               <div
                 key={a}
-                className="flex items-center gap-2 whitespace-nowrap text-lg font-medium tracking-tight text-white/35 transition-colors hover:text-white/80"
+                className="group flex items-center gap-5 whitespace-nowrap font-serif text-[1.4rem] italic tracking-tight text-white/40 transition-colors duration-500 hover:text-[#e6d4bd]"
               >
-                <span className="size-1 rounded-full bg-[#bfa68e]/50" />
-                {a}
+                <span>{a}</span>
+                {/* Rombus champagne separador editorial */}
+                <span
+                  aria-hidden
+                  className="size-1.5 rotate-45 border border-[#bfa68e]/40 bg-[#bfa68e]/10 transition-colors duration-500 group-hover:border-[#bfa68e]/80 group-hover:bg-[#bfa68e]/30"
+                />
               </div>
             ))}
           </Marquee>

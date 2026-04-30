@@ -1577,6 +1577,12 @@ input[type="date"] { cursor: pointer; }
   will-change: transform, opacity;
 }
 
+/* Smooth scroll global pra anchors do nav (#manifesto, #precos, #faq, etc) */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
 /* Editorial hairline draw on scroll */
 @keyframes lex-hairline {
   0%   { transform: scaleX(0); opacity: 0; }

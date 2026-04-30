@@ -24,6 +24,7 @@ import { LexHeroStage, GlyphReveal } from '@/components/ui/lex-hero-stage'
 import { Reveal, WordReveal } from '@/components/ui/reveal'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
+import { EditorialDivider } from '@/components/ui/editorial-divider'
 
 /* ════════════════════════════════════════════════════════════════════
  * Pralvex — Landing v9 "Editorial 3D" (2026-04-19)
@@ -362,19 +363,29 @@ export default function LandingPage() {
         <LexManifesto />
       </div>
 
+      <EditorialDivider variant="numeral" numeral="II · Vinte e sete agentes" className="bg-black" />
+
       {/* ═══ AGENTES BENTO ═════════════════════════════════════════════ */}
       <LexAgentsBento />
 
+      <EditorialDivider variant="numeral" numeral="III · Vs mercado" className="bg-black" />
+
       {/* ═══ COMPARATIVO — 10 rivais × 21 critérios ═══════════════════ */}
       <LexComparison />
+
+      <EditorialDivider variant="numeral" numeral="IV · Compliance" className="bg-black" />
 
       {/* ═══ PROVIMENTO 205 — compliance-first ═══════════════════════ */}
       <div id="provimento">
         <LexProvimento />
       </div>
 
+      <EditorialDivider variant="numeral" numeral="V · Planos" className="bg-black" />
+
       {/* ═══ PRICING ═══════════════════════════════════════════════════ */}
       <LexPricing />
+
+      <EditorialDivider variant="ornament" className="bg-black" />
 
       {/* ═══ FAQ ═══════════════════════════════════════════════════════ */}
       <LexFaq />
