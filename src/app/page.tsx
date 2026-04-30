@@ -419,11 +419,11 @@ export default function LandingPage() {
                   Dados processados em São Paulo
                 </div>
                 <a
-                  href="tel:+553493026456"
+                  href="tel:+5534993026456"
                   className="inline-flex w-fit items-center gap-2 rounded-full border border-[#bfa68e]/20 bg-[#bfa68e]/[0.04] px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-[#bfa68e]/80 transition hover:border-[#bfa68e]/40 hover:text-[#e6d4bd]"
                 >
                   <span className="size-1.5 rounded-full bg-[#bfa68e]" />
-                  Contato (34) 9302-6456
+                  Contato (34) 99302-6456
                 </a>
               </div>
             </div>

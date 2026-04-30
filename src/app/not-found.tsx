@@ -191,11 +191,11 @@ export default function NotFound() {
         >
           <span className="text-white/30">Atendimento direto</span>
           <a
-            href="tel:+553493026456"
+            href="tel:+5534993026456"
             className="inline-flex items-center gap-2 text-[#bfa68e]/85 transition hover:text-[#e6d4bd]"
           >
             <Phone size={11} strokeWidth={2.2} />
-            (34) 9302-6456
+            (34) 99302-6456
           </a>
           <span className="text-white/15">·</span>
           <a

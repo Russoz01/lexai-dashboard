@@ -418,8 +418,8 @@ export default function EmpresasPage() {
             <Link href="/empresas" className="transition hover:text-white">Para Empresas</Link>
             <Link href="/privacidade" className="transition hover:text-white">Privacidade (LGPD)</Link>
             <Link href="/termos" className="transition hover:text-white">Termos de Uso</Link>
-            <a href="tel:+553493026456" className="text-[#bfa68e]/80 transition hover:text-[#e6d4bd]">
-              (34) 9302-6456
+            <a href="tel:+5534993026456" className="text-[#bfa68e]/80 transition hover:text-[#e6d4bd]">
+              (34) 99302-6456
             </a>
           </div>
         </div>

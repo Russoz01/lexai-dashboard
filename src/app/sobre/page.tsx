@@ -249,8 +249,8 @@ export default function SobrePage() {
             <Link href="/termos" className="transition hover:text-white">
               Termos
             </Link>
-            <a href="tel:+553493026456" className="text-[#bfa68e]/80 transition hover:text-[#e6d4bd]">
-              (34) 9302-6456
+            <a href="tel:+5534993026456" className="text-[#bfa68e]/80 transition hover:text-[#e6d4bd]">
+              (34) 99302-6456
             </a>
           </div>
         </footer>
