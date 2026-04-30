@@ -66,6 +66,10 @@ export async function GET() {
       trial: {
         active: isTrialing,
         ends_at: usuario?.trial_ended_at,
+        // Trial agora dura 30 minutos — minutes_left e o campo principal.
+        // days_left mantido pra retro-compat de UI antiga.
+        minutes_left: isTrialing ? Math.max(0, Math.ceil((trialEnd - now) / (1000 * 60))) : 0,
+        seconds_left: isTrialing ? Math.max(0, Math.floor((trialEnd - now) / 1000)) : 0,
         days_left: isTrialing ? Math.max(0, Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24))) : 0,
       },
       stripe_customer_id: usuario?.stripe_customer_id || null,
