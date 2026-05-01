@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import {
@@ -257,20 +257,23 @@ export default function NegociadorPage() {
           ) : r ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, overflowY: 'auto', maxHeight: 600 }}>
               {r.zopa ? <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--accent-light)', borderLeft: '3px solid var(--accent)' }}><strong style={{ color: 'var(--accent)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Zona de Acordo (ZOPA)</strong><p style={{ marginTop: 6 }}>{String(r.zopa)}</p></div> : null}
-              {r.estrategia && typeof r.estrategia === 'object' && (
+              {r.estrategia && typeof r.estrategia === 'object' && (() => {
+                const estrategia = r.estrategia as { tipo?: string; abordagem?: string }
+                return (
                 <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)' }}>
                   <strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estratégia Recomendada</strong>
                   <div style={{ marginTop: 8 }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: 'var(--accent-light)', color: 'var(--accent)' }}>{(r.estrategia as any).tipo}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: 'var(--accent-light)', color: 'var(--accent)' }}>{estrategia.tipo}</span>
                   </div>
-                  <p style={{ marginTop: 8, whiteSpace: 'pre-wrap' }}>{(r.estrategia as any).abordagem}</p>
+                  <p style={{ marginTop: 8, whiteSpace: 'pre-wrap' }}>{estrategia.abordagem}</p>
                 </div>
-              )}
+                )
+              })()}
               {Array.isArray(r.cenarios) && r.cenarios.length > 0 && (
                 <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--hover)' }}>
                   <strong style={{ color: 'var(--text-primary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Cenários</strong>
                   <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {(r.cenarios as any[]).map((c, i) => {
+                    {(r.cenarios as Array<{ probabilidade?: string; cenario?: string; risco?: string; titulo?: string; descricao?: string }>).map((c, i) => {
                       // Parse probabilidade — could be "60%", "60", "Alta", etc.
                       const raw = String(c.probabilidade ?? '')
                       const match = raw.match(/(\d{1,3})/)
