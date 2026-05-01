@@ -62,7 +62,7 @@ const PLANOS: Plano[] = [
     precoMensal: 599,
     economiaReal: 'Recupere 6h por semana em pesquisas e redação',
     features: [
-      { label: '8 agentes essenciais (Resumidor, Redator, Pesquisador, Risco, Consultor, Negociador, Calculador, Tradutor)', disponivel: true },
+      { label: 'Todos os 27 agentes especializados', disponivel: true },
       { label: '50 documentos por mês', disponivel: true },
       { label: 'Histórico de 30 dias', disponivel: true },
       { label: 'Suporte por email em 48h', disponivel: true },
@@ -76,11 +76,11 @@ const PLANOS: Plano[] = [
     precoMensal: 1399,
     economiaReal: 'Recupere 12h por semana em pesquisas por advogado',
     features: [
-      { label: '15 agentes (Resumidor, Pesquisador, Redator, Calculador, Contestador, Recursos, Audiência…)', disponivel: true },
+      { label: 'Todos os 27 agentes especializados', disponivel: true },
       { label: '200 documentos por mês', disponivel: true },
       { label: 'Histórico de 45 dias', disponivel: true },
       { label: 'Suporte por email em 24h', disponivel: true },
-      { label: 'Exportação em PDF', disponivel: false },
+      { label: 'Exportação em PDF profissional', disponivel: true },
       { label: 'API própria para integração', disponivel: false },
       { label: 'Agentes customizados', disponivel: false },
     ],
