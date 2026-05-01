@@ -2,6 +2,7 @@
 import { DM_Sans, Playfair_Display } from 'next/font/google'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { CookieConsent } from '@/components/CookieConsent'
+import { MicrosoftClarity } from '@/components/MicrosoftClarity'
 import { SITE_URL } from '@/lib/site-url'
 import './globals.css'
 
@@ -200,6 +201,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main-content" className="skip-link">Pular para o conteudo</a>
         <ThemeProvider>{children}</ThemeProvider>
         <CookieConsent />
+        <MicrosoftClarity />
       </body>
     </html>
   )
