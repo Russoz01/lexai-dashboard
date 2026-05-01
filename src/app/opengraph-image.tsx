@@ -1,4 +1,4 @@
-import { ImageResponse } from 'next/og'
+﻿import { ImageResponse } from 'next/og'
 
 // Next.js App Router native OG image generation
 // Size recommended by social platforms: 1200x630
@@ -188,7 +188,7 @@ export default async function OpenGraphImage() {
                   display: 'flex',
                 }}
               />
-              Demo 30 min gratis sem cartao
+              Demo 50 min gratis sem cartao
             </div>
             <div style={{ color: 'rgba(255,255,255,0.20)', display: 'flex' }}>·</div>
             <div style={{ display: 'flex' }}>LGPD compliant</div>

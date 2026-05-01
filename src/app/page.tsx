@@ -15,6 +15,7 @@ import { ExitIntent } from '@/components/ExitIntent'
 import { LexAgentsBento } from '@/components/ui/lex-agents-bento'
 import { PralvexAreasMarquee } from '@/components/ui/pralvex-areas-marquee'
 import { LexPricing } from '@/components/ui/lex-pricing'
+import { LexFoundingMember } from '@/components/ui/lex-founding-member'
 import { LexFaq } from '@/components/ui/lex-faq'
 import { LexFinalCta } from '@/components/ui/lex-final-cta'
 import { LexComparison } from '@/components/ui/lex-comparison'
@@ -150,7 +151,7 @@ export default function LandingPage() {
               href="/login"
               className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-[#bfa68e]/30 bg-gradient-to-br from-[#bfa68e]/[0.18] to-transparent px-4 text-[12px] font-medium text-[#e6d4bd] transition hover:border-[#bfa68e]/60 hover:from-[#bfa68e]/[0.28]"
             >
-              Demo 30 min grátis
+              Demo 50 min grátis
               <ArrowRight
                 className="size-3 transition-transform group-hover:translate-x-0.5"
                 strokeWidth={2}
@@ -212,7 +213,7 @@ export default function LandingPage() {
               onClick={() => setMenuOpen(false)}
               className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] text-sm font-medium text-black"
             >
-              Demo 30 min grátis <ArrowRight className="size-4" />
+              Demo 50 min grátis <ArrowRight className="size-4" />
             </Link>
           </nav>
         </div>
@@ -290,7 +291,7 @@ export default function LandingPage() {
                 href="/login"
                 className="lex-magnetic lex-cta-shimmer group relative inline-flex h-13 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-8 py-3.5 text-[14px] font-medium text-black transition hover:brightness-110"
               >
-                <span className="relative z-10">Demo 30 min grátis</span>
+                <span className="relative z-10">Demo 50 min grátis</span>
                 <ArrowRight
                   className="relative z-10 size-4 transition-transform group-hover:translate-x-0.5"
                   strokeWidth={2}
@@ -384,6 +385,9 @@ export default function LandingPage() {
 
       {/* ═══ PRICING ═══════════════════════════════════════════════════ */}
       <LexPricing />
+
+      {/* ═══ FOUNDING MEMBER — primeiros 10 escritórios, 50% off vitalício ═ */}
+      <LexFoundingMember />
 
       <EditorialDivider variant="ornament" className="bg-black" />
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -26,7 +26,7 @@ import s from './Sidebar.module.css'
  * ═════════════════════════════════════════════════════════════ */
 
 const PLANOS: Record<string, { nome: string; preco: string }> = {
-  free:       { nome: 'Demonstração', preco: '30 min guiados' },
+  free:       { nome: 'Demonstração', preco: '50 min guiados' },
   starter:    { nome: 'Escritório',   preco: 'R$ 1.399 / advogado' },
   pro:        { nome: 'Firma',        preco: 'R$ 1.459 / advogado' },
   enterprise: { nome: 'Enterprise',   preco: 'R$ 1.599 / advogado' },

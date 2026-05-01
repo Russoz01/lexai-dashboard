@@ -252,11 +252,11 @@ const SECTIONS: Array<{
           </li>
           <li>
             <strong>Sem cobranca na demo:</strong> a demo nao exige cartao de credito
-            cadastrado. Ao final dos 30 minutos, o acesso e limitado ate a contratacao
+            cadastrado. Ao final dos 50 minutos, o acesso e limitado ate a contratacao
             de um plano pago.
           </li>
           <li>
-            <strong>Limites:</strong> durante a demo de 30 minutos, o Usuario tem
+            <strong>Limites:</strong> durante a demo de 50 minutos, o Usuario tem
             acesso aos recursos do plano Enterprise, respeitados os limites de uso
             descritos na pagina de planos.
           </li>

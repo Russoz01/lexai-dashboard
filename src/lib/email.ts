@@ -81,7 +81,7 @@ function baseTemplate(content: string): string {
 export function welcomeEmailHtml(nome: string): string {
   return baseTemplate(`
     <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;letter-spacing:-0.3px;">Bem-vindo a Pralvex, ${nome}!</h1>
-    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Sua demo de <strong>30 minutos</strong> esta ativa. Voce tem acesso a todos os 27 agentes IA — sem cobranca e sem precisar cadastrar cartao. Aproveite pra testar o que o gabinete entrega antes de assinar.</p>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Sua demo de <strong>50 minutos</strong> esta ativa. Voce tem acesso a todos os 27 agentes IA — sem cobranca e sem precisar cadastrar cartao. Aproveite pra testar o que o gabinete entrega antes de assinar.</p>
     <div style="background:#f5efe6;border-left:4px solid #bfa68e;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Comece pelo Resumidor</div>
       <div style="font-size:13px;color:#475569;line-height:1.5;">E o agente mais usado. Cole qualquer documento juridico e veja a magia acontecer em 45 segundos.</div>

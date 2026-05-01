@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+﻿import { createClient } from '@/lib/supabase/server'
 import { NextResponse }  from 'next/server'
 import { sendEmail, welcomeEmailHtml } from '@/lib/email'
 import { events } from '@/lib/analytics'
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
             const nome = (user.user_metadata?.nome as string) || user.email.split('@')[0]
             sendEmail({
               to: user.email,
-              subject: 'Bem-vindo a Pralvex — sua demo de 30 min esta ativa',
+              subject: 'Bem-vindo a Pralvex — sua demo de 50 min esta ativa',
               html: welcomeEmailHtml(nome),
             }).catch(() => { /* never block auth on email failure */ })
             events.signup(user.id, user.email).catch(() => { /* silent */ })

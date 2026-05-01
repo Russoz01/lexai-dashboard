@@ -229,7 +229,7 @@ export default function SobrePage() {
             href="/login"
             className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-5 py-2.5 text-sm font-medium text-[#0a0807] shadow-[0_0_28px_rgba(191,166,142,0.25)] transition hover:shadow-[0_0_40px_rgba(191,166,142,0.5)]"
           >
-            Demo 30 min grátis
+            Demo 50 min grátis
             <ArrowRight size={14} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link

@@ -58,7 +58,7 @@ const faqJsonLd = {
     {
       '@type': 'Question',
       name: 'Quanto custa a Pralvex?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Os planos comecam em R$ 1.399 por mes por advogado (plano Escritorio, 1-5 advogados). O plano Firma custa R$ 1.459 (6-15 advogados) e o Enterprise R$ 1.599 (16+ advogados). Todos incluem demo de 30 minutos gratis pra testar antes de assinar.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Os planos comecam em R$ 1.399 por mes por advogado (plano Escritorio, 1-5 advogados). O plano Firma custa R$ 1.459 (6-15 advogados) e o Enterprise R$ 1.599 (16+ advogados). Todos incluem demo de 50 minutos gratis pra testar antes de assinar.' },
     },
     {
       '@type': 'Question',

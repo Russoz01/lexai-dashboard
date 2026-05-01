@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export const PLAN_QUOTAS: Record<string, number> = {
   free:       5,
   // Current plan names
+  solo:       50,    // novo v11 — advogado autonomo R$ 599
   escritorio: 200,
   firma:      100000, // ilimitado na pratica
   enterprise: 100000,

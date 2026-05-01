@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useEffect } from 'react'
@@ -115,7 +115,7 @@ export default function EmpresasPage() {
               href="/login"
               className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium transition hover:bg-white/10"
             >
-              Demo 30 min grátis
+              Demo 50 min grátis
             </Link>
           </div>
         </div>
@@ -149,7 +149,7 @@ export default function EmpresasPage() {
               className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90"
             >
               <CalendarCheck size={16} />
-              Demo 30 min grátis
+              Demo 50 min grátis
             </Link>
             <Link
               href="#casos"
@@ -317,7 +317,7 @@ export default function EmpresasPage() {
         </div>
 
         <p className="mx-auto mt-8 max-w-xl text-center text-xs text-white/40" data-reveal>
-          Todos os planos incluem demo de 30 min grátis · Cancelamento a qualquer momento · Sem taxa de setup
+          Todos os planos incluem demo de 50 min grátis · Cancelamento a qualquer momento · Sem taxa de setup
         </p>
       </section>
 
@@ -379,7 +379,7 @@ export default function EmpresasPage() {
               Pronto para conhecer<br />a Pralvex <em className="italic text-[#bfa68e]/90">na prática?</em>
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-white/60">
-              Demonstração ao vivo de 30 minutos. Nenhum compromisso de assinatura. Proposta no mesmo dia.
+              Demonstração ao vivo de 50 minutos. Nenhum compromisso de assinatura. Proposta no mesmo dia.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
@@ -387,7 +387,7 @@ export default function EmpresasPage() {
                 className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
               >
                 <CalendarCheck size={16} />
-                Demo 30 min grátis
+                Demo 50 min grátis
               </Link>
               <Link
                 href="/"
@@ -397,7 +397,7 @@ export default function EmpresasPage() {
               </Link>
             </div>
             <div className="mt-6 font-mono text-[0.65rem] uppercase tracking-[0.25em] text-white/40">
-              30 minutos &nbsp;·&nbsp; Sem compromisso &nbsp;·&nbsp; Proposta em até 24h
+              50 minutos &nbsp;·&nbsp; Sem compromisso &nbsp;·&nbsp; Proposta em até 24h
             </div>
           </div>
         </div>

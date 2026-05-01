@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -50,7 +50,7 @@ export function LexFinalCta() {
             .
           </h2>
           <p className="mx-auto mt-7 max-w-xl text-[15.5px] leading-relaxed text-white/65">
-            Demo de 30 minutos grátis · Sem cartão · Cancela com um clique. Money-back
+            Demo de 50 minutos grátis · Sem cartão · Cancela com um clique. Money-back
             de 7 dias se não economizar vinte horas na primeira semana após assinar.
           </p>
 
@@ -59,7 +59,7 @@ export function LexFinalCta() {
               href="/login"
               className="lex-magnetic lex-cta-shimmer group relative inline-flex h-14 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-9 text-[14px] font-medium text-black transition hover:brightness-110"
             >
-              <span className="relative z-10">Demo 30 min grátis</span>
+              <span className="relative z-10">Demo 50 min grátis</span>
               <ArrowRight
                 className="relative z-10 size-4 transition-transform group-hover:translate-x-0.5"
                 strokeWidth={2}

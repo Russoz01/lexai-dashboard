@@ -1,4 +1,4 @@
-import Stripe from 'stripe'
+﻿import Stripe from 'stripe'
 
 if (!process.env.STRIPE_SECRET_KEY) {
   // eslint-disable-next-line no-console
@@ -12,7 +12,8 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_place
 
 // Map Stripe price IDs to internal plan slugs.
 // Set these in your environment after creating prices in Stripe.
-export const PRICE_TO_PLAN: Record<string, 'escritorio' | 'firma' | 'enterprise'> = {
+export const PRICE_TO_PLAN: Record<string, 'solo' | 'escritorio' | 'firma' | 'enterprise'> = {
+  [process.env.STRIPE_PRICE_SOLO       || 'price_solo_placeholder']:       'solo',
   [process.env.STRIPE_PRICE_ESCRITORIO || 'price_escritorio_placeholder']: 'escritorio',
   [process.env.STRIPE_PRICE_FIRMA      || 'price_firma_placeholder']:      'firma',
   [process.env.STRIPE_PRICE_ENTERPRISE || 'price_enterprise_placeholder']: 'enterprise',
@@ -21,6 +22,6 @@ export const PRICE_TO_PLAN: Record<string, 'escritorio' | 'firma' | 'enterprise'
   [process.env.STRIPE_PRICE_PRO       || 'price_pro_placeholder']:        'firma',
 }
 
-export function planFromPriceId(priceId: string): 'escritorio' | 'firma' | 'enterprise' | 'free' {
+export function planFromPriceId(priceId: string): 'solo' | 'escritorio' | 'firma' | 'enterprise' | 'free' {
   return PRICE_TO_PLAN[priceId] || 'free'
 }

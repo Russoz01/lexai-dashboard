@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
@@ -66,7 +66,7 @@ export async function GET() {
       trial: {
         active: isTrialing,
         ends_at: usuario?.trial_ended_at,
-        // Trial agora dura 30 minutos — minutes_left e o campo principal.
+        // Trial agora dura 50 minutos — minutes_left e o campo principal.
         // days_left mantido pra retro-compat de UI antiga.
         minutes_left: isTrialing ? Math.max(0, Math.ceil((trialEnd - now) / (1000 * 60))) : 0,
         seconds_left: isTrialing ? Math.max(0, Math.floor((trialEnd - now) / 1000)) : 0,

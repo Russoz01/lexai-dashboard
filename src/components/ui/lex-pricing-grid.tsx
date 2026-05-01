@@ -1,14 +1,14 @@
-'use client'
+﻿'use client'
 
 /* ═════════════════════════════════════════════════════════════════════
- * LexPricingGrid · v10.12 (2026-04-23)
+ * LexPricingGrid · v11.0 (2026-04-30)
  * ───────────────────────────────────────────────────────────────────
  * Componente canônico de planos — atelier editorial dark.
  * Fonte de verdade visual: /dashboard/planos + screenshot Leonardo.
  *
  * Uso:
  *   <LexPricingGrid />                              // landing (sem estado)
- *   <LexPricingGrid currentPlanId="starter"         // dashboard (com plano ativo)
+ *   <LexPricingGrid currentPlanId="solo"            // dashboard (com plano ativo)
  *     onCheckout={(id) => stripeCheckout(id)}       // Stripe inline
  *     loadingPlan={loadingPlan} />
  *
@@ -18,9 +18,13 @@
  *   · src/app/dashboard/planos/page.tsx   (billing autenticado)
  *
  * Preços sincronizados com Stripe (price IDs em src/lib/stripe.ts):
+ *   Solo:       R$   599 / advogado / mês  (NOVO v11)
  *   Escritório: R$ 1.399 / advogado / mês
  *   Firma:      R$ 1.459 / advogado / mês
  *   Enterprise: R$ 1.599 / advogado / mês
+ *
+ * Founding Member: 50% off vitalício pros primeiros 10 (cupom FOUNDING50).
+ * Demo grátis aumentada de 30min → 50min (DB default + cópia em todos lugares).
  * ════════════════════════════════════════════════════════════════════ */
 
 import {
@@ -28,7 +32,7 @@ import {
   ShieldCheck, TrendingUp, type LucideIcon,
 } from 'lucide-react'
 
-export type PlanoId = 'starter' | 'pro' | 'enterprise'
+export type PlanoId = 'solo' | 'starter' | 'pro' | 'enterprise'
 
 export interface LexPricingGridProps {
   /** Plano atual do usuário (marca "Você está aqui" + recalcula destaque). Omit se não autenticado. */
@@ -54,11 +58,25 @@ interface Plano {
 
 const PLANOS: Plano[] = [
   {
+    id: 'solo', nome: 'Solo', tagline: 'Advogado autônomo',
+    precoMensal: 599,
+    economiaReal: 'Recupere 6h por semana em pesquisas e redação',
+    features: [
+      { label: '8 agentes essenciais (Resumidor, Redator, Pesquisador, Risco, Consultor, Negociador, Calculador, Tradutor)', disponivel: true },
+      { label: '50 documentos por mês', disponivel: true },
+      { label: 'Histórico de 30 dias', disponivel: true },
+      { label: 'Suporte por email em 48h', disponivel: true },
+      { label: 'Exportação em PDF', disponivel: false },
+      { label: 'Equipe colaborativa', disponivel: false },
+      { label: 'Agentes customizados', disponivel: false },
+    ],
+  },
+  {
     id: 'starter', nome: 'Escritório', tagline: '1–5 advogados',
     precoMensal: 1399,
     economiaReal: 'Recupere 12h por semana em pesquisas por advogado',
     features: [
-      { label: '5 agentes (Resumidor, Pesquisador, Redator, Calculador, Monitor Legislativo)', disponivel: true },
+      { label: '15 agentes (Resumidor, Pesquisador, Redator, Calculador, Contestador, Recursos, Audiência…)', disponivel: true },
       { label: '200 documentos por mês', disponivel: true },
       { label: 'Histórico de 45 dias', disponivel: true },
       { label: 'Suporte por email em 24h', disponivel: true },
@@ -105,7 +123,8 @@ const TRUST_ITEMS: { Icon: LucideIcon; label: string; sub: string }[] = [
 ]
 
 function getDestaqueId(currentPlanId?: PlanoId): PlanoId {
-  if (currentPlanId === 'starter') return 'pro'
+  if (currentPlanId === 'solo') return 'starter'      // Solo upgradearia pra Escritório
+  if (currentPlanId === 'starter') return 'pro'       // Escritório upgrade pra Firma
   if (currentPlanId === 'enterprise') return 'enterprise'
   return 'pro' // default (sem plano ou pro): destaca Firma
 }
@@ -123,13 +142,13 @@ function getCtaLabel(
 ): string {
   if (!currentPlanId) {
     // Landing / anônimo — todos os 3 planos entram via signup (sem cartao)
-    // e usam demo de 30 min gratis. Money-back garantido por 7 dias apos
+    // e usam demo de 50 min gratis. Money-back garantido por 7 dias apos
     // assinar (separado do trial pre-checkout).
-    return 'Demo 30 min grátis'
+    return 'Demo 50 min grátis'
   }
   if (planoId === currentPlanId) return 'Você está aqui'
   if (precoAtual > precoPlano) return 'Mudar para este plano'
-  if (precoPlano > precoAtual) return 'Demo 30 min grátis'
+  if (precoPlano > precoAtual) return 'Demo 50 min grátis'
   return 'Mudar para este plano'
 }
 
@@ -152,7 +171,7 @@ export function LexPricingGrid({
       return
     }
     // Fallback landing — todos os planos abrem signup. Trial 7 dias
-    // automatico no starter, demo de 30 min sem pagar nos demais.
+    // automatico no starter, demo de 50 min sem pagar nos demais.
     window.location.href = `/login?next=${encodeURIComponent('/dashboard/planos')}`
   }
 
@@ -203,14 +222,14 @@ export function LexPricingGrid({
           fontFamily: 'var(--font-mono, ui-monospace), "SF Mono", Menlo, monospace',
           letterSpacing: '0.08em',
         }}>
-          cobrança <strong style={{ color: '#bfa68e' }}>por advogado registrado</strong> · R$ 1.399 a R$ 1.599 conforme plano
+          cobrança <strong style={{ color: '#bfa68e' }}>por advogado registrado</strong> · R$ 599 a R$ 1.599 conforme plano
         </div>
       )}
 
       {/* PLAN CARDS */}
       <div
         style={{
-          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18,
+          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14,
         }}
         className="lpg-plans-grid"
       >
@@ -384,7 +403,10 @@ export function LexPricingGrid({
       </div>
 
       <style>{`
-        @media (max-width: 1100px) {
+        @media (max-width: 1280px) {
+          .lpg-plans-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 700px) {
           .lpg-plans-grid  { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 900px) {

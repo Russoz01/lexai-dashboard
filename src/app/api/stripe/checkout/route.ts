@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 
@@ -13,10 +13,12 @@ export const runtime = 'nodejs'
  * Substitui os antigos links hardcoded buy.stripe.com/test_* no client.
  */
 
-type PlanId = 'starter' | 'pro' | 'enterprise'
+type PlanId = 'solo' | 'starter' | 'pro' | 'enterprise'
 
 function priceIdFor(plan: PlanId): string | null {
   switch (plan) {
+    case 'solo':
+      return process.env.STRIPE_PRICE_SOLO || null
     case 'starter':
       return process.env.STRIPE_PRICE_ESCRITORIO || process.env.STRIPE_PRICE_STARTER || null
     case 'pro':
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({})) as { plan?: string }
     const plan = body.plan as PlanId | undefined
-    if (!plan || !['starter', 'pro', 'enterprise'].includes(plan)) {
+    if (!plan || !['solo', 'starter', 'pro', 'enterprise'].includes(plan)) {
       return NextResponse.json({ error: 'invalid_plan' }, { status: 400 })
     }
 
@@ -77,7 +79,7 @@ export async function POST(req: NextRequest) {
       metadata: { auth_user_id: user.id, plan },
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
-        // Trial Pralvex e de 30 min DB-side antes do checkout. Quando user
+        // Trial Pralvex e de 50 min DB-side antes do checkout. Quando user
         // chega aqui ele ja decidiu pagar — Stripe cobra imediato. Nao tem
         // trial duplo descoordenado (DB 30min vs Stripe 7 dias).
         metadata: { plan, auth_user_id: user.id },
