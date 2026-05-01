@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk'
+﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
@@ -136,7 +136,10 @@ export async function POST(req: NextRequest) {
     // Build grounding context - retrieves real legal provisions + sumulas from corpus.
     const grounding = buildGroundingContext(`${pergunta} ${area} ${contexto}`, { area: area || undefined, topK: 8 })
     const gstats = groundingStats(grounding)
-    console.log('[API /consultor] grounding:', gstats)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /consultor] grounding:', gstats)
+    }
 
     let userMessage = `Questao juridica para parecer:\n\n${pergunta}`
     if (area.trim()) {
@@ -202,7 +205,10 @@ export async function POST(req: NextRequest) {
 
     // Validate citations against verified corpus and extract URLs.
     const validation = validateCitations(responseText)
-    console.log('[API /consultor] validation:', validation.stats, 'warnings:', validation.warnings.length)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /consultor] validation:', validation.stats, 'warnings:', validation.warnings.length)
+    }
 
     if (usuarioId) {
       const { error: histErr } = await supabase.from('historico').insert({

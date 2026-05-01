@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk'
+﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -112,7 +112,10 @@ export async function POST(req: NextRequest) {
     const areaForGrounding = safeArea !== 'Todas' ? safeArea.toLowerCase() : undefined
     const grounding = buildGroundingContext(query, { area: areaForGrounding, topK: 10 })
     const gstats = groundingStats(grounding)
-    console.log('[API /pesquisar] grounding:', gstats)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /pesquisar] grounding:', gstats)
+    }
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -161,7 +164,10 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = validateCitations(responseText)
-    console.log('[API /pesquisar] validation:', validation.stats, 'warnings:', validation.warnings.length)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /pesquisar] validation:', validation.stats, 'warnings:', validation.warnings.length)
+    }
 
     events.agentUsed(user.id, 'pesquisador', 'unknown').catch(() => {})
 

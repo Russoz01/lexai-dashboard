@@ -2,7 +2,11 @@
 import { SITE_URL } from '@/lib/site-url'
 
 const RESEND_KEY = process.env.RESEND_API_KEY
-const FROM = process.env.RESEND_FROM_EMAIL || 'Pralvex <onboarding@resend.dev>'
+// Fallback usa @pralvex.com.br ao inves do sandbox @resend.dev — mas o
+// envio so funciona se o dominio estiver verificado no Resend (vide DNS
+// SPF/DKIM/DMARC no Cloudflare). Se RESEND_FROM_EMAIL nao estiver setado,
+// emails caem em sendEmail catch e sao logados — nao quebram a request.
+const FROM = process.env.RESEND_FROM_EMAIL || 'Pralvex <noreply@pralvex.com.br>'
 
 const resend = RESEND_KEY ? new Resend(RESEND_KEY) : null
 

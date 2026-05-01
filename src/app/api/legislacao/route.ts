@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk'
+﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -76,7 +76,10 @@ export async function POST(req: NextRequest) {
 
     const grounding = buildGroundingContext(consulta, { topK: 8 })
     const gstats = groundingStats(grounding)
-    console.log('[API /legislacao] grounding:', gstats)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /legislacao] grounding:', gstats)
+    }
 
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -121,7 +124,10 @@ export async function POST(req: NextRequest) {
     }
 
     const validation = validateCitations(responseText)
-    console.log('[API /legislacao] validation:', validation.stats)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('[API /legislacao] validation:', validation.stats)
+    }
 
     events.agentUsed(user.id, 'legislacao', 'unknown').catch(() => {})
 
