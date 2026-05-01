@@ -147,8 +147,9 @@ export default async function SharedDocumentPage({
 }) {
   const token = params.token
 
-  // Basic token sanity check (24 chars, alphanumeric from randomUUID)
-  if (!token || typeof token !== 'string' || token.length < 16 || token.length > 64) {
+  // Token validation: tokens sao crypto.randomBytes(32).toString('hex') = 64 hex chars.
+  // Validar charset+length estrito previne SSRF/path traversal e indica attempt malicioso.
+  if (!token || typeof token !== 'string' || !/^[a-f0-9]{16,64}$/i.test(token)) {
     return <NotFoundView />
   }
 

@@ -38,6 +38,22 @@ export async function sendEmail({ to, subject, html }: EmailParams): Promise<{ o
 }
 
 // ============================================================================
+// Helper: HTML escape pra prevenir XSS persistente em templates
+// (advogado registra perfil com nome '<script>...</script>',
+//  email envia, recipient renderiza HTML => XSS)
+// ============================================================================
+
+function escapeHtml(unsafe: string | null | undefined): string {
+  if (unsafe == null) return ''
+  return String(unsafe)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+// ============================================================================
 // Email templates
 // ============================================================================
 
@@ -83,8 +99,9 @@ function baseTemplate(content: string): string {
 }
 
 export function welcomeEmailHtml(nome: string): string {
+  const safeNome = escapeHtml(nome)
   return baseTemplate(`
-    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;letter-spacing:-0.3px;">Bem-vindo a Pralvex, ${nome}!</h1>
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;letter-spacing:-0.3px;">Bem-vindo a Pralvex, ${safeNome}!</h1>
     <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Sua demo de <strong>50 minutos</strong> esta ativa. Voce tem acesso a todos os 27 agentes IA — sem cobranca e sem precisar cadastrar cartao. Aproveite pra testar o que o gabinete entrega antes de assinar.</p>
     <div style="background:#f5efe6;border-left:4px solid #bfa68e;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Comece pelo Resumidor</div>
@@ -96,8 +113,10 @@ export function welcomeEmailHtml(nome: string): string {
 }
 
 export function trialEndingEmailHtml(nome: string, daysLeft: number): string {
+  const safeNome = escapeHtml(nome)
+  const safeDaysLeft = Number.isFinite(daysLeft) ? Math.floor(daysLeft) : 0
   return baseTemplate(`
-    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">${nome}, seu trial termina em ${daysLeft} dia${daysLeft === 1 ? '' : 's'}</h1>
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">${safeNome}, seu trial termina em ${safeDaysLeft} dia${safeDaysLeft === 1 ? '' : 's'}</h1>
     <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Esperamos que voce esteja aproveitando os agentes da Pralvex. Para continuar usando todos os 27 agentes, escolha um plano antes do trial expirar.</p>
     <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:6px;">Oferta de lancamento</div>
@@ -113,14 +132,20 @@ export function inviteEmailHtml(
   equipeNome: string,
   acceptUrl: string,
 ): string {
+  // CRITICO: invitedByName e equipeNome vem de input de usuario (perfil/nome de equipe).
+  // Sem escape, atacante registra perfil com '<img src=x onerror=...>' e XSS roda
+  // no Gmail/Outlook do convidado. acceptUrl e hex 64 chars (crypto.randomBytes), seguro.
+  const safeInvitedBy = escapeHtml(invitedByName)
+  const safeEquipe = escapeHtml(equipeNome)
+  const safeUrl = escapeHtml(acceptUrl)
   return baseTemplate(`
-    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">Voce foi convidado para ${equipeNome}</h1>
-    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;"><strong>${invitedByName}</strong> convidou voce para fazer parte da equipe <strong>${equipeNome}</strong> na Pralvex &mdash; a IA juridica mais usada por escritorios brasileiros.</p>
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">Voce foi convidado para ${safeEquipe}</h1>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;"><strong>${safeInvitedBy}</strong> convidou voce para fazer parte da equipe <strong>${safeEquipe}</strong> na Pralvex &mdash; a IA juridica mais usada por escritorios brasileiros.</p>
     <div style="background:#f5efe6;border-left:4px solid #bfa68e;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#44372b;margin-bottom:6px;">Ao aceitar o convite voce tera acesso a</div>
       <div style="font-size:13px;color:#475569;line-height:1.6;">&bull; Todos os agentes contratados no plano da equipe<br>&bull; Historico compartilhado (quando autorizado pelo admin)<br>&bull; Suporte prioritario atraves do admin da equipe</div>
     </div>
-    <a href="${acceptUrl}" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Aceitar convite</a>
+    <a href="${safeUrl}" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Aceitar convite</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Este convite expira em 7 dias. Se voce nao conhece quem te convidou, pode ignorar este email.</p>
   `)
 }
@@ -142,12 +167,15 @@ export async function sendInviteEmail(params: {
 }
 
 export function paymentReceivedEmailHtml(nome: string, plano: string, valor: string): string {
+  const safeNome = escapeHtml(nome)
+  const safePlano = escapeHtml(plano)
+  const safeValor = escapeHtml(valor)
   return baseTemplate(`
-    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">Pagamento confirmado, ${nome}!</h1>
-    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Sua assinatura do plano <strong>${plano}</strong> esta ativa. Voce ja tem acesso completo a todos os agentes incluidos no plano.</p>
+    <h1 style="font-size:22px;font-weight:800;color:#132025;margin:0 0 16px;">Pagamento confirmado, ${safeNome}!</h1>
+    <p style="font-size:15px;color:#475569;line-height:1.6;margin:0 0 20px;">Sua assinatura do plano <strong>${safePlano}</strong> esta ativa. Voce ja tem acesso completo a todos os agentes incluidos no plano.</p>
     <div style="background:#ecfdf5;border-left:4px solid #10b981;padding:14px 18px;border-radius:8px;margin:20px 0;">
       <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:6px;">Detalhes do pagamento</div>
-      <div style="font-size:13px;color:#047857;line-height:1.6;">Plano: ${plano}<br>Valor: ${valor}<br>Cobranca: mensal recorrente</div>
+      <div style="font-size:13px;color:#047857;line-height:1.6;">Plano: ${safePlano}<br>Valor: ${safeValor}<br>Cobranca: mensal recorrente</div>
     </div>
     <a href="${SITE_URL}/dashboard" style="display:inline-block;background:#bfa68e;color:#132025;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;">Ir para o Dashboard</a>
     <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:24px 0 0;">Gerencie sua assinatura, cancele ou baixe faturas em <strong>Configuracoes &gt; Pagamento</strong>.</p>

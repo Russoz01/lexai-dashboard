@@ -38,6 +38,12 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) return unauthorized()
 
+    // Rate limit: previne spam de invites (50 pendentes por equipe ja existe,
+    // mas sem RL um owner pode disparar 50 emails em 1s = backscatter spam Resend).
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:invite`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     let body: InviteBody
     try {
       body = await req.json()

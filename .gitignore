@@ -1,5 +1,119 @@
-﻿node_modules/
+# ──────────────────────────────────────────────────────────────────
+# Pralvex .gitignore — defesa em profundidade contra leak de secrets
+# ──────────────────────────────────────────────────────────────────
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Build outputs
 .next/
+out/
+build/
+dist/
+*.tsbuildinfo
+
+# Vercel
+.vercel/
+.vercel
+
+# Env files (NEVER commit — contain LIVE API keys)
 .env
 .env.local
-.vercel
+.env.development
+.env.development.local
+.env.production
+.env.production.local
+.env.staging
+.env.staging.local
+.env.test
+.env.test.local
+.env*.local
+
+# Cryptographic keys & certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*.csr
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.ppk
+
+# Service account / credentials
+service-account.json
+service-account*.json
+credentials.json
+firebase-adminsdk-*.json
+google-credentials.json
+*-credentials.json
+secrets/
+private/
+
+# Database dumps & backups (NEVER commit user data)
+*.sqlite
+*.sqlite3
+*.db
+dump.sql
+backup.sql
+*.dump
+*.bak
+
+# Claude Code workspace (paths absolutos + worktrees + planos internos)
+.claude/
+.claude-cache/
+
+# Playwright artifacts (screenshots, traces, videos com dados de teste)
+.playwright-mcp/
+playwright-report/
+test-results/
+*.playwright-trace
+
+# IDE / editor configs (não-coletivos)
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS / temp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Screenshots de teste/desenvolvimento (não vão pro repo)
+*.jpeg
+*.jpg
+*.png
+!public/**/*.jpeg
+!public/**/*.jpg
+!public/**/*.png
+!**/icons/**/*.png
+
+# Coverage / analysis
+coverage/
+.nyc_output
+
+# Vault Vanix Cognitive Core (NÃO faz parte do produto)
+vanixcorp-cognitive-core/
+
+# TypeScript build incremental
+tsconfig.tsbuildinfo
+
+# Skill ad-hoc files
+skills-disponiveis.md

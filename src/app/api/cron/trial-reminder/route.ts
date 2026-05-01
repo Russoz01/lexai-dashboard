@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail, trialEndingEmailHtml } from '@/lib/email'
 import * as Sentry from '@sentry/nextjs'
+import { timingSafeEqual } from 'crypto'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -26,9 +27,17 @@ const CRON_SECRET = process.env.CRON_SECRET
 const REMINDER_WINDOWS = [3, 1] as const // days before trial ends
 
 export async function GET(req: NextRequest) {
-  // Vercel Cron authentication
-  const authHeader = req.headers.get('authorization')
-  if (!CRON_SECRET || authHeader !== `Bearer ${CRON_SECRET}`) {
+  // Vercel Cron authentication via constant-time compare
+  // (atacante remoto observando timing pode tentar recuperar CRON_SECRET char-by-char
+  //  com !== string compare — timingSafeEqual elimina esse vetor)
+  const authHeader = req.headers.get('authorization') || ''
+  if (!CRON_SECRET) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+  const expected = `Bearer ${CRON_SECRET}`
+  const aBuf = Buffer.from(authHeader)
+  const bBuf = Buffer.from(expected)
+  if (aBuf.length !== bBuf.length || !timingSafeEqual(aBuf, bBuf)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 

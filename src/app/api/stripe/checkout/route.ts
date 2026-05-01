@@ -47,6 +47,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'unauthenticated' }, { status: 401 })
     }
 
+    // Rate limit: sem RL, atacante autenticado dispara 1000 POSTs e cria 1000 Customers
+    // no Stripe (lixo + fraud detection trigger contra a conta Pralvex).
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:stripe_checkout`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     // Lazy-provision customer
     const { data: usuario } = await supabase
       .from('usuarios')
