@@ -15,7 +15,6 @@ import { ExitIntent } from '@/components/ExitIntent'
 import { LexAgentsBento } from '@/components/ui/lex-agents-bento'
 import { PralvexAreasMarquee } from '@/components/ui/pralvex-areas-marquee'
 import { LexPricing } from '@/components/ui/lex-pricing'
-import { LexFoundingMember } from '@/components/ui/lex-founding-member'
 import { LexFaq } from '@/components/ui/lex-faq'
 import { LexFinalCta } from '@/components/ui/lex-final-cta'
 import { LexComparison } from '@/components/ui/lex-comparison'
@@ -385,9 +384,6 @@ export default function LandingPage() {
 
       {/* ═══ PRICING ═══════════════════════════════════════════════════ */}
       <LexPricing />
-
-      {/* ═══ FOUNDING MEMBER — primeiros 10 escritórios, 50% off vitalício ═ */}
-      <LexFoundingMember />
 
       <EditorialDivider variant="ornament" className="bg-black" />
 
