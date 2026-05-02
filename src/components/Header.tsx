@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bell, HelpCircle, Menu } from 'lucide-react'
 import OnboardingModal from './OnboardingModal'
-import { ThemeToggle } from './ThemeToggle'
+// ThemeToggle import removido em v11.1 — dashboard força dark always
 
 /* ════════════════════════════════════════════════════════════════
  * Header (v11.0 · 2026-05-02)
@@ -65,7 +65,9 @@ export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onT
       </div>
 
       <div className="header-user">
-        <ThemeToggle variant="header" />
+        {/* ThemeToggle removido do dashboard em audit fix v11.1 — dashboard
+            força dark always (27 pages com colors hardcoded). Toggle visível
+            só em landing/marketing onde light mode é totalmente tokenizado. */}
 
         <button className="notif-bell" title="Ajuda e tour do Pralvex" onClick={() => setShowHelp(true)}>
           <HelpCircle size={16} strokeWidth={1.75} aria-hidden />

@@ -1,12 +1,13 @@
 'use client'
 
-import { Sun, Moon, Monitor } from 'lucide-react'
+import { Sun, Moon } from 'lucide-react'
 import { useTheme, type ThemePref } from '@/context/ThemeContext'
 
 /* ════════════════════════════════════════════════════════════════
- * ThemeToggle (v11.0 · 2026-05-02)
+ * ThemeToggle (v11.1 · 2026-05-02)
  * ────────────────────────────────────────────────────────────────
- * Pill segmentado com 3 estados: light · system · dark.
+ * Pill segmentado binário: light · dark.
+ * "System" foi removido em audit fix v11.1 — confuso pra advogado.
  * Usa data-theme do <html> + ThemeContext.
  *
  * Variantes visuais:
@@ -20,9 +21,8 @@ interface ThemeToggleProps {
 }
 
 const OPTIONS: Array<{ value: ThemePref; label: string; Icon: typeof Sun }> = [
-  { value: 'light',  label: 'Tema claro',                  Icon: Sun },
-  { value: 'system', label: 'Tema do sistema',             Icon: Monitor },
-  { value: 'dark',   label: 'Tema escuro (padrão Pralvex)', Icon: Moon },
+  { value: 'light', label: 'Tema claro',                  Icon: Sun },
+  { value: 'dark',  label: 'Tema escuro (padrão Pralvex)', Icon: Moon },
 ]
 
 export function ThemeToggle({ variant = 'header', className = '' }: ThemeToggleProps) {
