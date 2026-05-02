@@ -206,14 +206,25 @@ export default function ChatPage() {
       content: m.content + (m.agente ? ` [→ ${m.agente.titulo}]` : ''),
     }))
 
-    setMessages(prev => [...prev, userMsg])
+    // Cria a mensagem do assistente VAZIA já — streaming preenche progressivo
+    const assistantId = nowId()
+    const assistantMsg: Message = {
+      id: assistantId,
+      role: 'assistant',
+      content: '',
+      timestamp: Date.now(),
+    }
+
+    setMessages(prev => [...prev, userMsg, assistantMsg])
     setInput('')
     const arquivoSnapshot = arquivo
     setArquivo(null)
     setLoading(true)
 
     try {
-      const res = await fetch('/api/chat', {
+      // Wave C4 (2026-05-02) — streaming via NDJSON
+      // Server retorna lines: {type:"text",delta:...} | {type:"agente",...} | {type:"done"} | {type:"error"}
+      const res = await fetch('/api/chat?stream=1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -226,25 +237,85 @@ export default function ChatPage() {
         }),
       })
 
-      const data = await res.json()
-
+      // Erro HTTP (rate limit / quota / auth) — body é JSON normal, não stream
       if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
         setErro(data?.error || 'Erro ao processar mensagem.')
+        // Remove a assistant msg vazia que adicionamos
+        setMessages(prev => prev.filter(m => m.id !== assistantId))
         setLoading(false)
         return
       }
 
-      const assistantMsg: Message = {
-        id: nowId(),
-        role: 'assistant',
-        content: data.mensagem || '',
-        agente: data.tipo === 'rotear' ? data.agente : undefined,
-        timestamp: Date.now(),
+      const reader = res.body?.getReader()
+      if (!reader) {
+        // Browser sem ReadableStream — fallback para legacy não-streaming
+        const data = await res.json()
+        setMessages(prev => prev.map(m =>
+          m.id === assistantId
+            ? { ...m, content: data.mensagem || '', agente: data.tipo === 'rotear' ? data.agente : undefined }
+            : m,
+        ))
+        setLoading(false)
+        return
       }
-      setMessages(prev => [...prev, assistantMsg])
+
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let done = false
+      let gotError = false
+
+      while (!done) {
+        const { value, done: streamDone } = await reader.read()
+        done = streamDone
+        if (value) {
+          buffer += decoder.decode(value, { stream: !done })
+          // NDJSON — uma linha JSON por evento
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
+          for (const line of lines) {
+            if (!line.trim()) continue
+            try {
+              const event = JSON.parse(line)
+              if (event.type === 'text' && typeof event.delta === 'string') {
+                setMessages(prev => prev.map(m =>
+                  m.id === assistantId ? { ...m, content: m.content + event.delta } : m,
+                ))
+              } else if (event.type === 'agente' && event.agente) {
+                setMessages(prev => prev.map(m =>
+                  m.id === assistantId
+                    ? {
+                        ...m,
+                        agente: event.agente,
+                        // Se o LLM emitiu só tool_use sem texto, usa fallback do server
+                        content: m.content || event.mensagem || '',
+                      }
+                    : m,
+                ))
+              } else if (event.type === 'done') {
+                // Garante content final caso server tenha mandado fallback
+                setMessages(prev => prev.map(m =>
+                  m.id === assistantId && !m.content && event.mensagem
+                    ? { ...m, content: event.mensagem }
+                    : m,
+                ))
+              } else if (event.type === 'error') {
+                gotError = true
+                setErro(event.error || 'Erro ao processar mensagem.')
+                setMessages(prev => prev.filter(m => m.id !== assistantId))
+              }
+            } catch {
+              // Linha inválida — ignora silenciosamente
+            }
+          }
+        }
+      }
+
+      if (gotError) return
     } catch (err) {
       console.error('[chat/send]', err)
       setErro('Erro de rede. Verifique sua conexão e tente novamente.')
+      setMessages(prev => prev.filter(m => m.id !== assistantId))
     } finally {
       setLoading(false)
     }
@@ -365,6 +436,15 @@ export default function ChatPage() {
                   </div>
                 )}
 
+                {/* Typing dots quando assistant ainda nao recebeu nenhum delta */}
+                {m.role === 'assistant' && !m.content && loading && idx === messages.length - 1 && (
+                  <div className="chat-typing">
+                    <span className="chat-dot" />
+                    <span className="chat-dot" />
+                    <span className="chat-dot" />
+                  </div>
+                )}
+
                 {m.agente && (() => {
                   const AgenteIcon = AGENTES_ICONS[m.agente.key] || Sparkles
                   return (
@@ -389,19 +469,8 @@ export default function ChatPage() {
               </article>
             ))}
 
-            {loading && (
-              <article className="chat-msg chat-msg--assistant">
-                <div className="chat-msg-meta">
-                  <span className="chat-msg-label">Pralvex</span>
-                  <span className="chat-msg-time">agora</span>
-                </div>
-                <div className="chat-typing">
-                  <span className="chat-dot" />
-                  <span className="chat-dot" />
-                  <span className="chat-dot" />
-                </div>
-              </article>
-            )}
+            {/* Typing dots agora aparecem inline na propria msg do assistant
+                vazia (Wave C4 streaming). Bloco externo removido. */}
           </div>
         )}
       </div>

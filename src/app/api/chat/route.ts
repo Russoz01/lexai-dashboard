@@ -254,21 +254,129 @@ export async function POST(req: NextRequest) {
     ]
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+
+    // ─────────────────────────────────────────────────────────────────
+    // Modo streaming (Wave C4 · 2026-05-02)
+    // Retorna NDJSON via ReadableStream com eventos:
+    //   {"type":"text","delta":"..."}    — chunk de texto
+    //   {"type":"agente","agente":{...}} — quando tool_use rotear_agente fecha
+    //   {"type":"done","mensagem":"..."} — final + texto completo
+    //   {"type":"error","error":"..."}   — erro
+    // Frontend lê via fetch + ReadableStream e atualiza progressivamente.
+    // Tool_use é resolvido APÓS stream completar — só então emite "agente".
+    // ─────────────────────────────────────────────────────────────────
+    if (wantsStream) {
+      const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+
+      const encoder = new TextEncoder()
+      const stream = new ReadableStream({
+        async start(controller) {
+          const send = (obj: unknown) => {
+            controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'))
+          }
+
+          let textoResposta = ''
+          let rotear: { agente: AgenteKey; justificativa: string; pre_prompt?: string } | null = null
+
+          try {
+            const anthStream = client.messages.stream({
+              model: modelo,
+              max_tokens: modo === 'complexo' ? 3500 : 1800,
+              system: [
+                { type: 'text' as const, text: buildSystemPrompt(fidelidade) },
+              ],
+              tools: [ROUTING_TOOL],
+              messages,
+            })
+
+            anthStream.on('text', (chunk: string) => {
+              textoResposta += chunk
+              send({ type: 'text', delta: chunk })
+            })
+
+            const finalMsg = await anthStream.finalMessage()
+
+            // Extrai tool_use depois do stream — Anthropic só finaliza tool_use no message_stop
+            for (const block of finalMsg.content) {
+              if (block.type === 'tool_use' && block.name === 'rotear_agente') {
+                const input = block.input as { agente?: string; justificativa?: string; pre_prompt?: string }
+                if (input.agente && input.agente in AGENTES_CATALOGO) {
+                  rotear = {
+                    agente: input.agente as AgenteKey,
+                    justificativa: input.justificativa || '',
+                    pre_prompt: input.pre_prompt,
+                  }
+                }
+              }
+            }
+
+            textoResposta = textoResposta.trim()
+
+            if (rotear) {
+              send({
+                type: 'agente',
+                agente: {
+                  key: rotear.agente,
+                  titulo: AGENTES_CATALOGO[rotear.agente].titulo,
+                  rota: AGENTES_CATALOGO[rotear.agente].rota,
+                  justificativa: rotear.justificativa,
+                  pre_prompt: rotear.pre_prompt,
+                },
+                mensagem: textoResposta || `Esta tarefa e perfeita para o agente ${AGENTES_CATALOGO[rotear.agente].titulo}.`,
+              })
+            }
+
+            send({
+              type: 'done',
+              tipo: rotear ? 'rotear' : 'resposta',
+              mensagem: textoResposta || (rotear ? `Esta tarefa e perfeita para o agente ${AGENTES_CATALOGO[rotear.agente].titulo}.` : 'Desculpe, nao consegui formular uma resposta. Tente reformular.'),
+            })
+
+            // Persistência fora do stream — não bloqueia client
+            if (usuarioId) {
+              supabase.from('historico').insert({
+                usuario_id: usuarioId,
+                agente: 'chat',
+                mensagem_usuario: mensagem.slice(0, 500) || `[arquivo ${arquivoNome || 'anexado'}]`,
+                resposta_agente: rotear
+                  ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`.slice(0, 500)
+                  : textoResposta.slice(0, 500),
+              }).then(() => {}, () => {})
+            }
+            events.agentUsed(user.id, 'chat', rotear?.agente || 'direct').catch(() => {})
+          } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : 'Erro de stream'
+            console.error('[API /chat?stream=1]', message)
+            send({ type: 'error', error: 'Erro ao processar sua solicitacao. Tente novamente.' })
+          } finally {
+            controller.close()
+          }
+        },
+      })
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'application/x-ndjson; charset=utf-8',
+          'Cache-Control': 'no-cache, no-transform',
+          'X-Accel-Buffering': 'no',
+        },
+      })
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // Modo legacy (não-streaming) — fallback p/ clients antigos
+    // ─────────────────────────────────────────────────────────────────
     const response = await client.messages.create({
       model: modelo,
-      // Sonnet em modo complexo permite respostas mais elaboradas
       max_tokens: modo === 'complexo' ? 3500 : 1800,
       system: [
-        {
-          type: 'text' as const,
-          text: buildSystemPrompt(fidelidade),
-        },
+        { type: 'text' as const, text: buildSystemPrompt(fidelidade) },
       ],
       tools: [ROUTING_TOOL],
       messages,
     })
 
-    // Processa resposta — pode ser texto, tool use, ou ambos
     let textoResposta = ''
     let rotear: { agente: AgenteKey; justificativa: string; pre_prompt?: string } | null = null
 
@@ -289,7 +397,6 @@ export async function POST(req: NextRequest) {
 
     textoResposta = textoResposta.trim()
 
-    // Payload final pra UI
     const payload = rotear
       ? {
           tipo: 'rotear' as const,
@@ -307,7 +414,6 @@ export async function POST(req: NextRequest) {
           mensagem: textoResposta || 'Desculpe, nao consegui formular uma resposta. Tente reformular.',
         }
 
-    // Grava historico
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
     if (usuarioId) {
       await supabase.from('historico').insert({
