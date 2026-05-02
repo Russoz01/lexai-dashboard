@@ -208,12 +208,12 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 fontWeight: 600,
                 letterSpacing: '0.22em',
                 textTransform: 'uppercase',
-                color: '#e6d4bd',
+                color: 'var(--accent)',
                 marginBottom: 6,
                 position: 'relative',
               }}
             >
-              <Crown size={11} strokeWidth={2} aria-hidden style={{ color: '#e6d4bd' }} />
+              <Crown size={11} strokeWidth={2} aria-hidden style={{ color: 'var(--accent)' }} />
               Founder · Lifetime
             </div>
             <div
@@ -222,7 +222,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 fontFamily: 'var(--font-playfair)',
                 fontSize: 17,
                 lineHeight: 1.15,
-                color: '#f5ecdd',
+                color: 'var(--text-primary)',
                 fontStyle: 'italic',
                 position: 'relative',
               }}
@@ -235,7 +235,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 marginTop: 3,
                 fontFamily: 'var(--font-dm-sans)',
                 fontSize: 11,
-                color: 'rgba(230,212,189,0.72)',
+                color: 'var(--text-secondary)',
                 position: 'relative',
               }}
             >

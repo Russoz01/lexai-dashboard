@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bell, HelpCircle, Menu } from 'lucide-react'
 import OnboardingModal from './OnboardingModal'
-// ThemeToggle import removido em v11.1 — dashboard força dark always
+import { ThemeToggle } from './ThemeToggle'
 
 /* ════════════════════════════════════════════════════════════════
  * Header (v11.0 · 2026-05-02)
@@ -65,9 +65,7 @@ export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onT
       </div>
 
       <div className="header-user">
-        {/* ThemeToggle removido do dashboard em audit fix v11.1 — dashboard
-            força dark always (27 pages com colors hardcoded). Toggle visível
-            só em landing/marketing onde light mode é totalmente tokenizado. */}
+        <ThemeToggle variant="header" />
 
         <button className="notif-bell" title="Ajuda e tour do Pralvex" onClick={() => setShowHelp(true)}>
           <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
@@ -90,13 +88,13 @@ export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onT
         <div className="header-avatar" style={{
           transition: 'all 0.3s ease',
           background: 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
-          color: '#0a0a0a',
-          border: '1px solid rgba(191,166,142,0.4)',
-          boxShadow: '0 0 0 1px rgba(0,0,0,0.6), 0 4px 16px rgba(191,166,142,0.25)',
+          color: 'var(--bg-base)',
+          border: '1px solid var(--stone)',
+          boxShadow: '0 0 0 1px var(--shadow), 0 4px 16px rgba(191,166,142,0.25)',
           fontFamily: "'Playfair Display', Georgia, serif",
         }}
-          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 0 1px rgba(0,0,0,0.6), 0 0 24px rgba(191,166,142,0.5)' }}
-          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 0 1px rgba(0,0,0,0.6), 0 4px 16px rgba(191,166,142,0.25)' }}>
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 0 1px var(--shadow), 0 0 24px rgba(191,166,142,0.5)' }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 0 1px var(--shadow), 0 4px 16px rgba(191,166,142,0.25)' }}>
           {initials}
         </div>
       </div>

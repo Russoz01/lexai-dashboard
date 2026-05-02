@@ -20,28 +20,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<{ name: string; role: string } | null>(null)
 
-  // Audit fix v11.1 (2026-05-02): dashboard SEMPRE em dark.
-  // 27+ pages com colors hardcoded inline (rgba(20,20,20,0.85), #bfa68e etc)
-  // não adaptam ao tema. Tokenizar todas = 4h+ de trabalho. Decisão
-  // pragmática: brand editorial dark é coerente (Linear faz igual). Light
-  // mode aplica em landing/marketing/legal onde já tá tokenizado.
-  // Salva preferência do user; quando sair do dashboard, restora.
-  useEffect(() => {
-    if (typeof document === 'undefined') return
-    const html = document.documentElement
-    const previous = html.getAttribute('data-theme') ?? 'dark'
-    html.setAttribute('data-theme', 'dark')
-    return () => {
-      // Ao desmontar (navegou pra landing), volta pra preferência efetiva
-      try {
-        const pref = localStorage.getItem('pralvex-theme') || 'dark'
-        const eff = pref === 'light' ? 'light' : 'dark'
-        html.setAttribute('data-theme', eff)
-      } catch {
-        html.setAttribute('data-theme', previous)
-      }
-    }
-  }, [])
+  // v11.2 (2026-05-02): dashboard agora honra preferência do user.
+  // Tokenização completa via tokens CSS — light mode funciona end-to-end.
 
   useEffect(() => {
     let isMounted = true

@@ -103,18 +103,18 @@ export default function LegislacaoPage() {
               // Paleta monochromatic noir-friendly — antes 12 cores Tailwind
               // (red/indigo/purple/amber/etc) viravam "rainbow" sobre noir.
               // Agora 4 tons champagne/copper ciclando — diferenciacao via Icon.
-              { nome: 'Constituição Federal 1988', desc: 'Texto integral atualizado no Planalto', url: 'https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm', Icon: Landmark, color: '#bfa68e' },
+              { nome: 'Constituição Federal 1988', desc: 'Texto integral atualizado no Planalto', url: 'https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm', Icon: Landmark, color: 'var(--accent)' },
               { nome: 'Código Penal (Decreto-Lei 2.848/40)', desc: 'CP brasileiro — texto consolidado', url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm', Icon: ShieldAlert, color: '#c78a61' },
               { nome: 'Código Civil (Lei 10.406/02)', desc: 'CC brasileiro — texto consolidado', url: 'https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm', Icon: FileText, color: '#a8855c' },
-              { nome: 'Código de Processo Civil (Lei 13.105/15)', desc: 'CPC/2015 atualizado', url: 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm', Icon: NotebookText, color: '#d4ae6a' },
-              { nome: 'Código de Processo Penal (DL 3.689/41)', desc: 'CPP brasileiro consolidado', url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del3689compilado.htm', Icon: Gavel, color: '#bfa68e' },
+              { nome: 'Código de Processo Civil (Lei 13.105/15)', desc: 'CPC/2015 atualizado', url: 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm', Icon: NotebookText, color: 'var(--warning)' },
+              { nome: 'Código de Processo Penal (DL 3.689/41)', desc: 'CPP brasileiro consolidado', url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del3689compilado.htm', Icon: Gavel, color: 'var(--accent)' },
               { nome: 'CLT (DL 5.452/43)', desc: 'Consolidação das Leis do Trabalho', url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm', Icon: Briefcase, color: '#c78a61' },
               { nome: 'CDC (Lei 8.078/90)', desc: 'Código de Defesa do Consumidor', url: 'https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm', Icon: ShoppingBag, color: '#a8855c' },
-              { nome: 'CTN (Lei 5.172/66)', desc: 'Código Tributário Nacional', url: 'https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm', Icon: Coins, color: '#d4ae6a' },
-              { nome: 'Código Eleitoral (Lei 4.737/65)', desc: 'Texto consolidado eleitoral', url: 'https://www.planalto.gov.br/ccivil_03/leis/l4737compilado.htm', Icon: CheckSquare, color: '#bfa68e' },
+              { nome: 'CTN (Lei 5.172/66)', desc: 'Código Tributário Nacional', url: 'https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm', Icon: Coins, color: 'var(--warning)' },
+              { nome: 'Código Eleitoral (Lei 4.737/65)', desc: 'Texto consolidado eleitoral', url: 'https://www.planalto.gov.br/ccivil_03/leis/l4737compilado.htm', Icon: CheckSquare, color: 'var(--accent)' },
               { nome: 'LGPD (Lei 13.709/18)', desc: 'Lei Geral de Proteção de Dados', url: 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm', Icon: ShieldCheck, color: '#c78a61' },
               { nome: 'Marco Civil da Internet (Lei 12.965/14)', desc: 'Direitos no ambiente digital', url: 'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12965.htm', Icon: Globe, color: '#a8855c' },
-              { nome: 'Súmulas STF/STJ', desc: 'Índice de súmulas dos tribunais superiores', url: 'https://portal.stf.jus.br/jurisprudencia/sumarioSumulas.asp', Icon: Bookmark, color: '#d4ae6a' },
+              { nome: 'Súmulas STF/STJ', desc: 'Índice de súmulas dos tribunais superiores', url: 'https://portal.stf.jus.br/jurisprudencia/sumarioSumulas.asp', Icon: Bookmark, color: 'var(--warning)' },
             ].map((rec, i) => {
               const RecIcon = rec.Icon
               return (

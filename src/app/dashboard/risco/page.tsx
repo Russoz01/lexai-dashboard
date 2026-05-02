@@ -47,11 +47,11 @@ function nivelColor(nivel?: string): { bg: string; fg: string; label: string } {
   // que ficava berrante no noir. Agora gradiente champagne→copper→rose stone
   // que escala visualmente com a severidade.
   switch (nivel) {
-    case 'BAIXO':   return { bg: 'rgba(158,194,139,0.14)', fg: '#9ec28b', label: 'BAIXO' }
-    case 'MEDIO':   return { bg: 'rgba(212,174,106,0.16)', fg: '#d4ae6a', label: 'MÉDIO' }
+    case 'BAIXO':   return { bg: 'rgba(158,194,139,0.14)', fg: 'var(--success)', label: 'BAIXO' }
+    case 'MEDIO':   return { bg: 'rgba(212,174,106,0.16)', fg: 'var(--warning)', label: 'MÉDIO' }
     case 'ALTO':    return { bg: 'rgba(199,138,97,0.18)',  fg: '#c78a61', label: 'ALTO' }
-    case 'CRITICO': return { bg: 'rgba(216,137,119,0.20)', fg: '#d88977', label: 'CRÍTICO' }
-    default:        return { bg: 'rgba(191,166,142,0.10)', fg: '#bfa68e', label: '—' }
+    case 'CRITICO': return { bg: 'rgba(216,137,119,0.20)', fg: 'var(--danger)', label: 'CRÍTICO' }
+    default:        return { bg: 'var(--stone-soft)', fg: 'var(--accent)', label: '—' }
   }
 }
 

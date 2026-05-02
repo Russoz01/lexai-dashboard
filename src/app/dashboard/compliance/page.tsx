@@ -68,10 +68,10 @@ const TABS: { key: TabKey; label: string }[] = [
 // Paleta noir-friendly — antes era light pastel Tailwind (mint/amber/rose/pink)
 // que ficava ilegivel sobre noir. Agora champagne→copper→rose stone.
 const SCORE_COLORS: Record<string, { bg: string; color: string; border: string }> = {
-  BAIXO:   { bg: 'rgba(158,194,139,0.12)', color: '#9ec28b', border: 'rgba(158,194,139,0.35)' },
-  MEDIO:   { bg: 'rgba(212,174,106,0.12)', color: '#d4ae6a', border: 'rgba(212,174,106,0.35)' },
+  BAIXO:   { bg: 'rgba(158,194,139,0.12)', color: 'var(--success)', border: 'rgba(158,194,139,0.35)' },
+  MEDIO:   { bg: 'rgba(212,174,106,0.12)', color: 'var(--warning)', border: 'rgba(212,174,106,0.35)' },
   ALTO:    { bg: 'rgba(199,138,97,0.14)',  color: '#c78a61', border: 'rgba(199,138,97,0.40)'  },
-  CRITICO: { bg: 'rgba(216,137,119,0.14)', color: '#d88977', border: 'rgba(216,137,119,0.40)' },
+  CRITICO: { bg: 'rgba(216,137,119,0.14)', color: 'var(--danger)', border: 'rgba(216,137,119,0.40)' },
 }
 
 export default function CompliancePage() {

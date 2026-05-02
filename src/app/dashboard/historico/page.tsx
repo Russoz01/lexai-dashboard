@@ -54,7 +54,7 @@ function resolveAgenteMeta(slug: string): {
   const normalized = (slug || '').toLowerCase().trim()
   const found = BY_SLUG.get(normalized)
   if (found) {
-    return { Icon: found.Icon, label: found.label, accent: '#bfa68e' }
+    return { Icon: found.Icon, label: found.label, accent: 'var(--accent)' }
   }
   // Fallback elegante — mesma paleta, sem pastel
   return { Icon: MessageSquare, label: slug || 'Agente', accent: '#8a6f55' }
@@ -176,7 +176,7 @@ export default function HistoricoPage() {
               width: 6,
               height: 6,
               borderRadius: '50%',
-              background: '#bfa68e',
+              background: 'var(--accent)',
               boxShadow: '0 0 8px rgba(191,166,142,0.65)',
             }}
           />
@@ -186,7 +186,7 @@ export default function HistoricoPage() {
               fontSize: 10,
               letterSpacing: '0.32em',
               textTransform: 'uppercase',
-              color: '#bfa68e',
+              color: 'var(--accent)',
               fontWeight: 600,
             }}
           >
@@ -290,7 +290,7 @@ export default function HistoricoPage() {
                 left: 14,
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: 'rgba(191,166,142,0.55)',
+                color: 'var(--accent)',
               }}
             />
             <input
@@ -304,8 +304,8 @@ export default function HistoricoPage() {
                 paddingRight: filtro ? 40 : 14,
                 paddingTop: 10,
                 paddingBottom: 10,
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(191,166,142,0.18)',
+                background: 'var(--card-bg)',
+                border: '1px solid var(--stone-line)',
                 borderRadius: 10,
                 color: 'var(--text-primary)',
                 fontSize: 13.5,
@@ -313,12 +313,12 @@ export default function HistoricoPage() {
                 transition: 'border-color 0.2s, background 0.2s',
               }}
               onFocus={e => {
-                e.currentTarget.style.borderColor = 'rgba(191,166,142,0.42)'
-                e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                e.currentTarget.style.borderColor = 'var(--stone)'
+                e.currentTarget.style.background = 'var(--hover)'
               }}
               onBlur={e => {
-                e.currentTarget.style.borderColor = 'rgba(191,166,142,0.18)'
-                e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
+                e.currentTarget.style.borderColor = 'var(--stone-line)'
+                e.currentTarget.style.background = 'var(--card-bg)'
               }}
             />
             {filtro && (
@@ -333,7 +333,7 @@ export default function HistoricoPage() {
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  color: 'rgba(191,166,142,0.6)',
+                  color: 'var(--accent)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   padding: 4,
@@ -355,7 +355,7 @@ export default function HistoricoPage() {
                 left: 12,
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: 'rgba(191,166,142,0.55)',
+                color: 'var(--accent)',
                 pointerEvents: 'none',
               }}
             />
@@ -368,8 +368,8 @@ export default function HistoricoPage() {
                 paddingRight: 28,
                 paddingTop: 10,
                 paddingBottom: 10,
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(191,166,142,0.18)',
+                background: 'var(--card-bg)',
+                border: '1px solid var(--stone-line)',
                 borderRadius: 10,
                 color: 'var(--text-primary)',
                 fontSize: 13,
@@ -398,13 +398,13 @@ export default function HistoricoPage() {
               gap: 6,
               padding: '8px 12px',
               borderRadius: 8,
-              background: 'rgba(191,166,142,0.06)',
-              border: '1px solid rgba(191,166,142,0.18)',
+              background: 'var(--accent-bg)',
+              border: '1px solid var(--stone-line)',
               fontFamily: 'var(--font-mono, ui-monospace), monospace',
               fontSize: 10.5,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
-              color: '#bfa68e',
+              color: 'var(--accent)',
               fontWeight: 600,
             }}
           >
@@ -421,9 +421,9 @@ export default function HistoricoPage() {
             padding: '14px 18px',
             borderRadius: 12,
             background:
-              'linear-gradient(to right, rgba(191,75,75,0.1), rgba(191,75,75,0.04))',
-            border: '1px solid rgba(191,75,75,0.25)',
-            color: '#ff9999',
+              'linear-gradient(to right, var(--danger-light), var(--danger-light))',
+            border: '1px solid var(--danger)',
+            color: 'var(--danger)',
             fontSize: 13,
             display: 'flex',
             alignItems: 'center',
@@ -454,7 +454,7 @@ export default function HistoricoPage() {
               cx="12"
               cy="12"
               r="10"
-              stroke="#bfa68e"
+              stroke="var(--accent)"
               strokeWidth="2"
               strokeDasharray="40 20"
               strokeLinecap="round"
@@ -466,7 +466,7 @@ export default function HistoricoPage() {
               fontSize: 10,
               letterSpacing: '0.28em',
               textTransform: 'uppercase',
-              color: 'rgba(191,166,142,0.65)',
+              color: 'var(--accent)',
             }}
           >
             Abrindo o arquivo
@@ -481,7 +481,7 @@ export default function HistoricoPage() {
             padding: '64px 28px',
             textAlign: 'center',
             borderRadius: 16,
-            border: '1px dashed rgba(191,166,142,0.22)',
+            border: '1px dashed var(--stone-line)',
             background:
               'radial-gradient(ellipse at 50% 30%, rgba(191,166,142,0.05), transparent 70%)',
           }}
@@ -491,7 +491,7 @@ export default function HistoricoPage() {
             strokeWidth={1.3}
             aria-hidden
             style={{
-              color: '#bfa68e',
+              color: 'var(--accent)',
               opacity: 0.4,
               marginBottom: 16,
             }}
@@ -527,8 +527,8 @@ export default function HistoricoPage() {
             padding: '48px 28px',
             textAlign: 'center',
             borderRadius: 16,
-            border: '1px dashed rgba(191,166,142,0.22)',
-            background: 'rgba(255,255,255,0.015)',
+            border: '1px dashed var(--stone-line)',
+            background: 'var(--card-bg)',
           }}
         >
           <Search
@@ -536,7 +536,7 @@ export default function HistoricoPage() {
             strokeWidth={1.4}
             aria-hidden
             style={{
-              color: '#bfa68e',
+              color: 'var(--accent)',
               opacity: 0.45,
               marginBottom: 10,
             }}
@@ -573,16 +573,16 @@ export default function HistoricoPage() {
                   borderRadius: 14,
                   overflow: 'hidden',
                   border: isOpen
-                    ? '1px solid rgba(191,166,142,0.32)'
-                    : '1px solid rgba(191,166,142,0.14)',
+                    ? '1px solid var(--stone)'
+                    : '1px solid var(--stone-line)',
                   background: isOpen
-                    ? 'linear-gradient(to bottom, rgba(26,20,16,0.92), rgba(10,8,7,0.88))'
-                    : 'linear-gradient(to bottom, rgba(20,18,16,0.6), rgba(10,8,7,0.6))',
+                    ? 'var(--card-solid)'
+                    : 'var(--card-bg)',
                   backdropFilter: 'blur(8px)',
                   transition:
                     'border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
                   boxShadow: isOpen
-                    ? '0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(191,166,142,0.08)'
+                    ? '0 8px 32px var(--shadow-md), inset 0 1px 0 var(--accent-light)'
                     : 'none',
                 }}
               >
@@ -603,12 +603,12 @@ export default function HistoricoPage() {
                   onMouseEnter={e => {
                     if (isOpen) return
                     e.currentTarget.parentElement!.style.borderColor =
-                      'rgba(191,166,142,0.28)'
+                      'var(--stone)'
                   }}
                   onMouseLeave={e => {
                     if (isOpen) return
                     e.currentTarget.parentElement!.style.borderColor =
-                      'rgba(191,166,142,0.14)'
+                      'var(--stone-line)'
                   }}
                 >
                   {/* Serial number editorial */}
@@ -618,7 +618,7 @@ export default function HistoricoPage() {
                       fontFamily: 'var(--font-mono, ui-monospace), monospace',
                       fontSize: 10,
                       letterSpacing: '0.2em',
-                      color: 'rgba(191,166,142,0.55)',
+                      color: 'var(--accent)',
                       fontWeight: 700,
                       minWidth: 26,
                     }}
@@ -677,7 +677,7 @@ export default function HistoricoPage() {
                           fontSize: 10,
                           letterSpacing: '0.16em',
                           textTransform: 'uppercase',
-                          color: 'rgba(191,166,142,0.6)',
+                          color: 'var(--accent)',
                           fontWeight: 600,
                         }}
                       >
@@ -702,7 +702,7 @@ export default function HistoricoPage() {
                     <p
                       style={{
                         fontSize: 13,
-                        color: 'rgba(230,212,189,0.72)',
+                        color: 'var(--accent-light2)',
                         margin: 0,
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -720,7 +720,7 @@ export default function HistoricoPage() {
                       strokeWidth={1.75}
                       aria-hidden
                       style={{
-                        color: '#bfa68e',
+                        color: 'var(--accent)',
                         flexShrink: 0,
                       }}
                     />
@@ -730,7 +730,7 @@ export default function HistoricoPage() {
                       strokeWidth={1.75}
                       aria-hidden
                       style={{
-                        color: 'rgba(191,166,142,0.5)',
+                        color: 'var(--stone)',
                         flexShrink: 0,
                       }}
                     />
@@ -752,7 +752,7 @@ export default function HistoricoPage() {
                       <div
                         style={{
                           padding: '0 20px 18px 76px',
-                          borderTop: '1px solid rgba(191,166,142,0.12)',
+                          borderTop: '1px solid var(--stone-line)',
                           paddingTop: 16,
                           background:
                             'linear-gradient(to bottom, rgba(191,166,142,0.04), transparent 60%)',
@@ -772,7 +772,7 @@ export default function HistoricoPage() {
                               width: 4,
                               height: 4,
                               borderRadius: '50%',
-                              background: '#bfa68e',
+                              background: 'var(--accent)',
                             }}
                           />
                           <span
@@ -782,7 +782,7 @@ export default function HistoricoPage() {
                               fontSize: 10,
                               letterSpacing: '0.24em',
                               textTransform: 'uppercase',
-                              color: '#bfa68e',
+                              color: 'var(--accent)',
                               fontWeight: 600,
                             }}
                           >
@@ -792,7 +792,7 @@ export default function HistoricoPage() {
                         <p
                           style={{
                             fontSize: 13.5,
-                            color: 'rgba(230,212,189,0.85)',
+                            color: 'var(--text-primary)',
                             lineHeight: 1.75,
                             whiteSpace: 'pre-wrap',
                             margin: 0,

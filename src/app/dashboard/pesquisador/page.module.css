@@ -184,7 +184,7 @@
 
 .resultCardInner:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(19, 32, 37, 0.08);
+  box-shadow: 0 6px 20px var(--shadow);
 }
 
 .resultHeader {

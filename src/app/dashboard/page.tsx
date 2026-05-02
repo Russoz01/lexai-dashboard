@@ -442,14 +442,14 @@ export default function DashboardPage() {
       <section className={s.dashGridMain}>
 
         <article className={s.dashCard} style={{
-          background: 'radial-gradient(140% 110% at 50% 0%, rgba(191,166,142,0.07), transparent 60%), rgba(15,15,15,0.85)',
+          background: 'radial-gradient(140% 110% at 50% 0%, var(--accent-light), transparent 60%), var(--card-bg)',
         }}>
           <div className={s.dashCardHead}>
             <div>
               <div className={s.dashCardCap}>CAPÍTULO III · ATELIER · {totalAgents} ESPECIALISTAS</div>
               <h2 className={s.dashCardTitle}>{numberToPt(totalAgents)} <em>agentes</em></h2>
               <p className={s.dashCardSub}>
-                Cada um treinado num recorte específico do Direito BR · <span style={{ color: '#d4ae6a', fontWeight: 600 }}>6 novos na v10.8</span> · clique pra abrir o atelier
+                Cada um treinado num recorte específico do Direito BR · <span style={{ color: 'var(--warning)', fontWeight: 600 }}>6 novos na v10.8</span> · clique pra abrir o atelier
               </p>
             </div>
             <Link href="/dashboard/chat" className={s.dashCardAction}>
@@ -470,7 +470,7 @@ export default function DashboardPage() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12,
                     marginBottom: 16, paddingBottom: 12,
-                    borderBottom: '1px solid rgba(191,166,142,0.10)',
+                    borderBottom: '1px solid var(--border)',
                   }}
                 >
                   <div style={{
@@ -479,10 +479,10 @@ export default function DashboardPage() {
                       ? 'linear-gradient(135deg, rgba(245,232,211,0.22), rgba(191,166,142,0.14))'
                       : 'linear-gradient(135deg, rgba(212,174,106,0.14), rgba(122,95,72,0.08))',
                     border: group.highlight
-                      ? '1px solid rgba(245,232,211,0.45)'
-                      : '1px solid rgba(212,174,106,0.30)',
+                      ? '1px solid var(--stone)'
+                      : '1px solid var(--stone-line)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: group.highlight ? '#f5e8d3' : '#e6d4bd', flexShrink: 0,
+                    color: group.highlight ? 'var(--accent-light2)' : 'var(--accent-light2)', flexShrink: 0,
                     boxShadow: group.highlight
                       ? 'inset 0 0 0 1px rgba(245,232,211,0.15), 0 0 12px rgba(245,232,211,0.2)'
                       : 'none',
@@ -493,7 +493,7 @@ export default function DashboardPage() {
                     <div style={{
                       fontFamily: 'var(--font-mono, ui-monospace), monospace',
                       fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
-                      color: '#bfa68e', fontWeight: 700,
+                      color: 'var(--accent)', fontWeight: 700,
                     }}>
                       {group.label} · {group.items.length} agentes
                     </div>
@@ -539,11 +539,11 @@ export default function DashboardPage() {
                             display: 'flex', flexDirection: 'column', gap: 12,
                             padding: 16, borderRadius: 14, height: '100%',
                             background: locked
-                              ? 'rgba(10,10,10,0.55)'
-                              : 'linear-gradient(180deg, rgba(20,20,20,0.85), rgba(10,10,10,0.85))',
+                              ? 'var(--hover)'
+                              : 'var(--card-bg)',
                             border: locked
-                              ? '1px solid rgba(191,166,142,0.06)'
-                              : '1px solid rgba(191,166,142,0.12)',
+                              ? '1px solid var(--border)'
+                              : '1px solid var(--stone-line)',
                             opacity: locked ? 0.62 : 1,
                             textDecoration: 'none', color: 'inherit',
                             position: 'relative', overflow: 'hidden',
@@ -551,12 +551,12 @@ export default function DashboardPage() {
                           }}
                           onMouseEnter={e => {
                             if (locked) return
-                            e.currentTarget.style.borderColor = 'rgba(212,174,106,0.35)'
-                            e.currentTarget.style.boxShadow = '0 12px 36px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,174,106,0.08)'
+                            e.currentTarget.style.borderColor = 'var(--accent)'
+                            e.currentTarget.style.boxShadow = '0 12px 36px var(--shadow), 0 0 0 1px var(--accent-light)'
                           }}
                           onMouseLeave={e => {
                             if (locked) return
-                            e.currentTarget.style.borderColor = 'rgba(191,166,142,0.12)'
+                            e.currentTarget.style.borderColor = 'var(--stone-line)'
                             e.currentTarget.style.boxShadow = ''
                           }}
                         >
@@ -601,11 +601,11 @@ export default function DashboardPage() {
                             <div style={{
                               width: 38, height: 38, borderRadius: 11,
                               background: locked
-                                ? 'rgba(191,166,142,0.04)'
+                                ? 'var(--hover)'
                                 : 'linear-gradient(135deg, rgba(212,174,106,0.18), rgba(122,95,72,0.08))',
-                              border: '1px solid rgba(212,174,106,0.30)',
+                              border: '1px solid var(--stone-line)',
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              color: locked ? 'var(--text-muted)' : '#e6d4bd',
+                              color: locked ? 'var(--text-muted)' : 'var(--accent-light2)',
                               boxShadow: locked ? 'none' : 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 14px rgba(212,174,106,0.18)',
                             }}>
                               <Icon size={17} strokeWidth={1.7} aria-hidden />
@@ -620,7 +620,7 @@ export default function DashboardPage() {
                               </span>
                               {locked
                                 ? <Lock size={13} strokeWidth={2} style={{ color: 'var(--text-muted)' }} aria-hidden />
-                                : <ArrowRight size={13} strokeWidth={1.75} style={{ color: '#bfa68e' }} aria-hidden />
+                                : <ArrowRight size={13} strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden />
                               }
                             </div>
                           </div>
@@ -649,7 +649,7 @@ export default function DashboardPage() {
                             marginTop: 'auto', position: 'relative', zIndex: 1,
                             display: 'flex', flexDirection: 'column', gap: 8,
                             paddingTop: 10,
-                            borderTop: '1px dashed rgba(191,166,142,0.12)',
+                            borderTop: '1px dashed var(--stone-line)',
                           }}>
                             {detail.useCases && detail.useCases.length > 0 && (
                               <div style={{
@@ -660,11 +660,11 @@ export default function DashboardPage() {
                                   <span key={ui} style={{
                                     display: 'inline-flex', alignItems: 'center',
                                     padding: '2px 7px', borderRadius: 5,
-                                    background: locked ? 'rgba(120,110,100,0.06)' : 'rgba(212,174,106,0.08)',
-                                    border: `1px solid ${locked ? 'rgba(120,110,100,0.18)' : 'rgba(212,174,106,0.22)'}`,
+                                    background: locked ? 'var(--hover)' : 'var(--accent-bg)',
+                                    border: `1px solid ${locked ? 'var(--border)' : 'var(--stone-line)'}`,
                                     fontFamily: 'var(--font-mono, ui-monospace), monospace',
                                     fontSize: 9.5, letterSpacing: '0.08em',
-                                    color: locked ? 'var(--text-muted)' : '#bfa68e',
+                                    color: locked ? 'var(--text-muted)' : 'var(--accent)',
                                     fontWeight: 600, whiteSpace: 'nowrap',
                                   }}>
                                     {uc}
@@ -678,7 +678,7 @@ export default function DashboardPage() {
                                 fontFamily: 'var(--font-mono, ui-monospace), monospace',
                                 fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase',
                                 fontWeight: 700,
-                                color: locked ? 'var(--text-muted)' : '#9ec28b',
+                                color: locked ? 'var(--text-muted)' : 'var(--success)',
                               }}>
                                 <Timer size={11} strokeWidth={2} aria-hidden />
                                 {detail.saves}
@@ -698,7 +698,7 @@ export default function DashboardPage() {
                                 display: 'inline-flex', alignItems: 'center', gap: 5,
                                 fontFamily: 'var(--font-mono, ui-monospace), monospace',
                                 fontSize: 9.5, letterSpacing: '0.16em', textTransform: 'uppercase',
-                                fontWeight: 700, color: '#d4ae6a',
+                                fontWeight: 700, color: 'var(--warning)',
                                 marginTop: 2,
                               }}>
                                 <Crown size={10} strokeWidth={2} aria-hidden />

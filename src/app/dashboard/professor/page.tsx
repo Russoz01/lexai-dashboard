@@ -35,7 +35,7 @@ import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 // (red/amber/emerald/pink/etc) destoavam do DNA editorial atelier. Agora 4
 // tons de champagne/copper ciclando — diferenca visual entre areas vem do
 // Icon, nao da cor.
-const NOIR_TONES = ['#bfa68e', '#c78a61', '#a8855c', '#d4ae6a'] as const
+const NOIR_TONES = ['var(--accent)', '#c78a61', '#a8855c', 'var(--warning)'] as const
 const tonAt = (i: number) => NOIR_TONES[i % NOIR_TONES.length]
 
 const AREAS_PRATICA = [
@@ -96,11 +96,11 @@ export default function MonitorLegislativoPage() {
 
   // 5 secoes em monochrome champagne — antes era indigo/emerald/orange/red puro
   const SECOES = [
-    { key: 'legislacao' as const, label: 'Legislação', Icon: NotebookText, color: '#bfa68e' },
+    { key: 'legislacao' as const, label: 'Legislação', Icon: NotebookText, color: 'var(--accent)' },
     { key: 'precedentes' as const, label: 'Precedentes', Icon: Landmark, color: '#c78a61' },
     { key: 'regulatorio' as const, label: 'Regulatório', Icon: GitBranch, color: '#a8855c' },
-    { key: 'impacto' as const, label: 'Análise de Impacto', Icon: TrendingUp, color: '#d4ae6a' },
-    { key: 'acoes' as const, label: 'Ações Recomendadas', Icon: CheckSquare, color: '#d88977' },
+    { key: 'impacto' as const, label: 'Análise de Impacto', Icon: TrendingUp, color: 'var(--warning)' },
+    { key: 'acoes' as const, label: 'Ações Recomendadas', Icon: CheckSquare, color: 'var(--danger)' },
   ]
 
   return (

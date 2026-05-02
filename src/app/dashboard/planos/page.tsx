@@ -196,7 +196,7 @@ function PlanosPageInner() {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20,
         padding: 22, borderRadius: 14, marginBottom: 22,
-        background: 'rgba(15,15,15,0.82)',
+        background: 'var(--card-bg)',
         border: '1px solid var(--border)',
         flexWrap: 'wrap',
       }}>
@@ -226,7 +226,7 @@ function PlanosPageInner() {
           style={{
             padding: '12px 18px', borderRadius: 10, flexShrink: 0,
             background: 'linear-gradient(135deg, #f5e8d3, #bfa68e)',
-            color: '#0a0a0a', border: '1px solid rgba(212,174,106,0.5)',
+            color: 'var(--bg-base)', border: '1px solid rgba(212,174,106,0.5)',
             fontFamily: 'var(--font-mono, ui-monospace), monospace',
             fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700,
             cursor: portalLoading ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -243,7 +243,7 @@ function PlanosPageInner() {
       {planoAtual === 'enterprise' && (
         <div style={{
           padding: 24, borderRadius: 14, marginBottom: 32,
-          background: 'radial-gradient(140% 140% at 20% 0%, rgba(212,174,106,0.12), transparent 60%), rgba(15,15,15,0.88)',
+          background: 'radial-gradient(140% 140% at 20% 0%, rgba(212,174,106,0.12), transparent 60%), var(--card-bg)',
           border: '1px solid rgba(212,174,106,0.32)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
@@ -261,8 +261,8 @@ function PlanosPageInner() {
               <div key={i} style={{
                 display: 'flex', alignItems: 'flex-start', gap: 10,
                 padding: '10px 12px', borderRadius: 10,
-                background: 'rgba(10,10,10,0.4)',
-                border: '1px solid rgba(191,166,142,0.12)',
+                background: 'var(--hover)',
+                border: '1px solid var(--stone-line)',
                 fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5,
               }}>
                 <Star size={11} strokeWidth={2} style={{ color: 'var(--accent)', flexShrink: 0, marginTop: 3 }} aria-hidden />
@@ -276,7 +276,7 @@ function PlanosPageInner() {
       {/* COMPARE SECTION */}
       <div style={{
         padding: 28, borderRadius: 14, marginBottom: 24,
-        background: 'rgba(15,15,15,0.82)',
+        background: 'var(--card-bg)',
         border: '1px solid var(--border)',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 22 }}>
@@ -305,7 +305,7 @@ function PlanosPageInner() {
               display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14,
               fontFamily: 'var(--font-mono, ui-monospace), monospace',
               fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
-              color: '#d88977', fontWeight: 700,
+              color: 'var(--danger)', fontWeight: 700,
             }}>
               <XCircle size={14} strokeWidth={2} aria-hidden /> Sem Pralvex
             </div>
@@ -321,14 +321,14 @@ function PlanosPageInner() {
                 display: 'flex', alignItems: 'flex-start', gap: 10,
                 padding: '8px 0', fontSize: 12.5, color: 'var(--text-muted)', lineHeight: 1.55,
               }}>
-                <MinusCircle size={11} strokeWidth={2} style={{ color: '#d88977', marginTop: 3, flexShrink: 0 }} aria-hidden />
+                <MinusCircle size={11} strokeWidth={2} style={{ color: 'var(--danger)', marginTop: 3, flexShrink: 0 }} aria-hidden />
                 {item}
               </div>
             ))}
           </div>
           <div style={{
             padding: 18, borderRadius: 12,
-            background: 'radial-gradient(120% 140% at 20% 0%, rgba(212,174,106,0.08), transparent 60%), rgba(15,15,15,0.5)',
+            background: 'radial-gradient(120% 140% at 20% 0%, rgba(212,174,106,0.08), transparent 60%), var(--hover)',
             border: '1px solid rgba(212,174,106,0.3)',
           }}>
             <div style={{
@@ -362,7 +362,7 @@ function PlanosPageInner() {
       {/* OFICIO INTERNO — trust block honesto (substituiu testemunhos fake) */}
       <div style={{
         padding: 28, borderRadius: 14, marginBottom: 24,
-        background: 'rgba(15,15,15,0.82)',
+        background: 'var(--card-bg)',
         border: '1px solid var(--border)',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 22 }}>
@@ -412,8 +412,8 @@ function PlanosPageInner() {
             return (
               <div key={i} style={{
                 padding: 22, borderRadius: 12,
-                background: 'rgba(10,10,10,0.55)',
-                border: '1px solid rgba(191,166,142,0.12)',
+                background: 'var(--hover)',
+                border: '1px solid var(--stone-line)',
                 display: 'flex', flexDirection: 'column', gap: 14,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -426,8 +426,8 @@ function PlanosPageInner() {
                   </div>
                   <div style={{
                     width: 32, height: 32, borderRadius: 999,
-                    background: 'rgba(191,166,142,0.08)',
-                    border: '1px solid rgba(191,166,142,0.28)',
+                    background: 'var(--stone-soft)',
+                    border: '1px solid var(--stone)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: 'var(--accent)',
                   }}>
@@ -455,7 +455,7 @@ function PlanosPageInner() {
       {/* GUARANTEE */}
       <div style={{
         padding: 28, borderRadius: 14, marginBottom: 24, textAlign: 'center',
-        background: 'radial-gradient(120% 160% at 50% 0%, rgba(93,123,79,0.08), transparent 60%), rgba(15,15,15,0.88)',
+        background: 'radial-gradient(120% 160% at 50% 0%, rgba(93,123,79,0.08), transparent 60%), var(--card-bg)',
         border: '1px solid rgba(93,123,79,0.28)',
       }}>
         <div style={{
@@ -509,11 +509,11 @@ function PlanosPageInner() {
           border: '1px solid rgba(216,137,119,0.32)',
           fontFamily: 'var(--font-mono, ui-monospace), monospace',
           fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
-          color: '#d88977', fontWeight: 700,
+          color: 'var(--danger)', fontWeight: 700,
         }}>
           <span style={{
             width: 6, height: 6, borderRadius: '50%',
-            background: '#d88977', boxShadow: '0 0 8px #d88977',
+            background: 'var(--danger)', boxShadow: '0 0 8px #d88977',
           }} />
           Vagas limitadas para o lançamento
         </div>
@@ -538,7 +538,7 @@ function PlanosPageInner() {
             display: 'inline-flex', alignItems: 'center', gap: 10,
             padding: '16px 30px', borderRadius: 12,
             background: 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
-            color: '#0a0a0a',
+            color: 'var(--bg-base)',
             fontFamily: 'var(--font-mono, ui-monospace), monospace',
             fontSize: 12, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase',
             border: '1px solid rgba(212,174,106,0.5)',
@@ -563,7 +563,7 @@ function PlanosPageInner() {
       {/* FAQ */}
       <div style={{
         padding: 28, borderRadius: 14, marginBottom: 20,
-        background: 'rgba(15,15,15,0.82)',
+        background: 'var(--card-bg)',
         border: '1px solid var(--border)',
       }}>
         <div style={{
@@ -591,7 +591,7 @@ function PlanosPageInner() {
         ].map((item, i, arr) => (
           <div key={i} style={{
             padding: '16px 0',
-            borderBottom: i < arr.length - 1 ? '1px solid rgba(191,166,142,0.12)' : 'none',
+            borderBottom: i < arr.length - 1 ? '1px solid var(--stone-line)' : 'none',
           }}>
             <div style={{
               fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6,

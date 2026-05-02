@@ -248,12 +248,12 @@ export default function ConfiguracoesPage() {
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" style={{ width:72, height:72, borderRadius:'50%', objectFit:'cover', border:'3px solid var(--border)' }} />
                 ) : (
-                  <div style={{ width:72, height:72, borderRadius:'50%', background:'linear-gradient(135deg,#8a6f55 0%,#bfa68e 60%,#e6d4bd 100%)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-playfair), "Playfair Display", Georgia, serif', fontStyle:'italic', fontSize:28, fontWeight:400, color:'#0a0807', border:'3px solid rgba(191,166,142,0.25)', boxShadow:'0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
+                  <div style={{ width:72, height:72, borderRadius:'50%', background:'linear-gradient(135deg,#8a6f55 0%,#bfa68e 60%,#e6d4bd 100%)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-playfair), "Playfair Display", Georgia, serif', fontStyle:'italic', fontSize:28, fontWeight:400, color:'var(--bg-base)', border:'3px solid rgba(191,166,142,0.25)', boxShadow:'0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
                     {iniciais}
                   </div>
                 )}
                 {avatarLoading && (
-                  <div style={{ position:'absolute', inset:0, borderRadius:'50%', background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <div style={{ position:'absolute', inset:0, borderRadius:'50%', background:'var(--shadow-md)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                     <RotateCw size={18} strokeWidth={1.75} aria-hidden style={{ color:'#fff' }} />
                   </div>
                 )}
@@ -375,8 +375,8 @@ export default function ConfiguracoesPage() {
             style={{
               padding: 'clamp(20px, 4vw, 28px) clamp(20px, 4vw, 32px)',
               background:
-                'radial-gradient(120% 100% at 50% 0%, rgba(191,166,142,0.08), transparent 68%), rgba(10,10,10,0.82)',
-              border: '1px solid rgba(191,166,142,0.18)',
+                'radial-gradient(120% 100% at 50% 0%, rgba(191,166,142,0.08), transparent 68%), var(--card-bg)',
+              border: '1px solid var(--stone-line)',
               borderRadius: 18,
               position: 'relative',
               overflow: 'hidden',
@@ -389,7 +389,7 @@ export default function ConfiguracoesPage() {
                 fontSize: 10,
                 letterSpacing: '0.28em',
                 textTransform: 'uppercase',
-                color: '#bfa68e',
+                color: 'var(--accent)',
                 marginBottom: 14,
               }}
             >
@@ -426,7 +426,7 @@ export default function ConfiguracoesPage() {
                   style={{
                     marginTop: 6,
                     fontSize: 13,
-                    color: 'rgba(240,230,212,0.58)',
+                    color: 'var(--text-secondary)',
                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
@@ -441,7 +441,7 @@ export default function ConfiguracoesPage() {
                   style={{
                     fontSize: 'clamp(28px, 5.5vw, 36px)',
                     fontWeight: 300,
-                    color: '#f0e6d4',
+                    color: 'var(--text-primary)',
                     fontVariantNumeric: 'tabular-nums',
                     letterSpacing: '-0.01em',
                     lineHeight: 1,
@@ -453,7 +453,7 @@ export default function ConfiguracoesPage() {
                   style={{
                     marginTop: 6,
                     fontSize: 11,
-                    color: 'rgba(240,230,212,0.55)',
+                    color: 'var(--text-muted)',
                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',
@@ -487,10 +487,10 @@ export default function ConfiguracoesPage() {
                   gap: 8,
                   padding: '12px 18px',
                   borderRadius: 999,
-                  border: '1px solid rgba(191,166,142,0.35)',
+                  border: '1px solid var(--stone)',
                   background:
                     'linear-gradient(180deg, rgba(191,166,142,0.12) 0%, rgba(191,166,142,0.04) 100%)',
-                  color: '#f0e6d4',
+                  color: 'var(--text-primary)',
                   fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
                   fontSize: 11,
                   fontWeight: 500,
@@ -500,12 +500,12 @@ export default function ConfiguracoesPage() {
                   transition: 'all 0.2s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(191,166,142,0.6)'
+                  e.currentTarget.style.borderColor = 'var(--accent)'
                   e.currentTarget.style.background =
                     'linear-gradient(180deg, rgba(191,166,142,0.22) 0%, rgba(191,166,142,0.08) 100%)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(191,166,142,0.35)'
+                  e.currentTarget.style.borderColor = 'var(--stone)'
                   e.currentTarget.style.background =
                     'linear-gradient(180deg, rgba(191,166,142,0.12) 0%, rgba(191,166,142,0.04) 100%)'
                 }}
@@ -537,9 +537,9 @@ export default function ConfiguracoesPage() {
                   gap: 8,
                   padding: '12px 18px',
                   borderRadius: 999,
-                  border: '1px solid rgba(240,230,212,0.12)',
-                  background: 'rgba(255,255,255,0.02)',
-                  color: 'rgba(240,230,212,0.75)',
+                  border: '1px solid var(--border)',
+                  background: 'var(--card-bg)',
+                  color: 'var(--text-primary)',
                   fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
                   fontSize: 11,
                   fontWeight: 500,
@@ -549,12 +549,12 @@ export default function ConfiguracoesPage() {
                   transition: 'all 0.2s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(191,166,142,0.35)'
-                  e.currentTarget.style.color = '#f0e6d4'
+                  e.currentTarget.style.borderColor = 'var(--stone)'
+                  e.currentTarget.style.color = 'var(--text-primary)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(240,230,212,0.12)'
-                  e.currentTarget.style.color = 'rgba(240,230,212,0.75)'
+                  e.currentTarget.style.borderColor = 'var(--border)'
+                  e.currentTarget.style.color = 'var(--text-primary)'
                 }}
               >
                 <Receipt size={13} strokeWidth={1.75} aria-hidden />

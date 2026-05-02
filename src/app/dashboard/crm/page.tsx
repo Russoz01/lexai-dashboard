@@ -54,9 +54,9 @@ const fmtBRL = (n: number) =>
   n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
 
 const tempColor = (t: Lead['temperatura']) => {
-  if (t === 'quente') return { bg: 'rgba(216,137,119,0.14)', bd: 'rgba(216,137,119,0.34)', fg: '#d88977' }
-  if (t === 'morno')  return { bg: 'rgba(212,174,106,0.14)', bd: 'rgba(212,174,106,0.34)', fg: '#d4ae6a' }
-  return { bg: 'rgba(191,166,142,0.10)', bd: 'rgba(191,166,142,0.28)', fg: '#bfa68e' }
+  if (t === 'quente') return { bg: 'rgba(216,137,119,0.14)', bd: 'rgba(216,137,119,0.34)', fg: 'var(--danger)' }
+  if (t === 'morno')  return { bg: 'rgba(212,174,106,0.14)', bd: 'rgba(212,174,106,0.34)', fg: 'var(--warning)' }
+  return { bg: 'var(--stone-soft)', bd: 'var(--stone)', fg: 'var(--accent)' }
 }
 
 export default function CrmPage() {
@@ -126,7 +126,7 @@ export default function CrmPage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 10,
               background: 'linear-gradient(135deg, #f5e8d3, var(--accent))',
-              border: '1px solid rgba(212,174,106,0.5)', color: '#0a0a0a',
+              border: '1px solid rgba(212,174,106,0.5)', color: 'var(--bg-base)',
               fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
               boxShadow: '0 8px 24px rgba(212,174,106,0.22)',
             }}
@@ -146,7 +146,7 @@ export default function CrmPage() {
         ].map(({ icon: I, label, value, caption }, i) => (
           <div key={i} style={{
             padding: 18, borderRadius: 14,
-            background: 'rgba(15,15,15,0.85)',
+            background: 'var(--card-bg)',
             border: '1px solid var(--border)',
             display: 'flex', flexDirection: 'column', gap: 10,
           }}>
@@ -195,11 +195,11 @@ export default function CrmPage() {
           return (
             <div key={stage.id} style={{
               padding: 14, borderRadius: 12,
-              background: 'rgba(10,10,10,0.5)',
+              background: 'var(--hover)',
               border: '1px solid var(--border)',
               minHeight: 420,
             }}>
-              <div style={{ marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid rgba(191,166,142,0.12)' }}>
+              <div style={{ marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid var(--stone-line)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{stage.label}</div>
                   <div style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 700, background: 'rgba(212,174,106,0.12)', padding: '2px 7px', borderRadius: 10 }}>
@@ -230,7 +230,7 @@ export default function CrmPage() {
                         textAlign: 'left', cursor: 'pointer',
                         padding: 12, borderRadius: 10,
                         background: 'rgba(18,18,18,0.92)',
-                        border: '1px solid rgba(191,166,142,0.14)',
+                        border: '1px solid var(--stone-line)',
                         fontFamily: 'inherit',
                         transition: 'all 0.18s ease',
                       }}
@@ -239,7 +239,7 @@ export default function CrmPage() {
                         e.currentTarget.style.transform = 'translateY(-1px)'
                       }}
                       onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = 'rgba(191,166,142,0.14)'
+                        e.currentTarget.style.borderColor = 'var(--stone-line)'
                         e.currentTarget.style.transform = 'translateY(0)'
                       }}
                     >
@@ -259,10 +259,10 @@ export default function CrmPage() {
                         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>{lead.empresa}</div>
                       )}
                       <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: 'rgba(191,166,142,0.08)', color: 'var(--text-secondary)', letterSpacing: '0.06em' }}>
+                        <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: 'var(--stone-soft)', color: 'var(--text-secondary)', letterSpacing: '0.06em' }}>
                           {lead.tipo}
                         </span>
-                        <span style={{ fontSize: 9, fontWeight: 500, padding: '2px 6px', borderRadius: 6, background: 'rgba(191,166,142,0.06)', color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: 9, fontWeight: 500, padding: '2px 6px', borderRadius: 6, background: 'var(--accent-bg)', color: 'var(--text-muted)' }}>
                           {lead.origem}
                         </span>
                       </div>
@@ -275,7 +275,7 @@ export default function CrmPage() {
                       </div>
                       <div style={{
                         fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.5,
-                        padding: '6px 8px', borderRadius: 6, background: 'rgba(0,0,0,0.3)',
+                        padding: '6px 8px', borderRadius: 6, background: 'var(--shadow)',
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}>
                         <Clock size={10} style={{ color: 'var(--accent)', flexShrink: 0 }} />
@@ -297,7 +297,7 @@ export default function CrmPage() {
       {/* Recent activity */}
       <div style={{
         marginTop: 32, padding: 22, borderRadius: 14,
-        background: 'rgba(15,15,15,0.85)', border: '1px solid var(--border)',
+        background: 'var(--card-bg)', border: '1px solid var(--border)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
           <div>
@@ -334,8 +334,8 @@ export default function CrmPage() {
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', gap: 14,
                 padding: '10px 12px', borderRadius: 10,
-                background: 'rgba(10,10,10,0.4)',
-                border: '1px solid rgba(191,166,142,0.08)',
+                background: 'var(--hover)',
+                border: '1px solid var(--stone-soft)',
               }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: '50%',
@@ -383,7 +383,7 @@ export default function CrmPage() {
           style={{
             padding: '14px 22px', borderRadius: 12,
             background: 'linear-gradient(135deg, #f5e8d3, var(--accent), #7a5f48)',
-            color: '#0a0a0a', textDecoration: 'none',
+            color: 'var(--bg-base)', textDecoration: 'none',
             fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
             boxShadow: '0 12px 32px rgba(212,174,106,0.24)',
             border: '1px solid rgba(212,174,106,0.5)',
