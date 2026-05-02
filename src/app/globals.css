@@ -14,6 +14,16 @@
 /* ── Tokens — Light (atelier cream) ────────────────────────── */
 :root,
 [data-theme="light"] {
+  /* Type-scale fluid tokens (audit polish 2026-05-02)
+     clamp(min, fluid, max) — escala via vw entre breakpoints
+     Use: font-size: var(--type-display-1) em <h1> editorial */
+  --type-display-1: clamp(36px, 6.5vw, 78px);  /* hero headline */
+  --type-display-2: clamp(28px, 4.8vw, 56px);  /* section h2 */
+  --type-display-3: clamp(22px, 3.2vw, 36px);  /* sub-section h3 */
+  --type-body-lg:   clamp(15px, 1.4vw, 18px);  /* lede */
+  --type-body:      15px;                       /* default */
+  --type-meta:      clamp(11px, 0.85vw, 12.5px); /* eyebrows, monospace */
+
   --primary:        #132025;
   --primary-light:  #1c2d33;
   --primary-lighter:#33464a;

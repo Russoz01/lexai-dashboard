@@ -167,8 +167,10 @@ export function CookieConsent() {
               padding: '9px 16px',
               borderRadius: 10,
               background: 'transparent',
-              color: 'rgba(255,255,255,0.75)',
-              border: '1px solid rgba(255,255,255,0.16)',
+              // Audit fix v2: 0.75 → 0.92 pra passar WCAG AA (4.5:1 mínimo)
+              // contra background dark rgba(15,15,18,0.82)
+              color: 'rgba(255,255,255,0.92)',
+              border: '1px solid rgba(255,255,255,0.22)',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               fontFamily: 'inherit',

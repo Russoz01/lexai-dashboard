@@ -3,18 +3,18 @@
   "path": "/empresas",
   "finalUrl": "https://pralvex.com.br/empresas",
   "status": 200,
-  "ttfb": 461,
-  "htmlSizeKB": 151,
+  "ttfb": 3303,
+  "htmlSizeKB": 156,
   "perfMetrics": {
-    "domContentLoaded": 411,
-    "loadComplete": 604.7000000178814,
-    "firstContentfulPaint": 1072,
-    "transferSize": 20880,
-    "encodedBodySize": 20580
+    "domContentLoaded": 3131.4000000059605,
+    "loadComplete": 3367.4000000059605,
+    "firstContentfulPaint": 4012,
+    "transferSize": 21450,
+    "encodedBodySize": 21150
   },
   "elementStats": {
     "links": 18,
-    "buttons": 6,
+    "buttons": 7,
     "forms": 0,
     "inputs": 0,
     "images": 0,
@@ -22,14 +22,10 @@
     "altMissing": 0,
     "jsonLdScripts": 4
   },
-  "consoleErrors": [
-    "[error] Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
-  ],
-  "networkFailures": [
-    "GET https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516 — csp"
-  ],
+  "consoleErrors": [],
+  "networkFailures": [],
   "headers": {
-    "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://font",
+    "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com https://static.cloudflareinsights.com https://",
     "hsts": "max-age=31536000; includeSubDomains",
     "cache": "public, max-age=0, must-revalidate",
     "xVercelCache": "HIT",

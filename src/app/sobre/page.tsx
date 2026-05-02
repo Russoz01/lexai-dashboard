@@ -122,9 +122,16 @@ export default function SobrePage() {
             aria-hidden="true"
             className="absolute left-0 top-8 h-[calc(100%-4rem)] w-px bg-gradient-to-b from-transparent via-[#bfa68e]/60 to-transparent"
           />
-          <blockquote className="mb-6 text-balance text-xl font-light italic leading-[1.35] text-white/90 md:text-2xl">
-            &ldquo;A gente construiu a Pralvex porque cansou de ver IA generalista inventar
-            jurisprudência de madrugada e o advogado assinar sem conferir.&rdquo;
+          {/* Audit polish: pull-quote editorial — Playfair italic + champagne */}
+          <span
+            aria-hidden="true"
+            className="mb-2 block font-serif text-5xl leading-none text-[#bfa68e]/40 md:text-6xl"
+          >
+            &ldquo;
+          </span>
+          <blockquote className="mb-6 -mt-4 text-balance font-serif text-2xl font-light italic leading-[1.25] text-[#e6d4bd] md:text-[2rem]">
+            A gente construiu a Pralvex porque cansou de ver IA generalista inventar
+            jurisprudência de madrugada e o advogado assinar sem conferir.
           </blockquote>
 
           <div className="space-y-4 text-[0.95rem] leading-relaxed text-white/70 md:text-base">
