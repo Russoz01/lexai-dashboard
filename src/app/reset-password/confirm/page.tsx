@@ -113,7 +113,7 @@ export default function ResetPasswordConfirmPage() {
   }
 
   return (
-    <main className="relative min-h-screen bg-black text-white antialiased">
+    <main className="relative min-h-screen surface-base">
       <section
         ref={leftRef}
         className="relative flex min-h-screen flex-col px-6 py-10 md:px-12 lg:py-16"

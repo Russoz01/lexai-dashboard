@@ -84,12 +84,14 @@ export function CookieConsent() {
           zIndex: 9999,
           padding: '18px 22px',
           borderRadius: 16,
-          background: 'rgba(15, 15, 18, 0.82)',
+          // Audit fix P0-6 (2026-05-02): tokens em vez de hex hardcoded.
+          // Adapta light/dark via CSS variables.
+          background: 'var(--glass)',
           backdropFilter: 'blur(16px) saturate(160%)',
           WebkitBackdropFilter: 'blur(16px) saturate(160%)',
-          border: '1px solid rgba(255,255,255,0.10)',
-          boxShadow: '0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset',
-          color: '#F1F1F1',
+          border: '1px solid var(--glass-border)',
+          boxShadow: 'var(--glass-shadow)',
+          color: 'var(--text-primary)',
           fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
           display: 'flex',
           alignItems: 'center',
@@ -103,24 +105,24 @@ export function CookieConsent() {
               width: 40,
               height: 40,
               borderRadius: 12,
-              background: 'rgba(191,166,142,0.12)',
-              border: '1px solid rgba(191,166,142,0.28)',
+              background: 'var(--accent-light)',
+              border: '1px solid var(--stone-line)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <ShieldCheck size={18} strokeWidth={1.75} style={{ color: '#bfa68e' }} aria-hidden />
+            <ShieldCheck size={18} strokeWidth={1.75} style={{ color: 'var(--stone)' }} aria-hidden />
           </div>
         </div>
 
         <div style={{ flex: 1, minWidth: 240 }}>
-          <div style={{ fontSize: 13.5, fontWeight: 700, color: '#fff', marginBottom: 4, letterSpacing: '-0.2px' }}>
+          <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4, letterSpacing: '-0.2px' }}>
             Cookies e privacidade
           </div>
-          <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.62)', lineHeight: 1.5, margin: 0 }}>
+          <p style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
             Usamos cookies para autenticação (necessários) e analytics (opcional). Você pode revogar o consentimento a qualquer momento em{' '}
-            <Link href="/privacidade" style={{ color: '#bfa68e', textDecoration: 'underline' }}>
+            <Link href="/privacidade" style={{ color: 'var(--stone)', textDecoration: 'underline' }}>
               /privacidade
             </Link>
             . LGPD compliant.
@@ -137,7 +139,7 @@ export function CookieConsent() {
             right: 10,
             background: 'transparent',
             border: 'none',
-            color: 'rgba(255,255,255,0.5)',
+            color: 'var(--text-muted)',
             cursor: 'pointer',
             padding: 6,
             borderRadius: 6,
@@ -167,10 +169,8 @@ export function CookieConsent() {
               padding: '9px 16px',
               borderRadius: 10,
               background: 'transparent',
-              // Audit fix v2: 0.75 → 0.92 pra passar WCAG AA (4.5:1 mínimo)
-              // contra background dark rgba(15,15,18,0.82)
-              color: 'rgba(255,255,255,0.92)',
-              border: '1px solid rgba(255,255,255,0.22)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border)',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               fontFamily: 'inherit',
@@ -186,11 +186,11 @@ export function CookieConsent() {
               fontWeight: 600,
               padding: '9px 18px',
               borderRadius: 10,
-              background: '#bfa68e',
+              background: 'var(--stone)',
               color: '#132025',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(191,166,142,0.35)',
+              boxShadow: '0 4px 14px var(--glow)',
               whiteSpace: 'nowrap',
               fontFamily: 'inherit',
             }}

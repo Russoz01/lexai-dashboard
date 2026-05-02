@@ -43,7 +43,7 @@ const HOT_AGENTS: { href: string; label: string }[] = [
 
 export default function NotFound() {
   return (
-    <div className="relative isolate min-h-screen overflow-hidden bg-[#0a0807] text-white antialiased">
+    <div className="relative isolate min-h-screen overflow-hidden surface-base">
       {/* Ambient mesh — blobs champagne flutuando + dust dourado */}
       <AmbientMesh dust dustCount={14} intensity={0.85} />
 

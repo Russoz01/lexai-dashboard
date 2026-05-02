@@ -119,7 +119,7 @@ export default function EmpresasPage() {
   const AGENTS = agents()
 
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
+    <div className="min-h-screen surface-base">
       <style jsx global>{`
         [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; transition-delay: var(--reveal-delay, 0ms); }
         [data-reveal][data-revealed="true"] { opacity: 1; transform: translateY(0); }

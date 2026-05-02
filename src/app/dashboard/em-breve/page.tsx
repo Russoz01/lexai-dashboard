@@ -31,7 +31,7 @@ function EmBreveContent() {
   const desc = item?.desc ?? 'Estamos finalizando os últimos detalhes desta ferramenta.'
 
   return (
-    <div className="relative min-h-full bg-black text-white antialiased">
+    <div className="relative min-h-full surface-base">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] overflow-hidden">
         <Spotlight className="-top-40 left-0 md:-top-20 md:left-20" fill="#bfa68e" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(191,166,142,0.10),transparent)]" />

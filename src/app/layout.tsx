@@ -176,7 +176,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const nonce = cspNonceEnabled ? ((await headers()).get('x-nonce') || undefined) : undefined
 
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" data-theme="dark" suppressHydrationWarning>
       <head>
         {/* Theme boot — aplica data-theme ANTES de hydration pra evitar flash.
             Preferência: 'dark' | 'light' | 'system'. Default = 'dark' (preserva

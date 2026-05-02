@@ -236,7 +236,7 @@ function LoginPageInner() {
   const submitLabel = isSignUp ? 'Criar conta grátis' : 'Entrar'
 
   return (
-    <main className="relative min-h-screen grid-cols-1 bg-black text-white antialiased lg:grid lg:grid-cols-2">
+    <main className="relative min-h-screen grid-cols-1 surface-base lg:grid lg:grid-cols-2">
       {/* ══════ LEFT — Form ══════ */}
       <section
         ref={leftRef}
@@ -539,7 +539,7 @@ function LoginPageInner() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black" aria-hidden />}>
+    <Suspense fallback={<div className="min-h-screen surface-base" aria-hidden />}>
       <LoginPageInner />
     </Suspense>
   )

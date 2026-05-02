@@ -136,6 +136,71 @@ test.describe('Smoke: security headers (Wave R1)', () => {
   })
 })
 
+test.describe('Smoke: theme system (light/dark/system)', () => {
+  test('html tem data-theme=dark default no SSR (zero flash)', async ({ page }) => {
+    await page.goto('/')
+    const theme = await page.locator('html').getAttribute('data-theme')
+    expect(['dark', 'light']).toContain(theme)
+  })
+
+  test('boot script aplica light quando localStorage diz light', async ({ page, context }) => {
+    await context.addInitScript(() => {
+      localStorage.setItem('pralvex-theme', 'light')
+    })
+    await page.goto('/sobre')
+    const theme = await page.evaluate(() => document.documentElement.dataset.theme)
+    expect(theme).toBe('light')
+  })
+
+  test('toggle persiste apos reload', async ({ page }) => {
+    await page.goto('/sobre')
+    await page.evaluate(() => {
+      localStorage.setItem('pralvex-theme', 'light')
+      document.documentElement.setAttribute('data-theme', 'light')
+    })
+    await page.reload()
+    const theme = await page.evaluate(() => document.documentElement.dataset.theme)
+    expect(theme).toBe('light')
+  })
+
+  test('CSS tokens trocam com data-theme', async ({ page }) => {
+    await page.goto('/sobre')
+    // Dark default
+    await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'))
+    const darkBg = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--bg-base').trim()
+    )
+    expect(darkBg.toLowerCase()).toContain('132025')
+
+    // Light
+    await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'))
+    const lightBg = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--bg-base').trim()
+    )
+    expect(lightBg.toLowerCase()).toContain('f5efe6')
+  })
+})
+
+test.describe('Smoke: sitemap pos-rebrand (P0-3 fix)', () => {
+  test('robots.txt aponta pra pralvex.com.br nao lexai.com.br', async ({ request }) => {
+    const response = await request.get('/robots.txt')
+    expect(response.ok()).toBeTruthy()
+    const body = await response.text()
+    expect(body).toContain('pralvex.com.br')
+    expect(body).not.toContain('lexai.com.br')
+  })
+
+  test('sitemap.xml dinamico inclui pages legais + docs', async ({ request }) => {
+    const response = await request.get('/sitemap.xml')
+    expect(response.ok()).toBeTruthy()
+    const body = await response.text()
+    expect(body).toContain('pralvex.com.br')
+    expect(body).not.toContain('lexai.com.br')
+    expect(body).toContain('/dpa')
+    expect(body).toContain('/docs')
+  })
+})
+
 test.describe('Smoke: payload de erro genérico (não vaza schema)', () => {
   test('/api/chat 401 não vaza estrutura interna', async ({ request }) => {
     const response = await request.post('/api/chat', { data: { mensagem: 'x' } })

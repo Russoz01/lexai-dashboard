@@ -40,7 +40,7 @@ const pillars = [
 
 export default function SobrePage() {
   return (
-    <div className="relative isolate min-h-screen overflow-hidden bg-black text-white antialiased">
+    <div className="relative isolate min-h-screen overflow-hidden surface-base">
       <ScrollProgress />
       <AmbientMesh dust dustCount={8} intensity={0.5} />
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur-md md:px-10">

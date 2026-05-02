@@ -15,7 +15,8 @@ import CommandPalette from '@/components/CommandPalette'
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const supabase = createClient()
-  // Light mode foi removido — sempre dark v10
+  // Garante que ThemeProvider montou + leu localStorage antes do Header
+  // (que tem o ThemeToggle). Side-effect only — não usa retorno.
   useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<{ name: string; role: string } | null>(null)

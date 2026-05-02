@@ -175,7 +175,7 @@ export default async function SharedDocumentPage({
   const viewsCount = (doc.views || 0) + 1 // include this view
 
   return (
-    <div className="relative min-h-screen bg-black text-white antialiased">
+    <div className="relative min-h-screen surface-base">
       {/* ═══ Fundo ═══════════════════════════════════════════════════ */}
       <div
         aria-hidden

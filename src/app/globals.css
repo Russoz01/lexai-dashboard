@@ -11,8 +11,66 @@
    Light: warm cream #F5EFE6 + deep navy #132025
    ══════════════════════════════════════════════════════════════ */
 
-/* ── Tokens — Light (atelier cream) ────────────────────────── */
-:root,
+/* ── Default tokens (SSR/no-JS fallback = dark, brand default) ──
+   Antes era `:root, [data-theme="light"]` juntos — primeiro paint sem
+   JS aplicava cream antes do boot script setar data-theme=dark = FOUC.
+   Agora :root === dark; light é override explícito quando data-theme="light".
+   Audit fix P0-2 (2026-05-02). */
+:root {
+  /* Type-scale fluid tokens — independem de tema */
+  --type-display-1: clamp(36px, 6.5vw, 78px);
+  --type-display-2: clamp(28px, 4.8vw, 56px);
+  --type-display-3: clamp(22px, 3.2vw, 36px);
+  --type-body-lg:   clamp(15px, 1.4vw, 18px);
+  --type-body:      15px;
+  --type-meta:      clamp(11px, 0.85vw, 12.5px);
+
+  /* Dark default — replicado em [data-theme="dark"] abaixo */
+  --primary:        #F3EEE4;
+  --primary-light:  #e8dfcf;
+  --primary-lighter:#d6c9b3;
+  --accent:         #bfa68e;
+  --accent-light:   rgba(191,166,142,0.10);
+  --accent-light2:  #d4bea3;
+  --accent-dark:    #a88b6e;
+  --accent-bg:      rgba(191,166,142,0.06);
+  --stone:          #bfa68e;
+  --stone-soft:     rgba(191,166,142,0.10);
+  --stone-line:     rgba(191,166,142,0.14);
+  --bg:             transparent;
+  --bg-base:        #132025;
+  --bg-base-rgb:    19,32,37;
+  --bg-raise:       #18282e;
+  --sidebar-bg:     #0e181c;
+  --sidebar-text:   rgba(243,238,228,0.68);
+  --sidebar-active: #F3EEE4;
+  --sidebar-active-bar: #bfa68e;
+  --card-bg:        rgba(24,40,46,0.82);
+  --card-solid:     #18282e;
+  --text-primary:   #F3EEE4;
+  --text-secondary: rgba(243,238,228,0.64);
+  --text-muted:     rgba(243,238,228,0.48);
+  --success:        #9ec28b;
+  --success-light:  rgba(158,194,139,0.10);
+  --danger:         #d88977;
+  --danger-light:   rgba(216,137,119,0.10);
+  --warning:        #d4ae6a;
+  --warning-light:  rgba(212,174,106,0.08);
+  --info:           #d4bea3;
+  --celebrate:      #d4bea3;
+  --border:         rgba(191,166,142,0.10);
+  --hover:          rgba(191,166,142,0.05);
+  --input-bg:       rgba(14,24,28,0.92);
+  --shadow:         rgba(0,0,0,0.50);
+  --shadow-md:      rgba(0,0,0,0.65);
+  --glow:           rgba(191,166,142,0.22);
+  --glass:          rgba(14,24,28,0.78);
+  --glass-border:   rgba(191,166,142,0.12);
+  --glass-shadow:   0 1px 0 rgba(191,166,142,0.08), 0 10px 40px rgba(0,0,0,0.35);
+  --blur:           22px;
+}
+
+/* ── Tokens — Light (atelier cream, opt-in via data-theme="light") ── */
 [data-theme="light"] {
   /* Type-scale fluid tokens (audit polish 2026-05-02)
      clamp(min, fluid, max) — escala via vw entre breakpoints
@@ -130,6 +188,32 @@
   --glass-shadow:   0 1px 0 rgba(191,166,142,0.08), 0 10px 40px rgba(0,0,0,0.35);
   --blur:           22px;
 }
+
+/* ── Theme-aware utility classes (P0-1 audit fix 2026-05-02) ─────
+   Substituem `bg-black text-white` Tailwind em rotas marketing/legal.
+   `bg-black` é literal #000000 e ignora data-theme. Estas classes
+   trocam com tema, mantém antialiased.
+   ────────────────────────────────────────────────────────────── */
+.surface-base {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.surface-card {
+  background: var(--card-bg);
+  border-color: var(--card-border, var(--glass-border));
+  color: var(--text-primary);
+}
+.surface-glass {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
+  border: 1px solid var(--glass-border);
+}
+.text-on-surface { color: var(--text-primary); }
+.text-on-surface-muted { color: var(--text-secondary); }
+.border-on-surface { border-color: var(--border); }
 
 /* ── Base reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

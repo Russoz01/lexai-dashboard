@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /dashboard/
 
-Sitemap: https://lexai.com.br/sitemap.xml
+Sitemap: https://pralvex.com.br/sitemap.xml

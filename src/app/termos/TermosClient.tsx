@@ -534,7 +534,7 @@ const SECTIONS: Array<{
 
 export default function TermosClient() {
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
+    <div className="min-h-screen surface-base">
       {/* ═══ NAV ══════════════════════════════════════════════════════ */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/75 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">

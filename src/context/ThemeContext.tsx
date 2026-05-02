@@ -166,11 +166,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setPref(theme === 'dark' ? 'light' : 'dark')
   }, [theme, setPref])
 
+  // Audit fix P1-6 (2026-05-02): removido wrapper visibility:hidden — CLS desnecessário.
+  // O boot script no <head> de layout.tsx já aplica data-theme antes do primeiro
+  // paint, então não há FOUC a esconder. mounted é mantido só pra evitar SSR/CSR
+  // mismatch warning em consumers que dependem do tema (gracefully renderiza com
+  // default dark via :root tokens).
+  void mounted
   return (
     <ThemeContext.Provider value={{ pref, theme, setPref, toggleTheme }}>
-      <div style={{ visibility: mounted ? 'visible' : 'hidden' }}>
-        {children}
-      </div>
+      {children}
     </ThemeContext.Provider>
   )
 }
