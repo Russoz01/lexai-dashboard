@@ -33,8 +33,8 @@ export function LexPricing() {
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-white/65">
             Astrea cobra R$ 1.379 por usuário com limite de documentos. A Pralvex cobra entre{' '}
-            <span className="font-mono tabular-nums text-white/85">R$ 1.399 e R$ 1.599</span>{' '}
-            por advogado registrado — com documentos ilimitados a partir do Firma. Demo grátis de 50 min, sem cartão.
+            <span className="font-mono tabular-nums text-white/85">R$ 599 e R$ 1.599</span>{' '}
+            por advogado registrado — Solo entry-tier, Firma com documentos ilimitados, Enterprise com agentes customizados. Demo grátis de 50 min, sem cartão.
           </p>
         </Reveal>
 
@@ -42,12 +42,13 @@ export function LexPricing() {
           <LexPricingGrid />
         </Reveal>
 
-        {/* trust footer */}
+        {/* trust footer — atualizado pós-audit pra remover claims falsos
+            (PIX não implementado em subscription Stripe; NFS-e em roadmap) */}
         <Reveal delay={0.35}>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-white/40">
-            <span>Pix · cartão · boleto</span>
+            <span>Cartão · boleto</span>
             <span className="size-1 rounded-full bg-white/20" />
-            <span>NF emitida</span>
+            <span>Recibo eletrônico</span>
             <span className="size-1 rounded-full bg-white/20" />
             <span>Sem fidelidade</span>
             <span className="size-1 rounded-full bg-white/20" />

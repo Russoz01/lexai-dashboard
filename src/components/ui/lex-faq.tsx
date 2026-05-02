@@ -20,7 +20,7 @@ import { Reveal } from '@/components/ui/reveal'
 const faqs = [
   {
     q: 'Os 27 agentes são especializados em Direito brasileiro?',
-    a: 'Sim. CF/88, CLT, CDC, CPC, CC, legislação tributária, previdenciária e regulatória. Base jurisprudencial cobre STF, STJ, TRFs, TJs estaduais e tribunais superiores trabalhistas. Os 27 agentes estão ativos hoje — Resumidor, Pesquisador, Redator, Calculador, Legislação, Contestador, Recursos, Audiência, Parecerista, Revisor, Estrategista, Atendimento, Marketing IA, Professor, Simulado, Tradutor, Negociador, Consultor, Rotina, Planilhas, Compliance mais os 6 novos da v10.8: CNJ (DataJud), Comparador, Risco, Flashcards, Plano e Casos.',
+    a: 'Sim. Treinados em CF/88, CLT, CDC, CPC, CC, legislação tributária, previdenciária e regulatória. Base jurisprudencial cobre STF, STJ, TRFs, TJs estaduais e tribunais superiores trabalhistas. A plataforma tem 27 agentes ao todo; o acesso varia por plano: Solo libera 8 agentes essenciais, Escritório libera 18, Firma libera os 27, Enterprise inclui agentes customizados treinados no acervo do escritório.',
   },
   {
     q: 'Como funciona a validação contra o Provimento 205/2021 da OAB?',
@@ -32,7 +32,7 @@ const faqs = [
   },
   {
     q: 'Integra com PJe, e-SAJ, Projudi e calendário?',
-    a: 'Monitoramento processual via API nos planos Firma e Enterprise. Google Calendar, WhatsApp Business e Google Drive vêm por padrão em todos os planos. SSO via SAML, integração com tribunais e webhooks customizados disponíveis no Enterprise.',
+    a: 'Monitoramento processual via API exclusivo nos planos Firma e Enterprise. Google Calendar e Google Drive vêm a partir do Escritório. SSO via SAML, integração direta com tribunais e webhooks customizados disponíveis apenas no Enterprise. Solo tem o agente Calculador de prazos manual mas sem sync automático com tribunal.',
   },
   {
     q: 'E se a IA errar em uma peça? Quem responde?',
@@ -43,8 +43,8 @@ const faqs = [
     a: 'Plano Escritório: mesmo dia, conta criada em 5 minutos. Firma: 3 a 5 dias com onboarding dedicado, importação de modelos e treinamento do time. Enterprise: 2 a 4 semanas incluindo SSO, integrações com sistemas internos, agentes customizados ao nicho do escritório e treinamento. Migração de base histórica disponível em todos os planos.',
   },
   {
-    q: 'Por que o preço é fixo por escritório e não por advogado?',
-    a: 'Porque escritório que cresce não pode pagar imposto de crescimento. Astrea cobra R$ 1.379 por usuário — a 9 advogados, R$ 12.411/mês. A Pralvex cobra um único valor pelo escritório inteiro. Você contrata um analista júnior sem renegociar contrato de software. Sem fidelidade, cancela com um clique.',
+    q: 'Como é a cobrança — por escritório ou por advogado?',
+    a: 'Por advogado registrado. Solo R$ 599 (1 advogado), Escritório R$ 1.399 (até 5 advogados), Firma R$ 1.459 (6-15), Enterprise R$ 1.599 (16+). Astrea cobra R$ 1.379 por usuário sem variar feature set — a 9 advogados, R$ 12.411/mês com mesmo limite de docs. Pralvex Firma a 9 advogados sai R$ 13.131/mês mas com documentos ilimitados, todos os 27 agentes e onboarding 1:1 incluso. Sem fidelidade, cancela com um clique.',
   },
 ]
 

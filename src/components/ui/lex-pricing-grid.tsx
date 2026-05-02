@@ -56,19 +56,31 @@ interface Plano {
   features: { label: string; disponivel: boolean }[]
 }
 
+/* ─────────────────────────────────────────────────────────────────────
+ * Tiers redesign (2026-05-02 · audit R1 follow-up):
+ * Antes todos os 4 planos diziam "Todos os 27 agentes" — quebrava anchor
+ * pricing (sem justificativa pra pagar 2.7x mais caro). Agora cada tier
+ * tem feature set distinto, justificando o preço:
+ *
+ * Solo (R$599)        — 8 agentes essenciais, single advogado
+ * Escritório (R$1.399) — 18 agentes, até 5 advs, integração básica
+ * Firma (R$1.459)     — TODOS 27 agentes, 6-15 advs, onboarding + CRM
+ * Enterprise (R$1.599) — Firma + agentes CUSTOMIZADOS treinados pra escritório
+ * ───────────────────────────────────────────────────────────────────── */
 const PLANOS: Plano[] = [
   {
     id: 'solo', nome: 'Solo', tagline: 'Advogado autônomo',
     precoMensal: 599,
     economiaReal: 'Recupere 6h por semana em pesquisas e redação',
     features: [
-      { label: 'Todos os 27 agentes especializados', disponivel: true },
-      { label: '50 documentos por mês', disponivel: true },
+      { label: '8 agentes essenciais (Resumidor, Redator, Pesquisador, Calculador, Legislação, Risco, Contestador, Audiência)', disponivel: true },
+      { label: '50 análises de documentos por mês', disponivel: true },
       { label: 'Histórico de 30 dias', disponivel: true },
       { label: 'Suporte por email em 48h', disponivel: true },
-      { label: 'Exportação em PDF', disponivel: false },
-      { label: 'Equipe colaborativa', disponivel: false },
-      { label: 'Agentes customizados', disponivel: false },
+      { label: 'Exportação Word ABNT (sem PDF profissional)', disponivel: false },
+      { label: 'Equipe colaborativa (multi-usuário)', disponivel: false },
+      { label: 'Agentes especializados (Compliance, Marketing, OAB)', disponivel: false },
+      { label: 'Agentes customizados pro seu escritório', disponivel: false },
     ],
   },
   {
@@ -76,13 +88,14 @@ const PLANOS: Plano[] = [
     precoMensal: 1399,
     economiaReal: 'Recupere 12h por semana em pesquisas por advogado',
     features: [
-      { label: 'Todos os 27 agentes especializados', disponivel: true },
-      { label: '200 documentos por mês', disponivel: true },
-      { label: 'Histórico de 45 dias', disponivel: true },
+      { label: '18 agentes (8 essenciais + Parecerista, Consultor, Recursos, Estratégista, Negociador, Tradutor, Revisor, Atendimento, Simulado OAB, Professor)', disponivel: true },
+      { label: '200 análises de documentos por mês', disponivel: true },
+      { label: 'Histórico de 60 dias', disponivel: true },
       { label: 'Suporte por email em 24h', disponivel: true },
-      { label: 'Exportação em PDF profissional', disponivel: true },
-      { label: 'API própria para integração', disponivel: false },
-      { label: 'Agentes customizados', disponivel: false },
+      { label: 'Exportação Word ABNT + PDF profissional', disponivel: true },
+      { label: 'Equipe colaborativa até 5 advogados', disponivel: true },
+      { label: 'Agentes especializados (Compliance, Marketing, OAB)', disponivel: false },
+      { label: 'Agentes customizados pro seu escritório', disponivel: false },
     ],
   },
   {
@@ -90,27 +103,29 @@ const PLANOS: Plano[] = [
     precoMensal: 1459,
     economiaReal: 'Capacidade de atendimento +40% sem contratar',
     features: [
-      { label: 'Todos os 27 agentes especializados', disponivel: true },
+      { label: 'TODOS os 27 agentes (18 do Escritório + Compliance LGPD, Marketing-IA OAB, CRM, Planilhas, Calculador trabalhista, +5 verticais)', disponivel: true },
       { label: 'Documentos ilimitados', disponivel: true },
-      { label: 'Histórico de 90 dias', disponivel: true },
-      { label: 'Suporte prioritário em 3h', disponivel: true },
-      { label: 'Exportação em PDF profissional', disponivel: true },
-      { label: 'Sessão de onboarding dedicada', disponivel: true },
-      { label: 'CRM + Marketing em beta fechado', disponivel: true },
+      { label: 'Histórico de 180 dias', disponivel: true },
+      { label: 'Suporte prioritário em 3h (chat + email)', disponivel: true },
+      { label: 'Sessão de onboarding 1:1 + treinamento de equipe', disponivel: true },
+      { label: 'API REST básica para integrar com sistemas próprios', disponivel: true },
+      { label: 'Agentes customizados pro seu escritório', disponivel: false },
+      { label: 'Suporte WhatsApp 24h + Gerente dedicado', disponivel: false },
     ],
   },
   {
-    id: 'enterprise', nome: 'Enterprise', tagline: '16+ advogados',
+    id: 'enterprise', nome: 'Enterprise', tagline: '16+ advogados · White-label disponível',
     precoMensal: 1599,
     economiaReal: 'ROI de 8x sobre o investimento mensal',
     features: [
-      { label: 'Agentes customizados para o escritório', disponivel: true },
-      { label: 'Análises ilimitadas + fair use', disponivel: true },
-      { label: 'Histórico ilimitado e backup em nuvem', disponivel: true },
-      { label: 'Suporte via WhatsApp 24h + Gerente dedicado', disponivel: true },
-      { label: 'API privada + SLA de uptime', disponivel: true },
-      { label: 'Opção on-premise', disponivel: true },
-      { label: 'DPA incluso · CRM + Marketing liberados', disponivel: true },
+      { label: 'Tudo do Firma + agentes CUSTOMIZADOS treinados nos casos do escritório', disponivel: true },
+      { label: 'Análises ilimitadas + fair use generoso', disponivel: true },
+      { label: 'Histórico ilimitado + backup em nuvem dedicada', disponivel: true },
+      { label: 'Suporte WhatsApp 24h + Gerente de conta dedicado', disponivel: true },
+      { label: 'API privada com SLA 99.9% uptime', disponivel: true },
+      { label: 'Opção on-premise (servidor próprio)', disponivel: true },
+      { label: 'DPA contratado + auditoria LGPD anual', disponivel: true },
+      { label: 'White-label opcional (marca do escritório)', disponivel: true },
     ],
   },
 ]

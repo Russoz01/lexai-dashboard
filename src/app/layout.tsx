@@ -147,10 +147,10 @@ const jsonLd = {
     offerCount: 4,
     availability: 'https://schema.org/InStock',
     offers: [
-      { '@type': 'Offer', name: 'Solo',       price: '599',  priceCurrency: 'BRL', category: 'subscription', description: '1 advogado · 5 agentes essenciais', availability: 'https://schema.org/InStock' },
-      { '@type': 'Offer', name: 'Escritório', price: '1399', priceCurrency: 'BRL', category: 'subscription', description: '1-5 advogados · 27 agentes', availability: 'https://schema.org/InStock' },
-      { '@type': 'Offer', name: 'Firma',      price: '1459', priceCurrency: 'BRL', category: 'subscription', description: '6-15 advogados · 27 agentes', availability: 'https://schema.org/InStock' },
-      { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', category: 'subscription', description: '16+ advogados · agentes customizados', availability: 'https://schema.org/InStock' },
+      { '@type': 'Offer', name: 'Solo',       price: '599',  priceCurrency: 'BRL', category: 'subscription', description: 'Advogado autônomo · 8 agentes essenciais · 50 docs/mês', availability: 'https://schema.org/InStock' },
+      { '@type': 'Offer', name: 'Escritório', price: '1399', priceCurrency: 'BRL', category: 'subscription', description: '1-5 advogados · 18 agentes · 200 docs/mês · PDF profissional', availability: 'https://schema.org/InStock' },
+      { '@type': 'Offer', name: 'Firma',      price: '1459', priceCurrency: 'BRL', category: 'subscription', description: '6-15 advogados · TODOS 27 agentes · documentos ilimitados · API + onboarding', availability: 'https://schema.org/InStock' },
+      { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', category: 'subscription', description: '16+ advogados · agentes customizados treinados no escritório · DPA + on-premise + white-label', availability: 'https://schema.org/InStock' },
     ],
   },
   featureList: [
