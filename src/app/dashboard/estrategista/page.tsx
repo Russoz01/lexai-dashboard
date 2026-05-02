@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import {
@@ -16,6 +16,7 @@ import {
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 
 interface Acao {
   acao?: string; prazo?: string; fundamento?: string; entregavel?: string; responsavel?: string
@@ -202,9 +203,8 @@ export default function EstrategistaPage() {
           </div>
 
           {loading && (
-            <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>
-              <span style={{ display: 'inline-block', width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-              <div style={{ fontSize: 13 }}>Elaborando acoes, KPIs e matriz de risco...</div>
+            <div style={{ padding: 24 }}>
+              <AgentProgress loading steps={[...AGENT_STEPS.estrategista]} />
             </div>
           )}
 

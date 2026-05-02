@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /* ═════════════════════════════════════════════════════════════
  * /dashboard/em-breve — placeholder universal para rotas não-implementadas

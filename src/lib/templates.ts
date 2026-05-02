@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Template gallery used by /dashboard/modelos.
  * Each template is a starting-point prompt that gets piped into the
  * matching agent with the right system context pre-loaded.

@@ -1,4 +1,4 @@
-export interface AnonymizeResult {
+﻿export interface AnonymizeResult {
   text: string
   replacements: { tipo: string; original: string; mascara: string }[]
 }

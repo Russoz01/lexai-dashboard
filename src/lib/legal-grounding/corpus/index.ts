@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Corpus juridico consolidado - ponto de entrada unico para retrieval.
  */
 

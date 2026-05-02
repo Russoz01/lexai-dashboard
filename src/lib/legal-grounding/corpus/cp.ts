@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Codigo Penal (Decreto-Lei 2.848/1940) - dispositivos mais citados.
  */
 

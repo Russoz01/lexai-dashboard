@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
@@ -29,6 +29,7 @@ import {
   Gauge,
 } from 'lucide-react'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 
 // Paleta monochromatic noir-friendly — antes 10 cores Tailwind aleatorias
 // (red/amber/emerald/pink/etc) destoavam do DNA editorial atelier. Agora 4
@@ -294,10 +295,8 @@ export default function MonitorLegislativoPage() {
 
       {/* Loading */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-          <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>Gerando relatório legislativo...</div>
-          <div style={{ fontSize: 13 }}>Analisando mudanças legislativas, precedentes e regulatórias</div>
+        <div style={{ padding: '40px 0' }}>
+          <AgentProgress loading steps={[...AGENT_STEPS.legislacao]} />
         </div>
       ) : relatorio ? (
         <>

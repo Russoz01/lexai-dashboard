@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Feriados nacionais brasileiros + recesso forense
  *
  * Inclui feriados fixos e moveis (Pascoa, Carnaval, Sexta Santa, Corpus Christi)

@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ShieldCheck, Zap, ArrowRight, AlertTriangle, Info, Clipboard, Check, RotateCcw, Clock, Gauge } from 'lucide-react'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface ComplianceResult {
@@ -328,10 +329,8 @@ export default function CompliancePage() {
 
       {/* Loading */}
       {loading && (
-        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-          <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>Analisando compliance...</div>
-          <div style={{ fontSize: 13 }}>Mapeando riscos regulatórios para a área de {area}</div>
+        <div style={{ padding: '40px 0' }}>
+          <AgentProgress loading steps={[...AGENT_STEPS.compliance]} />
         </div>
       )}
 

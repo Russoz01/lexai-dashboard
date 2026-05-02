@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Legal grounding type definitions.
  *
  * The goal of this module is simple: make it impossible for any agent to cite

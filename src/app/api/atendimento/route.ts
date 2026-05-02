@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk'
+﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'

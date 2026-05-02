@@ -1,4 +1,4 @@
-/* ══════════════════════════════════════════════════════════════
+﻿/* ══════════════════════════════════════════════════════════════
  * motion-variants — DNA cinético compartilhado Pralvex
  * ──────────────────────────────────────────────────────────────
  * Conjunto de variants Framer Motion aplicado em todas as páginas

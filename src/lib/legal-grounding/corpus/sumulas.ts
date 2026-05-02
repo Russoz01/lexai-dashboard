@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Sumulas mais citadas - STF, STJ, TST.
  * Texto conforme enunciados oficiais. Vinculantes marcadas como tal.
  */

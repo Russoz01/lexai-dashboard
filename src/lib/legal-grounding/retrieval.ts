@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Retrieval engine - keyword match no corpus juridico.
  *
  * Dado um input de usuario + area opcional, retorna top-K dispositivos

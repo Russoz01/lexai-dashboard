@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import {
@@ -17,6 +17,7 @@ import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { LEGAL_AREAS_LABEL_MAP } from '@/lib/agents/taxonomy'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 
 interface Pergunta {
   pergunta?: string; racional?: string; red_flags?: string[]; followups?: string[]
@@ -197,9 +198,8 @@ export default function AtendimentoPage() {
           </div>
 
           {loading && (
-            <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>
-              <span style={{ display: 'inline-block', width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-              <div style={{ fontSize: 13 }}>Estruturando blocos de entrevista...</div>
+            <div style={{ padding: 24 }}>
+              <AgentProgress loading steps={[...AGENT_STEPS.consultor]} />
             </div>
           )}
 

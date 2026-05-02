@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Audit log helper — LGPD Art. 37 compliance layer.
  *
  * Centralizes all writes to `public.audit_log`. Uses the service-role

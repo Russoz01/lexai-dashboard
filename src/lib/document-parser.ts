@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /**
  * Universal document parser — handles PDF, DOCX, DOC, TXT.

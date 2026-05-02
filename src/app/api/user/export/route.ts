@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server'
+﻿import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { ok, unauthorized, serverError } from '@/lib/api-response'

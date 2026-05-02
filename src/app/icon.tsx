@@ -1,4 +1,4 @@
-import { ImageResponse } from 'next/og'
+﻿import { ImageResponse } from 'next/og'
 
 // App icon — favicon Pralvex (PX monograma em caixa champagne sobre noir)
 export const runtime = 'edge'

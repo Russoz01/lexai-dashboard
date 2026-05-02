@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Codigo Civil (Lei 10.406/2002) - dispositivos mais citados.
  */
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, type ComponentType, type SVGProps } from 'react'
 import {
@@ -12,6 +12,7 @@ import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { generateDocx, downloadBlob } from '@/lib/word-export'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 import { SkeletonResult } from '@/components/Skeleton'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
 
@@ -831,10 +832,7 @@ export default function RedatorPage() {
 
           {gerando ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
-                <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Gerando peça...</div>
-                <div style={{ fontSize: 13, marginTop: 4 }}>Elaborando com fundamentação legal</div>
-              </div>
+              <AgentProgress loading steps={[...AGENT_STEPS.redator]} />
               <SkeletonResult />
             </div>
           ) : peca ? (

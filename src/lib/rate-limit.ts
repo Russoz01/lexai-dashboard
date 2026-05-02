@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
+﻿import type { SupabaseClient } from '@supabase/supabase-js'
 
 const WINDOW_SECONDS = 60
 const MAX_REQUESTS_PER_WINDOW = 20 // 20 requests per minute per user

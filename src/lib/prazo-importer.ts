@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'

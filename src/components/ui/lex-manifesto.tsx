@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { motion } from 'framer-motion'
 import { Quote, Compass, Scale, MapPin } from 'lucide-react'

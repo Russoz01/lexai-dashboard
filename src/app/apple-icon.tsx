@@ -1,4 +1,4 @@
-import { ImageResponse } from 'next/og'
+﻿import { ImageResponse } from 'next/og'
 
 // Apple touch icon — PX Pralvex p/ iOS home screen
 export const runtime = 'edge'

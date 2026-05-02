@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import {
@@ -15,6 +15,7 @@ import {
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 
 interface FundamentoReforma {
   ponto?: string; argumentacao?: string; fundamento_legal?: string; jurisprudencia?: string
@@ -203,13 +204,8 @@ export default function RecursosPage() {
           </div>
 
           {loading && (
-            <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>
-              <span style={{
-                display: 'inline-block', width: 32, height: 32,
-                border: '3px solid var(--border)', borderTopColor: 'var(--accent)',
-                borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16,
-              }} />
-              <div style={{ fontSize: 13 }}>Analisando cabimento e razoes...</div>
+            <div style={{ padding: 24 }}>
+              <AgentProgress loading steps={[...AGENT_STEPS.recursos]} />
             </div>
           )}
 

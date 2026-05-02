@@ -25,6 +25,7 @@ import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 
 export default function NegociadorPage() {
   const [situacao, setSituacao] = useState('')
@@ -251,9 +252,8 @@ export default function NegociadorPage() {
             {r && <ConfidenceBadge confianca={r?.confianca} />}
           </div>
           {loading ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--text-muted)', minHeight: 280 }}>
-              <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-              <div style={{ fontWeight: 600 }}>Elaborando estratégia...</div>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, minHeight: 280 }}>
+              <AgentProgress loading steps={[...AGENT_STEPS.negociador]} />
             </div>
           ) : r ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, overflowY: 'auto', maxHeight: 600 }}>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /* ════════════════════════════════════════════════════════════════════
  * EditorialDivider — separador entre secoes da landing.

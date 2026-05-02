@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Belvo (Open Banking BR) integration — import bank transactions into Financeiro.
  *
  * Degrades gracefully: when BELVO_SECRET_ID / BELVO_SECRET_PASSWORD are missing,

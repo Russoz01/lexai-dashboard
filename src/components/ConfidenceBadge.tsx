@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { BadgeCheck, Zap } from 'lucide-react'
 

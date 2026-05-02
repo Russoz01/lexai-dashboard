@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useRef, useState } from 'react'
 import {
@@ -17,6 +17,7 @@ import { extractPdfWithMeta } from '@/lib/pdf-parser'
 import { anonymize, deAnonymize, type AnonymizeResult } from '@/lib/anonymizer'
 import { SkeletonResult } from '@/components/Skeleton'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import { FileText as FileTextIcon, Clock as ClockIcon, Gauge as GaugeIcon, ShieldCheck as ShieldIcon } from 'lucide-react'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -847,10 +848,8 @@ export default function ResumidorPage() {
 
             {/* Loading state */}
             {loading && (
-              <div className="section-card" style={{ padding: '24px' }}>
-                <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px', textAlign: 'center' }}>
-                  Analisando documento...
-                </p>
+              <div className="section-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <AgentProgress loading steps={[...AGENT_STEPS.resumidor]} />
                 <SkeletonResult />
               </div>
             )}

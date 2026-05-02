@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 interface SkeletonProps {
   width?: string | number

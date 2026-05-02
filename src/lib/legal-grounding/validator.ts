@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Validator de citacoes - pos-processamento.
  *
  * Extrai citacoes do texto/JSON gerado pelo agente e verifica contra:

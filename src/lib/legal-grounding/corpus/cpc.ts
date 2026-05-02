@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Codigo de Processo Civil (Lei 13.105/2015) - dispositivos mais citados.
  * Redacoes sintetizadas para grounding. Texto integral em planalto.gov.br.
  */

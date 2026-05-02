@@ -1,4 +1,4 @@
-// SM-2 spaced repetition algorithm — used by Professor flashcards.
+﻿// SM-2 spaced repetition algorithm — used by Professor flashcards.
 // Reference: https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
 //
 // quality scale:

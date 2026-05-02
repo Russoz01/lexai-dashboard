@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /**
  * UsagePanel — mostra o consumo do mes corrente e quanto falta ate o

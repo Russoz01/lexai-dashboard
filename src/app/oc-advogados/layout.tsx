@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import { Nav, Footer, FloatingWhatsApp } from './components'
 import s from './layout.module.css'
 

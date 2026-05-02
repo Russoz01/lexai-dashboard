@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /**
  * Biblioteca de modelos (/dashboard/modelos).

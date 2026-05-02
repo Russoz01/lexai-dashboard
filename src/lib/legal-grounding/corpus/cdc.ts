@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Codigo de Defesa do Consumidor (Lei 8.078/1990) - dispositivos mais citados.
  */
 

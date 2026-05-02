@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /**
  * ReferralPanel — painel "Indique e ganhe" no dashboard.

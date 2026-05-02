@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Search, AlertTriangle, BookOpen, Calendar, ExternalLink, ChevronDown, ChevronUp, User, Clipboard, Check, CheckCircle2, NotebookText, Layers, Hourglass, FileX, Clock, ShieldCheck, Gauge } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex, VerifiedBadge } from '@/components/ConfidenceBadge'
 import { SkeletonResult } from '@/components/Skeleton'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import { AgentHero } from '@/components/AgentHero'
 import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 import s from './page.module.css'
@@ -165,10 +166,7 @@ export default function PesquisadorPage() {
       {/* Resultados */}
       {buscando ? (
         <div className={s.loadingWrap}>
-          <div className={s.loadingCenter}>
-            <div className={s.loadingTitle}>Pesquisando com IA...</div>
-            <div className={s.loadingSub}>Analisando jurisprudência relevante</div>
-          </div>
+          <AgentProgress loading steps={[...AGENT_STEPS.pesquisador]} />
           <SkeletonResult />
         </div>
       ) : buscou && resultados.length === 0 ? (

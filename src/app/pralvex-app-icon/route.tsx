@@ -1,4 +1,4 @@
-import { ImageResponse } from 'next/og'
+﻿import { ImageResponse } from 'next/og'
 
 /* Pralvex App Icon — 512x512 PNG pra upload em Google OAuth consent screen,
  * Apple App Store, favicon HD, etc. Acessivel em /pralvex-app-icon

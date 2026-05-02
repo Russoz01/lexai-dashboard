@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useEffect, useMemo, useState } from 'react'
 import {
   Landmark,
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import {
   addDiasUteisForenses,
   breakdownPeriodo,
@@ -612,7 +613,9 @@ export default function CalculadorPage() {
             {resultado && <ConfidenceBadge confianca={resultado?.confianca} />}
           </div>
           {loading ? (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Calculando...</div>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+              <AgentProgress loading steps={[...AGENT_STEPS.calculador]} />
+            </div>
           ) : resultado ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, overflowY: 'auto', maxHeight: 500 }}>
               {resultado.resultado && <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--accent-light)', borderLeft: '3px solid var(--accent)' }}><strong style={{ color: 'var(--accent)', fontSize: 11, textTransform: 'uppercase' }}>Resultado</strong><p style={{ marginTop: 6, color: 'var(--text-primary)', fontWeight: 600 }}>{String(resultado.resultado)}</p></div>}

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { BookOpen, ExternalLink, ShieldCheck, AlertTriangle, Globe, ScrollText, Scale, ChevronDown, ChevronUp } from 'lucide-react'

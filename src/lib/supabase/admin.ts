@@ -1,4 +1,4 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+﻿import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 // Service-role client used by webhooks and trusted server-side jobs.
 // NEVER expose SUPABASE_SERVICE_ROLE_KEY to the client bundle.

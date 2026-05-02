@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CLT (Decreto-Lei 5.452/1943) - dispositivos mais citados.
  * Metadados para grounding - texto literal consultado via web_search.
  */

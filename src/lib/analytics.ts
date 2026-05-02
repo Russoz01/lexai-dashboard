@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Lightweight analytics wrapper. No-op if POSTHOG_KEY is not configured.
  * Use track() server-side or via fetch from client.
  */

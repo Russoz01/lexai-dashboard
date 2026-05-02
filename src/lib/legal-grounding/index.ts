@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Legal grounding - barrel export.
  *
  * Uso nas rotas API:

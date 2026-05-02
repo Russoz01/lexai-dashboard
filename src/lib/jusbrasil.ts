@@ -1,4 +1,4 @@
-/**
+﻿/**
  * JusBrasil API integration — real jurisprudence lookup for Pesquisador.
  *
  * Degrades gracefully: when JUSBRASIL_API_KEY is not set, returns [] and the

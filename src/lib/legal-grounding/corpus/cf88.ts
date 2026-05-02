@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Constituicao Federal de 1988 - dispositivos mais citados na advocacia.
  *
  * Fonte: texto consolidado em vigor em 2026-04, conforme EC 132/2023.

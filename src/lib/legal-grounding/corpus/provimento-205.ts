@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Provimento CNJ 205/2021 - regulamentacao do marketing juridico.
  * Relevante para agente Marketing IA (compliance com OAB).
  */

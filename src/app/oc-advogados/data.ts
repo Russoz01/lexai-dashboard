@@ -1,4 +1,4 @@
-/* ══════════════════════════════════════════════════════════════
+﻿/* ══════════════════════════════════════════════════════════════
    OC ADVOGADOS — Pure data + utilities (server-safe)
    NO 'use client' directive: this module must be importable from
    server components (generateMetadata, generateStaticParams).

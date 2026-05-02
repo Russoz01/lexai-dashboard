@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Prompt builder - injeta dispositivos verificados no system prompt.
  *
  * Uso tipico nas rotas API:

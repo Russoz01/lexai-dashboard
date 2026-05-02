@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 import { useState } from 'react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { Search, BookOpen, Landmark, ShieldAlert, FileText, NotebookText, Gavel, Briefcase, ShoppingBag, Coins, CheckSquare, ShieldCheck, Globe, Bookmark, ExternalLink, RotateCcw, Clock, Gauge } from 'lucide-react'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 export default function LegislacaoPage() {
@@ -144,8 +145,8 @@ export default function LegislacaoPage() {
       {erro && <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--danger-light)', color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{erro}</div>}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>Pesquisando legislação...</div>
+        <div style={{ padding: '40px 0' }}>
+          <AgentProgress loading steps={[...AGENT_STEPS.legislacao]} />
         </div>
       ) : resultado ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import {
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface Parecer {
@@ -319,10 +320,8 @@ export default function ConsultorPage() {
       {/* Loading skeleton */}
       {loading && (
         <div style={{ marginTop: 24 }}>
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)', marginBottom: 24 }}>
-            <span style={{ display: 'inline-block', width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-            <div style={{ fontWeight: 600, marginBottom: 6 }}>Elaborando parecer jurídico...</div>
-            <div style={{ fontSize: 13 }}>Analisando legislação, doutrina e jurisprudência</div>
+          <div style={{ marginBottom: 24 }}>
+            <AgentProgress loading steps={[...AGENT_STEPS.consultor]} />
           </div>
           <div className="section-card" style={{ padding: '28px 32px' }}>
             <div className="skeleton-line" style={{ width: '65%', height: 24, marginBottom: 16 }} />

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 export async function extractTextFromPdf(file: File): Promise<string> {
   // Use pdfjs-dist via dynamic import (avoids SSR issues)

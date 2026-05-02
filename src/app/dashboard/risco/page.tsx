@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import {
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
+import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface PontoRisco {
@@ -186,9 +187,7 @@ export default function RiscoPage() {
           )}
 
           {loading && (
-            <div style={{ color: 'var(--text-muted)', fontSize: 13, lineHeight: 1.7 }}>
-              Calculando score ponderado e identificando top 3 pontos críticos…
-            </div>
+            <AgentProgress loading steps={[...AGENT_STEPS.risco]} />
           )}
 
           {risco && (

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 // Last-resort error boundary for the root layout.
 // Fires when even error.tsx failed (e.g. layout itself threw during render).
