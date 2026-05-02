@@ -23,7 +23,8 @@ Sentry.init({
 
   integrations: [
     Sentry.replayIntegration({
-      maskAllText: true,  // LGPD — never leak client data
+      maskAllText: true,    // LGPD — never leak client data
+      maskAllInputs: true,  // P1 audit fix: form inputs (CPF, email, senha) nunca em replay
       blockAllMedia: true,
     }),
   ],

@@ -84,6 +84,9 @@ export async function POST(req: NextRequest) {
       client_reference_id: user.id,
       metadata: { auth_user_id: user.id, plan },
       line_items: [{ price: priceId, quantity: 1 }],
+      // P1 audit fix (2026-05-02): UI promete PIX/boleto mas backend só
+      // enviava 'card' implícito. Stripe BR já suporta os 3 métodos.
+      payment_method_types: ['card', 'boleto'],
       subscription_data: {
         // Trial Pralvex e de 50 min DB-side antes do checkout. Quando user
         // chega aqui ele ja decidiu pagar — Stripe cobra imediato. Nao tem

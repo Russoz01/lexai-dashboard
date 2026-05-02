@@ -31,36 +31,36 @@ import { useEffect, useState } from 'react'
 
 const CLARITY_PROJECT_ID = 'wkg0mc8mwv'
 const CONSENT_STORAGE_KEY = 'pralvex-cookie-consent'
+const CONSENT_EVENT = 'pralvex-consent-change'
 
 export function MicrosoftClarity() {
   const [consentGiven, setConsentGiven] = useState(false)
 
-  // Verifica consentimento do CookieConsent banner — só carrega se 'all'
+  // P1 audit fix (2026-05-02): event-driven em vez de polling 500ms.
+  // Antes: setInterval(handleStorage, 500) drenava CPU/bateria em todo
+  // visitante. Agora: ouve CustomEvent emitido pelo CookieConsent +
+  // checa localStorage no mount (TTL 6 meses).
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production') return
 
-    try {
-      const consent = sessionStorage.getItem(CONSENT_STORAGE_KEY)
-      if (consent === 'all') setConsentGiven(true)
-    } catch {
-      // sessionStorage indisponível (private mode etc) — não carrega
-    }
-
-    // Listener: se user aceitar cookies durante a sessão, ativa Clarity
-    const handleStorage = () => {
+    const checkConsent = () => {
       try {
-        const consent = sessionStorage.getItem(CONSENT_STORAGE_KEY)
+        const consent = localStorage.getItem(CONSENT_STORAGE_KEY)
         if (consent === 'all') setConsentGiven(true)
-      } catch { /* noop */ }
+      } catch { /* localStorage indisponível */ }
     }
-    window.addEventListener('storage', handleStorage)
 
-    // Re-checa após 500ms (CookieConsent escreve sessionStorage no clique)
-    const interval = window.setInterval(handleStorage, 500)
+    checkConsent()
+
+    // Event listener: dispara quando CookieConsent persiste decisão
+    const handleConsentChange = (e: Event) => {
+      const detail = (e as CustomEvent<{ value: string }>).detail
+      if (detail?.value === 'all') setConsentGiven(true)
+    }
+    window.addEventListener(CONSENT_EVENT, handleConsentChange)
 
     return () => {
-      window.removeEventListener('storage', handleStorage)
-      window.clearInterval(interval)
+      window.removeEventListener(CONSENT_EVENT, handleConsentChange)
     }
   }, [])
 

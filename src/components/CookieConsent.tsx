@@ -2,37 +2,66 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, X } from 'lucide-react'
 
+// P1 audit fix (2026-05-02): localStorage em vez de sessionStorage —
+// LGPD exige consent persistente + revogável. Antes, banner reaparecia
+// a cada nova aba/sessão. Agora persiste 6 meses (TTL via timestamp).
 const STORAGE_KEY = 'pralvex-cookie-consent'
+const STORAGE_TS_KEY = 'pralvex-cookie-consent-ts'
+const TTL_MS = 1000 * 60 * 60 * 24 * 180 // 6 meses
+const CONSENT_EVENT = 'pralvex-consent-change'
+
+export type ConsentValue = 'all' | 'necessary'
+
+function isConsentFresh(): boolean {
+  try {
+    const ts = Number(localStorage.getItem(STORAGE_TS_KEY))
+    return Number.isFinite(ts) && ts > 0 && (Date.now() - ts) < TTL_MS
+  } catch {
+    return false
+  }
+}
+
+function persistConsent(value: ConsentValue) {
+  try {
+    localStorage.setItem(STORAGE_KEY, value)
+    localStorage.setItem(STORAGE_TS_KEY, String(Date.now()))
+  } catch { /* noop */ }
+  // Emit CustomEvent pra Clarity/Sentry/etc. ouvirem (event-driven, não polling).
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: { value } }))
+  }
+}
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     try {
-      const stored = sessionStorage.getItem(STORAGE_KEY)
-      if (!stored) {
-        const t = window.setTimeout(() => setVisible(true), 400)
-        return () => window.clearTimeout(t)
-      }
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored && isConsentFresh()) return
+      const t = window.setTimeout(() => setVisible(true), 400)
+      return () => window.clearTimeout(t)
     } catch {
-      // sessionStorage may be unavailable (private mode, blocked cookies) — still show banner
+      // localStorage unavailable (private mode, blocked) — show banner
       setVisible(true)
     }
   }, [])
 
   const handleAcceptAll = () => {
-    try {
-      sessionStorage.setItem(STORAGE_KEY, 'all')
-    } catch { /* noop */ }
+    persistConsent('all')
     setVisible(false)
   }
 
   const handleNecessaryOnly = () => {
-    try {
-      sessionStorage.setItem(STORAGE_KEY, 'necessary')
-    } catch { /* noop */ }
+    persistConsent('necessary')
+    setVisible(false)
+  }
+
+  const handleDismiss = () => {
+    // Dismiss = trata como "necessary only" pra cumprir LGPD opt-in
+    persistConsent('necessary')
     setVisible(false)
   }
 
@@ -90,13 +119,35 @@ export function CookieConsent() {
             Cookies e privacidade
           </div>
           <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.62)', lineHeight: 1.5, margin: 0 }}>
-            Usamos cookies para autenticacao (necessarios) e analytics (opcional). Voce pode revogar o consentimento a qualquer momento em{' '}
+            Usamos cookies para autenticação (necessários) e analytics (opcional). Você pode revogar o consentimento a qualquer momento em{' '}
             <Link href="/privacidade" style={{ color: '#bfa68e', textDecoration: 'underline' }}>
               /privacidade
             </Link>
             . LGPD compliant.
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={handleDismiss}
+          aria-label="Fechar banner de cookies"
+          style={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            background: 'transparent',
+            border: 'none',
+            color: 'rgba(255,255,255,0.5)',
+            cursor: 'pointer',
+            padding: 6,
+            borderRadius: 6,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <X size={14} strokeWidth={2} aria-hidden />
+        </button>
 
         <div
           className="pralvex-cookie-buttons"
@@ -123,7 +174,7 @@ export function CookieConsent() {
               fontFamily: 'inherit',
             }}
           >
-            Apenas necessarios
+            Apenas necessários
           </button>
           <button
             type="button"

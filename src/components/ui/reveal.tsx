@@ -1,14 +1,20 @@
 ﻿'use client'
 
-import { motion, type Variants } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { motion, useReducedMotion, type Variants } from 'framer-motion'
+import { useEffect, useState, type ReactNode } from 'react'
 
 /**
  * Reveal — wrapper leve que anima filhos on-scroll usando framer-motion.
- * Usa `whileInView` (idiomatico) para garantir disparo confiavel.
  *
- * Fix (v3): removido `motion.create(Tag)` dinamico. Garante que elementos
- * ja visiveis no viewport inicial disparem normalmente.
+ * Fix (v4 · 2026-05-02): fallback de visibilidade pra evitar conteúdo invisível
+ * permanente. Antes, `whileInView` podia falhar em headless browsers,
+ * IntersectionObserver buggy ou prefers-reduced-motion → conteúdo opacity: 0
+ * eternamente (P0 audit: /termos /privacidade /empresas renderizavam void preto).
+ *
+ * Estratégias combinadas:
+ * 1. useReducedMotion → animate=visible imediato (a11y)
+ * 2. Safety timeout de 1.2s → force-visible se whileInView não disparou
+ * 3. viewport.once + amount minimo pra evitar miss em containers altos
  */
 export function Reveal({
   children,
@@ -21,6 +27,16 @@ export function Reveal({
   as?: 'div' | 'section' | 'header' | 'span' | 'p' | 'article' | 'li' | 'ul'
   className?: string
 }) {
+  const reduced = useReducedMotion()
+  const [forceVisible, setForceVisible] = useState(false)
+
+  useEffect(() => {
+    // Safety net: se Reveal não disparou em 1.2s (IntersectionObserver miss,
+    // headless browser, etc), força visível pra evitar conteúdo invisível.
+    const timer = setTimeout(() => setForceVisible(true), 1200)
+    return () => clearTimeout(timer)
+  }, [])
+
   const variants: Variants = {
     hidden:  { opacity: 0, y: 16, filter: 'blur(8px)' },
     visible: {
@@ -41,11 +57,26 @@ export function Reveal({
     : as === 'ul'     ? motion.ul
     : motion.div
 
+  // Se reduced-motion ou safety timeout disparou, animate=visible direto
+  // (skipa whileInView completamente, garante conteúdo sempre visível).
+  if (reduced || forceVisible) {
+    return (
+      <MotionComponent
+        initial={reduced ? 'visible' : 'hidden'}
+        animate="visible"
+        variants={variants}
+        className={className}
+      >
+        {children}
+      </MotionComponent>
+    )
+  }
+
   return (
     <MotionComponent
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '0px 0px -60px 0px' }}
+      viewport={{ once: true, margin: '0px 0px -60px 0px', amount: 0.05 }}
       variants={variants}
       className={className}
     >

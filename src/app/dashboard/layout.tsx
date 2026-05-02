@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 import { createClient } from '@/lib/supabase'
 import { useTheme } from '@/context/ThemeContext'
 import Sidebar from '@/components/Sidebar'
@@ -30,6 +31,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           return
         }
         const meta = data.user.user_metadata
+        const plano = (data.user.app_metadata?.plano as string) || 'unknown'
+        // P0 audit fix: Sentry user context — sem isso, errors chegam sem
+        // userId/plan = impossível triagem por tier (Founding vs Solo).
+        // Email NUNCA setado (LGPD); só id + plano (não-PII).
+        Sentry.setUser({ id: data.user.id, plano })
         setUser({
           name: meta?.nome || data.user.email?.split('@')[0] || 'Usuario',
           role: meta?.role || 'Advogado',

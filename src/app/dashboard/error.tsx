@@ -28,7 +28,13 @@ export default function DashboardError({
     console.error('[DashboardError]', error.message, { digest: error.digest })
     Sentry.captureException(error, {
       tags: { source: 'dashboard-error-boundary' },
-      extra: { digest: error.digest },
+      extra: {
+        digest: error.digest,
+        // P2 audit fix: extra context pra triagem (route, UA, viewport)
+        pathname: typeof window !== 'undefined' ? window.location.pathname : 'unknown',
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 200) : 'unknown',
+        viewport: typeof window !== 'undefined' ? `${window.innerWidth}x${window.innerHeight}` : 'unknown',
+      },
     })
   }, [error])
 

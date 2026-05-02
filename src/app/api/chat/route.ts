@@ -297,7 +297,10 @@ export async function POST(req: NextRequest) {
               model: modelo,
               max_tokens: modo === 'complexo' ? 3500 : 1800,
               system: [
-                { type: 'text' as const, text: buildSystemPrompt(fidelidade) },
+                // P1 audit fix (2026-05-02): cache_control ephemeral economiza
+                // ~80% input tokens em chat (agente mais chamado). Antes estava
+                // sem cache no hot path mais usado.
+                { type: 'text' as const, text: buildSystemPrompt(fidelidade), cache_control: { type: 'ephemeral' as const } },
               ],
               tools: [ROUTING_TOOL],
               messages,
@@ -405,7 +408,8 @@ export async function POST(req: NextRequest) {
       model: modelo,
       max_tokens: modo === 'complexo' ? 3500 : 1800,
       system: [
-        { type: 'text' as const, text: buildSystemPrompt(fidelidade) },
+        // P1 audit fix: cache_control ephemeral também no legacy path.
+        { type: 'text' as const, text: buildSystemPrompt(fidelidade), cache_control: { type: 'ephemeral' as const } },
       ],
       tools: [ROUTING_TOOL],
       messages,

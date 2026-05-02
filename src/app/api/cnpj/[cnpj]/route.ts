@@ -75,7 +75,49 @@ function isValidCnpj(cnpj: string): boolean {
   return d1 === Number(c[12]) && d2 === Number(c[13])
 }
 
+// P1 audit fix (2026-05-02): rate-limit IP-based in-memory pra evitar uso
+// como proxy CNPJ gratuito (DDoS amplification + esgotamento rate-limit
+// upstream BrasilAPI/ReceitaWS). Edge runtime = in-memory por instância,
+// limitação imperfeita mas reduz superfície. Limite: 10 req/min por IP.
+const ipRateLimit = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX = 10
+
+function checkIpRateLimit(ip: string): { ok: boolean; remaining: number; resetAt: number } {
+  const now = Date.now()
+  const entry = ipRateLimit.get(ip)
+  if (!entry || entry.resetAt < now) {
+    ipRateLimit.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS })
+    return { ok: true, remaining: RATE_LIMIT_MAX - 1, resetAt: now + RATE_LIMIT_WINDOW_MS }
+  }
+  entry.count++
+  return {
+    ok: entry.count <= RATE_LIMIT_MAX,
+    remaining: Math.max(0, RATE_LIMIT_MAX - entry.count),
+    resetAt: entry.resetAt,
+  }
+}
+
 export async function GET(req: NextRequest, ctx: { params: Promise<{ cnpj: string }> }) {
+  // Rate-limit por IP (best-effort em edge runtime distribuído)
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim()
+    || req.headers.get('x-real-ip')
+    || 'unknown'
+  const rl = checkIpRateLimit(ip)
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: 'Muitas consultas CNPJ. Aguarde 1 minuto.', code: 'rate_limited' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(Math.ceil((rl.resetAt - Date.now()) / 1000)),
+          'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
+          'X-RateLimit-Remaining': String(rl.remaining),
+        },
+      },
+    )
+  }
+
   const { cnpj: raw } = await ctx.params
   const cnpj = cleanCnpj(raw)
 

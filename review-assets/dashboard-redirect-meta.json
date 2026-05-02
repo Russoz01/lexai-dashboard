@@ -1,0 +1,38 @@
+{
+  "slug": "dashboard-redirect",
+  "path": "/dashboard",
+  "finalUrl": "https://pralvex.com.br/login?error=session_expired&next=%2Fdashboard",
+  "status": 200,
+  "ttfb": 314,
+  "htmlSizeKB": 61,
+  "perfMetrics": {
+    "domContentLoaded": 306.5,
+    "loadComplete": 439.39999997615814,
+    "firstContentfulPaint": 548,
+    "transferSize": 9660,
+    "encodedBodySize": 9360
+  },
+  "elementStats": {
+    "links": 6,
+    "buttons": 6,
+    "forms": 1,
+    "inputs": 2,
+    "images": 0,
+    "h1Count": 1,
+    "altMissing": 0,
+    "jsonLdScripts": 4
+  },
+  "consoleErrors": [
+    "[error] Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+  ],
+  "networkFailures": [
+    "GET https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516 — csp"
+  ],
+  "headers": {
+    "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://font",
+    "hsts": "max-age=31536000; includeSubDomains",
+    "cache": "public, max-age=0, must-revalidate",
+    "xVercelCache": "HIT",
+    "contentType": "text/html; charset=utf-8"
+  }
+}

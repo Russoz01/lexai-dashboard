@@ -67,10 +67,22 @@ function useScrollReveal() {
   useEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const nodes = document.querySelectorAll<HTMLElement>('[data-reveal]')
-    if (prefersReduced) {
+
+    // Se reduced-motion ou IntersectionObserver não suportado, revela tudo já.
+    if (prefersReduced || typeof IntersectionObserver === 'undefined') {
       nodes.forEach((n) => n.setAttribute('data-revealed', 'true'))
       return
     }
+
+    // Fix v4 (2026-05-02): nodes acima do fold revelam imediato pra evitar
+    // dependência de scroll (caso IO miss em headless / SSG bots).
+    nodes.forEach((n) => {
+      const rect = n.getBoundingClientRect()
+      if (rect.top < window.innerHeight) {
+        n.setAttribute('data-revealed', 'true')
+      }
+    })
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -80,10 +92,22 @@ function useScrollReveal() {
           }
         })
       },
-      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' },
+      { threshold: 0.05, rootMargin: '0px 0px -60px 0px' },
     )
-    nodes.forEach((n) => io.observe(n))
-    return () => io.disconnect()
+    nodes.forEach((n) => {
+      if (n.getAttribute('data-revealed') !== 'true') io.observe(n)
+    })
+
+    // Safety net: se algum nó não revelou em 1.5s, revela tudo
+    const safetyTimer = setTimeout(() => {
+      nodes.forEach((n) => n.setAttribute('data-revealed', 'true'))
+      io.disconnect()
+    }, 1500)
+
+    return () => {
+      io.disconnect()
+      clearTimeout(safetyTimer)
+    }
   }, [])
 }
 

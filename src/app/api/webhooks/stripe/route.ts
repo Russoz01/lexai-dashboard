@@ -159,6 +159,35 @@ export async function POST(req: NextRequest) {
         break
       }
 
+      // P0 audit fix (2026-05-02): refund flow não tratado antes — chargeback
+      // processado pelo Stripe, mas Pralvex mantinha acesso. PCI-DSS req.
+      // tracking + compliance fiscal BR não baixava receita reconhecida.
+      case 'charge.refunded': {
+        const charge = event.data.object as Stripe.Charge
+        const customerId = typeof charge.customer === 'string' ? charge.customer : charge.customer?.id
+        if (customerId) {
+          // Revoga acesso (volta pra free) e marca refunded pra audit fiscal
+          const { error } = await supabase
+            .from('usuarios')
+            .update({
+              plano: 'free',
+              subscription_status: 'canceled',
+              stripe_subscription_id: null,
+            })
+            .eq('stripe_customer_id', customerId)
+          if (error) throw error
+          // Log fiscal — operador pode auditar refunds para baixar receita
+          // eslint-disable-next-line no-console
+          console.warn('[stripe webhook] charge.refunded', {
+            chargeId: charge.id,
+            amount: charge.amount_refunded,
+            currency: charge.currency,
+            customerId,
+          })
+        }
+        break
+      }
+
       default:
         // Ignore unhandled events
         break

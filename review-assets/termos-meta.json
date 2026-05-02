@@ -1,0 +1,42 @@
+{
+  "slug": "termos",
+  "path": "/termos",
+  "finalUrl": "https://pralvex.com.br/termos",
+  "status": 200,
+  "ttfb": 396,
+  "htmlSizeKB": 90,
+  "perfMetrics": {
+    "domContentLoaded": 366.59999999403954,
+    "loadComplete": 684,
+    "firstContentfulPaint": 1412,
+    "transferSize": 18514,
+    "encodedBodySize": 18214
+  },
+  "elementStats": {
+    "links": 27,
+    "buttons": 2,
+    "forms": 0,
+    "inputs": 0,
+    "images": 0,
+    "h1Count": 1,
+    "altMissing": 0,
+    "jsonLdScripts": 4
+  },
+  "consoleErrors": [
+    "[error] Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.",
+    "[warning] [.WebGL-0x1644011d4c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x1644011d4c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x1644011d4c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x1644011d4c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "networkFailures": [
+    "GET https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516 — csp"
+  ],
+  "headers": {
+    "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://font",
+    "hsts": "max-age=31536000; includeSubDomains",
+    "cache": "public, max-age=0, must-revalidate",
+    "xVercelCache": "HIT",
+    "contentType": "text/html; charset=utf-8"
+  }
+}

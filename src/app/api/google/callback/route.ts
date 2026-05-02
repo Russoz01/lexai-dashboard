@@ -1,4 +1,5 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
 import { exchangeCodeForToken, isGoogleCalendarConfigured } from '@/lib/google-calendar'
 
@@ -28,8 +29,17 @@ export async function GET(req: NextRequest) {
     }
 
     // ── CSRF state validation ───────────────────────────────────────────────
+    // P2 audit fix (2026-05-02): timingSafeEqual em vez de !== pra evitar
+    // timing attacks na recuperação parcial do state nonce. Padrão consistente
+    // com cron/trial-reminder/route.ts.
     const stateCookie = req.cookies.get('google_oauth_state')?.value
-    if (!stateParam || !stateCookie || stateParam !== stateCookie) {
+    if (!stateParam || !stateCookie) {
+      dashboardUrl.searchParams.set('google', 'csrf_error')
+      return NextResponse.redirect(dashboardUrl)
+    }
+    const aBuf = Buffer.from(stateParam)
+    const bBuf = Buffer.from(stateCookie)
+    if (aBuf.length !== bBuf.length || !timingSafeEqual(aBuf, bBuf)) {
       dashboardUrl.searchParams.set('google', 'csrf_error')
       return NextResponse.redirect(dashboardUrl)
     }
