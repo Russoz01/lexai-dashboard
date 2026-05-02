@@ -6,6 +6,7 @@ import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingSta
 import { parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -104,7 +105,7 @@ export async function POST(req: NextRequest) {
       .rpc('check_and_charge', { p_auth_user_id: user.id, p_agente: 'consultor' })
 
     if (chargeErr) {
-      console.error('[API /consultor] check_and_charge rpc error:', chargeErr.message, chargeErr.code)
+      safeLog.error('[API /consultor] check_and_charge rpc error:', chargeErr.message, chargeErr.code)
       return NextResponse.json({ error: 'Erro ao validar quota.' }, { status: 500 })
     }
 
@@ -122,7 +123,7 @@ export async function POST(req: NextRequest) {
           quota: { used: usado, limit: limite, plan: plano },
         }, { status: 429 })
       }
-      console.error('[API /consultor] check_and_charge returned ok:false with unknown reason:', charge.reason)
+      safeLog.error('[API /consultor] check_and_charge returned ok:false with unknown reason:', charge.reason)
       return NextResponse.json({ error: 'Erro ao validar quota.' }, { status: 500 })
     }
 
@@ -144,8 +145,7 @@ export async function POST(req: NextRequest) {
     const grounding = buildGroundingContext(`${pergunta} ${area} ${contexto}`, { area: area || undefined, topK: 8 })
     const gstats = groundingStats(grounding)
     if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.log('[API /consultor] grounding:', gstats)
+      safeLog.debug('[API /consultor] grounding:', gstats)
     }
 
     let userMessage = `Questao juridica para parecer:\n\n${pergunta}`
@@ -209,8 +209,7 @@ export async function POST(req: NextRequest) {
     // Validate citations against verified corpus and extract URLs.
     const validation = validateCitations(responseText)
     if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.log('[API /consultor] validation:', validation.stats, 'warnings:', validation.warnings.length)
+      safeLog.debug('[API /consultor] validation:', validation.stats, 'warnings:', validation.warnings.length)
     }
 
     if (usuarioId) {
@@ -221,7 +220,7 @@ export async function POST(req: NextRequest) {
         resposta_agente: `Parecer sobre ${parecerData?.titulo || pergunta.slice(0, 100)}`,
       })
       if (histErr) {
-        console.error('[API /consultor] historico insert error:', histErr.message, histErr.code)
+        safeLog.error('[API /consultor] historico insert error:', histErr.message, histErr.code)
       }
     }
 
@@ -236,7 +235,7 @@ export async function POST(req: NextRequest) {
     const errName = err instanceof Error ? err.name : 'Unknown'
     const errMsg = err instanceof Error ? err.message : String(err)
     const errStack = err instanceof Error ? err.stack?.split('\n').slice(0, 5).join(' | ') : undefined
-    console.error('[API /consultor] unhandled:', errName, '-', errMsg, '|', errStack ?? '')
+    safeLog.error('[API /consultor] unhandled:', errName, '-', errMsg, '|', errStack ?? '')
 
     // Demo-mode fallback (Wave C5) — fallback tem {parecer:...}, falta fontes + grounding_stats
     if (isDemoFallbackEnabled() && isRetryableError(err)) {

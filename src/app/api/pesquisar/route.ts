@@ -7,6 +7,7 @@ import { buscarJurisprudenciaReal, isJusBrasilConfigured } from '@/lib/jusbrasil
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest) {
     const gstats = groundingStats(grounding)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /pesquisar] grounding:', gstats)
+      safeLog.debug('[API /pesquisar] grounding:', gstats)
     }
 
     // Wave C5 fix: AbortController 90s — Anthropic + WEB_SEARCH_TOOL pode
@@ -175,7 +176,7 @@ export async function POST(req: NextRequest) {
     const validation = validateCitations(responseText)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /pesquisar] validation:', validation.stats, 'warnings:', validation.warnings.length)
+      safeLog.debug('[API /pesquisar] validation:', validation.stats, 'warnings:', validation.warnings.length)
     }
 
     events.agentUsed(user.id, 'pesquisador', 'unknown').catch(() => {})

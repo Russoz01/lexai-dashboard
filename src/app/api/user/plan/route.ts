@@ -1,5 +1,6 @@
 ﻿import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { safeLog } from '@/lib/safe-log'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,7 +31,7 @@ export async function GET() {
 
     if (dbError && process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.error('[api/user/plan] db error:', dbError.message)
+      safeLog.error('[api/user/plan] db error:', dbError.message)
     }
 
     // Founder flag vem direto da DB — não há vetor de spoofing
@@ -77,7 +78,7 @@ export async function GET() {
   } catch (e) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.error('[api/user/plan] error:', e)
+      safeLog.error('[api/user/plan] error:', e)
     }
     return NextResponse.json({ plano: 'free', authenticated: false, error: 'internal' }, { status: 500 })
   }

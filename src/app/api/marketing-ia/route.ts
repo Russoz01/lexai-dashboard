@@ -6,6 +6,7 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { validateMarketingOutput } from '@/lib/oab-validator'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -145,7 +146,7 @@ export async function POST(req: NextRequest) {
     const conteudo = validation.sanitized
     if (validation.violations.length > 0) {
       // eslint-disable-next-line no-console
-      console.warn('[marketing-ia OAB violations]', {
+      safeLog.warn('[marketing-ia OAB violations]', {
         userId: user.id,
         plataforma,
         violations: validation.violations.map(v => ({ rule: v.rule, severity: v.severity })),

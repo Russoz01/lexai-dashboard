@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
+import { safeLog } from '@/lib/safe-log'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error'
     // eslint-disable-next-line no-console
-    console.error('[api/stripe/portal] error:', msg)
+    safeLog.error('[api/stripe/portal] error:', msg)
     return NextResponse.json({ error: 'Failed to create portal session' }, { status: 500 })
   }
 }

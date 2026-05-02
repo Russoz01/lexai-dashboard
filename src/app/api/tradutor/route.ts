@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
 import { parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
       .rpc('check_and_charge', { p_auth_user_id: user.id, p_agente: 'tradutor' })
 
     if (chargeErr) {
-      console.error('[API /tradutor] check_and_charge rpc error:', chargeErr.message, chargeErr.code)
+      safeLog.error('[API /tradutor] check_and_charge rpc error:', chargeErr.message, chargeErr.code)
       return NextResponse.json({ error: 'Erro ao validar quota.' }, { status: 500 })
     }
 
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
           quota: { used: usado, limit: limite, plan: plano },
         }, { status: 429 })
       }
-      console.error('[API /tradutor] check_and_charge returned ok:false with unknown reason:', charge.reason)
+      safeLog.error('[API /tradutor] check_and_charge returned ok:false with unknown reason:', charge.reason)
       return NextResponse.json({ error: 'Erro ao validar quota.' }, { status: 500 })
     }
 
@@ -130,7 +131,7 @@ export async function POST(req: NextRequest) {
         resposta_agente: `Traducao juridica de ${tipo} de ${origem} para ${destino}`,
       })
       if (histErr) {
-        console.error('[API /tradutor] historico insert error:', histErr.message, histErr.code)
+        safeLog.error('[API /tradutor] historico insert error:', histErr.message, histErr.code)
       }
     }
 
@@ -143,7 +144,7 @@ export async function POST(req: NextRequest) {
     const errName = err instanceof Error ? err.name : 'Unknown'
     const errMsg = err instanceof Error ? err.message : String(err)
     const errStack = err instanceof Error ? err.stack?.split('\n').slice(0, 5).join(' | ') : undefined
-    console.error('[API /tradutor] unhandled:', errName, '-', errMsg, '|', errStack ?? '')
+    safeLog.error('[API /tradutor] unhandled:', errName, '-', errMsg, '|', errStack ?? '')
 
     const lower = errMsg.toLowerCase()
     if (errName === 'AbortError' || errName === 'TimeoutError' || lower.includes('timeout') || lower.includes('aborted')) {

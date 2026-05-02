@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { safeLog } from '@/lib/safe-log'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       // eslint-disable-next-line no-console
-      console.error('[api/newsletter] upsert error:', error.message)
+      safeLog.error('[api/newsletter] upsert error:', error.message)
       // Mantém resposta neutra pro cliente — UX é sempre sucesso
       return NextResponse.json({ ok: true, queued: false })
     }
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'
     // eslint-disable-next-line no-console
-    console.error('[api/newsletter] error:', msg)
+    safeLog.error('[api/newsletter] error:', msg)
     return NextResponse.json({ error: 'server_error' }, { status: 500 })
   }
 }

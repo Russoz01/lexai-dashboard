@@ -2,6 +2,7 @@
 import Stripe from 'stripe'
 import { stripe, planFromPriceId } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeLog } from '@/lib/safe-log'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -19,8 +20,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 export async function POST(req: NextRequest) {
   // Hard fail if webhook secret is not configured — never accept unverified events
   if (!webhookSecret || webhookSecret.length === 0) {
-    // eslint-disable-next-line no-console
-    console.error('[stripe webhook] STRIPE_WEBHOOK_SECRET is not configured — rejecting all events')
+    safeLog.error('[stripe webhook] STRIPE_WEBHOOK_SECRET is not configured — rejecting all events')
     return NextResponse.json({ error: 'Webhook not configured' }, { status: 503 })
   }
 
@@ -36,8 +36,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
-    // eslint-disable-next-line no-console
-    console.error('[stripe webhook] signature verification failed:', msg)
+    safeLog.error('[stripe webhook] signature verification failed:', msg)
     return NextResponse.json({ error: `Invalid signature: ${msg}` }, { status: 400 })
   }
 
@@ -63,19 +62,16 @@ export async function POST(req: NextRequest) {
     // PG unique violation = duplicate event already processed (23505)
     const code = (idempErr as { code?: string }).code
     if (code === '23505') {
-      // eslint-disable-next-line no-console
-      console.log('[stripe webhook] duplicate event ignored:', event.id, event.type)
+      safeLog.debug('[stripe webhook] duplicate event ignored:', event.id, event.type)
       return NextResponse.json({ received: true, duplicate: true })
     }
     // Outro erro de DB — log e segue (fail-open evita travar webhook crítico)
-    // eslint-disable-next-line no-console
-    console.error('[stripe webhook] idempotency insert failed:', idempErr.message)
+    safeLog.error('[stripe webhook] idempotency insert failed:', idempErr.message)
   }
 
   // Sanity log — só em dev
   if (process.env.NODE_ENV !== 'production') {
-    // eslint-disable-next-line no-console
-    console.log('[stripe webhook] processing', event.type, insertData?.event_id || event.id)
+    safeLog.debug('[stripe webhook] processing', event.type, insertData?.event_id || event.id)
   }
 
   try {
@@ -141,8 +137,7 @@ export async function POST(req: NextRequest) {
             .eq('auth_user_id', authUserId)
           if (error) throw error
         } else {
-          // eslint-disable-next-line no-console
-          console.warn('[stripe webhook] checkout.session.completed without auth_user_id metadata — skipping link')
+          safeLog.warn('[stripe webhook] checkout.session.completed without auth_user_id metadata — skipping link')
         }
         break
       }
@@ -177,8 +172,7 @@ export async function POST(req: NextRequest) {
             .eq('stripe_customer_id', customerId)
           if (error) throw error
           // Log fiscal — operador pode auditar refunds para baixar receita
-          // eslint-disable-next-line no-console
-          console.warn('[stripe webhook] charge.refunded', {
+          safeLog.warn('[stripe webhook] charge.refunded', {
             chargeId: charge.id,
             amount: charge.amount_refunded,
             currency: charge.currency,
@@ -196,8 +190,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error'
-    // eslint-disable-next-line no-console
-    console.error('[stripe webhook] handler error:', msg)
+    safeLog.error('[stripe webhook] handler error:', msg)
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 })
   }
 }

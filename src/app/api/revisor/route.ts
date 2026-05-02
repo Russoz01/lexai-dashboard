@@ -6,6 +6,7 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -83,7 +84,7 @@ export async function POST(req: NextRequest) {
     const gstats = groundingStats(grounding)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /revisor] grounding:', gstats)
+      safeLog.debug('[API /revisor] grounding:', gstats)
     }
 
     const controller = new AbortController()
@@ -131,7 +132,7 @@ export async function POST(req: NextRequest) {
     const validation = validateCitations(responseText)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /revisor] validation:', validation.stats)
+      safeLog.debug('[API /revisor] validation:', validation.stats)
     }
 
     events.agentUsed(user.id, 'revisor', 'unknown').catch(() => {})
@@ -145,7 +146,7 @@ export async function POST(req: NextRequest) {
     const msg = err instanceof Error ? err.message : 'Erro interno'
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.error('[API /revisor]', errName, msg)
+      safeLog.error('[API /revisor]', errName, msg)
     }
     if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
       return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente um documento menor.' }, { status: 504 })

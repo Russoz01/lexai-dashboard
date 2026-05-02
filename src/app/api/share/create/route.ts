@@ -2,6 +2,7 @@
 import { validateAuth } from '@/lib/api-utils'
 import { events } from '@/lib/analytics'
 import { SITE_URL } from '@/lib/site-url'
+import { safeLog } from '@/lib/safe-log'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -118,7 +119,7 @@ export async function POST(req: NextRequest) {
 
     if (insertErr) {
       // eslint-disable-next-line no-console
-      console.error('[api/share/create] insert error:', insertErr.message)
+      safeLog.error('[api/share/create] insert error:', insertErr.message)
       return NextResponse.json(
         { error: 'Falha ao criar link de compartilhamento.' },
         { status: 500 }
@@ -136,7 +137,7 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Erro interno'
     // eslint-disable-next-line no-console
-    console.error('[api/share/create] error:', message)
+    safeLog.error('[api/share/create] error:', message)
     return NextResponse.json(
       { error: 'Erro ao processar solicitacao.' },
       { status: 500 }

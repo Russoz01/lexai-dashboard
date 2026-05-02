@@ -2,6 +2,7 @@
 import { randomBytes } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
 import { getGoogleAuthUrl, isGoogleCalendarConfigured } from '@/lib/google-calendar'
+import { safeLog } from '@/lib/safe-log'
 
 /**
  * GET /api/google/auth
@@ -47,7 +48,7 @@ export async function GET() {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Erro interno'
     // eslint-disable-next-line no-console
-    console.error('[API /google/auth]', message)
+    safeLog.error('[API /google/auth]', message)
     return NextResponse.json({ error: 'Erro ao iniciar autenticacao Google.' }, { status: 500 })
   }
 }

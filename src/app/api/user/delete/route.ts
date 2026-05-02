@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
 import { ok, fail, unauthorized, serverError } from '@/lib/api-response'
 import { audit } from '@/lib/audit'
+import { safeLog } from '@/lib/safe-log'
 
 export const dynamic = 'force-dynamic'
 
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
     if (errors.length) {
       // Partial — log for manual follow-up
       // eslint-disable-next-line no-console
-      console.error('[api/user/delete] partial failure:', errors.join(' | '))
+      safeLog.error('[api/user/delete] partial failure:', errors.join(' | '))
       return fail(
         'A exclusao foi parcialmente concluida. Nossa equipe sera notificada.',
         500,

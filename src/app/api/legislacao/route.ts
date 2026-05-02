@@ -5,6 +5,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
     const gstats = groundingStats(grounding)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /legislacao] grounding:', gstats)
+      safeLog.debug('[API /legislacao] grounding:', gstats)
     }
 
     const message = await client.messages.create({
@@ -124,7 +125,7 @@ export async function POST(req: NextRequest) {
     const validation = validateCitations(responseText)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /legislacao] validation:', validation.stats)
+      safeLog.debug('[API /legislacao] validation:', validation.stats)
     }
 
     events.agentUsed(user.id, 'legislacao', 'unknown').catch(() => {})

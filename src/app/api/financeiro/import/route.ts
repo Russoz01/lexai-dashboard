@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { isBelvoConfigured, listTransactions } from '@/lib/belvo'
 import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { safeLog } from '@/lib/safe-log'
 
 /**
  * GET /api/financeiro/import
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
     const { error: insertError } = await supabase.from('financeiro').insert(rows)
     if (insertError) {
       // eslint-disable-next-line no-console
-      console.error('[financeiro/import] insert error:', insertError.message)
+      safeLog.error('[financeiro/import] insert error:', insertError.message)
       return NextResponse.json(
         { error: 'Nao foi possivel salvar os lancamentos importados.' },
         { status: 500 },
@@ -113,7 +114,7 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Erro interno'
     // eslint-disable-next-line no-console
-    console.error('[API /financeiro/import]', message)
+    safeLog.error('[API /financeiro/import]', message)
     return NextResponse.json(
       { error: 'Ocorreu um erro ao importar transacoes. Tente novamente.' },
       { status: 500 },

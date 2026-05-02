@@ -3,6 +3,7 @@ import { timingSafeEqual } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
 import { exchangeCodeForToken, isGoogleCalendarConfigured } from '@/lib/google-calendar'
 import { encryptToken, isCryptoConfigured } from '@/lib/crypto-tokens'
+import { safeLog } from '@/lib/safe-log'
 
 /**
  * GET /api/google/callback?code=...&state=...
@@ -80,7 +81,7 @@ export async function GET(req: NextRequest) {
       const cryptoOn = isCryptoConfigured()
       if (!cryptoOn) {
         // eslint-disable-next-line no-console
-        console.warn('[google/callback] OAUTH_ENCRYPTION_KEY ausente — tokens armazenados em texto plano (LGPD Art. 46 risk)')
+        safeLog.warn('[google/callback] OAUTH_ENCRYPTION_KEY ausente — tokens armazenados em texto plano (LGPD Art. 46 risk)')
       }
       const accessToken = cryptoOn ? encryptToken(token.access_token) : token.access_token
       const refreshToken = token.refresh_token
@@ -111,7 +112,7 @@ export async function GET(req: NextRequest) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Erro interno'
     // eslint-disable-next-line no-console
-    console.error('[API /google/callback]', message)
+    safeLog.error('[API /google/callback]', message)
     dashboardUrl.searchParams.set('google', 'error')
     return NextResponse.redirect(dashboardUrl)
   }

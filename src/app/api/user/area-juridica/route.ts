@@ -1,6 +1,7 @@
 ﻿import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { isLegalAreaSlug } from '@/lib/agents/taxonomy'
+import { safeLog } from '@/lib/safe-log'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,7 +29,7 @@ export async function GET() {
     })
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error('[api/user/area-juridica] GET error:', e)
+    safeLog.error('[api/user/area-juridica] GET error:', e)
     return NextResponse.json({ slug: null, error: 'internal' }, { status: 500 })
   }
 }
@@ -61,14 +62,14 @@ export async function PATCH(req: Request) {
 
     if (updateError) {
       // eslint-disable-next-line no-console
-      console.error('[api/user/area-juridica] update error:', updateError.message)
+      safeLog.error('[api/user/area-juridica] update error:', updateError.message)
       return NextResponse.json({ error: 'Erro ao salvar preferencia.' }, { status: 500 })
     }
 
     return NextResponse.json({ ok: true, slug })
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error('[api/user/area-juridica] PATCH error:', e)
+    safeLog.error('[api/user/area-juridica] PATCH error:', e)
     return NextResponse.json({ error: 'internal' }, { status: 500 })
   }
 }
