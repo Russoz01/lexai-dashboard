@@ -1,0 +1,32 @@
+{
+  "extends": "next/core-web-vitals",
+  "plugins": ["@typescript-eslint"],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-console": "error",
+    "@typescript-eslint/no-explicit-any": "off"
+  },
+  "overrides": [
+    {
+      "files": ["src/lib/safe-log.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": [
+        "scripts/**/*.{js,ts}",
+        "**/*.test.{ts,tsx}",
+        "**/*.spec.{ts,tsx}",
+        "tests/**/*.{ts,tsx}",
+        "playwright.config.ts",
+        "vitest.config.ts",
+        "next.config.js",
+        "sentry.*.config.ts"
+      ],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
+}

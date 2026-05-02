@@ -6,6 +6,7 @@
 // caring about perf drilldowns.
 
 import * as Sentry from '@sentry/nextjs'
+import { scrubSentryEvent, scrubSentryBreadcrumb } from './src/lib/sentry-scrub'
 
 const DSN = process.env.NEXT_PUBLIC_SENTRY_DSN
 
@@ -57,9 +58,14 @@ Sentry.init({
   ],
 
   // Drop events before sending if they match sensitive contexts
-  beforeSend(event) {
+  beforeSend(event, hint) {
     // Never ship error reports when DSN isn't configured locally
     if (!DSN) return null
-    return event
+    // PII scrub completo (extra, contexts, breadcrumbs, user, request body)
+    return scrubSentryEvent(event, hint)
+  },
+
+  beforeBreadcrumb(breadcrumb) {
+    return scrubSentryBreadcrumb(breadcrumb)
   },
 })

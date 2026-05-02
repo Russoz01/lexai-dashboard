@@ -115,3 +115,49 @@ export function isCryptoConfigured(): boolean {
   const secret = process.env.OAUTH_ENCRYPTION_KEY
   return typeof secret === 'string' && secret.length >= 16
 }
+
+/**
+ * Lazy migration helper — read path.
+ *
+ * Recebe token do DB + decrypta. Se for legacy plain (sem prefixo enc:),
+ * re-encrypta e escreve de volta via callback `persistFn`. Idempotente.
+ *
+ * Uso típico em route que lê oauth_tokens:
+ *
+ *   const { data } = await supabase.from('oauth_tokens')
+ *     .select('access_token').eq('user_id', uid).single()
+ *
+ *   const token = await readAndMigrateToken(data.access_token, async (newCipher) => {
+ *     await supabase.from('oauth_tokens')
+ *       .update({ access_token: newCipher })
+ *       .eq('user_id', uid)
+ *   })
+ *
+ * Garante que toda leitura subsequente já vai pegar enc: (zero plain tokens
+ * em produção depois do primeiro read). Sem precisar migration explicit.
+ *
+ * Se OAUTH_ENCRYPTION_KEY ausente, retorna o valor cru (graceful degrade —
+ * nem encripta nem migra). Logs via safeLog.warn pra alertar ops.
+ */
+export async function readAndMigrateToken(
+  storedValue: string | null | undefined,
+  persistFn: (newCiphertext: string) => Promise<void>,
+): Promise<string> {
+  if (!storedValue) return ''
+  if (storedValue.startsWith(ENCRYPTED_PREFIX)) {
+    // Já encriptado — só decrypta
+    return decryptToken(storedValue)
+  }
+  // Legacy plain → re-encrypt + persist back (lazy migration)
+  if (!isCryptoConfigured()) {
+    // Sem chave configurada — retorna plain (graceful degrade)
+    return storedValue
+  }
+  try {
+    const newCipher = encryptToken(storedValue)
+    await persistFn(newCipher)
+  } catch {
+    // Persist falhou — não bloqueia a request, próximo read tenta de novo
+  }
+  return storedValue
+}

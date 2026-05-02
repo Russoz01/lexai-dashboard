@@ -2,6 +2,7 @@
 import { NextResponse }  from 'next/server'
 import { sendEmail, welcomeEmailHtml } from '@/lib/email'
 import { events } from '@/lib/analytics'
+import { safeLog } from '@/lib/safe-log'
 
 // Validate redirect path to prevent open redirect attacks + directory traversal
 function sanitizeRedirect(path: string): string {
@@ -56,7 +57,7 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}${next}`)
       }
     } else {
-      console.error('[auth/callback] Exchange error:', error.message)
+      safeLog.error('[auth/callback] Exchange error:', error.message)
     }
   }
 

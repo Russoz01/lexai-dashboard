@@ -1,5 +1,6 @@
 ﻿import { NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
+import { safeLog } from './safe-log'
 
 /**
  * Standard response envelope used by every API route.
@@ -44,7 +45,7 @@ export function rateLimited(message = 'Muitas requisicoes. Aguarde e tente novam
 export function serverError(context: string, err: unknown) {
   const msg = err instanceof Error ? err.message : String(err)
   // eslint-disable-next-line no-console
-  console.error(`[API ${context}]`, msg)
+  safeLog.error(`[API ${context}]`, msg)
 
   // Map upstream errors to actionable status codes
   const lower = msg.toLowerCase()

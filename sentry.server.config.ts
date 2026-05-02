@@ -4,6 +4,7 @@
 // serverError() and the global error boundary.
 
 import * as Sentry from '@sentry/nextjs'
+import { scrubSentryEvent, scrubSentryBreadcrumb } from './src/lib/sentry-scrub'
 
 const DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
 
@@ -32,16 +33,11 @@ Sentry.init({
 
   beforeSend(event, hint) {
     if (!DSN) return null
+    // PII scrub completo (extra, contexts, breadcrumbs, user, request body)
+    return scrubSentryEvent(event, hint)
+  },
 
-    // Strip cookies + headers with tokens before shipping to Sentry
-    if (event.request) {
-      delete event.request.cookies
-      if (event.request.headers) {
-        delete event.request.headers.authorization
-        delete event.request.headers.cookie
-        delete event.request.headers['x-api-key']
-      }
-    }
-    return event
+  beforeBreadcrumb(breadcrumb) {
+    return scrubSentryBreadcrumb(breadcrumb)
   },
 })

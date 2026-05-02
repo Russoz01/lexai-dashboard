@@ -1,12 +1,12 @@
 ﻿import Stripe from 'stripe'
+import { safeLog } from '@/lib/safe-log'
 
 // SECURITY NOTE: STRIPE_SECRET_KEY tem fallback 'sk_test_placeholder' pra
 // nao quebrar build local/Vercel collect-page-data (que roda NODE_ENV=production
 // sem env vars). Hard-fail e feito nas ROTAS que usam stripe (via guard que
 // retorna 503 se STRIPE_SECRET_KEY ausente). Ver isStripeConfigured() abaixo.
 if (!process.env.STRIPE_SECRET_KEY) {
-  // eslint-disable-next-line no-console
-  console.warn('[stripe] STRIPE_SECRET_KEY not set — Stripe operations will fail at runtime')
+  safeLog.warn('[stripe] STRIPE_SECRET_KEY not set — Stripe operations will fail at runtime')
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {

@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { parseAgentJSON } from '@/lib/api-utils'
 import { isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { safeLog } from '@/lib/safe-log'
 
 /* ════════════════════════════════════════════════════════════════════
  * agent-stream · v1.0 (2026-05-02)
@@ -93,19 +94,19 @@ export function createAgentStream<T>(opts: AgentStreamOptions<T>): Response {
             await onPersist(parsed, fullText)
           } catch (e: unknown) {
             // eslint-disable-next-line no-console
-            console.error(`[agent-stream:${agente}] onPersist failed:`, e instanceof Error ? e.message : String(e))
+            safeLog.error(`[agent-stream:${agente}] onPersist failed:`, e instanceof Error ? e.message : String(e))
           }
         }
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : 'Erro de stream'
         // eslint-disable-next-line no-console
-        console.error(`[agent-stream:${agente}]`, message)
+        safeLog.error(`[agent-stream:${agente}]`, message)
 
         // Wave C5 fix: emite cached response como done event se demo fallback
         // ativo + erro retryable. Frontend renderiza como sucesso transparente.
         if (demoFallback && isDemoFallbackEnabled() && isRetryableError(e)) {
           // eslint-disable-next-line no-console
-          console.warn(`[agent-stream:${agente}] using demo fallback (reason: ${message.slice(0, 80)})`)
+          safeLog.warn(`[agent-stream:${agente}] using demo fallback (reason: ${message.slice(0, 80)})`)
           const finalPayload = wrapResult ? wrapResult(demoFallback) : demoFallback
           send({ type: 'done', result: finalPayload, chars: 0 })
         } else {

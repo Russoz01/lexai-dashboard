@@ -13,6 +13,8 @@
  * Wave C5 (2026-05-02) — pre-demo last-resort safety net.
  * ═══════════════════════════════════════════════════════════════════ */
 
+import { safeLog } from './safe-log'
+
 export interface DemoFallbackOptions {
   /** Razão do fallback — vai no log Sentry pra rastreio */
   reason?: string
@@ -156,7 +158,7 @@ export function getDemoFallback<K extends DemoFallbackKey>(
   options: DemoFallbackOptions = {},
 ): typeof DEMO_FALLBACKS[K] {
   // eslint-disable-next-line no-console
-  console.warn(`[demo-fallback] Triggered for agente="${agente}" reason="${options.reason || 'unknown'}"`)
+  safeLog.warn(`[demo-fallback] Triggered for agente="${agente}" reason="${options.reason || 'unknown'}"`)
   // Sentry capture é feito no caller — aqui só logamos pra console
   return DEMO_FALLBACKS[agente]
 }

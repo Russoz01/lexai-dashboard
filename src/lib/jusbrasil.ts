@@ -10,6 +10,8 @@
  *  - JUSBRASIL_API_KEY (required to activate)
  */
 
+import { safeLog } from './safe-log'
+
 const JUSBRASIL_API_KEY = process.env.JUSBRASIL_API_KEY
 const JUSBRASIL_BASE_URL = 'https://api.jusbrasil.com.br/v2'
 
@@ -28,7 +30,7 @@ export async function buscarJurisprudenciaReal(
 ): Promise<JurisprudenciaReal[]> {
   if (!JUSBRASIL_API_KEY) {
     // eslint-disable-next-line no-console
-    console.warn('[jusbrasil] JUSBRASIL_API_KEY not set — using AI hallucination fallback')
+    safeLog.warn('[jusbrasil] JUSBRASIL_API_KEY not set — using AI hallucination fallback')
     return []
   }
   try {
@@ -60,7 +62,7 @@ export async function buscarJurisprudenciaReal(
     })
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error('[jusbrasil] error:', e instanceof Error ? e.message : 'unknown')
+    safeLog.error('[jusbrasil] error:', e instanceof Error ? e.message : 'unknown')
     return []
   }
 }

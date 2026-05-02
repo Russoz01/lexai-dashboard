@@ -21,6 +21,7 @@ import {
   Check,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
+import { safeLog } from '@/lib/safe-log'
 
 const DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -93,14 +94,14 @@ export default function RotinaPage() {
               // antiga) quebrava render em compromissos.filter(...)
               if (Array.isArray(parsed)) setCompromissos(parsed)
             }
-          } catch (e) { console.error('[rotina] parse compromissos LS:', e) }
+          } catch (e) { safeLog.error('[rotina] parse compromissos LS:', e) }
           try {
             const savedPlanos = localStorage.getItem(LS_PLANOS)
             if (savedPlanos) {
               const parsedPlanos = JSON.parse(savedPlanos)
               if (Array.isArray(parsedPlanos)) setPlanosFuturos(parsedPlanos)
             }
-          } catch (e) { console.error('[rotina] parse planos LS:', e) }
+          } catch (e) { safeLog.error('[rotina] parse planos LS:', e) }
           setSincronizando(false)
           return
         }
@@ -113,7 +114,7 @@ export default function RotinaPage() {
           .maybeSingle()
 
         if (usuarioErr) {
-          console.error('[rotina] resolve usuarios.id:', usuarioErr)
+          safeLog.error('[rotina] resolve usuarios.id:', usuarioErr)
           if (!cancelled) setSincronizando(false)
           return
         }
@@ -144,10 +145,10 @@ export default function RotinaPage() {
                   cor: c.cor,
                 }))
                 const { error: insErr } = await supabase.from('rotina_compromissos').insert(rows)
-                if (insErr) console.error('[rotina] migração compromissos:', insErr)
+                if (insErr) safeLog.error('[rotina] migração compromissos:', insErr)
               }
             }
-          } catch (e) { console.error('[rotina] migração compromissos parse:', e) }
+          } catch (e) { safeLog.error('[rotina] migração compromissos parse:', e) }
 
           try {
             const savedPlanos = localStorage.getItem(LS_PLANOS)
@@ -163,16 +164,16 @@ export default function RotinaPage() {
                   concluido: false,
                 }))
                 const { error: insErr } = await supabase.from('rotina_planos_futuros').insert(rows)
-                if (insErr) console.error('[rotina] migração planos:', insErr)
+                if (insErr) safeLog.error('[rotina] migração planos:', insErr)
               }
             }
-          } catch (e) { console.error('[rotina] migração planos parse:', e) }
+          } catch (e) { safeLog.error('[rotina] migração planos parse:', e) }
 
           try {
             localStorage.removeItem(LS_COMPROMISSOS)
             localStorage.removeItem(LS_PLANOS)
             localStorage.setItem(LS_MIGRATED, '1')
-          } catch (e) { console.error('[rotina] limpa LS:', e) }
+          } catch (e) { safeLog.error('[rotina] limpa LS:', e) }
         }
 
         // Carrega do Supabase (RLS já filtra por usuario)
@@ -184,7 +185,7 @@ export default function RotinaPage() {
         if (cancelled) return
 
         if (compResp.error) {
-          console.error('[rotina] load compromissos:', compResp.error)
+          safeLog.error('[rotina] load compromissos:', compResp.error)
         } else if (compResp.data) {
           setCompromissos(compResp.data.map(r => ({
             id: String(r.id),
@@ -198,7 +199,7 @@ export default function RotinaPage() {
         }
 
         if (planResp.error) {
-          console.error('[rotina] load planos:', planResp.error)
+          safeLog.error('[rotina] load planos:', planResp.error)
         } else if (planResp.data) {
           setPlanosFuturos(planResp.data.map(r => ({
             id: String(r.id),
@@ -209,7 +210,7 @@ export default function RotinaPage() {
           })))
         }
       } catch (e) {
-        console.error('[rotina] load fatal:', e)
+        safeLog.error('[rotina] load fatal:', e)
       } finally {
         if (!cancelled) setSincronizando(false)
       }
@@ -268,14 +269,14 @@ export default function RotinaPage() {
   useEffect(() => {
     if (sincronizando || usuarioId) return
     try { localStorage.setItem(LS_COMPROMISSOS, JSON.stringify(compromissos)) } catch (e) {
-      console.error('[rotina] save compromissos LS:', e)
+      safeLog.error('[rotina] save compromissos LS:', e)
     }
   }, [compromissos, sincronizando, usuarioId])
 
   useEffect(() => {
     if (sincronizando || usuarioId) return
     try { localStorage.setItem(LS_PLANOS, JSON.stringify(planosFuturos)) } catch (e) {
-      console.error('[rotina] save planos LS:', e)
+      safeLog.error('[rotina] save planos LS:', e)
     }
   }, [planosFuturos, sincronizando, usuarioId])
 
@@ -318,7 +319,7 @@ export default function RotinaPage() {
         .single()
 
       if (error || !data) {
-        console.error('[rotina] insert compromisso:', error)
+        safeLog.error('[rotina] insert compromisso:', error)
         return
       }
 
@@ -333,7 +334,7 @@ export default function RotinaPage() {
       }])
       setModal(false); setForm(EMPTY_COMP)
     } catch (e) {
-      console.error('[rotina] insert compromisso fatal:', e)
+      safeLog.error('[rotina] insert compromisso fatal:', e)
     }
   }, [form, usuarioId])
 
@@ -346,12 +347,12 @@ export default function RotinaPage() {
       const supabase = createClient()
       const { error } = await supabase.from('rotina_compromissos').delete().eq('id', id)
       if (error) {
-        console.error('[rotina] delete compromisso:', error)
+        safeLog.error('[rotina] delete compromisso:', error)
         return
       }
       setCompromissos(prev => prev.filter(c => c.id !== id))
     } catch (e) {
-      console.error('[rotina] delete compromisso fatal:', e)
+      safeLog.error('[rotina] delete compromisso fatal:', e)
     }
   }, [usuarioId])
 
@@ -420,7 +421,7 @@ export default function RotinaPage() {
         .single()
 
       if (error || !data) {
-        console.error('[rotina] insert plano:', error)
+        safeLog.error('[rotina] insert plano:', error)
         return
       }
 
@@ -433,7 +434,7 @@ export default function RotinaPage() {
       }])
       setPlanoForm(EMPTY_PLANO)
     } catch (e) {
-      console.error('[rotina] insert plano fatal:', e)
+      safeLog.error('[rotina] insert plano fatal:', e)
     }
   }, [dataSelecionada, planoForm, usuarioId])
 
@@ -446,12 +447,12 @@ export default function RotinaPage() {
       const supabase = createClient()
       const { error } = await supabase.from('rotina_planos_futuros').delete().eq('id', id)
       if (error) {
-        console.error('[rotina] delete plano:', error)
+        safeLog.error('[rotina] delete plano:', error)
         return
       }
       setPlanosFuturos(prev => prev.filter(p => p.id !== id))
     } catch (e) {
-      console.error('[rotina] delete plano fatal:', e)
+      safeLog.error('[rotina] delete plano fatal:', e)
     }
   }, [usuarioId])
 

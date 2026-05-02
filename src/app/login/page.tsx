@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, Check, Eye, EyeOff, Loader2, MailCheck } from 'lucide-react'
 import { PralvexMark } from '@/components/PralvexMark'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
+import { safeLog } from '@/lib/safe-log'
 
 /* ═════════════════════════════════════════════════════════════
  * /login — Atelier Login (migrado para Tailwind em 2026-04-17)
@@ -189,7 +190,7 @@ function LoginPageInner() {
         setOauthLoading(null)
       }
     } catch (err) {
-      console.error('Erro OAuth:', err)
+      safeLog.error('Erro OAuth:', err)
       setErro('Erro inesperado ao conectar com Google.')
       setOauthLoading(null)
     }

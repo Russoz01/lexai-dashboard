@@ -1,5 +1,6 @@
 ﻿import { NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { safeLog } from './safe-log'
 
 export const PLAN_QUOTAS: Record<string, number> = {
   free:       5,
@@ -88,7 +89,7 @@ export async function checkAndIncrementQuota(
   if (incErr) {
     // Don't block the user on quota tracking failure — log and continue
     // eslint-disable-next-line no-console
-    console.error('[quota] increment failed:', incErr.message)
+    safeLog.error('[quota] increment failed:', incErr.message)
     return { ok: true, remaining: limit - currentCount - 1, used: currentCount + 1, limit }
   }
 

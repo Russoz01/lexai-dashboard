@@ -16,6 +16,7 @@ import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import { AGENT_EXAMPLES } from '@/lib/agent-examples'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
+import { safeLog } from '@/lib/safe-log'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement> & { size?: number | string }>
 
@@ -295,7 +296,7 @@ export default function RedatorPage() {
             setTimeout(() => setSavedBadge(false), 3500)
           }
         })
-        .catch(err => console.error('[redator/saveDraft]', err))
+        .catch(err => safeLog.error('[redator/saveDraft]', err))
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro ao gerar peça')
     } finally {

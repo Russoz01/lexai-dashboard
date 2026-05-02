@@ -26,6 +26,7 @@ import { useDraft, clearDraft } from '@/hooks/useDraft'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 import { AgentHero } from '@/components/AgentHero'
 import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
+import { safeLog } from '@/lib/safe-log'
 
 export default function NegociadorPage() {
   const [situacao, setSituacao] = useState('')
@@ -76,7 +77,7 @@ export default function NegociadorPage() {
             setTimeout(() => setSavedBadge(false), 3500)
           }
         })
-        .catch(err => console.error('[negociador/saveDraft]', err))
+        .catch(err => safeLog.error('[negociador/saveDraft]', err))
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : 'Erro na análise')
     } finally { setLoading(false) }

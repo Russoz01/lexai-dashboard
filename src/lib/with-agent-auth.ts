@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { userCanAccessAgent, getUpgradeMessage, getMinPlanFor } from '@/lib/plan-access'
+import { safeLog } from '@/lib/safe-log'
 
 /* ═════════════════════════════════════════════════════════════
  * withAgentAuth — v10.10 agent route guard
@@ -125,7 +126,7 @@ export function withAgentAuth(
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erro interno'
       // eslint-disable-next-line no-console
-      console.error(`[API /${agentSlug}]`, msg)
+      safeLog.error(`[API /${agentSlug}]`, msg)
 
       // 529 / overloaded — erro esperado do Anthropic, não é bug
       if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {

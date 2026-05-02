@@ -18,6 +18,7 @@
 import { createAdminClient } from './supabase/admin'
 import * as Sentry from '@sentry/nextjs'
 import type { NextRequest } from 'next/server'
+import { safeLog } from './safe-log'
 
 export type AuditAction =
   | 'user.login'
@@ -74,7 +75,7 @@ export async function audit(entry: AuditEntry): Promise<void> {
     })
     if (error) {
       // eslint-disable-next-line no-console
-      console.error('[audit] insert failed', error)
+      safeLog.error('[audit] insert failed', error)
       Sentry.captureMessage('audit_log_insert_failed', {
         level: 'warning',
         tags: { action: entry.action },
@@ -83,7 +84,7 @@ export async function audit(entry: AuditEntry): Promise<void> {
     }
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error('[audit] unexpected error', err)
+    safeLog.error('[audit] unexpected error', err)
     Sentry.captureException(err, {
       tags: { source: 'audit_log', action: entry.action },
     })

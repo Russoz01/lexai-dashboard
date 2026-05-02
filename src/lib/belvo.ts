@@ -11,6 +11,8 @@
  *  - BELVO_URL             (optional, defaults to sandbox)
  */
 
+import { safeLog } from './safe-log'
+
 const BELVO_SECRET_ID = process.env.BELVO_SECRET_ID
 const BELVO_SECRET_PASSWORD = process.env.BELVO_SECRET_PASSWORD
 const BELVO_URL = process.env.BELVO_URL || 'https://sandbox.belvo.com'
@@ -40,7 +42,7 @@ export async function listTransactions(
 ): Promise<BelvoTransaction[]> {
   if (!isBelvoConfigured()) {
     // eslint-disable-next-line no-console
-    console.warn('[belvo] credentials not configured')
+    safeLog.warn('[belvo] credentials not configured')
     return []
   }
   try {
@@ -71,7 +73,7 @@ export async function listTransactions(
     })
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error('[belvo] error:', e instanceof Error ? e.message : 'unknown')
+    safeLog.error('[belvo] error:', e instanceof Error ? e.message : 'unknown')
     return []
   }
 }

@@ -1,5 +1,6 @@
 ﻿'use client'
 import { createClient } from '@/lib/supabase'
+import { safeLog } from '@/lib/safe-log'
 
 const supabase = createClient()
 
@@ -57,7 +58,7 @@ export async function saveDraft(
     .single()
 
   if (error) {
-    console.error('[saveDraft]', error)
+    safeLog.error('[saveDraft]', error)
     return null
   }
   return data as DraftRow

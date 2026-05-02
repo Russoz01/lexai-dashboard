@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { AlertTriangle, RotateCcw, Home } from 'lucide-react'
 import * as Sentry from '@sentry/nextjs'
+import { safeLog } from '@/lib/safe-log'
 
 /**
  * Dashboard error boundary — preserva sidebar/layout do dashboard quando uma
@@ -25,7 +26,7 @@ export default function DashboardError({
 }) {
   useEffect(() => {
     // eslint-disable-next-line no-console
-    console.error('[DashboardError]', error.message, { digest: error.digest })
+    safeLog.error('[DashboardError]', error.message, { digest: error.digest })
     Sentry.captureException(error, {
       tags: { source: 'dashboard-error-boundary' },
       extra: {

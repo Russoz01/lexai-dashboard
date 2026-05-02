@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { createClient } from '@/lib/supabase'
+import { safeLog } from '@/lib/safe-log'
 
 /**
  * Resolves public.usuarios.id from the current auth.users.id.
@@ -81,7 +82,7 @@ export async function resolveUsuarioId(): Promise<string | null> {
 
   if (insertError || !created?.id) {
     // eslint-disable-next-line no-console
-    console.error('[resolveUsuarioId] Failed to create usuarios row:', insertError?.message)
+    safeLog.error('[resolveUsuarioId] Failed to create usuarios row:', insertError?.message)
     return null
   }
 

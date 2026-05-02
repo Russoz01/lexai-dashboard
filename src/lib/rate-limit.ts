@@ -1,4 +1,5 @@
 ﻿import type { SupabaseClient } from '@supabase/supabase-js'
+import { safeLog } from './safe-log'
 
 const WINDOW_SECONDS = 60
 const MAX_REQUESTS_PER_WINDOW = 20 // 20 requests per minute per user
@@ -36,7 +37,7 @@ export async function checkRateLimit(
     if (error) {
       if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line no-console
-        console.error('[rate-limit] RPC error:', error.message)
+        safeLog.error('[rate-limit] RPC error:', error.message)
       }
       // Fail open
       return { ok: true, remaining: MAX_REQUESTS_PER_WINDOW, resetIn: WINDOW_SECONDS }
@@ -56,7 +57,7 @@ export async function checkRateLimit(
   } catch (err) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.error('[rate-limit] unexpected error:', err instanceof Error ? err.message : err)
+      safeLog.error('[rate-limit] unexpected error:', err instanceof Error ? err.message : err)
     }
     return { ok: true, remaining: MAX_REQUESTS_PER_WINDOW, resetIn: WINDOW_SECONDS }
   }

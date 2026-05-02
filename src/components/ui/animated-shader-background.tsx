@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useRef, useEffect } from 'react'
+import { safeLog } from '@/lib/safe-log'
 
 /* ─────────────────────────────────────────────────────────────
  * AnimatedShaderBackground
@@ -90,7 +91,7 @@ export function AnimatedShaderBackground({
       gl.shaderSource(s, src)
       gl.compileShader(s)
       if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-        console.warn(gl.getShaderInfoLog(s))
+        safeLog.warn(gl.getShaderInfoLog(s))
       }
       return s
     }
@@ -102,7 +103,7 @@ export function AnimatedShaderBackground({
     gl.attachShader(program, fs)
     gl.linkProgram(program)
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.warn(gl.getProgramInfoLog(program))
+      safeLog.warn(gl.getProgramInfoLog(program))
       return
     }
     gl.useProgram(program)

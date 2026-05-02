@@ -1,5 +1,6 @@
 ﻿import { Resend } from 'resend'
 import { SITE_URL } from '@/lib/site-url'
+import { safeLog } from '@/lib/safe-log'
 
 const RESEND_KEY = process.env.RESEND_API_KEY
 // Fallback usa @pralvex.com.br ao inves do sandbox @resend.dev — mas o
@@ -23,7 +24,7 @@ interface EmailParams {
 export async function sendEmail({ to, subject, html }: EmailParams): Promise<{ ok: boolean; reason?: string }> {
   if (!resend) {
     // eslint-disable-next-line no-console
-    console.warn('[email] RESEND_API_KEY not set — would have sent:', { to, subject })
+    safeLog.warn('[email] RESEND_API_KEY not set — would have sent:', { to, subject })
     return { ok: false, reason: 'not-configured' }
   }
   try {
@@ -32,7 +33,7 @@ export async function sendEmail({ to, subject, html }: EmailParams): Promise<{ o
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'
     // eslint-disable-next-line no-console
-    console.error('[email] send failed:', msg)
+    safeLog.error('[email] send failed:', msg)
     return { ok: false, reason: msg }
   }
 }

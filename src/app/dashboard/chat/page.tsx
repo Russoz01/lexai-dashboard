@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { extractPdfWithMeta } from '@/lib/pdf-parser'
 import { confirmDialog } from '@/components/ConfirmDialog'
+import { safeLog } from '@/lib/safe-log'
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * Pralvex — Chat Orquestrador
@@ -192,7 +193,7 @@ export default function ChatPage() {
         setErro('Formato não suportado. Envie PDF, TXT ou MD.')
       }
     } catch (err) {
-      console.error('[chat/file]', err)
+      safeLog.error('[chat/file]', err)
       setErro('Erro ao ler arquivo. Tente novamente.')
       setParsingPdf(false)
     }
@@ -344,7 +345,7 @@ export default function ChatPage() {
         if (mountedRef.current) setMessages(prev => prev.filter(m => m.id !== assistantId))
         return
       }
-      console.error('[chat/send]', err)
+      safeLog.error('[chat/send]', err)
       if (mountedRef.current) {
         setErro('Erro de rede. Verifique sua conexão e tente novamente.')
         setMessages(prev => prev.filter(m => m.id !== assistantId))

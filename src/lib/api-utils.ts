@@ -1,6 +1,7 @@
 ﻿import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { safeLog } from './safe-log'
 
 const MAX_INPUT_LENGTH = 50000 // 50k chars max
 
@@ -44,7 +45,7 @@ export async function resolveUsuarioIdServer(
   if (!email || !email.trim()) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.warn('[resolveUsuarioIdServer] no email available — skipping insert to avoid ghost row')
+      safeLog.warn('[resolveUsuarioIdServer] no email available — skipping insert to avoid ghost row')
     }
     return null
   }
@@ -64,7 +65,7 @@ export async function resolveUsuarioIdServer(
   if (error || !created?.id) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.error('[resolveUsuarioIdServer] Failed to create usuarios row:', error?.message)
+      safeLog.error('[resolveUsuarioIdServer] Failed to create usuarios row:', error?.message)
     }
     return null
   }
@@ -91,7 +92,7 @@ export function validateInput(text: string | undefined, minLength: number, field
 export function safeError(context: string, err: unknown) {
   const msg = err instanceof Error ? err.message : 'Erro interno'
   // eslint-disable-next-line no-console
-  console.error(`[API ${context}]`, msg)
+  safeLog.error(`[API ${context}]`, msg)
 
   // Map common Anthropic SDK errors to actionable status codes
   let statusCode = 500
@@ -140,7 +141,7 @@ export function parseAgentJSON<T = unknown>(responseText: string, fallback: T): 
     // Wave C5 fix: log warning mesmo em prod pra debug — antes engolia silente
     // e operador não saberia o motivo do fallback genérico durante demo.
     // eslint-disable-next-line no-console
-    console.warn('[parseAgentJSON] parse failed:', e instanceof Error ? e.message.slice(0, 120) : String(e), '| preview:', responseText.slice(0, 120))
+    safeLog.warn('[parseAgentJSON] parse failed:', e instanceof Error ? e.message.slice(0, 120) : String(e), '| preview:', responseText.slice(0, 120))
     return fallback
   }
 }
@@ -178,7 +179,7 @@ export async function withRetry<T>(
       if (!retryable || attempt === maxAttempts) throw err
       const delay = baseDelayMs * Math.pow(3, attempt - 1) // 300, 900, 2700
       // eslint-disable-next-line no-console
-      console.warn(`[withRetry] attempt ${attempt}/${maxAttempts} failed (${msg.slice(0, 80)}), retrying in ${delay}ms`)
+      safeLog.warn(`[withRetry] attempt ${attempt}/${maxAttempts} failed (${msg.slice(0, 80)}), retrying in ${delay}ms`)
       await new Promise(resolve => setTimeout(resolve, delay))
     }
   }

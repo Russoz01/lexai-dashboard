@@ -20,6 +20,7 @@ import { SkeletonResult } from '@/components/Skeleton'
 import { AgentHero } from '@/components/AgentHero'
 import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import { AGENT_EXAMPLES } from '@/lib/agent-examples'
+import { safeLog } from '@/lib/safe-log'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Analise = any
@@ -218,7 +219,7 @@ export default function ResumidorPage() {
       if (target === 'single' && !titulo) setTitulo(baseName)
       toast('success', `PDF carregado: ${numPages} ${numPages === 1 ? 'página' : 'páginas'}`)
     } catch (e) {
-      console.error('PDF parse error:', e)
+      safeLog.error('PDF parse error:', e)
       toast('error', 'Não foi possível ler o PDF')
     } finally {
       setCarregandoPdf(null)
@@ -1191,7 +1192,7 @@ export default function ResumidorPage() {
                           toast('info', 'Nenhum prazo para importar')
                         }
                       } catch (e) {
-                        console.error('[prazo-importer]', e)
+                        safeLog.error('[prazo-importer]', e)
                         toast('error', 'Não foi possível importar os prazos')
                       } finally {
                         setImportingPrazos(false)
