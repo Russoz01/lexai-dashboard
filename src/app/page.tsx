@@ -25,6 +25,7 @@ import { Reveal, WordReveal } from '@/components/ui/reveal'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
 import { EditorialDivider } from '@/components/ui/editorial-divider'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 /* ════════════════════════════════════════════════════════════════════
  * Pralvex — Landing v9 "Editorial 3D" (2026-04-19)
@@ -146,6 +147,7 @@ export default function LandingPage() {
             >
               Entrar
             </Link>
+            <ThemeToggle variant="landing" />
             <Link
               href="/login"
               className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-[#bfa68e]/30 bg-gradient-to-br from-[#bfa68e]/[0.18] to-transparent px-4 text-[12px] font-medium text-[#e6d4bd] transition hover:border-[#bfa68e]/60 hover:from-[#bfa68e]/[0.28]"

@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bell, HelpCircle, Menu } from 'lucide-react'
 import OnboardingModal from './OnboardingModal'
+import { ThemeToggle } from './ThemeToggle'
 
 /* ════════════════════════════════════════════════════════════════
- * Header (v10.8 · 2026-04-22)
+ * Header (v11.0 · 2026-05-02)
  * ────────────────────────────────────────────────────────────────
- * Light mode REMOVIDO — botão Sun/Moon foi suprimido.
- * Painel é noir champagne sempre, alinhado à landing v10.
+ * Light mode reintroduzido como opcional — toggle (sun/system/moon)
+ * fica no header top-right. Default = dark (preserva brand editorial).
  * ═══════════════════════════════════════════════════════════════ */
 
 interface HeaderProps {
@@ -64,6 +65,8 @@ export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onT
       </div>
 
       <div className="header-user">
+        <ThemeToggle variant="header" />
+
         <button className="notif-bell" title="Ajuda e tour do Pralvex" onClick={() => setShowHelp(true)}>
           <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
         </button>

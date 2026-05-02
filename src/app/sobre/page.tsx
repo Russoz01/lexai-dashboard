@@ -5,6 +5,7 @@ import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import { ArrowRight } from 'lucide-react'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 /* ═════════════════════════════════════════════════════════════
  * /sobre — página institucional (migrado para Tailwind em 2026-04-17)
@@ -53,6 +54,7 @@ export default function SobrePage() {
           <Link href="/roi" className="hidden text-white/60 transition hover:text-white sm:inline">
             Calculadora
           </Link>
+          <ThemeToggle variant="landing" />
           <Link
             href="/login"
             className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-white transition hover:border-[#bfa68e]/40 hover:bg-white/10"

@@ -11,6 +11,7 @@ import { LexPricingGrid } from '@/components/ui/lex-pricing-grid'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
 import { agents } from '@/lib/catalog'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 /* ═════════════════════════════════════════════════════════════════════
  * /empresas — Página B2B Pralvex (v10.8 Editorial · 2026-04-23)
@@ -135,6 +136,7 @@ export default function EmpresasPage() {
             <Link href="/" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Início</Link>
             <Link href="/#precos" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Planos</Link>
             <Link href="/login" className="text-sm text-white/70 transition hover:text-white">Entrar</Link>
+            <ThemeToggle variant="landing" />
             <Link
               href="/login"
               className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium transition hover:bg-white/10"

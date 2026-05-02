@@ -178,12 +178,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
+        {/* Theme boot — aplica data-theme ANTES de hydration pra evitar flash.
+            Preferência: 'dark' | 'light' | 'system'. Default = 'dark' (preserva
+            brand editorial). 'system' segue prefers-color-scheme. */}
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: `
           (function() {
             try {
-              var t = localStorage.getItem('pralvex-theme');
-              if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-              document.documentElement.setAttribute('data-theme', t);
+              var p = localStorage.getItem('pralvex-theme');
+              if (p !== 'light' && p !== 'dark' && p !== 'system') p = 'dark';
+              var eff = p === 'system'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : p;
+              document.documentElement.setAttribute('data-theme', eff);
             } catch(e) {
               document.documentElement.setAttribute('data-theme', 'dark');
             }
