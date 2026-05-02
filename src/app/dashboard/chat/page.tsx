@@ -199,7 +199,9 @@ export default function ChatPage() {
       timestamp: Date.now(),
     }
 
-    const historicoPayload = messages.slice(-8).map(m => ({
+    // Envia 14 ultimas msgs (server pega 12 — manda 2 extras pra absorver
+    // tool_use intermediario que nao conta no contexto user/assistant)
+    const historicoPayload = messages.slice(-14).map(m => ({
       role: m.role,
       content: m.content + (m.agente ? ` [→ ${m.agente.titulo}]` : ''),
     }))

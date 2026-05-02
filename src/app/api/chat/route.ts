@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk'
+﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -207,10 +207,11 @@ export async function POST(req: NextRequest) {
     const mensagem: string = typeof body?.mensagem === 'string' ? body.mensagem : ''
     const arquivoTexto: string | undefined = typeof body?.arquivoTexto === 'string' ? body.arquivoTexto : undefined
     const arquivoNome: string | undefined = typeof body?.arquivoNome === 'string' ? body.arquivoNome : undefined
-    // Hard-cap em 6 mensagens × 1500 chars (era 8×4000 = 32k chars). Cliente
-    // malicioso conseguia fazer 8 turnos de 4000 chars + arquivo de 40k pra
-    // forçar ~70k tokens de input por request — burn de quota Anthropic em $$.
-    const historico: ChatMessage[] = Array.isArray(body?.historico) ? body.historico.slice(-6) : []
+    // Hard-cap em 12 mensagens × 1500 chars (era 6, expandido p/ memoria mais
+    // longa pos-Wave-C1 2026-05-02). Cap por msg em 1500 chars protege contra
+    // input flood. 12 msg cobre conversa completa estilo "analise contrato →
+    // qual prazo? → tem clausulas abusivas? → como negociar?" sem perder contexto.
+    const historico: ChatMessage[] = Array.isArray(body?.historico) ? body.historico.slice(-12) : []
 
     // Fidelidade controla o tom. Default 'parceiro' (caloroso/tecnico).
     const fidelidadeRaw = typeof body?.fidelidade === 'string' ? body.fidelidade : 'parceiro'
