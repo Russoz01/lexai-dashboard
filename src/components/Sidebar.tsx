@@ -27,6 +27,7 @@ import s from './Sidebar.module.css'
 
 const PLANOS: Record<string, { nome: string; preco: string }> = {
   free:       { nome: 'Demonstração', preco: '50 min guiados' },
+  solo:       { nome: 'Solo',         preco: 'R$ 599 / advogado' },
   starter:    { nome: 'Escritório',   preco: 'R$ 1.399 / advogado' },
   pro:        { nome: 'Firma',        preco: 'R$ 1.459 / advogado' },
   enterprise: { nome: 'Enterprise',   preco: 'R$ 1.599 / advogado' },

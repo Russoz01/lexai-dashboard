@@ -5,6 +5,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { assertPlanAccess } from '@/lib/plan-access'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -75,6 +76,10 @@ export async function POST(req: NextRequest) {
     if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
 
     const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    // Plan-based access (Wave R1 audit): Parecerista é Escritório+
+    const planBlock = await assertPlanAccess(supabase, user.id, 'parecerista')
+    if (planBlock) return planBlock
+
     const rl = await checkRateLimit(supabase, `user:${user.id}:parecerista`)
     if (!rl.ok) return rateLimitResponse(rl)
 

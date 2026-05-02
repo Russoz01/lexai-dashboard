@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 
 export interface PlanInfo {
-  plano: 'free' | 'starter' | 'pro' | 'enterprise'
+  plano: 'free' | 'solo' | 'starter' | 'pro' | 'enterprise'
   realPlano: string
   authenticated: boolean
   subscription_status: string

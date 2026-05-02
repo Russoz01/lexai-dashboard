@@ -4,6 +4,7 @@ import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { checkAndIncrementQuota } from '@/lib/quotas'
+import { userCanAccessAgent, getUpgradeMessage, getMinPlanFor } from '@/lib/plan-access'
 
 /* ═════════════════════════════════════════════════════════════
  * withAgentAuth — v10.10 agent route guard
@@ -48,6 +49,8 @@ interface WithAgentAuthOptions {
   skipRateLimit?: boolean
   /** Pula a checagem de ANTHROPIC_API_KEY (default: false). Útil pra agentes que não chamam LLM. */
   skipLLMKeyCheck?: boolean
+  /** Pula plan-access check (default: false). Útil pra rotas free-tier (chat router, ex). */
+  skipPlanCheck?: boolean
 }
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -80,19 +83,44 @@ export function withAgentAuth(
         return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
       }
 
-      // 3) Rate limit — 20 req/min/user/agent (sliding window via Supabase)
+      // 3) Plan-based access check (Wave R1 audit fix)
+      // Cada plano libera um subset distinto de agentes. Solo R$599 só
+      // tem 8 essenciais; Firma R$1.459 libera todos 27. Sem isso,
+      // pricing era cosmético — backend liberava qualquer agente.
+      if (!options.skipPlanCheck) {
+        const { data: planoRow } = await supabase
+          .from('usuarios')
+          .select('plano')
+          .eq('auth_user_id', user.id)
+          .maybeSingle()
+        const plano = planoRow?.plano as string | undefined
+        if (!userCanAccessAgent(plano, agentSlug)) {
+          const minPlan = getMinPlanFor(agentSlug)
+          return NextResponse.json(
+            {
+              error: getUpgradeMessage(agentSlug),
+              code: 'plan_upgrade_required',
+              required_plan: minPlan,
+              current_plan: plano || 'unknown',
+            },
+            { status: 403 },
+          )
+        }
+      }
+
+      // 4) Rate limit — 20 req/min/user/agent (sliding window via Supabase)
       if (!options.skipRateLimit) {
         const rl = await checkRateLimit(supabase, `user:${user.id}:${agentSlug}`)
         if (!rl.ok) return rateLimitResponse(rl)
       }
 
-      // 4) Quota — enforcado no server, nunca confiar em localStorage
+      // 5) Quota — enforcado no server, nunca confiar em localStorage
       if (!options.skipQuota) {
         const quota = await checkAndIncrementQuota(supabase, user.id, agentSlug)
         if (!quota.ok && quota.response) return quota.response
       }
 
-      // 5) Delega pra lógica do agente
+      // 6) Delega pra lógica do agente
       return await handler({ req, supabase, user, agentSlug })
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erro interno'

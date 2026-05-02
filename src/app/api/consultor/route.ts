@@ -5,6 +5,7 @@ import { events } from '@/lib/analytics'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { assertPlanAccess } from '@/lib/plan-access'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -90,6 +91,10 @@ export async function POST(req: NextRequest) {
     if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
 
     // Sliding-window rate limit (20 req/min per user per agent) — fails open
+    // Plan-based access (Wave R1 audit): Consultor é Escritório+
+    const planBlock = await assertPlanAccess(supabase, user.id, 'consultor')
+    if (planBlock) return planBlock
+
     const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
     const rl = await checkRateLimit(supabase, `user:${user.id}:consultor`)
     if (!rl.ok) return rateLimitResponse(rl)
