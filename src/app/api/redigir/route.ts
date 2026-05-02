@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { createAgentStream } from '@/lib/agent-stream'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -86,6 +88,37 @@ export async function POST(req: NextRequest) {
     }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
+
+    // Wave C5: streaming opt-in via ?stream=1
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'redator',
+        params: {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8192,
+          system: [
+            { type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } },
+          ],
+          messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
+        },
+        fallback: { titulo: TEMPLATES[template], documento: '', referencias_legais: [], observacoes: ['Resposta nao estruturada'], tipo: template },
+        wrapResult: (parsed) => ({ peca: parsed }),
+        onPersist: async (parsed) => {
+          if (usuarioId) {
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId, agente: 'redator',
+              mensagem_usuario: `Redigir: ${TEMPLATES[template]}`,
+              resposta_agente: (parsed.titulo as string) || TEMPLATES[template],
+            })
+          }
+          events.agentUsed(user.id, 'redator', 'unknown').catch(() => {})
+        },
+      })
+    }
+
     // 90s hard cap — Anthropic Sonnet 4 com 8192 tokens leva ate ~60s.
     // Sem AbortController, lambda travada consome funcao-segundos ate
     // Vercel matar em 300s e usuario ve 504 sem mensagem util.
@@ -134,6 +167,11 @@ export async function POST(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       console.error('[API /redigir]', errName, msg)
+    }
+    // Demo-mode fallback (Wave C5)
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      const fallback = getDemoFallback('redator', { reason: msg })
+      return NextResponse.json({ peca: fallback })
     }
     if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
       return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente instrucoes mais curtas.' }, { status: 504 })

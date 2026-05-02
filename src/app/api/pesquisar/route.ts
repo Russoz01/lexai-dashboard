@@ -5,6 +5,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { buscarJurisprudenciaReal, isJusBrasilConfigured } from '@/lib/jusbrasil'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -174,6 +175,10 @@ export async function POST(req: NextRequest) {
       grounding_stats: { ...gstats, ...validation.stats },
     })
   } catch (err: unknown) {
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      const fallback = getDemoFallback('pesquisador', { reason: err instanceof Error ? err.message : String(err) })
+      return NextResponse.json(fallback)
+    }
     return safeError('pesquisar', err)
   }
 }

@@ -149,6 +149,8 @@ export default function ResumidorPage() {
   const [texto, setTexto]     = useState('')
   const [titulo, setTitulo]   = useState('')
   const [loading, setLoading] = useState(false)
+  // Wave C5: streaming chars counter para feedback visual real-time
+  const [streamChars, setStreamChars] = useState(0)
   const [analise, setAnalise] = useState<Analise | null>(null)
   const [erro, setErro]       = useState('')
   const [salvando, setSalvando] = useState(false)
@@ -281,7 +283,7 @@ export default function ResumidorPage() {
     return out
   }
 
-  async function callResumirApi(rawText: string): Promise<Analise> {
+  async function callResumirApi(rawText: string, onProgress?: (chars: number) => void): Promise<Analise> {
     let payloadText = rawText
     let replacements: AnonymizeResult['replacements'] = []
     if (anonimizar) {
@@ -289,20 +291,66 @@ export default function ResumidorPage() {
       payloadText = masked.text
       replacements = masked.replacements
     }
-    const res  = await fetch('/api/resumir', {
+
+    // Wave C5: streaming NDJSON via ?stream=1. Mostra chars recebidos em
+    // tempo real via onProgress; resultado final via {type:"done"}.
+    const res = await fetch('/api/resumir?stream=1', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ texto: payloadText }),
     })
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.error || 'Erro desconhecido')
-    let result: Analise = data.analise
-    if (anonimizar && replacements.length > 0) {
-      result = deAnonymizeAnalise(result, replacements)
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data?.error || `Erro ${res.status}`)
     }
-    // Track total masked count for the badge (single mode uses this)
+
+    const reader = res.body?.getReader()
+    if (!reader) {
+      // Browser sem ReadableStream — fallback: assume JSON normal (sem stream)
+      const data = await res.json()
+      let result: Analise = data.analise
+      if (anonimizar && replacements.length > 0) result = deAnonymizeAnalise(result, replacements)
+      if (replacements.length > 0) setMascarados(prev => prev + replacements.length)
+      return result
+    }
+
+    const decoder = new TextDecoder()
+    let buffer = ''
+    let done = false
+    let result: Analise | null = null
+    let streamError: string | null = null
+
+    while (!done) {
+      const { value, done: streamDone } = await reader.read()
+      done = streamDone
+      if (value) {
+        buffer += decoder.decode(value, { stream: !done })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+        for (const line of lines) {
+          if (!line.trim()) continue
+          try {
+            const event = JSON.parse(line)
+            if (event.type === 'text' && typeof event.chars === 'number') {
+              onProgress?.(event.chars)
+            } else if (event.type === 'done' && event.result) {
+              result = (event.result as { analise: Analise }).analise
+            } else if (event.type === 'error') {
+              streamError = event.error || 'Erro de stream'
+            }
+          } catch { /* ignora linhas inválidas */ }
+        }
+      }
+    }
+
+    if (streamError) throw new Error(streamError)
+    if (!result) throw new Error('Stream encerrou sem resultado')
+
+    let final: Analise = result
+    if (anonimizar && replacements.length > 0) final = deAnonymizeAnalise(final, replacements)
     if (replacements.length > 0) setMascarados(prev => prev + replacements.length)
-    return result
+    return final
   }
 
   async function handleComparar() {
@@ -352,9 +400,10 @@ export default function ResumidorPage() {
     setAnalise(null)
     setSalvo(false)
     setMascarados(0)
+    setStreamChars(0)
 
     try {
-      const result = await callResumirApi(texto)
+      const result = await callResumirApi(texto, (chars) => setStreamChars(chars))
       setAnalise(result)
       if (!titulo) setTitulo(result.classificacao?.tipo || result.tipo_documento || 'Documento analisado')
       toast('success', 'Documento analisado com sucesso')
@@ -870,6 +919,15 @@ export default function ResumidorPage() {
             {loading && (
               <div className="section-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <AgentProgress loading steps={[...AGENT_STEPS.resumidor]} />
+                {streamChars > 0 && (
+                  <div style={{
+                    fontSize: 11, color: 'var(--text-muted)', textAlign: 'center',
+                    fontFamily: 'ui-monospace, Menlo, Consolas, monospace',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}>
+                    Recebendo análise · {streamChars.toLocaleString('pt-BR')} caracteres
+                  </div>
+                )}
                 <SkeletonResult />
               </div>
             )}

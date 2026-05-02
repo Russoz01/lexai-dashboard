@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -127,6 +129,42 @@ export async function POST(req: NextRequest) {
       console.log('[API /contestador] grounding:', gstats)
     }
 
+    // Wave C5: streaming opt-in via ?stream=1
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'contestador',
+        params: {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8192,
+          system: [
+            { type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: grounding.contextBlock },
+          ],
+          messages: [{ role: 'user', content: userMessage }],
+        },
+        fallback: { contestacao: { titulo: 'Contestacao', merito: { sintese_fatica: '' } } },
+        wrapResult: (parsed) => {
+          const c = ((parsed as Record<string, unknown>)?.contestacao ?? parsed) as Record<string, unknown>
+          return { contestacao: c }
+        },
+        onPersist: async (parsed) => {
+          const c = ((parsed as Record<string, unknown>)?.contestacao ?? parsed) as Record<string, unknown>
+          if (usuarioId) {
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId,
+              agente: 'contestador',
+              mensagem_usuario: `Contestacao: ${teseInicial.slice(0, 200)}`,
+              resposta_agente: (c?.titulo as string) || 'Contestacao elaborada',
+            })
+          }
+          events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
+        },
+      })
+    }
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
     let message: Anthropic.Messages.Message
@@ -187,6 +225,11 @@ export async function POST(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       console.error('[API /contestador]', errName, msg)
+    }
+    // Demo-mode fallback (Wave C5)
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      const fallback = getDemoFallback('contestador', { reason: msg })
+      return NextResponse.json(fallback)
     }
     if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
       return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente teses mais curtas.' }, { status: 504 })

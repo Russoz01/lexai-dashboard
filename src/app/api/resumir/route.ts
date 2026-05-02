@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { createAgentStream } from '@/lib/agent-stream'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -95,6 +97,39 @@ export async function POST(req: NextRequest) {
     }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
+
+    // Wave C5: streaming opt-in via ?stream=1. Frontend lê NDJSON e mostra
+    // chars recebidos em tempo real. Default mantém comportamento legacy.
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'resumidor',
+        params: {
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 8192,
+          system: [
+            { type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } },
+          ],
+          messages: [{ role: 'user', content: `Document to analyze:\n\n${texto}` }],
+        },
+        fallback: { resumo: '', erro_parse: true },
+        wrapResult: (parsed) => ({ analise: parsed }),
+        onPersist: async (parsed) => {
+          if (usuarioId) {
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId,
+              agente: 'resumidor',
+              mensagem_usuario: `Analise: ${texto.slice(0, 100)}`,
+              resposta_agente: typeof parsed.objeto === 'string' ? parsed.objeto.slice(0, 200) : 'Documento analisado',
+            })
+          }
+          events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})
+        },
+      })
+    }
+
     // AbortController evita lambda travado em 300s sob 529 overload
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
@@ -138,6 +173,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ analise })
   } catch (err: unknown) {
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      const fallback = getDemoFallback('resumidor', { reason: err instanceof Error ? err.message : String(err) })
+      return NextResponse.json({ analise: fallback })
+    }
     return safeError('resumir', err)
   }
 }

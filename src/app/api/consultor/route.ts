@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { parseAgentJSON } from '@/lib/api-utils'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -231,6 +232,12 @@ export async function POST(req: NextRequest) {
     const errMsg = err instanceof Error ? err.message : String(err)
     const errStack = err instanceof Error ? err.stack?.split('\n').slice(0, 5).join(' | ') : undefined
     console.error('[API /consultor] unhandled:', errName, '-', errMsg, '|', errStack ?? '')
+
+    // Demo-mode fallback (Wave C5)
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      const fallback = getDemoFallback('consultor', { reason: errMsg })
+      return NextResponse.json(fallback)
+    }
 
     const lower = errMsg.toLowerCase()
     if (errName === 'AbortError' || errName === 'TimeoutError' || lower.includes('timeout') || lower.includes('aborted')) {

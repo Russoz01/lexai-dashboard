@@ -1,8 +1,10 @@
 ﻿import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { DM_Sans, Playfair_Display } from 'next/font/google'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { CookieConsent } from '@/components/CookieConsent'
 import { MicrosoftClarity } from '@/components/MicrosoftClarity'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { SITE_URL } from '@/lib/site-url'
 import './globals.css'
 
@@ -165,11 +167,17 @@ const jsonLd = {
   permissions: 'Nao requer instalacao local',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Wave C5: lê nonce do middleware (se CSP_NONCE_ENABLED=1) pra autorizar
+  // scripts inline no novo CSP. Quando não setado, undefined → scripts caem
+  // no 'unsafe-inline' do CSP estático do next.config.js.
+  const headersList = await headers()
+  const nonce = headersList.get('x-nonce') || undefined
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: `
           (function() {
             try {
               var t = localStorage.getItem('pralvex-theme');
@@ -181,24 +189,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           })();
         `}} />
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       </head>
       <body className={`${dmSans.variable} ${playfair.variable}`}>
         <a href="#main-content" className="skip-link">Pular para o conteudo</a>
+        <OfflineBanner />
         <ThemeProvider>{children}</ThemeProvider>
         <CookieConsent />
         <MicrosoftClarity />

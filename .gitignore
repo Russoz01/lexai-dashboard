@@ -15,6 +15,11 @@ build/
 dist/
 *.tsbuildinfo
 
+# Playwright (E2E)
+test-results/
+playwright-report/
+playwright/.cache/
+
 # Vercel
 .vercel/
 .vercel
