@@ -66,6 +66,19 @@ export async function exchangeCodeForToken(
   }
 }
 
+/**
+ * Cria evento no Google Calendar do usuário.
+ *
+ * IMPORTANTE: caller deve passar accessToken JÁ DECRYPTADO.
+ * Tokens em oauth_tokens table estão encriptados (AES-256-GCM, SEC-04 fix
+ * 2026-05-02). Use decryptToken() de @/lib/crypto-tokens antes de chamar.
+ *
+ * Exemplo:
+ *   import { decryptToken } from '@/lib/crypto-tokens'
+ *   const { data } = await supabase.from('oauth_tokens').select('access_token')...
+ *   const accessToken = decryptToken(data.access_token)
+ *   await createCalendarEvent(accessToken, event)
+ */
 export async function createCalendarEvent(
   accessToken: string,
   event: GCalEvent,

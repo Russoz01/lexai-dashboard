@@ -241,26 +241,35 @@ export function LexPricingGrid({
           const isEnterprisePremium = plano.id === 'enterprise' && currentPlanId === 'enterprise'
           const isLoadingThis = loadingPlan === plano.id
           const isLoadingOther = loadingPlan !== null && loadingPlan !== plano.id
+          // P0-8 audit fix (2026-05-02): Solo de-emphasized pra restaurar
+          // anchor pricing. Antes Solo R$599 canibalizava Escritório R$1.399
+          // (jump 2.3x = backfire psychology). Agora Solo entry-tier visual.
+          const isSoloDeemphasized = plano.id === 'solo' && !currentPlanId
 
           return (
             <div key={plano.id} style={{
               position: 'relative',
               borderRadius: 16, overflow: 'hidden',
+              opacity: isSoloDeemphasized ? 0.78 : 1,
               background: isEnterprisePremium
                 ? 'radial-gradient(120% 140% at 20% 0%, rgba(212,174,106,0.12), transparent 60%), linear-gradient(180deg, rgba(20,15,8,0.92), rgba(10,10,10,0.94))'
-                : 'rgba(15,15,15,0.82)',
+                : isSoloDeemphasized
+                  ? 'rgba(12,12,12,0.7)'
+                  : 'rgba(15,15,15,0.82)',
               border: isEnterprisePremium
                 ? '1px solid rgba(212,174,106,0.55)'
                 : isDestaque
-                  ? '1px solid rgba(212,174,106,0.42)'
-                  : '1px solid rgba(191,166,142,0.14)',
+                  ? '2px solid rgba(212,174,106,0.62)'
+                  : isSoloDeemphasized
+                    ? '1px dashed rgba(191,166,142,0.18)'
+                    : '1px solid rgba(191,166,142,0.14)',
               boxShadow: isEnterprisePremium
                 ? '0 24px 60px rgba(212,174,106,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
                 : isDestaque
-                  ? '0 16px 40px rgba(212,174,106,0.08)'
+                  ? '0 24px 56px rgba(212,174,106,0.18)'
                   : '0 8px 24px rgba(0,0,0,0.25)',
-              transform: isDestaque ? 'translateY(-4px)' : 'none',
-              transition: 'transform 0.2s ease, border-color 0.2s ease',
+              transform: isDestaque ? 'translateY(-8px) scale(1.02)' : 'none',
+              transition: 'transform 0.25s ease, border-color 0.2s ease, box-shadow 0.25s ease',
             }}>
               {badgeLabel && (
                 <div style={{

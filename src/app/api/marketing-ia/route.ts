@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { validateMarketingOutput } from '@/lib/oab-validator'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -129,7 +130,22 @@ export async function POST(req: NextRequest) {
     const parsed = parseAgentJSON<{ conteudo?: unknown }>(responseText, {
       conteudo: { topico, plataforma, variacoes: [{ nome: 'Variacao 1', corpo: responseText }] },
     })
-    const conteudo = parsed?.conteudo ?? parsed
+    const conteudoRaw = parsed?.conteudo ?? parsed
+
+    // SEC-12 audit fix (2026-05-02): valida output contra Provimento 205 OAB.
+    // Se LLM gerou conteúdo violador (garantia resultado, mercantilização,
+    // sorteios, comparação com colegas), sanitiza + marca violations.
+    // Última linha de defesa antes do output sair pra UI do advogado-cliente.
+    const validation = validateMarketingOutput(conteudoRaw)
+    const conteudo = validation.sanitized
+    if (validation.violations.length > 0) {
+      // eslint-disable-next-line no-console
+      console.warn('[marketing-ia OAB violations]', {
+        userId: user.id,
+        plataforma,
+        violations: validation.violations.map(v => ({ rule: v.rule, severity: v.severity })),
+      })
+    }
 
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
     if (usuarioId) {
@@ -142,7 +158,13 @@ export async function POST(req: NextRequest) {
     }
 
     events.agentUsed(user.id, 'marketing-ia', 'unknown').catch(() => {})
-    return NextResponse.json({ conteudo })
+    return NextResponse.json({
+      conteudo,
+      // SEC-12: expor violations pra UI mostrar warning amigável ao advogado
+      oab_violations: validation.violations.length > 0
+        ? validation.violations.map(v => ({ regra: v.rule, severidade: v.severity, motivo: v.motivo, trecho_removido: v.severity === 'high' ? v.trecho : undefined }))
+        : undefined,
+    })
   } catch (err: unknown) {
     return safeError('marketing-ia', err)
   }

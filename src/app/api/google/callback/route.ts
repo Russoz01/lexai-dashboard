@@ -2,6 +2,7 @@
 import { timingSafeEqual } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
 import { exchangeCodeForToken, isGoogleCalendarConfigured } from '@/lib/google-calendar'
+import { encryptToken, isCryptoConfigured } from '@/lib/crypto-tokens'
 
 /**
  * GET /api/google/callback?code=...&state=...
@@ -71,12 +72,27 @@ export async function GET(req: NextRequest) {
         ? new Date(Date.now() + token.expires_in * 1000).toISOString()
         : null
 
+      // SEC-04 audit fix (2026-05-02): AES-256-GCM encryption antes de
+      // persistir. Antes, tokens em texto plano = sequestro de calendar
+      // de TODOS users se DB vazar. LGPD Art. 46 (medida técnica).
+      // Graceful degrade: se OAUTH_ENCRYPTION_KEY não setado em env,
+      // log warn + persiste plain (backward-compat até key ser configurada).
+      const cryptoOn = isCryptoConfigured()
+      if (!cryptoOn) {
+        // eslint-disable-next-line no-console
+        console.warn('[google/callback] OAUTH_ENCRYPTION_KEY ausente — tokens armazenados em texto plano (LGPD Art. 46 risk)')
+      }
+      const accessToken = cryptoOn ? encryptToken(token.access_token) : token.access_token
+      const refreshToken = token.refresh_token
+        ? (cryptoOn ? encryptToken(token.refresh_token) : token.refresh_token)
+        : null
+
       await supabase.from('oauth_tokens').upsert(
         {
           usuario_id: usuario.id,
           provider: 'google_calendar',
-          access_token: token.access_token,
-          refresh_token: token.refresh_token ?? null,
+          access_token: accessToken,
+          refresh_token: refreshToken,
           expires_at: expiresAt,
         },
         { onConflict: 'usuario_id,provider' },
