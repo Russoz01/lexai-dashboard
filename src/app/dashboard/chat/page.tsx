@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
@@ -22,6 +22,8 @@ import {
   Settings2,
   Brain,
   Gauge,
+  ChevronUp,
+  ChevronDown,
   type LucideIcon,
 } from 'lucide-react'
 import { extractPdfWithMeta } from '@/lib/pdf-parser'
@@ -431,7 +433,9 @@ export default function ChatPage() {
                 {fidelidade === 'profissional' ? 'Profissional' : fidelidade === 'casual' ? 'Casual' : 'Parceiro'}
               </span>
             </span>
-            <span className="chat-settings-caret">{showSettings ? '▴' : '▾'}</span>
+            <span className="chat-settings-caret" aria-hidden="true">
+              {showSettings ? <ChevronUp size={12} strokeWidth={2} /> : <ChevronDown size={12} strokeWidth={2} />}
+            </span>
           </button>
 
           {showSettings && (

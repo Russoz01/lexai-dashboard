@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase'
@@ -792,6 +792,10 @@ function useCountUp(target: number, active: boolean, durationMs = 900): number {
   useEffect(() => {
     if (!active) return
     if (target === 0) { setN(0); return }
+    // Respeita prefers-reduced-motion (WCAG 2.3.3 — animation disable)
+    const reducedMotion = typeof window !== 'undefined'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reducedMotion) { setN(target); return }
     const start = performance.now()
     const ease = (t: number) => 1 - Math.pow(1 - t, 3)
     let raf: number
