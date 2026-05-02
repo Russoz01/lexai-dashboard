@@ -138,3 +138,43 @@ export function parseAgentJSON<T = unknown>(responseText: string, fallback: T): 
     return fallback
   }
 }
+
+/**
+ * Retry helper para chamadas Anthropic. Tenta até `maxAttempts` vezes com
+ * backoff exponencial (300ms, 900ms, 2700ms) APENAS para erros transientes:
+ * 429 rate limit, 502/503/504 server errors, overloaded, timeout.
+ *
+ * Não retenta para 401 (auth), 400 (bad request) — falham rápido.
+ *
+ * Wave C5 (2026-05-02) — pré-demo resilience.
+ */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxAttempts = 3,
+  baseDelayMs = 300,
+): Promise<T> {
+  let lastError: unknown
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn()
+    } catch (err) {
+      lastError = err
+      const msg = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase()
+      const retryable = msg.includes('429')
+        || msg.includes('rate_limit')
+        || msg.includes('overloaded')
+        || msg.includes('timeout')
+        || msg.includes('etimedout')
+        || msg.includes('502')
+        || msg.includes('503')
+        || msg.includes('504')
+        || msg.includes('econnreset')
+      if (!retryable || attempt === maxAttempts) throw err
+      const delay = baseDelayMs * Math.pow(3, attempt - 1) // 300, 900, 2700
+      // eslint-disable-next-line no-console
+      console.warn(`[withRetry] attempt ${attempt}/${maxAttempts} failed (${msg.slice(0, 80)}), retrying in ${delay}ms`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+  throw lastError
+}

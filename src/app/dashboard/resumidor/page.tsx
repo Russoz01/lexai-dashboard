@@ -18,6 +18,8 @@ import { anonymize, deAnonymize, type AnonymizeResult } from '@/lib/anonymizer'
 import { SkeletonResult } from '@/components/Skeleton'
 import { AgentHero } from '@/components/AgentHero'
 import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
+import { AGENT_EXAMPLES } from '@/lib/agent-examples'
+import { Wand2 } from 'lucide-react'
 import { FileText as FileTextIcon, Clock as ClockIcon, Gauge as GaugeIcon, ShieldCheck as ShieldIcon } from 'lucide-react'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -678,6 +680,24 @@ export default function ResumidorPage() {
                         {mascarados} dado{mascarados === 1 ? '' : 's'} mascarado{mascarados === 1 ? '' : 's'}
                       </span>
                     )}
+                    <button
+                      type="button"
+                      onClick={() => setTexto(AGENT_EXAMPLES.resumidor[0].payload.texto)}
+                      disabled={!!texto.trim()}
+                      title={texto.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar contrato de exemplo'}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '6px 12px', borderRadius: '8px',
+                        background: 'var(--card-bg)', border: '1px solid var(--border)',
+                        color: 'var(--text-secondary)',
+                        fontSize: '12px', fontWeight: 600,
+                        cursor: texto.trim() ? 'not-allowed' : 'pointer',
+                        fontFamily: "'DM Sans', sans-serif",
+                        opacity: texto.trim() ? 0.5 : 1,
+                      }}
+                    >
+                      <Wand2 size={14} strokeWidth={1.75} aria-hidden /> Exemplo
+                    </button>
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}

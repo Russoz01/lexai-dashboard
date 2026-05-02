@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
+import { parseAgentJSON } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -179,13 +180,12 @@ export async function POST(req: NextRequest) {
     )
     const responseText = textBlock?.text.trim() ?? ''
 
-    let relatorio
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      relatorio = cleaned ? JSON.parse(cleaned) : { analise_impacto: { resumo_geral: '' }, erro_parse: true }
-    } catch {
-      relatorio = { analise_impacto: { resumo_geral: responseText }, erro_parse: true }
-    }
+    const relatorio = responseText
+      ? parseAgentJSON<Record<string, unknown>>(
+          responseText,
+          { analise_impacto: { resumo_geral: responseText }, erro_parse: true },
+        )
+      : { analise_impacto: { resumo_geral: '' }, erro_parse: true }
 
     if (usuarioId) {
       const { error: histErr } = await supabase.from('historico').insert({

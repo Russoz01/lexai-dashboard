@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -111,13 +111,10 @@ export async function POST(req: NextRequest) {
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let peca
-    try {
-      const jsonStr = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      peca = JSON.parse(jsonStr)
-    } catch {
-      peca = { titulo: TEMPLATES[template], documento: responseText, referencias_legais: [], observacoes: ['Resposta nao estruturada'], tipo: template }
-    }
+    const peca = parseAgentJSON<Record<string, unknown>>(
+      responseText,
+      { titulo: TEMPLATES[template], documento: responseText, referencias_legais: [], observacoes: ['Resposta nao estruturada'], tipo: template },
+    )
 
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
     if (usuarioId) {

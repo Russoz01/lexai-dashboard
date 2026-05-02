@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, withRetry } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -366,8 +366,9 @@ export async function POST(req: NextRequest) {
 
     // ─────────────────────────────────────────────────────────────────
     // Modo legacy (não-streaming) — fallback p/ clients antigos
+    // Wave C5: retry automático 3x com backoff em erros transientes.
     // ─────────────────────────────────────────────────────────────────
-    const response = await client.messages.create({
+    const response = await withRetry(() => client.messages.create({
       model: modelo,
       max_tokens: modo === 'complexo' ? 3500 : 1800,
       system: [
@@ -375,7 +376,7 @@ export async function POST(req: NextRequest) {
       ],
       tools: [ROUTING_TOOL],
       messages,
-    })
+    }))
 
     let textoResposta = ''
     let rotear: { agente: AgenteKey; justificativa: string; pre_prompt?: string } | null = null

@@ -13,6 +13,7 @@ import { generateDocx, downloadBlob } from '@/lib/word-export'
 import { saveDraft, listDrafts, deleteDraft, type DraftRow } from '@/lib/drafts'
 import { SkeletonResult } from '@/components/Skeleton'
 import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
+import { AGENT_EXAMPLES } from '@/lib/agent-examples'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
 
@@ -570,6 +571,24 @@ export default function RedatorPage() {
               </div>
             )}
 
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 6 }}>
+              <button
+                type="button"
+                onClick={() => setInstrucoes(AGENT_EXAMPLES.redator[0].payload.contexto)}
+                disabled={!!instrucoes.trim()}
+                title={instrucoes.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar caso de exemplo'}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '5px 10px', borderRadius: 6,
+                  background: 'var(--card-bg)', border: '1px solid var(--border)',
+                  color: 'var(--text-secondary)', fontSize: 11, fontWeight: 600,
+                  cursor: instrucoes.trim() ? 'not-allowed' : 'pointer',
+                  opacity: instrucoes.trim() ? 0.5 : 1,
+                }}
+              >
+                <Wand2 size={12} strokeWidth={1.75} aria-hidden /> Exemplo
+              </button>
+            </div>
             <textarea
               value={instrucoes}
               onChange={e => setInstrucoes(e.target.value)}

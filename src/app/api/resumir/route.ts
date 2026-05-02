@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -118,13 +118,10 @@ export async function POST(req: NextRequest) {
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let analise
-    try {
-      const jsonStr = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      analise = JSON.parse(jsonStr)
-    } catch {
-      analise = { resumo: responseText, erro_parse: true }
-    }
+    const analise = parseAgentJSON<Record<string, unknown>>(
+      responseText,
+      { resumo: responseText, erro_parse: true },
+    )
 
     // Save to historico (was missing — only agent without it)
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)

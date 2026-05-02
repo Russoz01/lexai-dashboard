@@ -1,7 +1,7 @@
 ﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -104,14 +104,11 @@ export const POST = withAgentAuth('audiencia', async ({ req, supabase, user }) =
     .map(b => b.text)
     .join('\n')
     .trim()
-  let parsed
-  try {
-    const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-    parsed = JSON.parse(cleaned)
-  } catch {
-    parsed = { roteiro: { titulo: TIPOS_AUDIENCIA[tipo], abertura: { tese_central: responseText } } }
-  }
-  const roteiro = parsed?.roteiro ?? parsed
+  const parsed = parseAgentJSON<Record<string, unknown>>(
+    responseText,
+    { roteiro: { titulo: TIPOS_AUDIENCIA[tipo], abertura: { tese_central: responseText } } },
+  )
+  const roteiro = (parsed?.roteiro as Record<string, unknown> | undefined) ?? parsed
 
   const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
   if (usuarioId) {

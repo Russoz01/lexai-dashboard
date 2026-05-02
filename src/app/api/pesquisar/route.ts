@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { buscarJurisprudenciaReal, isJusBrasilConfigured } from '@/lib/jusbrasil'
-import { resolveUsuarioIdServer, safeError } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -137,13 +137,10 @@ export async function POST(req: NextRequest) {
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let pesquisa
-    try {
-      const jsonStr = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      pesquisa = JSON.parse(jsonStr)
-    } catch {
-      pesquisa = { enquadramento: responseText, erro_parse: true }
-    }
+    const pesquisa = parseAgentJSON<Record<string, unknown>>(
+      responseText,
+      { enquadramento: responseText, erro_parse: true },
+    )
 
     // Enrich with real JusBrasil results when configured — degrades to AI results otherwise
     if (isJusBrasilConfigured()) {
@@ -159,7 +156,7 @@ export async function POST(req: NextRequest) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId, agente: 'pesquisador',
         mensagem_usuario: `Pesquisa: ${query}`,
-        resposta_agente: pesquisa.enquadramento?.slice(0, 200) || 'Pesquisa realizada',
+        resposta_agente: (pesquisa.enquadramento as string)?.slice(0, 200) || 'Pesquisa realizada',
       })
     }
 

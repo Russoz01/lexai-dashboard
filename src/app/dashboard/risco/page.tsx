@@ -13,6 +13,8 @@ import {
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
 import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
+import { AGENT_EXAMPLES } from '@/lib/agent-examples'
+import { Wand2 } from 'lucide-react'
 import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface PontoRisco {
@@ -137,7 +139,25 @@ export default function RiscoPage() {
             {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
 
-          <label className="form-label" style={{ marginBottom: 6 }}>Texto do documento</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <label className="form-label" style={{ margin: 0 }}>Texto do documento</label>
+            <button
+              type="button"
+              onClick={() => setDocumento(AGENT_EXAMPLES.risco[0].payload.documento)}
+              disabled={!!documento.trim()}
+              title={documento.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar contrato SaaS de exemplo'}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                padding: '4px 10px', borderRadius: 6,
+                background: 'var(--card-bg)', border: '1px solid var(--border)',
+                color: 'var(--text-secondary)', fontSize: 11, fontWeight: 600,
+                cursor: documento.trim() ? 'not-allowed' : 'pointer',
+                opacity: documento.trim() ? 0.5 : 1,
+              }}
+            >
+              <Wand2 size={12} strokeWidth={1.75} aria-hidden /> Exemplo
+            </button>
+          </div>
           <textarea
             value={documento}
             onChange={(e) => setDocumento(e.target.value)}

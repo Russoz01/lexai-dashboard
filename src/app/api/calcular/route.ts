@@ -1,7 +1,7 @@
 ﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 import { buildAreaContext } from '@/lib/agents/taxonomy'
 
@@ -107,12 +107,10 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
     .map(b => b.text)
     .join('\n')
     .trim()
-  let resultado
-  try {
-    resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
-  } catch {
-    resultado = { resultado: responseText, erro_parse: true }
-  }
+  const resultado = parseAgentJSON<Record<string, unknown>>(
+    responseText,
+    { resultado: responseText, erro_parse: true },
+  )
 
   const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
   if (usuarioId) {

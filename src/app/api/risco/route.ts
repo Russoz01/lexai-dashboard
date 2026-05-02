@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -137,14 +137,11 @@ export async function POST(req: NextRequest) {
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let parsed
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      parsed = JSON.parse(cleaned)
-    } catch {
-      parsed = { risco: { score_global: 50, nivel: 'MEDIO', recomendacao: responseText, top_3_pontos: [], confianca: { nivel: 'baixa', nota: 'Resposta nao estruturada' } } }
-    }
-    const risco = parsed?.risco ?? parsed
+    const parsed = parseAgentJSON<Record<string, unknown>>(
+      responseText,
+      { risco: { score_global: 50, nivel: 'MEDIO', recomendacao: responseText, top_3_pontos: [], confianca: { nivel: 'baixa', nota: 'Resposta nao estruturada' } } },
+    )
+    const risco = ((parsed as Record<string, unknown>)?.risco ?? parsed) as Record<string, unknown>
 
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
     if (usuarioId) {

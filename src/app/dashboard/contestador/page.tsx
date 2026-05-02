@@ -16,6 +16,8 @@ import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { toast } from '@/components/Toast'
 import { AgentHero } from '@/components/AgentHero'
 import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
+import { AGENT_EXAMPLES } from '@/lib/agent-examples'
+import { Wand2 } from 'lucide-react'
 import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface Preliminar {
@@ -193,6 +195,28 @@ export default function ContestadorPage() {
           <h2 style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', margin: '0 0 20px' }}>
             Teses do caso
           </h2>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+            <button
+              type="button"
+              onClick={() => {
+                const ex = AGENT_EXAMPLES.contestador[0].payload
+                setTeseInicial(ex.teseInicial)
+                setTeseDefesa(ex.teseDefesa)
+              }}
+              disabled={!!(teseInicial.trim() || teseDefesa.trim())}
+              title={teseInicial.trim() || teseDefesa.trim() ? 'Limpe os campos para carregar exemplo' : 'Carregar caso de exemplo'}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                padding: '5px 10px', borderRadius: 6,
+                background: 'var(--card-bg)', border: '1px solid var(--border)',
+                color: 'var(--text-secondary)', fontSize: 11, fontWeight: 600,
+                cursor: (teseInicial.trim() || teseDefesa.trim()) ? 'not-allowed' : 'pointer',
+                opacity: (teseInicial.trim() || teseDefesa.trim()) ? 0.5 : 1,
+              }}
+            >
+              <Wand2 size={12} strokeWidth={1.75} aria-hidden /> Exemplo
+            </button>
+          </div>
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
               Tese da inicial (autor)

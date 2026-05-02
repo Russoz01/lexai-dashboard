@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
+import { parseAgentJSON } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -192,16 +193,12 @@ export async function POST(req: NextRequest) {
       .join('\n')
       .trim()
 
-    let parecer
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      parecer = cleaned ? JSON.parse(cleaned) : { parecer: { titulo: '', conclusao: '' }, erro_parse: true }
-    } catch {
-      parecer = { parecer: { titulo: 'Parecer', conclusao: responseText }, erro_parse: true }
-    }
+    const parecer = responseText
+      ? parseAgentJSON<Record<string, unknown>>(responseText, { parecer: { titulo: 'Parecer', conclusao: responseText }, erro_parse: true })
+      : { parecer: { titulo: '', conclusao: '' }, erro_parse: true }
 
     // Normalize: if the model returned { parecer: { ... } }, extract the inner object
-    const parecerData = parecer?.parecer ?? parecer
+    const parecerData = ((parecer as Record<string, unknown>)?.parecer ?? parecer) as Record<string, unknown>
 
     // Validate citations against verified corpus and extract URLs.
     const validation = validateCitations(responseText)
