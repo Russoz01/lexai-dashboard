@@ -543,6 +543,7 @@ export default function ChatPage() {
             type="file"
             accept=".pdf,.txt,.md,text/plain,text/markdown,application/pdf"
             onChange={onPickFile}
+            aria-label="Selecionar arquivo PDF, TXT ou Markdown"
             style={{ display: 'none' }}
           />
 

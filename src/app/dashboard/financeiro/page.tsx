@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useCallback } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
@@ -424,9 +424,14 @@ export default function FinanceiroPage() {
   }
 
   async function deletar(id: string) {
+    // Mostra descricao + valor pra usuario nao deletar item errado por engano
+    const item = itens.find(t => t.id === id)
+    const detalhes = item
+      ? `"${item.descricao}" — R$ ${(item.valor ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+      : 'Este lançamento'
     const ok = await confirmDialog({
-      title: 'Excluir este lançamento',
-      description: 'O registro financeiro será removido da sua base. Essa ação não pode ser desfeita.',
+      title: 'Excluir lançamento',
+      description: `${detalhes} será removido da sua base. Essa ação não pode ser desfeita.`,
       confirmLabel: 'Excluir',
       cancelLabel: 'Manter',
       variant: 'danger',
@@ -942,7 +947,9 @@ export default function FinanceiroPage() {
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
                   <div>
                     <label className="form-label">Valor (R$) *</label>
-                    <input type="number" step="0.01" min="0" value={form.valor}
+                    <input
+                      type="number" step="0.01" min="0" inputMode="decimal"
+                      value={form.valor}
                       onChange={e => setForm(f => ({...f, valor:e.target.value}))}
                       placeholder="0,00" className="form-input" required />
                   </div>
@@ -1080,6 +1087,7 @@ export default function FinanceiroPage() {
                   <button
                     type="submit"
                     disabled={importing || belvoConfigured === false}
+                    title={belvoConfigured === false ? 'Importação Belvo disponível no plano Firma' : undefined}
                     className="btn-primary"
                     style={{ flex:1, justifyContent:'center' }}
                   >
