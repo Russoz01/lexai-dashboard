@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -123,17 +123,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ resultado })
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /negociar]', msg)
-    if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {
-      return NextResponse.json({
-        error: 'Agente temporariamente sobrecarregado. Aguarde 30 segundos e tente novamente.',
-        retry: true,
-      }, { status: 503 })
-    }
-    return NextResponse.json({
-      error: 'Ocorreu um erro ao processar sua solicitacao. Tente novamente.',
-      details: msg,
-    }, { status: 500 })
+    return safeError('negociar', err)
   }
 }
