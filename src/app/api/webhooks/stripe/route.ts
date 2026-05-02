@@ -3,6 +3,7 @@ import Stripe from 'stripe'
 import { stripe, planFromPriceId } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog } from '@/lib/safe-log'
+import { audit } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
         const filterCol = authUserId ? 'auth_user_id' : 'stripe_customer_id'
         const filterVal = authUserId ?? customerId
 
-        const { error } = await supabase
+        const { data: updated, error } = await supabase
           .from('usuarios')
           .update({
             plano,
@@ -100,8 +101,20 @@ export async function POST(req: NextRequest) {
             current_period_end: new Date((sub as unknown as { current_period_end: number }).current_period_end * 1000).toISOString(),
           })
           .eq(filterCol, filterVal)
+          .select('id')
+          .maybeSingle()
 
         if (error) throw error
+        // LGPD Art. 37 audit — plano mudou, registra pra rastreio
+        if (updated?.id) {
+          audit({
+            usuarioId: updated.id,
+            action: 'user.plan_change',
+            entityType: 'subscription',
+            entityId: sub.id,
+            metadata: { plano, status: sub.status, event: event.type },
+          }).catch(() => {})
+        }
         break
       }
 
@@ -111,11 +124,22 @@ export async function POST(req: NextRequest) {
         const authUserId = (sub.metadata?.auth_user_id as string | undefined) || null
         const filterCol = authUserId ? 'auth_user_id' : 'stripe_customer_id'
         const filterVal = authUserId ?? customerId
-        const { error } = await supabase
+        const { data: updated, error } = await supabase
           .from('usuarios')
           .update({ plano: 'free', subscription_status: 'canceled', stripe_subscription_id: null })
           .eq(filterCol, filterVal)
+          .select('id')
+          .maybeSingle()
         if (error) throw error
+        if (updated?.id) {
+          audit({
+            usuarioId: updated.id,
+            action: 'user.plan_change',
+            entityType: 'subscription',
+            entityId: sub.id,
+            metadata: { plano: 'free', reason: 'subscription_deleted' },
+          }).catch(() => {})
+        }
         break
       }
 

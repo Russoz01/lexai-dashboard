@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { exchangeCodeForToken, isGoogleCalendarConfigured } from '@/lib/google-calendar'
 import { encryptToken, isCryptoConfigured } from '@/lib/crypto-tokens'
 import { safeLog } from '@/lib/safe-log'
+import { audit } from '@/lib/audit'
 
 /**
  * GET /api/google/callback?code=...&state=...
@@ -98,6 +99,15 @@ export async function GET(req: NextRequest) {
         },
         { onConflict: 'usuario_id,provider' },
       )
+
+      // LGPD Art. 37 audit — terceiro com acesso a dados (Google) registrado
+      audit({
+        usuarioId: usuario.id,
+        action: 'user.oauth_connect',
+        entityType: 'oauth_tokens',
+        metadata: { provider: 'google_calendar', encrypted: cryptoOn },
+        request: req,
+      }).catch(() => {})
     }
 
     // Clear the CSRF cookie

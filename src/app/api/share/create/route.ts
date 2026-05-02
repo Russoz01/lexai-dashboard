@@ -3,6 +3,7 @@ import { validateAuth } from '@/lib/api-utils'
 import { events } from '@/lib/analytics'
 import { SITE_URL } from '@/lib/site-url'
 import { safeLog } from '@/lib/safe-log'
+import { audit } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -128,6 +129,16 @@ export async function POST(req: NextRequest) {
 
     // Fire-and-forget analytics event
     events.shareCreated(user.id, tipo).catch(() => { /* silent */ })
+
+    // LGPD Art. 37 audit — documento compartilhado externamente, rastreável
+    audit({
+      usuarioId: usuario.id,
+      action: 'document.share',
+      entityType: 'shared_documents',
+      entityId: token,
+      metadata: { tipo, titulo: titulo.slice(0, 80), expires_at: expiresAt },
+      request: req,
+    }).catch(() => {})
 
     return NextResponse.json({
       token,

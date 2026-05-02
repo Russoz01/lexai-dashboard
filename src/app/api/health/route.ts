@@ -39,7 +39,35 @@ export async function GET() {
     checks.supabase = { ok: false, error: err instanceof Error ? err.message : 'unknown' }
   }
 
-  const healthy = Object.values(checks).every((c) => c.ok)
+  // 4. Anthropic — env var only (real call burns tokens em uptime monitor)
+  checks.anthropic = process.env.ANTHROPIC_API_KEY
+    ? { ok: true }
+    : { ok: false, error: 'ANTHROPIC_API_KEY missing' }
+
+  // 5. Stripe — env var (real balance retrieve seria $$, env check basta)
+  checks.stripe = process.env.STRIPE_SECRET_KEY
+    ? { ok: true }
+    : { ok: false, error: 'STRIPE_SECRET_KEY missing' }
+
+  // 6. Webhook secret (sem isso webhook handler rejeita tudo)
+  checks.stripe_webhook = process.env.STRIPE_WEBHOOK_SECRET
+    ? { ok: true }
+    : { ok: false, error: 'STRIPE_WEBHOOK_SECRET missing' }
+
+  // 7. OAuth encryption key (SEC-04)
+  checks.crypto = (process.env.OAUTH_ENCRYPTION_KEY?.length ?? 0) >= 16
+    ? { ok: true }
+    : { ok: false, error: 'OAUTH_ENCRYPTION_KEY missing or <16 chars' }
+
+  // 8. Sentry (degraded if missing, não blocking)
+  checks.sentry = (process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN)
+    ? { ok: true }
+    : { ok: false, error: 'SENTRY_DSN missing (errors not tracked)' }
+
+  // Critical checks — se algum fail, status=503
+  // Sentry é warning-level: marca degraded mas nao 503
+  const criticalKeys = ['app', 'env', 'supabase', 'anthropic', 'stripe', 'stripe_webhook', 'crypto']
+  const healthy = criticalKeys.every((k) => checks[k]?.ok)
   const status = healthy ? 200 : 503
 
   return NextResponse.json(

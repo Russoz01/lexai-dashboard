@@ -8,6 +8,7 @@ import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableErro
 import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { validateOabContent } from '@/lib/oab-validator'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -219,10 +220,18 @@ export async function POST(req: NextRequest) {
     }
 
     events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
+
+    // Provimento 205/2021 OAB soft check sobre o body da contestação
+    const oabCheck = responseText ? validateOabContent(responseText) : null
+    const oab_warnings = oabCheck && oabCheck.violations.length > 0
+      ? oabCheck.violations.map(v => ({ rule: v.rule, severity: v.severity, motivo: v.motivo }))
+      : undefined
+
     return NextResponse.json({
       contestacao,
       fontes: validation.sources,
       grounding_stats: { ...gstats, ...validation.stats },
+      oab_warnings,
     })
   } catch (err: unknown) {
     const errName = err instanceof Error ? err.name : 'Unknown'

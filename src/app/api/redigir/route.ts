@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
 import { safeLog } from '@/lib/safe-log'
+import { validateOabContent } from '@/lib/oab-validator'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -163,7 +164,16 @@ export async function POST(req: NextRequest) {
 
     events.agentUsed(user.id, 'redator', 'unknown').catch(() => {})
 
-    return NextResponse.json({ peca })
+    // Provimento 205/2021 OAB soft check — peça processual não é publicidade,
+    // mas se modelo gerou trecho promocional inadvertido (ex: rodapé de
+    // "consulte-nos pra garantir vitória"), opera vê warning. Não bloqueia.
+    const oabBody = typeof peca.documento === 'string' ? peca.documento : ''
+    const oabCheck = oabBody ? validateOabContent(oabBody) : null
+    const oab_warnings = oabCheck && oabCheck.violations.length > 0
+      ? oabCheck.violations.map(v => ({ rule: v.rule, severity: v.severity, motivo: v.motivo }))
+      : undefined
+
+    return NextResponse.json({ peca, oab_warnings })
   } catch (err: unknown) {
     const errName = err instanceof Error ? err.name : 'Unknown'
     const msg = err instanceof Error ? err.message : 'Erro interno'
