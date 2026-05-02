@@ -5,6 +5,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
+import { assertPlanAccess } from '@/lib/plan-access'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -50,6 +51,9 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
     if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
+
+    const planBlock = await assertPlanAccess(supabase, user.id, 'revisor')
+    if (planBlock) return planBlock
 
     const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
     const rl = await checkRateLimit(supabase, `user:${user.id}:revisor`)

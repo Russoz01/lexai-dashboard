@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { assertPlanAccess } from '@/lib/plan-access'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -80,6 +81,9 @@ export async function POST(req: NextRequest) {
     if (!ANTHROPIC_API_KEY) {
       return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
     }
+
+    const planBlock = await assertPlanAccess(supabase, user.id, 'planilhas')
+    if (planBlock) return planBlock
 
     // Sliding-window rate limit (20 req/min per user per agent)
     const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
