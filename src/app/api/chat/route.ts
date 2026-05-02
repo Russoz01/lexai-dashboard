@@ -5,6 +5,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, withRetry } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -362,13 +363,13 @@ export async function POST(req: NextRequest) {
                     : textoResposta.slice(0, 500),
                 })
               } catch (e: unknown) {
-                console.error('[API /chat?stream=1] historico insert failed:', e instanceof Error ? e.message : String(e))
+                safeLog.error('[API /chat?stream=1] historico insert failed:', e instanceof Error ? e.message : String(e))
               }
             }
             events.agentUsed(user.id, 'chat', rotear?.agente || 'direct').catch(() => {})
           } catch (e: unknown) {
             const message = e instanceof Error ? e.message : 'Erro de stream'
-            console.error('[API /chat?stream=1]', message)
+            safeLog.error('[API /chat?stream=1]', message)
 
             // Wave C5 fix: se demo fallback ativo + erro retryable, emite
             // resposta cached como done event em vez de error. Frontend
@@ -469,7 +470,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(payload)
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Erro interno'
-    console.error('[API /chat]', message)
+    safeLog.error('[API /chat]', message)
 
     // Demo-mode fallback (Wave C5): se o erro é transiente e fallback ativado,
     // retorna resposta cached em vez de 500. Salva-vidas pré-demo.

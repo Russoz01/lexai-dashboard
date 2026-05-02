@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -127,7 +128,7 @@ export async function POST(req: NextRequest) {
     const gstats = groundingStats(grounding)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /contestador] grounding:', gstats)
+      safeLog.debug('[API /contestador] grounding:', gstats)
     }
 
     // Wave C5: streaming opt-in via ?stream=1
@@ -214,7 +215,7 @@ export async function POST(req: NextRequest) {
     const validation = validateCitations(responseText)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /contestador] validation:', validation.stats)
+      safeLog.debug('[API /contestador] validation:', validation.stats)
     }
 
     events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
@@ -228,7 +229,7 @@ export async function POST(req: NextRequest) {
     const msg = err instanceof Error ? err.message : 'Erro interno'
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.error('[API /contestador]', errName, msg)
+      safeLog.error('[API /contestador]', errName, msg)
     }
     // Demo-mode fallback (Wave C5) — wrap fontes + grounding_stats
     if (isDemoFallbackEnabled() && isRetryableError(err)) {

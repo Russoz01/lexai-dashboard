@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -105,7 +106,7 @@ export async function POST(req: NextRequest) {
     const gstats = groundingStats(grounding)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /parecerista] grounding:', gstats)
+      safeLog.debug('[API /parecerista] grounding:', gstats)
     }
 
     const controller = new AbortController()
@@ -159,7 +160,7 @@ export async function POST(req: NextRequest) {
     const validation = validateCitations(responseText)
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('[API /parecerista] validation:', validation.stats, 'warnings:', validation.warnings.length)
+      safeLog.debug('[API /parecerista] validation:', validation.stats, 'warnings:', validation.warnings.length)
     }
 
     events.agentUsed(user.id, 'parecerista', 'unknown').catch(() => {})
@@ -173,7 +174,7 @@ export async function POST(req: NextRequest) {
     const msg = err instanceof Error ? err.message : 'Erro interno'
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.error('[API /parecerista]', errName, msg)
+      safeLog.error('[API /parecerista]', errName, msg)
     }
     // Demo-mode fallback (Wave C5) — wrap pra match shape de sucesso ({parecer, fontes, grounding_stats})
     if (isDemoFallbackEnabled() && isRetryableError(err)) {

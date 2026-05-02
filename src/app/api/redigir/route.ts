@@ -6,6 +6,7 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
+import { safeLog } from '@/lib/safe-log'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -168,7 +169,7 @@ export async function POST(req: NextRequest) {
     const msg = err instanceof Error ? err.message : 'Erro interno'
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.error('[API /redigir]', errName, msg)
+      safeLog.error('[API /redigir]', errName, msg)
     }
     // Demo-mode fallback (Wave C5)
     if (isDemoFallbackEnabled() && isRetryableError(err)) {
