@@ -215,6 +215,24 @@
 .text-on-surface-muted { color: var(--text-secondary); }
 .border-on-surface { border-color: var(--border); }
 
+/* Landing nav sticky tematizada — substitui bg-black/80 hardcoded */
+.lex-landing-nav-scrolled {
+  border-bottom: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+
+/* Em light mode, esconde decorações dark-only (shaders, ambient mesh,
+   gradients editoriais que só fazem sentido no fundo dark editorial).
+   Mantém wireframe + cards + texto, que adaptam via tokens. */
+[data-theme="light"] .lex-landing-shell .pralvex-shader,
+[data-theme="light"] .lex-landing-shell .pralvex-mesh,
+[data-theme="light"] .lex-landing-shell .lex-headline-glow,
+[data-theme="light"] .lex-landing-shell [data-decoration="dark-only"] {
+  display: none;
+}
+
 /* ── Base reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

@@ -75,7 +75,7 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-black text-white antialiased">
+    <div className="min-h-screen overflow-x-hidden surface-base lex-landing-shell">
       {/* Scroll progress — barra fina dourada no topo */}
       <ScrollProgress />
 
@@ -84,7 +84,7 @@ export default function LandingPage() {
         className={
           'fixed inset-x-0 top-0 z-50 transition-all duration-500 ' +
           (scrolled
-            ? 'border-b border-white/[0.08] bg-black/80 backdrop-blur-2xl'
+            ? 'lex-landing-nav-scrolled'
             : 'bg-transparent')
         }
       >

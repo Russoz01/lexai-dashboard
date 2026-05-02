@@ -104,10 +104,11 @@ export const CATALOG: CatalogItem[] = [
   { slug: 'plano',        label: 'Plano',        href: '/dashboard/plano',        Icon: CalendarDays,   desc: 'Plano de estudos IA · cronograma OAB',          kind: 'agent', minPlan: 'pro', implemented: false },
 
   // ───────── 4 módulos de plataforma ─────────
-  // CRM segue implemented:true porque é DEMO funcional intencional (página
-  // declara isso explicitamente em page.tsx:1-9). Os outros 3 são preview-only.
+  // 2026-05-02: CRM virou EM BREVE também (era DEMO funcional, mas Leonardo
+  // pediu pra evitar promessa em demo até CRM real estar pronto). Os 4
+  // módulos agora são preview-only — todos roteiam pra /dashboard/em-breve.
   { slug: 'casos',        label: 'Casos',        href: '/dashboard/casos',        Icon: FolderKanban,   desc: 'Pastas de casos · timeline por cliente',        kind: 'module', minPlan: 'pro',        implemented: false },
-  { slug: 'crm',          label: 'CRM',          href: '/dashboard/crm',          Icon: Users,          desc: 'Leads, clientes e funil de atendimento · DEMO', kind: 'module', minPlan: 'pro',        implemented: true  },
+  { slug: 'crm',          label: 'CRM',          href: '/dashboard/crm',          Icon: Users,          desc: 'Leads, clientes e funil de atendimento',        kind: 'module', minPlan: 'pro',        implemented: false },
   { slug: 'jurimetria',   label: 'Jurimetria',   href: '/dashboard/jurimetria',   Icon: BarChart3,      desc: 'Métricas processuais e benchmarks',             kind: 'module', minPlan: 'pro',        implemented: false },
   { slug: 'marketing',    label: 'Marketing',    href: '/dashboard/marketing',    Icon: Sparkles,       desc: 'Agenda de conteúdo compliant · calendário',     kind: 'module', minPlan: 'enterprise', implemented: false },
 ]
