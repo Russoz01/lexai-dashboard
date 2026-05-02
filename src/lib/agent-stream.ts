@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { parseAgentJSON } from '@/lib/api-utils'
+import { isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 
 /* ════════════════════════════════════════════════════════════════════
  * agent-stream · v1.0 (2026-05-02)
@@ -38,10 +39,12 @@ export interface AgentStreamOptions<T> {
   onPersist?: (parsed: T, fullText: string) => Promise<void> | void
   /** Wrapper opcional do payload final (ex: { peca: parsed } em vez de parsed direto) */
   wrapResult?: (parsed: T) => unknown
+  /** Resposta cached pra emitir se Anthropic falhar com erro retryable + DEMO_FALLBACK_ENABLED=1 */
+  demoFallback?: T
 }
 
 export function createAgentStream<T>(opts: AgentStreamOptions<T>): Response {
-  const { client, params, fallback, agente, onPersist, wrapResult } = opts
+  const { client, params, fallback, agente, onPersist, wrapResult, demoFallback } = opts
 
   const encoder = new TextEncoder()
   const stream = new ReadableStream({
@@ -78,7 +81,17 @@ export function createAgentStream<T>(opts: AgentStreamOptions<T>): Response {
         const message = e instanceof Error ? e.message : 'Erro de stream'
         // eslint-disable-next-line no-console
         console.error(`[agent-stream:${agente}]`, message)
-        send({ type: 'error', error: 'Erro ao processar sua solicitacao. Tente novamente.' })
+
+        // Wave C5 fix: emite cached response como done event se demo fallback
+        // ativo + erro retryable. Frontend renderiza como sucesso transparente.
+        if (demoFallback && isDemoFallbackEnabled() && isRetryableError(e)) {
+          // eslint-disable-next-line no-console
+          console.warn(`[agent-stream:${agente}] using demo fallback (reason: ${message.slice(0, 80)})`)
+          const finalPayload = wrapResult ? wrapResult(demoFallback) : demoFallback
+          send({ type: 'done', result: finalPayload, chars: 0 })
+        } else {
+          send({ type: 'error', error: 'Erro ao processar sua solicitacao. Tente novamente.' })
+        }
       } finally {
         controller.close()
       }

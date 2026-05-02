@@ -32,9 +32,13 @@ function generateNonce(): string {
 }
 
 function buildCspWithNonce(nonce: string): string {
+  // Wave C5 fix (2026-05-02): removido 'strict-dynamic' que ignora whitelist
+  // de hosts e quebraria o loader Sentry. Mantido nonce + whitelist explícito
+  // de Sentry/Stripe/etc. Inline scripts ganham nonce; bundled scripts vêm
+  // do 'self' ou hosts whitelisted normalmente.
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com`,
+    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",

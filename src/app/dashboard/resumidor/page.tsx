@@ -283,7 +283,8 @@ export default function ResumidorPage() {
     return out
   }
 
-  async function callResumirApi(rawText: string, onProgress?: (chars: number) => void): Promise<Analise> {
+  async function callResumirApi(rawText: string, opts: { onProgress?: (chars: number) => void; useStream?: boolean } = {}): Promise<Analise> {
+    const { onProgress, useStream = true } = opts
     let payloadText = rawText
     let replacements: AnonymizeResult['replacements'] = []
     if (anonimizar) {
@@ -294,7 +295,10 @@ export default function ResumidorPage() {
 
     // Wave C5: streaming NDJSON via ?stream=1. Mostra chars recebidos em
     // tempo real via onProgress; resultado final via {type:"done"}.
-    const res = await fetch('/api/resumir?stream=1', {
+    // Comparador (handleComparar) passa useStream=false pra evitar 2 streams
+    // paralelos que estouram rate limit user:id:resumidor (20 req/min).
+    const endpoint = useStream ? '/api/resumir?stream=1' : '/api/resumir'
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ texto: payloadText }),
@@ -303,6 +307,15 @@ export default function ResumidorPage() {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
       throw new Error(data?.error || `Erro ${res.status}`)
+    }
+
+    // Modo non-streaming — JSON tradicional (legacy/comparador)
+    if (!useStream) {
+      const data = await res.json()
+      let result: Analise = data.analise
+      if (anonimizar && replacements.length > 0) result = deAnonymizeAnalise(result, replacements)
+      if (replacements.length > 0) setMascarados(prev => prev + replacements.length)
+      return result
     }
 
     const reader = res.body?.getReader()
@@ -361,7 +374,12 @@ export default function ResumidorPage() {
     setAnaliseB(null)
     setMascarados(0)
     try {
-      const [a, b] = await Promise.all([callResumirApi(textoA), callResumirApi(textoB)])
+      // Comparador usa modo non-streaming pra evitar 2 streams paralelos
+      // estourarem rate limit user:resumidor (20 req/min).
+      const [a, b] = await Promise.all([
+        callResumirApi(textoA, { useStream: false }),
+        callResumirApi(textoB, { useStream: false }),
+      ])
       setAnaliseA(a)
       setAnaliseB(b)
       toast('success', 'Comparação concluída')
@@ -403,7 +421,7 @@ export default function ResumidorPage() {
     setStreamChars(0)
 
     try {
-      const result = await callResumirApi(texto, (chars) => setStreamChars(chars))
+      const result = await callResumirApi(texto, { onProgress: (chars) => setStreamChars(chars) })
       setAnalise(result)
       if (!titulo) setTitulo(result.classificacao?.tipo || result.tipo_documento || 'Documento analisado')
       toast('success', 'Documento analisado com sucesso')

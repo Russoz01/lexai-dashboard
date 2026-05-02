@@ -349,7 +349,16 @@ export async function POST(req: NextRequest) {
           } catch (e: unknown) {
             const message = e instanceof Error ? e.message : 'Erro de stream'
             console.error('[API /chat?stream=1]', message)
-            send({ type: 'error', error: 'Erro ao processar sua solicitacao. Tente novamente.' })
+
+            // Wave C5 fix: se demo fallback ativo + erro retryable, emite
+            // resposta cached como done event em vez de error. Frontend
+            // renderiza fallback transparentemente.
+            if (isDemoFallbackEnabled() && isRetryableError(e)) {
+              const fallback = getDemoFallback('chat', { reason: message })
+              send({ type: 'done', tipo: 'resposta', mensagem: fallback.mensagem })
+            } else {
+              send({ type: 'error', error: 'Erro ao processar sua solicitacao. Tente novamente.' })
+            }
           } finally {
             controller.close()
           }

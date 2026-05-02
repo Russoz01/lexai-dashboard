@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
-import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 
@@ -146,6 +146,7 @@ export async function POST(req: NextRequest) {
           messages: [{ role: 'user', content: userMessage }],
         },
         fallback: { contestacao: { titulo: 'Contestacao', merito: { sintese_fatica: '' } } },
+        demoFallback: DEMO_FALLBACKS.contestador as Record<string, unknown>,
         wrapResult: (parsed) => {
           const c = ((parsed as Record<string, unknown>)?.contestacao ?? parsed) as Record<string, unknown>
           return { contestacao: c }

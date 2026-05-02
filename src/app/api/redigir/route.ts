@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
-import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -105,6 +105,7 @@ export async function POST(req: NextRequest) {
           messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
         },
         fallback: { titulo: TEMPLATES[template], documento: '', referencias_legais: [], observacoes: ['Resposta nao estruturada'], tipo: template },
+        demoFallback: DEMO_FALLBACKS.redator as Record<string, unknown>,
         wrapResult: (parsed) => ({ peca: parsed }),
         onPersist: async (parsed) => {
           if (usuarioId) {
