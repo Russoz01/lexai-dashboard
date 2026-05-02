@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
@@ -114,4 +114,27 @@ export function safeError(context: string, err: unknown) {
   }
 
   return NextResponse.json({ error: clientMsg }, { status: statusCode })
+}
+
+/**
+ * Parse JSON output de agente IA. Antes era 5 linhas repetidas em 21 routes:
+ *   const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+ *   try { parsed = JSON.parse(cleaned) } catch { parsed = fallback }
+ *
+ * Agora 1 linha:
+ *   const parsed = parseAgentJSON(responseText, { ...fallback })
+ *
+ * Modelo as vezes retorna ```json ... ``` (markdown code fence) ou JSON puro.
+ * Esta funcao tira fence + trim + parse com try/catch + retorna fallback se falhar.
+ */
+export function parseAgentJSON<T = unknown>(responseText: string, fallback: T): T {
+  try {
+    const cleaned = responseText
+      .replace(/```json\n?/g, '')
+      .replace(/```\n?/g, '')
+      .trim()
+    return JSON.parse(cleaned) as T
+  } catch {
+    return fallback
+  }
 }

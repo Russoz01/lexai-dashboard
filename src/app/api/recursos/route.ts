@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -114,14 +114,12 @@ export async function POST(req: NextRequest) {
       .map(b => b.text)
       .join('\n')
       .trim()
-    let parsed
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      parsed = JSON.parse(cleaned)
-    } catch {
-      parsed = { recurso: { titulo: TIPOS_RECURSO[tipo], razoes: { sintese_do_julgado: responseText } } }
-    }
-    const recurso = parsed?.recurso ?? parsed
+    const parsed = parseAgentJSON<Record<string, unknown> & { recurso?: Record<string, unknown> }>(
+      responseText,
+      { recurso: { titulo: TIPOS_RECURSO[tipo], razoes: { sintese_do_julgado: responseText } } },
+    )
+    const recurso = (parsed?.recurso ?? parsed) as Record<string, unknown>
+    const tituloRecurso = (recurso?.titulo as string) || TIPOS_RECURSO[tipo]
 
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
     if (usuarioId) {
@@ -129,7 +127,7 @@ export async function POST(req: NextRequest) {
         usuario_id: usuarioId,
         agente: 'recursos',
         mensagem_usuario: `Recurso: ${TIPOS_RECURSO[tipo]}`,
-        resposta_agente: recurso?.titulo || TIPOS_RECURSO[tipo],
+        resposta_agente: tituloRecurso,
       })
     }
 

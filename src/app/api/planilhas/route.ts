@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -131,23 +131,17 @@ export async function POST(req: NextRequest) {
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let analise: any
-    try {
-      const jsonStr = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      analise = JSON.parse(jsonStr)
-    } catch {
-      analise = {
-        sumario: responseText || 'Nao foi possivel processar a resposta da IA.',
-        estrutura: { linhas: 0, colunas: 0, headers: [] },
-        insights: [],
-        problemas: [],
-        melhorias: [],
-        formulas_sugeridas: [],
-        versao_melhorada: content,
-        confianca: { nivel: 'baixa', nota: 'Falha ao interpretar resposta estruturada' },
-        erro_parse: true,
-      }
-    }
+    const analise: any = parseAgentJSON(responseText, {
+      sumario: responseText || 'Nao foi possivel processar a resposta da IA.',
+      estrutura: { linhas: 0, colunas: 0, headers: [] },
+      insights: [],
+      problemas: [],
+      melhorias: [],
+      formulas_sugeridas: [],
+      versao_melhorada: content,
+      confianca: { nivel: 'baixa', nota: 'Falha ao interpretar resposta estruturada' },
+      erro_parse: true,
+    })
 
     // Defensive: ensure required shape
     analise.estrutura = analise.estrutura || { linhas: 0, colunas: 0, headers: [] }

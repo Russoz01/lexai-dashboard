@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -107,12 +107,10 @@ export async function POST(req: NextRequest) {
       .map(b => b.text)
       .join('\n')
       .trim()
-    let resultado
-    try {
-      resultado = JSON.parse(responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
-    } catch {
-      resultado = { explicacao: responseText, erro_parse: true }
-    }
+    const resultado = parseAgentJSON<Record<string, unknown>>(
+      responseText,
+      { explicacao: responseText, erro_parse: true },
+    )
 
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
     if (usuarioId) {
