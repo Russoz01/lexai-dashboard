@@ -1,9 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk'
+﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -134,13 +134,10 @@ export async function POST(req: NextRequest) {
       .map(b => b.text)
       .join('\n')
       .trim()
-    let parsed
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      parsed = JSON.parse(cleaned)
-    } catch {
-      parsed = { parecer: { titulo: 'Parecer', conclusao: responseText } }
-    }
+    const parsed = parseAgentJSON<Record<string, unknown> & { parecer?: Record<string, unknown> }>(
+      responseText,
+      { parecer: { titulo: 'Parecer', conclusao: responseText } },
+    )
     const parecer = parsed?.parecer ?? parsed
 
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)

@@ -1,9 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk'
+﻿import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -108,13 +108,10 @@ export async function POST(req: NextRequest) {
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let parsed
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      parsed = JSON.parse(cleaned)
-    } catch {
-      parsed = { revisao: { resumo_geral: responseText, issues_criticos: [], issues_atencao: [], issues_sugestoes: [] } }
-    }
+    const parsed = parseAgentJSON<Record<string, unknown> & { revisao?: Record<string, unknown> }>(
+      responseText,
+      { revisao: { resumo_geral: responseText, issues_criticos: [], issues_atencao: [], issues_sugestoes: [] } },
+    )
     const revisao = parsed?.revisao ?? parsed
 
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)

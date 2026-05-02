@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -121,14 +121,12 @@ export async function POST(req: NextRequest) {
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
-    let parsed
-    try {
-      const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      parsed = JSON.parse(cleaned)
-    } catch {
-      parsed = { plano: { titulo: 'Plano estrategico', sintese_situacional: responseText } }
-    }
-    const plano = parsed?.plano ?? parsed
+    const parsed = parseAgentJSON<Record<string, unknown> & { plano?: Record<string, unknown> }>(
+      responseText,
+      { plano: { titulo: 'Plano estrategico', sintese_situacional: responseText } },
+    )
+    const plano = (parsed?.plano ?? parsed) as Record<string, unknown>
+    const tituloPlano = (plano?.titulo as string) || 'Plano estrategico'
 
     const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
     if (usuarioId) {
@@ -136,7 +134,7 @@ export async function POST(req: NextRequest) {
         usuario_id: usuarioId,
         agente: 'estrategista',
         mensagem_usuario: `Plano: ${caso.slice(0, 200)}`,
-        resposta_agente: plano?.titulo || 'Plano estrategico',
+        resposta_agente: tituloPlano,
       })
     }
 
