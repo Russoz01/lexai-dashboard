@@ -1,5 +1,9 @@
 import { VanixHeroStage } from '@/components/ui/vanix-hero-stage'
 
+// Force dynamic — bypass CDN cache durante iteração
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function VanixHeroDemoPage() {
   return (
     <main>

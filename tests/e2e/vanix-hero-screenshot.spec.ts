@@ -10,7 +10,9 @@ test('vanix hero screenshots', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setViewportSize({ width: 1440, height: 900 })
 
-  await page.goto('/vanix-hero-demo', { waitUntil: 'networkidle' })
+  // Bypass Vercel CDN cache com query string única
+  const nocache = `?_v=${Date.now()}`
+  await page.goto(`/vanix-hero-demo${nocache}`, { waitUntil: 'networkidle' })
 
   // Wait stagger entrance complete (~1.5s)
   await page.waitForTimeout(1800)
