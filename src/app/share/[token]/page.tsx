@@ -68,14 +68,16 @@ async function fetchSharedDoc(token: string): Promise<SharedDoc | null> {
   }
 }
 
-/** Best-effort view counter. Never throws. */
-async function incrementViews(id: string, current: number) {
+/** Best-effort view counter via RPC SECURITY DEFINER.
+ *  Antes: UPDATE direto via anon client. Vulnerabilidade: a policy RLS
+ *  permitia anon UPDATE de qualquer coluna (titulo/conteudo/etc) — atacante
+ *  com token publico defaceava o doc. Agora chama RPC restrita que SO
+ *  incrementa views, valida charset do token e respeita expires_at.
+ *  Audit 2026-05-02. */
+async function incrementViews(token: string) {
   try {
     const supabase = createPublicClient()
-    await supabase
-      .from('shared_documents')
-      .update({ views: (current || 0) + 1 })
-      .eq('id', id)
+    await supabase.rpc('increment_shared_doc_views', { doc_token: token })
   } catch {
     // silent
   }
@@ -160,8 +162,8 @@ export default async function SharedDocumentPage({
   const expired = new Date(doc.expires_at).getTime() < Date.now()
   if (expired) return <NotFoundView />
 
-  // Fire and forget view increment
-  incrementViews(doc.id, doc.views || 0).catch(() => { /* silent */ })
+  // Fire and forget view increment (via RPC SECURITY DEFINER)
+  incrementViews(token).catch(() => { /* silent */ })
 
   const analise = doc.conteudo || {}
   const objeto: string = analise.objeto || analise.resumo || analise.conclusao || ''

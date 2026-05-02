@@ -207,6 +207,7 @@ export default function NegociadorPage() {
                       <Icon size={13} strokeWidth={1.75} aria-hidden style={{ color: ex.color }} />
                     </span>
                     <div style={{ flex: 1, minWidth: 0 }}>
+                      {/* SAFE: ex.titulo e hardcoded em EXEMPLOS[] (linhas 185-190) com &mdash; entity. Audit 2026-05-02 confirmou nao vem de IA/DB. */}
                       <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }} dangerouslySetInnerHTML={{ __html: ex.titulo }} />
                       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Clique para aplicar este modelo</div>
                     </div>
