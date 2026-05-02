@@ -169,10 +169,10 @@ export async function POST(req: NextRequest) {
       // eslint-disable-next-line no-console
       console.error('[API /risco]', errName, msg)
     }
-    // Demo-mode fallback (Wave C5)
+    // Demo-mode fallback (Wave C5) — fallback já tem {risco:...}, falta fontes + grounding_stats
     if (isDemoFallbackEnabled() && isRetryableError(err)) {
       const fallback = getDemoFallback('risco', { reason: msg })
-      return NextResponse.json(fallback)
+      return NextResponse.json({ ...fallback, fontes: [], grounding_stats: {} })
     }
     if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
       return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente um documento menor.' }, { status: 504 })

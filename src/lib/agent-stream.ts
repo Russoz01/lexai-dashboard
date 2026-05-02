@@ -41,22 +41,38 @@ export interface AgentStreamOptions<T> {
   wrapResult?: (parsed: T) => unknown
   /** Resposta cached pra emitir se Anthropic falhar com erro retryable + DEMO_FALLBACK_ENABLED=1 */
   demoFallback?: T
+  /** Hard timeout em ms — default 90000. Aborta stream + emite error/fallback se Anthropic pendurar. */
+  timeoutMs?: number
 }
 
 export function createAgentStream<T>(opts: AgentStreamOptions<T>): Response {
-  const { client, params, fallback, agente, onPersist, wrapResult, demoFallback } = opts
+  const { client, params, fallback, agente, onPersist, wrapResult, demoFallback, timeoutMs = 90_000 } = opts
 
   const encoder = new TextEncoder()
   const stream = new ReadableStream({
     async start(controller) {
+      // Wave C5 fix: flag pra evitar duplo-send (ex: erro após done) e
+      // double-close. Stream API joga InvalidStateError se enqueue/close duplicado.
+      let closed = false
       const send = (obj: unknown) => {
-        controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'))
+        if (closed) return
+        try {
+          controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'))
+        } catch {
+          // Cliente desconectou — controller já em estado fechado
+          closed = true
+        }
       }
+
+      // Wave C5 fix: AbortController hard cap. Anthropic stream sem signal
+      // pendurava lambda 300s em 529 overload. Agora aborta em timeoutMs.
+      const abortController = new AbortController()
+      const timeoutId = setTimeout(() => abortController.abort(), timeoutMs)
 
       let fullText = ''
 
       try {
-        const anthStream = client.messages.stream(params)
+        const anthStream = client.messages.stream(params, { signal: abortController.signal })
 
         anthStream.on('text', (chunk: string) => {
           fullText += chunk
@@ -70,12 +86,15 @@ export function createAgentStream<T>(opts: AgentStreamOptions<T>): Response {
 
         send({ type: 'done', result: finalPayload, chars: fullText.length })
 
-        // Persist fora do stream — não bloqueia fechamento
+        // Wave C5 fix: await onPersist ANTES de close pra garantir que
+        // serverless lambda não termine antes da persistência completar.
         if (onPersist) {
-          Promise.resolve(onPersist(parsed, fullText)).catch((e: unknown) => {
+          try {
+            await onPersist(parsed, fullText)
+          } catch (e: unknown) {
             // eslint-disable-next-line no-console
             console.error(`[agent-stream:${agente}] onPersist failed:`, e instanceof Error ? e.message : String(e))
-          })
+          }
         }
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : 'Erro de stream'
@@ -93,7 +112,13 @@ export function createAgentStream<T>(opts: AgentStreamOptions<T>): Response {
           send({ type: 'error', error: 'Erro ao processar sua solicitacao. Tente novamente.' })
         }
       } finally {
-        controller.close()
+        clearTimeout(timeoutId)
+        closed = true
+        try {
+          controller.close()
+        } catch {
+          // Ignora double-close (controller já fechou em erro de send)
+        }
       }
     },
   })

@@ -170,10 +170,10 @@ export async function POST(req: NextRequest) {
       // eslint-disable-next-line no-console
       console.error('[API /parecerista]', errName, msg)
     }
-    // Demo-mode fallback (Wave C5)
+    // Demo-mode fallback (Wave C5) — wrap pra match shape de sucesso ({parecer, fontes, grounding_stats})
     if (isDemoFallbackEnabled() && isRetryableError(err)) {
       const fallback = getDemoFallback('parecerista', { reason: msg })
-      return NextResponse.json(fallback)
+      return NextResponse.json({ parecer: fallback, fontes: [], grounding_stats: {} })
     }
     if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
       return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente uma consulta mais curta.' }, { status: 504 })

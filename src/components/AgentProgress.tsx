@@ -61,13 +61,19 @@ export function AgentProgress({
       return
     }
 
+    // Wave C5 fix: avança até o último step e fica nele.
+    // Se IA demora >stepCount * stepIntervalMs, o último step fica visível
+    // mas elapsedMs continua subindo, mostrando que ainda tá processando.
     const stepTimer = setInterval(() => {
       setStepIdx(idx => Math.min(idx + 1, steps.length - 1))
     }, stepIntervalMs)
 
+    // Wave C5 fix: usa Date.now() como baseline pra elapsedMs preciso
+    // (setInterval drift compõe ao longo do tempo).
+    const startMs = Date.now()
     const elapsedTimer = setInterval(() => {
-      setElapsedMs(ms => ms + 1000)
-    }, 1000)
+      setElapsedMs(Date.now() - startMs)
+    }, 250)
 
     return () => {
       clearInterval(stepTimer)
@@ -91,7 +97,13 @@ export function AgentProgress({
     )
   }
 
-  const currentStep = steps[stepIdx] || steps[steps.length - 1] || 'Processando...'
+  // Wave C5 fix: quando estiver no último step por >10s, alterna pra
+  // "Quase lá..." pra UX não travar visualmente em respostas longas.
+  const onLastStep = stepIdx >= steps.length - 1
+  const stuckOnLast = onLastStep && elapsedMs > steps.length * stepIntervalMs + 10_000
+  const currentStep = stuckOnLast
+    ? 'Quase lá, finalizando...'
+    : (steps[stepIdx] || steps[steps.length - 1] || 'Processando...')
   const progress = Math.min(95, ((stepIdx + 1) / steps.length) * 90 + (elapsedMs / 60000) * 5)
   const elapsedSec = Math.floor(elapsedMs / 1000)
 

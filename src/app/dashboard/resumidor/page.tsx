@@ -1,11 +1,12 @@
 ﻿'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   ChevronDown, ChevronUp, FileText, Files, Lock, XCircle, AlertTriangle,
   Cpu, Check, Clipboard, CheckCircle2, Save, Link2, Clock, AlignLeft,
   Users, Calendar, Hourglass, CalendarPlus, BookOpen, Lightbulb,
-  RotateCcw, ArrowDownUp, Network,
+  RotateCcw, ArrowDownUp, Network, Wand2, Gauge, ShieldCheck,
+  FileText as FileTextIcon, Clock as ClockIcon, Gauge as GaugeIcon, ShieldCheck as ShieldIcon,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
@@ -19,8 +20,6 @@ import { SkeletonResult } from '@/components/Skeleton'
 import { AgentHero } from '@/components/AgentHero'
 import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
 import { AGENT_EXAMPLES } from '@/lib/agent-examples'
-import { Wand2 } from 'lucide-react'
-import { FileText as FileTextIcon, Clock as ClockIcon, Gauge as GaugeIcon, ShieldCheck as ShieldIcon } from 'lucide-react'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Analise = any
@@ -160,6 +159,17 @@ export default function ResumidorPage() {
   const [compartilhando, setCompartilhando] = useState(false)
   const [importingPrazos, setImportingPrazos] = useState(false)
 
+  // Wave C5 fix: AbortController + mounted ref pra cancelar stream em unmount
+  const abortRef = useRef<AbortController | null>(null)
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      abortRef.current?.abort()
+    }
+  }, [])
+
   // ── PDF upload state ─────────────────────────────────────────────────
   const fileInputRef  = useRef<HTMLInputElement | null>(null)
   const fileInputARef = useRef<HTMLInputElement | null>(null)
@@ -298,10 +308,12 @@ export default function ResumidorPage() {
     // Comparador (handleComparar) passa useStream=false pra evitar 2 streams
     // paralelos que estouram rate limit user:id:resumidor (20 req/min).
     const endpoint = useStream ? '/api/resumir?stream=1' : '/api/resumir'
+    // Wave C5 fix: abortRef permite cancelar stream em unmount/nova request
     const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ texto: payloadText }),
+      signal: abortRef.current?.signal,
     })
 
     if (!res.ok) {
@@ -413,6 +425,10 @@ export default function ResumidorPage() {
 
   async function handleAnalisar() {
     if (!texto.trim() || loading) return
+    // Wave C5 fix: aborta stream anterior + cria novo controller
+    abortRef.current?.abort()
+    abortRef.current = new AbortController()
+
     setLoading(true)
     setErro('')
     setAnalise(null)
@@ -421,16 +437,22 @@ export default function ResumidorPage() {
     setStreamChars(0)
 
     try {
-      const result = await callResumirApi(texto, { onProgress: (chars) => setStreamChars(chars) })
+      const result = await callResumirApi(texto, {
+        onProgress: (chars) => { if (mountedRef.current) setStreamChars(chars) },
+      })
+      if (!mountedRef.current) return
       setAnalise(result)
       if (!titulo) setTitulo(result.classificacao?.tipo || result.tipo_documento || 'Documento analisado')
       toast('success', 'Documento analisado com sucesso')
     } catch (e: unknown) {
+      // AbortError = unmount/nova request — silencia
+      if (e instanceof Error && e.name === 'AbortError') return
+      if (!mountedRef.current) return
       const msg = e instanceof Error ? e.message : 'Erro ao processar documento'
       setErro(msg)
       toast('error', msg)
     } finally {
-      setLoading(false)
+      if (mountedRef.current) setLoading(false)
     }
   }
 
@@ -752,6 +774,7 @@ export default function ResumidorPage() {
                       onClick={() => setTexto(AGENT_EXAMPLES.resumidor[0].payload.texto)}
                       disabled={!!texto.trim()}
                       title={texto.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar contrato de exemplo'}
+                      aria-label={texto.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar contrato de exemplo'}
                       style={{
                         display: 'flex', alignItems: 'center', gap: '6px',
                         padding: '6px 12px', borderRadius: '8px',

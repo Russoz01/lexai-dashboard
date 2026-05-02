@@ -233,10 +233,10 @@ export async function POST(req: NextRequest) {
     const errStack = err instanceof Error ? err.stack?.split('\n').slice(0, 5).join(' | ') : undefined
     console.error('[API /consultor] unhandled:', errName, '-', errMsg, '|', errStack ?? '')
 
-    // Demo-mode fallback (Wave C5)
+    // Demo-mode fallback (Wave C5) — fallback tem {parecer:...}, falta fontes + grounding_stats
     if (isDemoFallbackEnabled() && isRetryableError(err)) {
       const fallback = getDemoFallback('consultor', { reason: errMsg })
-      return NextResponse.json(fallback)
+      return NextResponse.json({ ...fallback, fontes: [], grounding_stats: {} })
     }
 
     const lower = errMsg.toLowerCase()

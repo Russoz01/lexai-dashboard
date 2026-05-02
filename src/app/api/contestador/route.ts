@@ -97,13 +97,7 @@ export async function POST(req: NextRequest) {
     if (authError || !user) return NextResponse.json({ error: 'Nao autorizado.' }, { status: 401 })
     if (!ANTHROPIC_API_KEY) return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
 
-    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
-    const rl = await checkRateLimit(supabase, `user:${user.id}:contestador`)
-    if (!rl.ok) return rateLimitResponse(rl)
-
-    const quota = await checkAndIncrementQuota(supabase, user.id, 'contestador')
-    if (!quota.ok && quota.response) return quota.response
-
+    // Wave C5 fix: validar input ANTES de quota+rate-limit
     const body = await req.json().catch(() => ({}))
     const teseInicial = typeof body?.teseInicial === 'string' ? body.teseInicial : ''
     const teseDefesa = typeof body?.teseDefesa === 'string' ? body.teseDefesa : ''
@@ -117,6 +111,13 @@ export async function POST(req: NextRequest) {
     if (teseInicial.length > 25000 || teseDefesa.length > 25000) {
       return NextResponse.json({ error: 'Texto excede o limite maximo de 25.000 caracteres por campo.' }, { status: 400 })
     }
+
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:contestador`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
+    const quota = await checkAndIncrementQuota(supabase, user.id, 'contestador')
+    if (!quota.ok && quota.response) return quota.response
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const userMessage = `TESE DA INICIAL (autor):\n${teseInicial}\n\nTESE DE DEFESA (reu):\n${teseDefesa}\n\nElabore um esboco tecnico e completo de contestacao.`
@@ -141,7 +142,9 @@ export async function POST(req: NextRequest) {
           max_tokens: 8192,
           system: [
             { type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } },
-            { type: 'text' as const, text: grounding.contextBlock },
+            // Wave C5 fix: cache_control no grounding também — sem isso, todo
+            // request paga o block grande de novo (custo + latência).
+            { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
           ],
           messages: [{ role: 'user', content: userMessage }],
         },
@@ -227,10 +230,10 @@ export async function POST(req: NextRequest) {
       // eslint-disable-next-line no-console
       console.error('[API /contestador]', errName, msg)
     }
-    // Demo-mode fallback (Wave C5)
+    // Demo-mode fallback (Wave C5) — wrap fontes + grounding_stats
     if (isDemoFallbackEnabled() && isRetryableError(err)) {
       const fallback = getDemoFallback('contestador', { reason: msg })
-      return NextResponse.json(fallback)
+      return NextResponse.json({ ...fallback, fontes: [], grounding_stats: {} })
     }
     if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
       return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente teses mais curtas.' }, { status: 504 })

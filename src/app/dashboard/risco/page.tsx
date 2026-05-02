@@ -146,6 +146,7 @@ export default function RiscoPage() {
               onClick={() => setDocumento(AGENT_EXAMPLES.risco[0].payload.documento)}
               disabled={!!documento.trim()}
               title={documento.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar contrato SaaS de exemplo'}
+              aria-label={documento.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar contrato SaaS de exemplo'}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 padding: '4px 10px', borderRadius: 6,

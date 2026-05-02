@@ -205,6 +205,7 @@ export default function ContestadorPage() {
               }}
               disabled={!!(teseInicial.trim() || teseDefesa.trim())}
               title={teseInicial.trim() || teseDefesa.trim() ? 'Limpe os campos para carregar exemplo' : 'Carregar caso de exemplo'}
+              aria-label={teseInicial.trim() || teseDefesa.trim() ? 'Limpe os campos para carregar exemplo' : 'Carregar caso de exemplo'}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 padding: '5px 10px', borderRadius: 6,

@@ -62,17 +62,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Servico de IA indisponivel.' }, { status: 503 })
     }
 
-    // Sliding-window rate limit (20 req/min per user per agent)
-    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
-    const rl = await checkRateLimit(supabase, `user:${user.id}:redator`)
-    if (!rl.ok) return rateLimitResponse(rl)
-
-    // Server-side quota enforcement (server-trusted, never localStorage)
-    const quota = await checkAndIncrementQuota(supabase, user.id, 'redator')
-    if (!quota.ok && quota.response) {
-      return quota.response
-    }
-
+    // Wave C5 fix: validar input ANTES de quota+rate-limit
     const body = await req.json().catch(() => ({}))
     const template = typeof body?.template === 'string' ? body.template : ''
     const instrucoes = typeof body?.instrucoes === 'string' ? body.instrucoes : ''
@@ -85,6 +75,17 @@ export async function POST(req: NextRequest) {
     }
     if (instrucoes.length > 50000) {
       return NextResponse.json({ error: 'Texto excede o limite maximo de 50.000 caracteres.' }, { status: 400 })
+    }
+
+    // Sliding-window rate limit (20 req/min per user per agent)
+    const { checkRateLimit, rateLimitResponse } = await import('@/lib/rate-limit')
+    const rl = await checkRateLimit(supabase, `user:${user.id}:redator`)
+    if (!rl.ok) return rateLimitResponse(rl)
+
+    // Server-side quota enforcement (server-trusted, never localStorage)
+    const quota = await checkAndIncrementQuota(supabase, user.id, 'redator')
+    if (!quota.ok && quota.response) {
+      return quota.response
     }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })

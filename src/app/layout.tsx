@@ -168,11 +168,12 @@ const jsonLd = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Wave C5: lê nonce do middleware (se CSP_NONCE_ENABLED=1) pra autorizar
-  // scripts inline no novo CSP. Quando não setado, undefined → scripts caem
-  // no 'unsafe-inline' do CSP estático do next.config.js.
-  const headersList = await headers()
-  const nonce = headersList.get('x-nonce') || undefined
+  // Wave C5: lê nonce do middleware SOMENTE se CSP_NONCE_ENABLED=1.
+  // Sem o gate, await headers() força tudo dynamic mesmo com flag off,
+  // perdendo SSG/ISR de landing/marketing. Com gate, layout só vira dynamic
+  // quando flag explicitamente ativa.
+  const cspNonceEnabled = process.env.CSP_NONCE_ENABLED === '1'
+  const nonce = cspNonceEnabled ? ((await headers()).get('x-nonce') || undefined) : undefined
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>

@@ -32,18 +32,19 @@ function generateNonce(): string {
 }
 
 function buildCspWithNonce(nonce: string): string {
-  // Wave C5 fix (2026-05-02): removido 'strict-dynamic' que ignora whitelist
-  // de hosts e quebraria o loader Sentry. Mantido nonce + whitelist explícito
-  // de Sentry/Stripe/etc. Inline scripts ganham nonce; bundled scripts vêm
-  // do 'self' ou hosts whitelisted normalmente.
+  // Wave C5 final (2026-05-02):
+  // - 'strict-dynamic' removido (quebrava Sentry loader).
+  // - script-src: nonce + Sentry CDN + Clarity (analytics).
+  // - connect-src: + wss://*.supabase.co (Realtime), Clarity ingest.
+  // - frame-src: + hooks.stripe.com (3D Secure redirects).
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com`,
+    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com https://www.clarity.ms https://*.clarity.ms`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self' https://*.supabase.co https://api.anthropic.com https://api.stripe.com https://app.posthog.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io",
-    "frame-src https://js.stripe.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://api.stripe.com https://app.posthog.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://www.clarity.ms https://*.clarity.ms",
+    "frame-src https://js.stripe.com https://hooks.stripe.com",
     "worker-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
@@ -88,7 +89,11 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          response = NextResponse.next({ request: { headers: request.headers } })
+          // Wave C5 fix: usar requestHeaders mutado (com x-nonce) em vez de request.headers cru.
+          // Sem isso, o CSP/nonce some quando Supabase refresh os cookies.
+          response = NextResponse.next({ request: { headers: requestHeaders } })
+          // Re-aplica CSP/nonce porque NextResponse.next cria response zerado
+          if (nonce) response.headers.set('Content-Security-Policy', buildCspWithNonce(nonce))
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options),
           )

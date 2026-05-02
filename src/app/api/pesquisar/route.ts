@@ -118,23 +118,34 @@ export async function POST(req: NextRequest) {
       console.log('[API /pesquisar] grounding:', gstats)
     }
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
-      system: [
-        {
-          type: 'text' as const,
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' as const },
-        },
-        {
-          type: 'text' as const,
-          text: grounding.contextBlock,
-        },
-      ],
-      tools: [WEB_SEARCH_TOOL],
-      messages: [{ role: 'user', content: `Research topic: ${query}${filtros ? `\n\nFilters:\n${filtros}` : ''}` }],
-    })
+    // Wave C5 fix: AbortController 90s — Anthropic + WEB_SEARCH_TOOL pode
+    // demorar e sem hard cap a lambda penduraria 300s.
+    const abortController = new AbortController()
+    const timeoutId = setTimeout(() => abortController.abort(), 90_000)
+    let message: Anthropic.Messages.Message
+    try {
+      message = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8192,
+        system: [
+          {
+            type: 'text' as const,
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' as const },
+          },
+          {
+            type: 'text' as const,
+            text: grounding.contextBlock,
+            // Wave C5 fix: cache_control no grounding também
+            cache_control: { type: 'ephemeral' as const },
+          },
+        ],
+        tools: [WEB_SEARCH_TOOL],
+        messages: [{ role: 'user', content: `Research topic: ${query}${filtros ? `\n\nFilters:\n${filtros}` : ''}` }],
+      }, { signal: abortController.signal })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
@@ -177,7 +188,8 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     if (isDemoFallbackEnabled() && isRetryableError(err)) {
       const fallback = getDemoFallback('pesquisador', { reason: err instanceof Error ? err.message : String(err) })
-      return NextResponse.json(fallback)
+      // Wrap pra match shape de sucesso ({pesquisa, fontes, grounding_stats})
+      return NextResponse.json({ pesquisa: fallback, fontes: [], grounding_stats: {} })
     }
     return safeError('pesquisar', err)
   }

@@ -108,6 +108,19 @@ export default function ChatPage() {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Wave C5 fix: AbortController + mounted ref pra cancelar stream em
+  // unmount/limpar conversa. Sem isso, setState dispara em componente
+  // desmontado (warning React) e reader vaza.
+  const abortRef = useRef<AbortController | null>(null)
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      abortRef.current?.abort()
+    }
+  }, [])
+
   // Hidrata as preferencias do localStorage no mount
   useEffect(() => {
     try {
@@ -221,6 +234,11 @@ export default function ChatPage() {
     setArquivo(null)
     setLoading(true)
 
+    // Wave C5 fix: aborta stream anterior se existir + cria novo controller
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+
     try {
       // Wave C4 (2026-05-02) — streaming via NDJSON
       // Server retorna lines: {type:"text",delta:...} | {type:"agente",...} | {type:"done"} | {type:"error"}
@@ -235,6 +253,7 @@ export default function ChatPage() {
           fidelidade,
           modo,
         }),
+        signal: ac.signal,
       })
 
       // Erro HTTP (rate limit / quota / auth) — body é JSON normal, não stream
@@ -265,7 +284,8 @@ export default function ChatPage() {
       let done = false
       let gotError = false
 
-      while (!done) {
+      try {
+      while (!done && !ac.signal.aborted) {
         const { value, done: streamDone } = await reader.read()
         done = streamDone
         if (value) {
@@ -275,6 +295,8 @@ export default function ChatPage() {
           buffer = lines.pop() || ''
           for (const line of lines) {
             if (!line.trim()) continue
+            // Wave C5 fix: skip processing se desmontado/abortado
+            if (!mountedRef.current || ac.signal.aborted) break
             try {
               const event = JSON.parse(line)
               if (event.type === 'text' && typeof event.delta === 'string') {
@@ -310,14 +332,25 @@ export default function ChatPage() {
           }
         }
       }
+      } finally {
+        // Libera lock do reader pra liberar stream HTTP
+        try { reader.releaseLock() } catch { /* já released */ }
+      }
 
       if (gotError) return
     } catch (err) {
+      // AbortError esperado em unmount/limpar conversa — ignora silenciosamente
+      if (err instanceof Error && err.name === 'AbortError') {
+        if (mountedRef.current) setMessages(prev => prev.filter(m => m.id !== assistantId))
+        return
+      }
       console.error('[chat/send]', err)
-      setErro('Erro de rede. Verifique sua conexão e tente novamente.')
-      setMessages(prev => prev.filter(m => m.id !== assistantId))
+      if (mountedRef.current) {
+        setErro('Erro de rede. Verifique sua conexão e tente novamente.')
+        setMessages(prev => prev.filter(m => m.id !== assistantId))
+      }
     } finally {
-      setLoading(false)
+      if (mountedRef.current) setLoading(false)
     }
   }
 
@@ -329,6 +362,8 @@ export default function ChatPage() {
   }
 
   async function limparConversa() {
+    // Wave C5 fix: aborta stream em curso ao limpar conversa
+    abortRef.current?.abort()
     const ok = await confirmDialog({
       title: 'Limpar a conversa',
       description: 'Essa ação remove todas as mensagens desta sessão. Não é possível desfazer.',
@@ -438,10 +473,16 @@ export default function ChatPage() {
 
                 {/* Typing dots quando assistant ainda nao recebeu nenhum delta */}
                 {m.role === 'assistant' && !m.content && loading && idx === messages.length - 1 && (
-                  <div className="chat-typing">
-                    <span className="chat-dot" />
-                    <span className="chat-dot" />
-                    <span className="chat-dot" />
+                  <div
+                    className="chat-typing"
+                    role="status"
+                    aria-live="polite"
+                    aria-label="Pralvex está pensando"
+                  >
+                    <span className="chat-dot" aria-hidden="true" />
+                    <span className="chat-dot" aria-hidden="true" />
+                    <span className="chat-dot" aria-hidden="true" />
+                    <span className="sr-only">Pralvex está pensando...</span>
                   </div>
                 )}
 

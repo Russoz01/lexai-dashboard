@@ -273,9 +273,21 @@ export async function POST(req: NextRequest) {
       const encoder = new TextEncoder()
       const stream = new ReadableStream({
         async start(controller) {
+          // Wave C5 fix: flag closed + try/catch em send pra evitar
+          // InvalidStateError em duplo-close ou cliente desconectado.
+          let closed = false
           const send = (obj: unknown) => {
-            controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'))
+            if (closed) return
+            try {
+              controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'))
+            } catch {
+              closed = true
+            }
           }
+
+          // Wave C5 fix: hard timeout 90s — sem isso, lambda pendura 300s em 529.
+          const abortController = new AbortController()
+          const timeoutId = setTimeout(() => abortController.abort(), 90_000)
 
           let textoResposta = ''
           let rotear: { agente: AgenteKey; justificativa: string; pre_prompt?: string } | null = null
@@ -289,7 +301,7 @@ export async function POST(req: NextRequest) {
               ],
               tools: [ROUTING_TOOL],
               messages,
-            })
+            }, { signal: abortController.signal })
 
             anthStream.on('text', (chunk: string) => {
               textoResposta += chunk
@@ -334,16 +346,21 @@ export async function POST(req: NextRequest) {
               mensagem: textoResposta || (rotear ? `Esta tarefa e perfeita para o agente ${AGENTES_CATALOGO[rotear.agente].titulo}.` : 'Desculpe, nao consegui formular uma resposta. Tente reformular.'),
             })
 
-            // Persistência fora do stream — não bloqueia client
+            // Wave C5 fix: await persistência ANTES de fechar stream pra
+            // evitar lambda terminar antes do insert no Supabase flushar.
             if (usuarioId) {
-              supabase.from('historico').insert({
-                usuario_id: usuarioId,
-                agente: 'chat',
-                mensagem_usuario: mensagem.slice(0, 500) || `[arquivo ${arquivoNome || 'anexado'}]`,
-                resposta_agente: rotear
-                  ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`.slice(0, 500)
-                  : textoResposta.slice(0, 500),
-              }).then(() => {}, () => {})
+              try {
+                await supabase.from('historico').insert({
+                  usuario_id: usuarioId,
+                  agente: 'chat',
+                  mensagem_usuario: mensagem.slice(0, 500) || `[arquivo ${arquivoNome || 'anexado'}]`,
+                  resposta_agente: rotear
+                    ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`.slice(0, 500)
+                    : textoResposta.slice(0, 500),
+                })
+              } catch (e: unknown) {
+                console.error('[API /chat?stream=1] historico insert failed:', e instanceof Error ? e.message : String(e))
+              }
             }
             events.agentUsed(user.id, 'chat', rotear?.agente || 'direct').catch(() => {})
           } catch (e: unknown) {
@@ -360,7 +377,13 @@ export async function POST(req: NextRequest) {
               send({ type: 'error', error: 'Erro ao processar sua solicitacao. Tente novamente.' })
             }
           } finally {
-            controller.close()
+            clearTimeout(timeoutId)
+            closed = true
+            try {
+              controller.close()
+            } catch {
+              // Ignora double-close
+            }
           }
         },
       })

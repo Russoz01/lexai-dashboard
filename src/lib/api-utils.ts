@@ -129,12 +129,18 @@ export function safeError(context: string, err: unknown) {
  */
 export function parseAgentJSON<T = unknown>(responseText: string, fallback: T): T {
   try {
+    // Wave C5 fix: regex case-insensitive (Anthropic às vezes retorna ```JSON
+    // ou ```Json). Antes só pegava lowercase, deixando fence corromper o parse.
     const cleaned = responseText
-      .replace(/```json\n?/g, '')
-      .replace(/```\n?/g, '')
+      .replace(/```(?:json|json5)?\s*\n?/gi, '')
+      .replace(/```\s*\n?/g, '')
       .trim()
     return JSON.parse(cleaned) as T
-  } catch {
+  } catch (e) {
+    // Wave C5 fix: log warning mesmo em prod pra debug — antes engolia silente
+    // e operador não saberia o motivo do fallback genérico durante demo.
+    // eslint-disable-next-line no-console
+    console.warn('[parseAgentJSON] parse failed:', e instanceof Error ? e.message.slice(0, 120) : String(e), '| preview:', responseText.slice(0, 120))
     return fallback
   }
 }

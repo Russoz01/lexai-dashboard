@@ -577,6 +577,7 @@ export default function RedatorPage() {
                 onClick={() => setInstrucoes(AGENT_EXAMPLES.redator[0].payload.contexto)}
                 disabled={!!instrucoes.trim()}
                 title={instrucoes.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar caso de exemplo'}
+                aria-label={instrucoes.trim() ? 'Limpe o campo para carregar exemplo' : 'Carregar caso de exemplo'}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 5,
                   padding: '5px 10px', borderRadius: 6,
