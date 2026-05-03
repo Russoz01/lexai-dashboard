@@ -4,8 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON, withRetry } from '@/lib/api-utils'
-import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
@@ -115,6 +116,63 @@ export async function POST(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       safeLog.debug('[API /parecerista] grounding:', gstats)
+    }
+
+    // P1-2 (audit elite IA): streaming opt-in via ?stream=1.
+    // Parecerista usa Sonnet com 8192 tokens — sem streaming, usuario ve
+    // tela em branco ate ~60s. Com NDJSON, ve texto chegando em chunks.
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = usuarioIdEarly
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'parecerista',
+        params: {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8192,
+          system: [
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
+          ],
+          tools: [WEB_SEARCH_TOOL],
+          messages: [{ role: 'user', content: userMessage }],
+        },
+        fallback: { parecer: { titulo: 'Parecer', conclusao: '' } },
+        demoFallback: DEMO_FALLBACKS.parecerista as Record<string, unknown>,
+        wrapResult: (parsed) => {
+          const p = ((parsed as Record<string, unknown>)?.parecer ?? parsed) as Record<string, unknown>
+          return { parecer: p }
+        },
+        onPersist: async (parsed, fullText) => {
+          const p = ((parsed as Record<string, unknown>)?.parecer ?? parsed) as Record<string, unknown>
+          if (usuarioId) {
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId,
+              agente: 'parecerista',
+              mensagem_usuario: `Parecer: ${consulta.slice(0, 200)}${area ? ` (${area})` : ''}`,
+              resposta_agente: (p?.titulo as string) || 'Parecer juridico',
+            })
+            const tituloOut = (p?.titulo as string) || consulta.slice(0, 80)
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
+              agente: 'parecerista',
+              resumo: buildMemorySummary('parecerista', consulta, tituloOut),
+              fatos: [
+                ...(area ? [{ key: 'area', value: area }] : []),
+                { key: 'titulo', value: String(tituloOut).slice(0, 120) },
+              ],
+              tags: extractMemoryTags('parecerista', area, `${consulta} ${tituloOut}`),
+            }, { prefs }), 'recordAgentMemory:parecerista')
+          }
+          // Validacao final no fim do stream — fontes vao no proximo poll do client
+          if (process.env.NODE_ENV !== 'production') {
+            const v = validateCitations(fullText)
+            // eslint-disable-next-line no-console
+            safeLog.debug('[API /parecerista stream] validation:', v.stats)
+          }
+          fireAndForget(events.agentUsed(user.id, 'parecerista', 'unknown'), 'events.agentUsed:parecerista')
+        },
+      })
     }
 
     const controller = new AbortController()

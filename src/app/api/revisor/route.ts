@@ -8,7 +8,8 @@ import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
-import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { createAgentStream } from '@/lib/agent-stream'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -94,6 +95,54 @@ export async function POST(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       safeLog.debug('[API /revisor] grounding:', gstats)
+    }
+
+    // P1-2 (audit elite IA): streaming opt-in via ?stream=1.
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = usuarioIdEarly
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'revisor',
+        params: {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8192,
+          system: [
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
+          ],
+          messages: [{ role: 'user', content: userMessage }],
+        },
+        fallback: { revisao: { resumo_geral: '', issues_criticos: [], issues_atencao: [], issues_sugestoes: [] } },
+        demoFallback: DEMO_FALLBACKS.revisor as Record<string, unknown>,
+        wrapResult: (parsed) => {
+          const r = ((parsed as Record<string, unknown>)?.revisao ?? parsed) as Record<string, unknown>
+          return { revisao: r }
+        },
+        onPersist: async (parsed) => {
+          const r = ((parsed as Record<string, unknown>)?.revisao ?? parsed) as Record<string, unknown>
+          if (usuarioId) {
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId,
+              agente: 'revisor',
+              mensagem_usuario: `Revisao: ${tipo || 'Documento'} (${documento.length} chars)`,
+              resposta_agente: `Revisao concluida - Score ${r?.score ?? '-'}`,
+            })
+            const scoreOut = String(r?.score ?? '-')
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
+              agente: 'revisor',
+              resumo: buildMemorySummary('revisor', `${tipo || 'Documento'}: ${documento.slice(0, 120)}`, `score ${scoreOut}`),
+              fatos: [
+                ...(tipo ? [{ key: 'tipo', value: tipo }] : []),
+                { key: 'score', value: scoreOut },
+              ],
+              tags: extractMemoryTags('revisor', tipo, documento.slice(0, 800)),
+            }, { prefs }), 'recordAgentMemory:revisor')
+          }
+          fireAndForget(events.agentUsed(user.id, 'revisor', 'unknown'), 'events.agentUsed:revisor')
+        },
+      })
     }
 
     const controller = new AbortController()

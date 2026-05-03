@@ -5,7 +5,8 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { buscarJurisprudenciaReal, isJusBrasilConfigured } from '@/lib/jusbrasil'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
-import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
@@ -125,6 +126,52 @@ export async function POST(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       safeLog.debug('[API /pesquisar] grounding:', gstats)
+    }
+
+    // P1-2 (audit elite IA): streaming opt-in via ?stream=1.
+    // Pesquisador usa Sonnet+web_search, ate ~80s — sem stream ve tela
+    // branca. Com NDJSON, usuario ve resultado vir em chunks.
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = usuarioIdEarly
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'pesquisador',
+        params: {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8192,
+          system: [
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
+          ],
+          tools: [WEB_SEARCH_TOOL],
+          messages: [{ role: 'user', content: `Research topic: ${query}${filtros ? `\n\nFilters:\n${filtros}` : ''}` }],
+        },
+        fallback: { enquadramento: '', erro_parse: true },
+        demoFallback: DEMO_FALLBACKS.pesquisador as Record<string, unknown>,
+        wrapResult: (parsed) => ({ pesquisa: parsed }),
+        onPersist: async (parsed) => {
+          if (usuarioId) {
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId, agente: 'pesquisador',
+              mensagem_usuario: `Pesquisa: ${query}`,
+              resposta_agente: ((parsed as Record<string, unknown>)?.enquadramento as string)?.slice(0, 200) || 'Pesquisa realizada',
+            })
+            const enqOut = ((parsed as Record<string, unknown>)?.enquadramento as string)?.slice(0, 160) || 'pesquisa realizada'
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
+              agente: 'pesquisador',
+              resumo: buildMemorySummary('pesquisador', query, enqOut),
+              fatos: [
+                ...(safeArea !== 'Todas' ? [{ key: 'area', value: safeArea }] : []),
+                ...(safeTribunal !== 'Todos' ? [{ key: 'tribunal', value: safeTribunal }] : []),
+              ],
+              tags: extractMemoryTags('pesquisador', safeArea !== 'Todas' ? safeArea : undefined, query),
+            }, { prefs }), 'recordAgentMemory:pesquisador')
+          }
+          fireAndForget(events.agentUsed(user.id, 'pesquisador', 'unknown'), 'events.agentUsed:pesquisador')
+        },
+      })
     }
 
     // Wave C5 fix: AbortController 90s — Anthropic + WEB_SEARCH_TOOL pode

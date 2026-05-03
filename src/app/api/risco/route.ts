@@ -4,7 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON, withRetry } from '@/lib/api-utils'
-import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
@@ -120,6 +121,56 @@ export async function POST(req: NextRequest) {
     const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
     const prefsContext = buildPreferencesContext(prefs)
     const enhancedSystem = buildAgentPreamble('risco') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
+    // P1-2 (audit elite IA): streaming opt-in via ?stream=1.
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = usuarioIdEarly
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'risco',
+        params: {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 4096,
+          system: [
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
+          ],
+          messages: [{ role: 'user', content: userMessage }],
+        },
+        fallback: { risco: { score_global: 50, nivel: 'MEDIO', recomendacao: '', top_3_pontos: [] } },
+        demoFallback: DEMO_FALLBACKS.risco as Record<string, unknown>,
+        wrapResult: (parsed) => {
+          const r = ((parsed as Record<string, unknown>)?.risco ?? parsed) as Record<string, unknown>
+          return { risco: r }
+        },
+        onPersist: async (parsed) => {
+          const r = ((parsed as Record<string, unknown>)?.risco ?? parsed) as Record<string, unknown>
+          if (usuarioId) {
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId,
+              agente: 'risco',
+              mensagem_usuario: `Risco: ${tipo || 'Documento'} (${documento.length} chars)`,
+              resposta_agente: `Score ${r?.score_global ?? '-'}/100 (${r?.nivel ?? '-'})`,
+            })
+            const scoreOut = String(r?.score_global ?? '-')
+            const nivelOut = String(r?.nivel ?? '-')
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
+              agente: 'risco',
+              resumo: buildMemorySummary('risco', `${tipo || 'Documento'}: ${documento.slice(0, 120)}`, `score ${scoreOut} ${nivelOut}`),
+              fatos: [
+                ...(tipo ? [{ key: 'tipo', value: tipo }] : []),
+                { key: 'score', value: scoreOut },
+                { key: 'nivel', value: nivelOut },
+              ],
+              tags: extractMemoryTags('risco', tipo, documento.slice(0, 800)),
+            }, { prefs }), 'recordAgentMemory:risco')
+          }
+          fireAndForget(events.agentUsed(user.id, 'risco', 'unknown'), 'events.agentUsed:risco')
+        },
+      })
+    }
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)

@@ -4,6 +4,8 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { withAgentAuth } from '@/lib/with-agent-auth'
+import { DEMO_FALLBACKS } from '@/lib/demo-fallback'
+import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
@@ -94,14 +96,61 @@ export const POST = withAgentAuth('audiencia', async ({ req, supabase, user }) =
   const grounding = buildGroundingContext(caso.slice(0, 2000), { topK: 8 })
   const gstats = groundingStats(grounding)
 
+  // P1-2 (audit elite IA): streaming opt-in via ?stream=1.
+  const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+  if (wantsStream) {
+    const usuarioId = usuarioIdEarly
+    return createAgentStream<Record<string, unknown>>({
+      client,
+      agente: 'audiencia',
+      params: {
+        // Audit P2-1: Haiku 4.5 entrega 90% qualidade nesta task com custo 1/5 do Sonnet.
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4096,
+        system: [
+          { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+          { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
+        ],
+        messages: [{ role: 'user', content: userMessage }],
+      },
+      fallback: { roteiro: { titulo: TIPOS_AUDIENCIA[tipo], abertura: { tese_central: '' } } },
+      demoFallback: DEMO_FALLBACKS.audiencia as Record<string, unknown>,
+      wrapResult: (parsed) => {
+        const r = ((parsed as Record<string, unknown>)?.roteiro ?? parsed) as Record<string, unknown>
+        return { roteiro: r }
+      },
+      onPersist: async (parsed) => {
+        const r = ((parsed as Record<string, unknown>)?.roteiro ?? parsed) as Record<string, unknown>
+        if (usuarioId) {
+          const tituloR = (r?.titulo as string) || TIPOS_AUDIENCIA[tipo]
+          await supabase.from('historico').insert({
+            usuario_id: usuarioId,
+            agente: 'audiencia',
+            mensagem_usuario: `Roteiro: ${TIPOS_AUDIENCIA[tipo]}`,
+            resposta_agente: tituloR,
+          })
+          fireAndForget(recordAgentMemory(supabase, usuarioId, {
+            agente: 'audiencia',
+            resumo: buildMemorySummary('audiencia', `${TIPOS_AUDIENCIA[tipo]}: ${caso.slice(0, 120)}`, tituloR),
+            fatos: [{ key: 'tipo', value: tipo }],
+            tags: extractMemoryTags('audiencia', tipo, caso),
+          }, { prefs }), 'recordAgentMemory:audiencia')
+        }
+        fireAndForget(events.agentUsed(user.id, 'audiencia', 'unknown'), 'events.agentUsed:audiencia')
+      },
+    })
+  }
+
   // 90s hard cap pra evitar lambda travada em overload Anthropic
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 90_000)
   let message: Anthropic.Messages.Message
   try {
     message = await withRetry(() => client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
+      // Audit P2-1: Haiku 4.5 entrega 90% qualidade nesta task com custo 1/5 do Sonnet.
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 4096,
       system: [
         {
           type: 'text' as const,
