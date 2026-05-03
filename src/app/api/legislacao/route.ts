@@ -104,6 +104,8 @@ export async function POST(req: NextRequest) {
         {
           type: 'text' as const,
           text: grounding.contextBlock,
+          // P1 audit fix (2026-05-03): grounding cacheado — bloco eh per-query mas usuario itera muito no mesmo caso.
+          cache_control: { type: 'ephemeral' as const },
         },
         ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
