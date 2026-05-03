@@ -125,7 +125,7 @@ function EmBreveContent() {
         >
           <Link
             href="/dashboard/chat"
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-5 py-2.5 text-sm font-medium text-[#0a0807] shadow-[0_0_28px_rgba(191,166,142,0.28)] transition-all hover:shadow-[0_0_40px_rgba(191,166,142,0.5)]"
+            className="press-scale group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-[#bfa68e]/40 bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-5 py-2.5 text-sm font-medium text-[#0a0807] shadow-[0_0_28px_rgba(191,166,142,0.28)] transition-editorial hover:shadow-[0_0_40px_rgba(191,166,142,0.5)]"
           >
             <Sparkles size={14} strokeWidth={2} />
             Usar Chat agora
@@ -134,7 +134,7 @@ function EmBreveContent() {
           </Link>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm backdrop-blur transition-all"
+            className="press-scale inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm backdrop-blur transition-editorial hover:border-[var(--accent)]"
             style={{
               border: '1px solid var(--border)',
               background: 'var(--hover)',

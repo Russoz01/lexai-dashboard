@@ -370,7 +370,7 @@ export default function LandingPage() {
             <div className="mt-11 flex flex-col items-center justify-center gap-3 md:flex-row">
               <Link
                 href="/login"
-                className="lex-magnetic lex-cta-shimmer group relative inline-flex h-13 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-8 py-3.5 text-[14px] font-medium text-black transition hover:brightness-110"
+                className="lex-magnetic lex-cta-shimmer press-scale group relative inline-flex h-13 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-8 py-3.5 text-[14px] font-medium text-black transition-editorial hover:brightness-110"
               >
                 <span className="relative z-10">Demo 50 min grátis</span>
                 <ArrowRight
@@ -380,7 +380,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="#agentes"
-                className="inline-flex h-13 items-center justify-center gap-2 rounded-full px-8 py-3.5 text-[14px] font-medium backdrop-blur transition"
+                className="press-scale hover-lift inline-flex h-13 items-center justify-center gap-2 rounded-full px-8 py-3.5 text-[14px] font-medium backdrop-blur transition-editorial"
                 style={{
                   border: '1px solid var(--border)',
                   background: 'var(--hover)',

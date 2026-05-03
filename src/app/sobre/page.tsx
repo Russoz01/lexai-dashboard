@@ -247,7 +247,7 @@ export default function SobrePage() {
         <div className="mt-12 flex flex-wrap gap-3">
           <Link
             href="/login"
-            className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-5 py-2.5 text-sm font-medium text-[#0a0807] shadow-[0_0_28px_rgba(191,166,142,0.25)] transition hover:shadow-[0_0_40px_rgba(191,166,142,0.5)]"
+            className="press-scale group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-5 py-2.5 text-sm font-medium text-[#0a0807] shadow-[0_0_28px_rgba(191,166,142,0.25)] transition-editorial hover:shadow-[0_0_40px_rgba(191,166,142,0.5)]"
           >
             Demo 50 min grátis
             <ArrowRight size={14} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
@@ -255,7 +255,7 @@ export default function SobrePage() {
           <Link
             href="/roi"
             style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-secondary)' }}
-            className="inline-flex items-center rounded-full border px-5 py-2.5 text-sm backdrop-blur transition hover:border-[#bfa68e]/40 hover:text-on-surface"
+            className="press-scale inline-flex items-center rounded-full border px-5 py-2.5 text-sm backdrop-blur transition-editorial hover:border-[#bfa68e]/40 hover:text-on-surface"
           >
             Calcular ROI
           </Link>

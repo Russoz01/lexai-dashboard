@@ -179,7 +179,7 @@ export default function EmpresasPage() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-reveal>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-5 py-3 text-sm font-medium text-[#0a0807] transition hover:brightness-110"
+              className="press-scale inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-5 py-3 text-sm font-medium text-[#0a0807] transition-editorial hover:brightness-110"
             >
               <CalendarCheck size={16} />
               Demo 50 min grátis
@@ -187,7 +187,7 @@ export default function EmpresasPage() {
             <Link
               href="#casos"
               style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
-              className="rounded-lg border px-5 py-3 text-sm transition"
+              className="press-scale rounded-lg border px-5 py-3 text-sm transition-editorial hover:border-[var(--accent)]"
             >
               Ver casos de uso
             </Link>
@@ -236,10 +236,10 @@ export default function EmpresasPage() {
             return (
               <div
                 key={a.slug}
-                className={`group relative overflow-hidden rounded-xl border p-5 transition ${
+                className={`group relative overflow-hidden rounded-xl border p-5 hover-lift transition-editorial ${
                   isNew
                     ? 'border-[#bfa68e]/35 hover:border-[#bfa68e]/55 hover:shadow-[0_0_28px_rgba(191,166,142,0.25)]'
-                    : 'border-on-surface'
+                    : 'border-on-surface hover:shadow-[0_8px_24px_var(--shadow)]'
                 }`}
                 data-reveal
                 style={{
