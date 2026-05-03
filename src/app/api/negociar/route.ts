@@ -101,8 +101,9 @@ export async function POST(req: NextRequest) {
     let message: Anthropic.Messages.Message
     try {
       message = await withRetry(() => client.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8192,
+        // Audit P2-1: Haiku 4.5 entrega 90% qualidade nesta task com custo 1/5 do Sonnet.
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4096,
         system: [
           {
             type: 'text' as const,
