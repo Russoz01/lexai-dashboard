@@ -33,46 +33,55 @@ const AGENTES_CATALOGO = {
     titulo: 'Resumidor',
     rota: '/dashboard/resumidor',
     quando: 'Analisar documentos juridicos (contratos, peticoes, acordaos). Extrair clausulas, riscos, prazos, partes, obrigacoes e valores.',
+    diferencial: 'comprime documento longo em 1-2 paginas + extrai pontos chave',
   },
   redator: {
     titulo: 'Redator',
     rota: '/dashboard/redator',
     quando: 'Escrever peticoes iniciais, contestacoes, recursos, pareceres, notificacoes e outras pecas processuais estruturadas.',
+    diferencial: 'escreve peca processual do zero a partir de fatos',
   },
   pesquisador: {
     titulo: 'Pesquisador',
     rota: '/dashboard/pesquisador',
     quando: 'Buscar jurisprudencia do STF, STJ, TJ-SP e demais tribunais. Encontrar precedentes, sumulas e teses aplicaveis a um caso.',
+    diferencial: 'busca jurisprudencia + doutrina por tese, com web search',
   },
   negociador: {
     titulo: 'Negociador',
     rota: '/dashboard/negociador',
     quando: 'Montar estrategia de negociacao, BATNA, ZOPA, roteiros de audiencia de conciliacao, tatica de acordo.',
+    diferencial: 'tatica de acordo (BATNA/ZOPA) pre-audiencia ou na mesa',
   },
   professor: {
     titulo: 'Monitor Legislativo',
     rota: '/dashboard/professor',
     quando: 'Monitorar mudancas normativas, novos precedentes, alteracoes legislativas relevantes para a area de atuacao do escritorio.',
+    diferencial: 'aula didatica sobre tema juridico (estudo dirigido)',
   },
   calculador: {
     titulo: 'Calculador',
     rota: '/dashboard/calculador',
     quando: 'Calcular prazos processuais, correcao monetaria, juros, multas, custas, indenizacoes trabalhistas.',
+    diferencial: 'calcula prazo + valores monetarios com indices oficiais',
   },
   legislacao: {
     titulo: 'Legislacao',
     rota: '/dashboard/legislacao',
     quando: 'Consultar artigos especificos de leis, codigos e estatutos, com explicacao tecnica e jurisprudencia aplicada.',
+    diferencial: 'consulta artigo de lei especifico com aplicacao pratica',
   },
   rotina: {
     titulo: 'Rotina',
     rota: '/dashboard/rotina',
     quando: 'Organizar agenda, tarefas repetitivas, rotinas do escritorio, checklists e fluxos de trabalho.',
+    diferencial: 'organiza rotina semanal + checklist + cronograma de tarefas',
   },
   planilhas: {
     titulo: 'Planilhas',
     rota: '/dashboard/planilhas',
     quando: 'Gerar planilhas juridicas (controle de honorarios, timesheet, controle processual, previsao de receita).',
+    diferencial: 'gera planilha juridica (timesheet, controle de prazos, honorarios)',
   },
 } as const
 
@@ -126,7 +135,7 @@ PAPEL FUNCIONAL:
 2. ROTEAR para o agente especialista certo via tool "rotear_agente" quando a tarefa exigir uma ferramenta especifica do atelier.
 
 AGENTES DISPONIVEIS (use a tool "rotear_agente" quando apropriado):
-${Object.entries(AGENTES_CATALOGO).map(([k, v]) => `- ${k}: ${v.quando}`).join('\n')}
+${Object.entries(AGENTES_CATALOGO).map(([k, v]) => `- ${k} (${v.diferencial}): ${v.quando}`).join('\n')}
 
 REGRAS DE DECISAO:
 - Pergunta rapida/conceitual ("o que e ZOPA?", "qual prazo da contestacao no CPC?") → responda voce mesmo, sem rotear.
