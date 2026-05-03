@@ -206,23 +206,23 @@ export function LexPricingGrid({
               key={i}
               style={{
                 padding: 14, borderRadius: 12,
-                background: 'rgba(15,15,15,0.78)',
-                border: '1px solid rgba(191,166,142,0.14)',
+                background: 'var(--card-bg)',
+                border: '1px solid var(--border)',
                 display: 'flex', alignItems: 'center', gap: 12,
               }}
             >
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
-                background: 'rgba(212,174,106,0.12)',
-                border: '1px solid rgba(212,174,106,0.28)',
+                background: 'var(--accent-light)',
+                border: '1px solid var(--stone-line)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0,
               }}>
-                <t.Icon size={16} strokeWidth={1.75} style={{ color: '#bfa68e' }} aria-hidden />
+                <t.Icon size={16} strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden />
               </div>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#f5f1ea', marginBottom: 2 }}>{t.label}</div>
-                <div style={{ fontSize: 11, color: '#9c9388' }}>{t.sub}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>{t.label}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{t.sub}</div>
               </div>
             </div>
           ))}
@@ -233,11 +233,11 @@ export function LexPricingGrid({
       {!hidePricingNote && (
         <div style={{
           textAlign: 'center', marginBottom: 22,
-          fontSize: 12, color: '#9c9388',
+          fontSize: 12, color: 'var(--text-secondary)',
           fontFamily: 'var(--font-mono, ui-monospace), "SF Mono", Menlo, monospace',
           letterSpacing: '0.08em',
         }}>
-          cobrança <strong style={{ color: '#bfa68e' }}>por advogado registrado</strong> · R$ 599 a R$ 1.599 conforme plano
+          cobrança <strong style={{ color: 'var(--accent)' }}>por advogado registrado</strong> · R$ 599 a R$ 1.599 conforme plano
         </div>
       )}
 
@@ -267,22 +267,20 @@ export function LexPricingGrid({
               borderRadius: 16, overflow: 'hidden',
               opacity: isSoloDeemphasized ? 0.78 : 1,
               background: isEnterprisePremium
-                ? 'radial-gradient(120% 140% at 20% 0%, rgba(212,174,106,0.12), transparent 60%), linear-gradient(180deg, rgba(20,15,8,0.92), rgba(10,10,10,0.94))'
-                : isSoloDeemphasized
-                  ? 'rgba(12,12,12,0.7)'
-                  : 'rgba(15,15,15,0.82)',
+                ? 'radial-gradient(120% 140% at 20% 0%, var(--accent-light), transparent 60%), var(--card-solid)'
+                : 'var(--card-bg)',
               border: isEnterprisePremium
-                ? '1px solid rgba(212,174,106,0.55)'
+                ? '1px solid var(--stone)'
                 : isDestaque
-                  ? '2px solid rgba(212,174,106,0.62)'
+                  ? '2px solid var(--stone)'
                   : isSoloDeemphasized
-                    ? '1px dashed rgba(191,166,142,0.18)'
-                    : '1px solid rgba(191,166,142,0.14)',
+                    ? '1px dashed var(--stone-line)'
+                    : '1px solid var(--border)',
               boxShadow: isEnterprisePremium
-                ? '0 24px 60px rgba(212,174,106,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
+                ? '0 24px 60px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.04)'
                 : isDestaque
-                  ? '0 24px 56px rgba(212,174,106,0.18)'
-                  : '0 8px 24px rgba(0,0,0,0.25)',
+                  ? '0 24px 56px var(--glow)'
+                  : '0 8px 24px var(--shadow)',
               transform: isDestaque ? 'translateY(-8px) scale(1.02)' : 'none',
               transition: 'transform 0.25s ease, border-color 0.2s ease, box-shadow 0.25s ease',
             }}>
@@ -305,29 +303,29 @@ export function LexPricingGrid({
                 <div style={{
                   fontFamily: 'var(--font-mono, ui-monospace), monospace',
                   fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase',
-                  color: '#bfa68e', marginBottom: 6,
+                  color: 'var(--accent)', marginBottom: 6,
                 }}>
                   Plano · {plano.id}
                 </div>
                 <div style={{
                   fontFamily: "'Playfair Display', Georgia, serif",
                   fontSize: 32, fontStyle: 'italic', fontWeight: 500,
-                  color: '#f5f1ea', lineHeight: 1.1,
+                  color: 'var(--text-primary)', lineHeight: 1.1,
                   letterSpacing: '-0.01em', marginBottom: 4,
                 }}>
                   {plano.nome}
                 </div>
-                <div style={{ fontSize: 12, color: '#9c9388', marginBottom: 20 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 20 }}>
                   {plano.tagline}
                 </div>
 
                 {/* Preço */}
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
-                  <span style={{ fontSize: 14, color: '#d4ccc0', fontWeight: 600 }}>R$</span>
+                  <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 600 }}>R$</span>
                   <span style={{
                     fontFamily: "'Playfair Display', Georgia, serif",
                     fontSize: 52, fontWeight: 600, lineHeight: 1,
-                    color: isDestaque ? '#bfa68e' : '#f5f1ea',
+                    color: isDestaque ? 'var(--accent)' : 'var(--text-primary)',
                     letterSpacing: '-0.02em',
                   }}>
                     {preco.toLocaleString('pt-BR')}
@@ -336,7 +334,7 @@ export function LexPricingGrid({
                 <div style={{
                   fontFamily: 'var(--font-mono, ui-monospace), monospace',
                   fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase',
-                  color: '#9c9388', marginBottom: 14,
+                  color: 'var(--text-secondary)', marginBottom: 14,
                 }}>
                   por advogado / mês
                 </div>
@@ -345,9 +343,9 @@ export function LexPricingGrid({
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '8px 12px', borderRadius: 10, marginBottom: 20,
-                  background: 'rgba(212,174,106,0.08)',
-                  border: '1px solid rgba(212,174,106,0.2)',
-                  fontSize: 11, color: '#d4beac', fontWeight: 500, lineHeight: 1.4,
+                  background: 'var(--accent-light)',
+                  border: '1px solid var(--stone-line)',
+                  fontSize: 11, color: 'var(--accent)', fontWeight: 500, lineHeight: 1.4,
                 }}>
                   <TrendingUp size={12} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden />
                   {plano.economiaReal}
@@ -360,9 +358,9 @@ export function LexPricingGrid({
                       <span style={{
                         width: 18, height: 18, borderRadius: 5, flexShrink: 0,
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        background: f.disponivel ? 'rgba(212,174,106,0.14)' : 'rgba(120,110,100,0.06)',
-                        border: `1px solid ${f.disponivel ? 'rgba(212,174,106,0.34)' : 'rgba(120,110,100,0.18)'}`,
-                        color: f.disponivel ? '#bfa68e' : '#9c9388',
+                        background: f.disponivel ? 'var(--accent-light)' : 'var(--hover)',
+                        border: `1px solid ${f.disponivel ? 'var(--stone-line)' : 'var(--border)'}`,
+                        color: f.disponivel ? 'var(--accent)' : 'var(--text-muted)',
                         marginTop: 1,
                       }}>
                         {f.disponivel
@@ -371,9 +369,9 @@ export function LexPricingGrid({
                       </span>
                       <span style={{
                         fontSize: 12, lineHeight: 1.5,
-                        color: f.disponivel ? '#d4ccc0' : '#9c9388',
+                        color: f.disponivel ? 'var(--text-primary)' : 'var(--text-muted)',
                         textDecoration: f.disponivel ? 'none' : 'line-through',
-                        textDecorationColor: 'rgba(120,110,100,0.4)',
+                        textDecorationColor: 'var(--text-muted)',
                       }}>
                         {f.label}
                       </span>
@@ -393,21 +391,21 @@ export function LexPricingGrid({
                     cursor: isCurrentPlan || isLoadingOther ? 'default' : 'pointer',
                     transition: 'all 0.2s ease',
                     background: isCurrentPlan
-                      ? 'rgba(191,166,142,0.06)'
+                      ? 'var(--hover)'
                       : isDestaque
                         ? 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)'
                         : 'transparent',
                     color: isCurrentPlan
-                      ? '#9c9388'
+                      ? 'var(--text-muted)'
                       : isDestaque
                         ? '#0a0a0a'
-                        : '#bfa68e',
+                        : 'var(--accent)',
                     border: isCurrentPlan
-                      ? '1px solid rgba(191,166,142,0.14)'
+                      ? '1px solid var(--border)'
                       : isDestaque
-                        ? '1px solid rgba(212,174,106,0.5)'
-                        : '1px solid rgba(212,174,106,0.38)',
-                    boxShadow: isDestaque && !isCurrentPlan ? '0 12px 32px rgba(212,174,106,0.22)' : 'none',
+                        ? '1px solid var(--stone)'
+                        : '1px solid var(--stone-line)',
+                    boxShadow: isDestaque && !isCurrentPlan ? '0 12px 32px var(--glow)' : 'none',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                     opacity: isLoadingOther ? 0.5 : 1,
                   }}

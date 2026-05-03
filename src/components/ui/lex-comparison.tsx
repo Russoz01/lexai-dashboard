@@ -121,19 +121,24 @@ function CellRender({ value, isLex }: { value: Cell; isLex: boolean }) {
   if (value === true)
     return (
       <Check
-        className={cn('mx-auto size-4', isLex ? 'text-[#bfa68e]' : 'text-emerald-500/70')}
+        className={cn('mx-auto size-4', !isLex && 'text-emerald-500/70')}
         strokeWidth={2.2}
+        style={isLex ? { color: 'var(--accent)' } : undefined}
       />
     )
-  if (value === false) return <X className="mx-auto size-4 text-white/22" strokeWidth={1.6} />
+  if (value === false)
+    return (
+      <X className="mx-auto size-4" strokeWidth={1.6} style={{ color: 'var(--text-muted)' }} />
+    )
   if (value === 'partial')
     return <Minus className="mx-auto size-4 text-amber-400/70" strokeWidth={2.2} />
   return (
     <span
-      className={cn(
-        'whitespace-nowrap font-mono text-[11px] tabular-nums',
-        isLex ? 'font-semibold text-[#e4cfa9]' : 'text-white/55',
-      )}
+      className="whitespace-nowrap font-mono text-[11px] tabular-nums"
+      style={{
+        color: isLex ? 'var(--accent)' : 'var(--text-secondary)',
+        fontWeight: isLex ? 600 : 400,
+      }}
     >
       {value}
     </span>
@@ -154,7 +159,8 @@ export function LexComparison() {
   return (
     <section
       id="comparativo"
-      className="relative mx-auto w-full overflow-hidden bg-black py-24"
+      className="relative mx-auto w-full overflow-hidden py-24"
+      style={{ background: 'var(--bg-base)' }}
     >
       {/* Ambient mesh — bem sutil para nao competir com tabela densa */}
       <AmbientMesh intensity={0.35} />
@@ -166,15 +172,28 @@ export function LexComparison() {
 
       <div className="relative mx-auto max-w-7xl px-4">
         <Reveal as="div" className="mx-auto mb-12 max-w-3xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#bfa68e]/20 bg-[#bfa68e]/[0.04] px-3 py-1 font-mono text-[0.62rem] uppercase tracking-[0.24em] text-[#bfa68e]/85">
-            <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+          <div
+            className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[0.62rem] uppercase tracking-[0.24em]"
+            style={{
+              border: '1px solid var(--stone-line)',
+              background: 'var(--accent-light)',
+              color: 'var(--accent)',
+            }}
+          >
+            <span className="size-1.5 rounded-full" style={{ background: 'var(--accent)' }} />
             Pralvex vs {totalRivals - 1} alternativas do mercado
           </div>
-          <h2 className="text-balance text-4xl font-medium leading-tight text-white md:text-[3rem]">
+          <h2
+            className="text-balance text-4xl font-medium leading-tight md:text-[3rem]"
+            style={{ color: 'var(--text-primary)' }}
+          >
             {UNIQUE_LEX_ROWS} diferenciais onde{' '}
-            <span className="font-serif italic text-[#e6d4bd]">só a Pralvex entrega.</span>
+            <span className="font-serif italic text-grad-accent">só a Pralvex entrega.</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-[1.7] text-white/60">
+          <p
+            className="mx-auto mt-5 max-w-2xl text-[15px] leading-[1.7]"
+            style={{ color: 'var(--text-secondary)' }}
+          >
             Comparamos {totalRows} pontos críticos contra 4 generalistas (ChatGPT, Claude,
             Gemini, Copilot), 1 legal AI global (Harvey, US/UK) e 4 plataformas jurídicas
             brasileiras (Astrea, Projuris, Lexter, Jusbrasil). Linhas destacadas em ouro são
@@ -183,11 +202,20 @@ export function LexComparison() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="overflow-x-auto rounded-2xl border border-white/[0.08] bg-[#0a0a0a]">
+          <div
+            className="overflow-x-auto rounded-2xl"
+            style={{
+              border: '1px solid var(--border)',
+              background: 'var(--card-bg)',
+            }}
+          >
             <table className="w-full min-w-[1280px] border-collapse text-sm">
               <thead>
-                <tr className="border-b border-white/10">
-                  <th className="sticky left-0 z-10 bg-[#0a0a0a] px-4 py-5 text-left font-mono text-[0.6rem] font-medium uppercase tracking-[0.2em] text-white/45">
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <th
+                    className="sticky left-0 z-10 px-4 py-5 text-left font-mono text-[0.6rem] font-medium uppercase tracking-[0.2em]"
+                    style={{ background: 'var(--card-solid)', color: 'var(--text-muted)' }}
+                  >
                     Critério
                   </th>
                   {RIVALS.map((r, i) => {
@@ -195,18 +223,17 @@ export function LexComparison() {
                     return (
                       <th
                         key={r.name}
-                        className={cn(
-                          'px-2 py-5 text-center text-xs font-medium tracking-tight align-bottom',
-                          isLex
-                            ? 'bg-[#bfa68e]/[0.06] text-[#e4cfa9]'
-                            : 'text-white/55',
-                        )}
-                        style={{ minWidth: 92 }}
+                        className="px-2 py-5 text-center text-xs font-medium tracking-tight align-bottom"
+                        style={{
+                          minWidth: 92,
+                          background: isLex ? 'var(--accent-light)' : undefined,
+                          color: isLex ? 'var(--accent)' : 'var(--text-secondary)',
+                        }}
                       >
-                        <div className={cn(
-                          'mb-1 font-mono text-[0.52rem] uppercase tracking-[0.18em]',
-                          isLex ? 'text-[#bfa68e]/80' : 'text-white/30',
-                        )}>
+                        <div
+                          className="mb-1 font-mono text-[0.52rem] uppercase tracking-[0.18em]"
+                          style={{ color: isLex ? 'var(--accent)' : 'var(--text-muted)' }}
+                        >
                           {kindLabel(r.kind)}
                         </div>
                         <div className={cn(
@@ -216,12 +243,18 @@ export function LexComparison() {
                           {r.name}
                         </div>
                         {r.badge && (
-                          <div className="mt-0.5 font-mono text-[0.5rem] uppercase tracking-[0.16em] text-white/30">
+                          <div
+                            className="mt-0.5 font-mono text-[0.5rem] uppercase tracking-[0.16em]"
+                            style={{ color: 'var(--text-muted)' }}
+                          >
                             {r.badge}
                           </div>
                         )}
                         {i === 0 && (
-                          <div className="mt-1 font-mono text-[0.55rem] uppercase tracking-[0.2em] text-[#bfa68e]/60">
+                          <div
+                            className="mt-1 font-mono text-[0.55rem] uppercase tracking-[0.2em]"
+                            style={{ color: 'var(--accent)' }}
+                          >
                             incluído
                           </div>
                         )}
@@ -261,22 +294,42 @@ export function LexComparison() {
               body: 'Servidor em SP, zero retenção, DPA assinado, audit log por usuário, treinado em CF/88 + CLT + CDC + CPC. Harvey é US, generalistas treinam modelo público.',
             },
           ].map(c => (
-            <div key={c.title} className="rounded-xl border border-[#bfa68e]/12 bg-[#0a0a0a]/60 p-5">
-              <div className="mb-2 font-mono text-[0.58rem] uppercase tracking-[0.24em] text-[#bfa68e]/80">
+            <div
+              key={c.title}
+              className="rounded-xl p-5"
+              style={{
+                border: '1px solid var(--stone-line)',
+                background: 'var(--card-bg)',
+              }}
+            >
+              <div
+                className="mb-2 font-mono text-[0.58rem] uppercase tracking-[0.24em]"
+                style={{ color: 'var(--accent)' }}
+              >
                 {c.kicker}
               </div>
-              <div className="font-serif text-lg italic text-white">{c.title}</div>
-              <p className="mt-2 text-[13px] leading-[1.55] text-white/55">{c.body}</p>
+              <div
+                className="font-serif text-lg italic"
+                style={{ color: 'var(--text-primary)' }}
+              >{c.title}</div>
+              <p
+                className="mt-2 text-[13px] leading-[1.55]"
+                style={{ color: 'var(--text-secondary)' }}
+              >{c.body}</p>
             </div>
           ))}
         </Reveal>
 
         <Reveal
-          as="p"
           delay={0.4}
-          className="mt-8 text-center font-mono text-[0.62rem] uppercase tracking-[0.18em] text-white/35"
+          className="mt-8"
         >
-          Preços coletados em 04/2026 nos sites oficiais · plano entrada por advogado/mês · Harvey é enterprise-only, valor estimado USD 300
+          <p
+            className="text-center font-mono text-[0.62rem] uppercase tracking-[0.18em]"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Preços coletados em 04/2026 nos sites oficiais · plano entrada por advogado/mês · Harvey é enterprise-only, valor estimado USD 300
+          </p>
         </Reveal>
       </div>
     </section>
@@ -287,13 +340,17 @@ function Group({ group, isLast }: { group: Group; isLast: boolean }) {
   const Icon = group.Icon
   return (
     <>
-      <tr className="border-b border-white/[0.06]">
+      <tr style={{ borderBottom: '1px solid var(--border)' }}>
         <td
           colSpan={RIVALS.length + 1}
-          className="bg-gradient-to-r from-[#bfa68e]/[0.05] to-transparent px-4 py-3"
+          className="px-4 py-3"
+          style={{ background: 'linear-gradient(to right, var(--accent-light), transparent)' }}
         >
-          <div className="flex items-center gap-2.5 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-[#bfa68e]/80">
-            <Icon className="size-3.5 text-[#bfa68e]" strokeWidth={1.6} />
+          <div
+            className="flex items-center gap-2.5 font-mono text-[0.62rem] uppercase tracking-[0.22em]"
+            style={{ color: 'var(--accent)' }}
+          >
+            <Icon className="size-3.5" strokeWidth={1.6} style={{ color: 'var(--accent)' }} />
             {group.label}
           </div>
         </td>
@@ -302,22 +359,28 @@ function Group({ group, isLast }: { group: Group; isLast: boolean }) {
         <tr
           key={row.feature}
           className={cn(
-            'border-b border-white/[0.04] transition-colors hover:bg-white/[0.018]',
-            row.highlight && 'bg-[#bfa68e]/[0.025]',
+            'transition-colors',
             isLast && ri === group.rows.length - 1 && 'border-b-0',
           )}
+          style={{
+            borderBottom: '1px solid var(--border)',
+            background: row.highlight ? 'var(--accent-light)' : undefined,
+          }}
         >
           <td
-            className={cn(
-              'sticky left-0 z-10 bg-[#0a0a0a] px-4 py-3 text-left text-[13.5px]',
-              row.highlight ? 'font-medium text-white' : 'text-white/78',
-            )}
+            className="sticky left-0 z-10 px-4 py-3 text-left text-[13.5px]"
+            style={{
+              background: 'var(--card-solid)',
+              color: row.highlight ? 'var(--text-primary)' : 'var(--text-secondary)',
+              fontWeight: row.highlight ? 500 : 400,
+            }}
           >
             <span className="flex items-center gap-2">
               {row.highlight && (
                 <span
                   aria-hidden
-                  className="size-1 shrink-0 rounded-full bg-[#bfa68e]"
+                  className="size-1 shrink-0 rounded-full"
+                  style={{ background: 'var(--accent)' }}
                   title="Diferencial exclusivo Pralvex"
                 />
               )}
@@ -327,10 +390,8 @@ function Group({ group, isLast }: { group: Group; isLast: boolean }) {
           {row.values.map((v, i) => (
             <td
               key={i}
-              className={cn(
-                'px-2 py-3 text-center',
-                i === 0 && 'bg-[#bfa68e]/[0.05]',
-              )}
+              className="px-2 py-3 text-center"
+              style={i === 0 ? { background: 'var(--accent-light)' } : undefined}
             >
               <CellRender value={v} isLex={i === 0} />
             </td>

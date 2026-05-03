@@ -90,10 +90,14 @@ export default function LandingPage() {
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link href="/" className="group flex items-center gap-2.5">
-            <div className="relative flex size-9 items-center justify-center rounded-lg border border-white/[0.08] bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent transition-all group-hover:border-[#bfa68e]/40">
+            <div
+              className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent transition-all"
+              style={{ border: '1px solid var(--border)' }}
+            >
               <Scale
-                className="size-4 text-[#e6d4bd]"
+                className="size-4"
                 strokeWidth={1.6}
+                style={{ color: 'var(--accent)' }}
               />
               {/* corner glints */}
               <span
@@ -105,7 +109,10 @@ export default function LandingPage() {
                 className="pointer-events-none absolute -bottom-px -right-px size-2 rounded-br-lg border-b border-r border-[#bfa68e]/40"
               />
             </div>
-            <span className="font-serif text-[15px] tracking-tight text-white">
+            <span
+              className="font-serif text-[15px] tracking-tight"
+              style={{ color: 'var(--text-primary)' }}
+            >
               Pralvex
             </span>
           </Link>
@@ -113,44 +120,54 @@ export default function LandingPage() {
           <nav className="hidden items-center gap-7 md:flex">
             <a
               href="#agentes"
-              className="text-[13px] text-white/60 transition-colors hover:text-white"
+              className="text-[13px] transition-colors hover:opacity-100"
+              style={{ color: 'var(--text-secondary)' }}
             >
               Agentes
             </a>
             <a
               href="#manifesto"
-              className="text-[13px] text-white/60 transition-colors hover:text-white"
+              className="text-[13px] transition-colors hover:opacity-100"
+              style={{ color: 'var(--text-secondary)' }}
             >
               Manifesto
             </a>
             <a
               href="#provimento"
-              className="text-[13px] text-white/60 transition-colors hover:text-white"
+              className="text-[13px] transition-colors hover:opacity-100"
+              style={{ color: 'var(--text-secondary)' }}
             >
               Compliance
             </a>
             <a
               href="#precos"
-              className="text-[13px] text-white/60 transition-colors hover:text-white"
+              className="text-[13px] transition-colors hover:opacity-100"
+              style={{ color: 'var(--text-secondary)' }}
             >
               Planos
             </a>
             <a
               href="#faq"
-              className="text-[13px] text-white/60 transition-colors hover:text-white"
+              className="text-[13px] transition-colors hover:opacity-100"
+              style={{ color: 'var(--text-secondary)' }}
             >
               FAQ
             </a>
             <Link
               href="/login"
-              className="text-[13px] text-white/60 transition-colors hover:text-white"
+              className="text-[13px] transition-colors hover:opacity-100"
+              style={{ color: 'var(--text-secondary)' }}
             >
               Entrar
             </Link>
             <ThemeToggle variant="landing" />
             <Link
               href="/login"
-              className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-[#bfa68e]/30 bg-gradient-to-br from-[#bfa68e]/[0.18] to-transparent px-4 text-[12px] font-medium text-[#e6d4bd] transition hover:border-[#bfa68e]/60 hover:from-[#bfa68e]/[0.28]"
+              className="group inline-flex h-9 items-center gap-1.5 rounded-full bg-gradient-to-br from-[#bfa68e]/[0.18] to-transparent px-4 text-[12px] font-medium transition hover:from-[#bfa68e]/[0.28]"
+              style={{
+                border: '1px solid var(--stone-line)',
+                color: 'var(--accent)',
+              }}
             >
               Demo 50 min grátis
               <ArrowRight
@@ -163,7 +180,8 @@ export default function LandingPage() {
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="flex size-9 items-center justify-center rounded-md border border-white/10 md:hidden"
+            className="flex size-9 items-center justify-center rounded-md md:hidden"
+            style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}
             aria-label="Abrir menu"
           >
             <Menu className="size-4" />
@@ -174,17 +192,22 @@ export default function LandingPage() {
       {/* mobile menu */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-2xl md:hidden"
+          className="fixed inset-0 z-[60] backdrop-blur-2xl md:hidden"
           role="dialog"
+          style={{ background: 'var(--bg-base)' }}
         >
           <div className="flex h-16 items-center justify-between px-6">
-            <span className="font-serif text-[15px] tracking-tight text-white">
+            <span
+              className="font-serif text-[15px] tracking-tight"
+              style={{ color: 'var(--text-primary)' }}
+            >
               Pralvex
             </span>
             <button
               type="button"
               onClick={() => setMenuOpen(false)}
-              className="flex size-9 items-center justify-center rounded-md border border-white/10"
+              className="flex size-9 items-center justify-center rounded-md"
+              style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}
               aria-label="Fechar menu"
             >
               <X className="size-4" />
@@ -204,7 +227,11 @@ export default function LandingPage() {
                 key={i.l}
                 href={i.h}
                 onClick={() => setMenuOpen(false)}
-                className="border-b border-white/5 py-4 font-serif text-xl tracking-tight"
+                className="py-4 font-serif text-xl tracking-tight"
+                style={{
+                  borderBottom: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                }}
               >
                 {i.l}
               </a>
@@ -221,11 +248,11 @@ export default function LandingPage() {
       )}
 
       {/* ═══ HERO — 3D STAGE + EDITORIAL HEADLINE ════════════════════ */}
-      <section className="relative isolate overflow-hidden pt-32 pb-24 md:pt-40 md:pb-28">
-        {/* dark gradient base */}
+      <section className="relative isolate overflow-hidden pt-32 pb-24 md:pt-40 md:pb-28 lex-hero-bg">
+        {/* gradient base — só renderiza em dark via CSS rule */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-30 bg-gradient-to-b from-[#0a0f12] via-black to-black"
+          className="pointer-events-none absolute inset-0 -z-30 lex-hero-gradient"
         />
 
         {/* Ambient mesh — 3 blobs champagne flutuando lento + dust dourado.
@@ -240,7 +267,7 @@ export default function LandingPage() {
             0.20 (era 0.45) pra deixar os cards do stage e blobs respirarem */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(50%_45%_at_50%_45%,rgba(0,0,0,0.20)_0%,transparent_70%)]"
+          className="pointer-events-none absolute inset-0 -z-10 lex-hero-radial-dark"
         />
         <div
           aria-hidden
@@ -253,21 +280,33 @@ export default function LandingPage() {
         <div className="relative mx-auto max-w-5xl px-6 text-center">
           {/* Eyebrow */}
           <Reveal>
-            <div className="mb-9 inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.03] px-4 py-1.5 backdrop-blur">
+            <div
+              className="mb-9 inline-flex items-center gap-2 rounded-full px-4 py-1.5 backdrop-blur"
+              style={{
+                border: '1px solid var(--border)',
+                background: 'var(--hover)',
+              }}
+            >
               <span className="relative flex size-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#bfa68e] opacity-60" />
                 <span className="relative inline-flex size-2 rounded-full bg-[#bfa68e]" />
               </span>
-              <span className="font-mono text-[0.62rem] uppercase tracking-[0.24em] text-white/75">
+              <span
+                className="font-mono text-[0.62rem] uppercase tracking-[0.24em]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
                 O sistema operacional do Direito brasileiro
               </span>
             </div>
           </Reveal>
 
           {/* Headline — editorial serif italic, anti-hype */}
-          <h1 className="text-balance font-serif text-[3rem] leading-[1.02] tracking-[-0.02em] text-white md:text-[5rem] lg:text-[5.8rem]">
+          <h1
+            className="text-balance font-serif text-[3rem] leading-[1.02] tracking-[-0.02em] md:text-[5rem] lg:text-[5.8rem]"
+            style={{ color: 'var(--text-primary)' }}
+          >
             <WordReveal text="O copiloto que" className="block" stagger={0.08} />
-            <span className="mt-2 block italic text-[#e6d4bd]">
+            <span className="mt-2 block italic text-grad-accent">
               <GlyphReveal text="recusa" delay={0.5} stagger={0.04} />
             </span>
             <span className="mt-2 block">
@@ -279,7 +318,10 @@ export default function LandingPage() {
           </h1>
 
           <Reveal delay={0.85}>
-            <p className="mx-auto mt-9 max-w-2xl text-balance text-[16px] leading-[1.65] text-white/70 md:text-[17px]">
+            <p
+              className="mx-auto mt-9 max-w-2xl text-balance text-[16px] leading-[1.65] md:text-[17px]"
+              style={{ color: 'var(--text-secondary)' }}
+            >
               Vinte e sete agentes treinados em PJe, Provimentos e rotina de
               escritório brasileiro. CRM jurídico, jurimetria e marketing
               OAB-compliant — no lugar de cinco contratos diferentes.
@@ -300,7 +342,12 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="#agentes"
-                className="inline-flex h-13 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-8 py-3.5 text-[14px] font-medium text-white backdrop-blur transition hover:border-white/35 hover:bg-white/[0.08]"
+                className="inline-flex h-13 items-center justify-center gap-2 rounded-full px-8 py-3.5 text-[14px] font-medium backdrop-blur transition"
+                style={{
+                  border: '1px solid var(--border)',
+                  background: 'var(--hover)',
+                  color: 'var(--text-primary)',
+                }}
               >
                 <CalendarCheck className="size-4" strokeWidth={1.75} />
                 Ver os 27 agentes
@@ -319,15 +366,17 @@ export default function LandingPage() {
               ].map((s, i) => (
                 <div key={s.k} className="flex flex-col items-center">
                   <div
-                    className="lex-figure bg-gradient-to-br from-white via-white to-[#bfa68e] bg-clip-text font-serif text-4xl font-semibold tabular-nums text-transparent md:text-5xl"
+                    className="lex-figure lex-figure-grad font-serif text-4xl font-semibold tabular-nums md:text-5xl"
                     style={{
-                      WebkitBackgroundClip: 'text',
                       animationDelay: `${1.2 + i * 0.08}s`,
                     }}
                   >
                     {s.v}
                   </div>
-                  <div className="mt-2.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/45">
+                  <div
+                    className="mt-2.5 font-mono text-[0.6rem] uppercase tracking-[0.22em]"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
                     {s.k}
                   </div>
                 </div>
@@ -338,7 +387,13 @@ export default function LandingPage() {
 
         {/* Trust strip */}
         <div className="relative mx-auto mt-20 max-w-5xl px-6">
-          <div className="flex flex-wrap items-center justify-center gap-x-9 gap-y-3 border-y border-white/[0.06] py-7">
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-9 gap-y-3 py-7"
+            style={{
+              borderTop: '1px solid var(--border)',
+              borderBottom: '1px solid var(--border)',
+            }}
+          >
             {[
               'LGPD nativa',
               'Provimento 205 / OAB',
@@ -348,7 +403,8 @@ export default function LandingPage() {
             ].map((t) => (
               <span
                 key={t}
-                className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55"
+                className="font-mono text-[0.6rem] uppercase tracking-[0.22em]"
+                style={{ color: 'var(--text-secondary)' }}
               >
                 {t}
               </span>
@@ -365,29 +421,29 @@ export default function LandingPage() {
         <LexManifesto />
       </div>
 
-      <EditorialDivider variant="numeral" numeral="II · Vinte e sete agentes" className="bg-black" />
+      <EditorialDivider variant="numeral" numeral="II · Vinte e sete agentes" />
 
       {/* ═══ AGENTES BENTO ═════════════════════════════════════════════ */}
       <LexAgentsBento />
 
-      <EditorialDivider variant="numeral" numeral="III · Vs mercado" className="bg-black" />
+      <EditorialDivider variant="numeral" numeral="III · Vs mercado" />
 
       {/* ═══ COMPARATIVO — 10 rivais × 21 critérios ═══════════════════ */}
       <LexComparison />
 
-      <EditorialDivider variant="numeral" numeral="IV · Compliance" className="bg-black" />
+      <EditorialDivider variant="numeral" numeral="IV · Compliance" />
 
       {/* ═══ PROVIMENTO 205 — compliance-first ═══════════════════════ */}
       <div id="provimento">
         <LexProvimento />
       </div>
 
-      <EditorialDivider variant="numeral" numeral="V · Planos" className="bg-black" />
+      <EditorialDivider variant="numeral" numeral="V · Planos" />
 
       {/* ═══ PRICING ═══════════════════════════════════════════════════ */}
       <LexPricing />
 
-      <EditorialDivider variant="ornament" className="bg-black" />
+      <EditorialDivider variant="ornament" />
 
       {/* ═══ FAQ ═══════════════════════════════════════════════════════ */}
       <LexFaq />
@@ -396,35 +452,63 @@ export default function LandingPage() {
       <LexFinalCta />
 
       {/* ═══ FOOTER ════════════════════════════════════════════════════ */}
-      <footer className="relative border-t border-white/[0.06] bg-black">
+      <footer
+        className="relative"
+        style={{
+          borderTop: '1px solid var(--border)',
+          background: 'var(--bg-base)',
+        }}
+      >
         <div className="mx-auto max-w-7xl px-6 py-14">
           <div className="grid grid-cols-2 gap-10 md:grid-cols-5">
             <div className="col-span-2">
               <Link href="/" className="inline-flex items-center gap-2.5">
-                <div className="relative flex size-9 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent">
+                <div
+                  className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent"
+                  style={{ border: '1px solid var(--border)' }}
+                >
                   <Scale
-                    className="size-4 text-[#e6d4bd]"
+                    className="size-4"
                     strokeWidth={1.6}
+                    style={{ color: 'var(--accent)' }}
                   />
                 </div>
-                <span className="font-serif text-[15px] tracking-tight text-white">
+                <span
+                  className="font-serif text-[15px] tracking-tight"
+                  style={{ color: 'var(--text-primary)' }}
+                >
                   Pralvex
                 </span>
               </Link>
-              <p className="mt-4 max-w-xs text-[13.5px] leading-[1.6] text-white/55">
+              <p
+                className="mt-4 max-w-xs text-[13.5px] leading-[1.6]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
                 Sistema operacional jurídico. 27 agentes + CRM + jurimetria em
                 uma única plataforma — no lugar de cinco contratos.
               </p>
               <div className="mt-6 flex flex-col gap-2.5">
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55">
-                  <ShieldCheck className="size-3 text-[#bfa68e]" strokeWidth={2} />
+                <div
+                  className="inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em]"
+                  style={{
+                    border: '1px solid var(--border)',
+                    background: 'var(--hover)',
+                    color: 'var(--text-secondary)',
+                  }}
+                >
+                  <ShieldCheck className="size-3" strokeWidth={2} style={{ color: 'var(--accent)' }} />
                   Dados processados em São Paulo
                 </div>
                 <a
                   href="tel:+5534993026456"
-                  className="inline-flex w-fit items-center gap-2 rounded-full border border-[#bfa68e]/20 bg-[#bfa68e]/[0.04] px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-[#bfa68e]/80 transition hover:border-[#bfa68e]/40 hover:text-[#e6d4bd]"
+                  className="inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.22em] transition"
+                  style={{
+                    border: '1px solid var(--stone-line)',
+                    background: 'var(--accent-light)',
+                    color: 'var(--accent)',
+                  }}
                 >
-                  <span className="size-1.5 rounded-full bg-[#bfa68e]" />
+                  <span className="size-1.5 rounded-full" style={{ background: 'var(--accent)' }} />
                   Contato (34) 99302-6456
                 </a>
               </div>
@@ -460,7 +544,10 @@ export default function LandingPage() {
               },
             ].map((col) => (
               <div key={col.title}>
-                <div className="mb-4 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55">
+                <div
+                  className="mb-4 font-mono text-[0.6rem] uppercase tracking-[0.22em]"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
                   {col.title}
                 </div>
                 <ul className="space-y-3">
@@ -468,7 +555,8 @@ export default function LandingPage() {
                     <li key={l.l}>
                       <Link
                         href={l.h}
-                        className="text-[13px] text-white/60 transition-colors hover:text-white"
+                        className="text-[13px] transition-colors"
+                        style={{ color: 'var(--text-secondary)' }}
                       >
                         {l.l}
                       </Link>
@@ -479,11 +567,17 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-white/[0.06] pt-6 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/45">
+          <div
+            className="mt-14 flex flex-wrap items-center justify-between gap-4 pt-6 font-mono text-[0.6rem] uppercase tracking-[0.18em]"
+            style={{
+              borderTop: '1px solid var(--border)',
+              color: 'var(--text-muted)',
+            }}
+          >
             <div>© MMXXVI · Pralvex</div>
             <div className="flex items-center gap-4">
               <span>contato@pralvex.com.br</span>
-              <span className="size-1 rounded-full bg-white/20" />
+              <span className="size-1 rounded-full" style={{ background: 'var(--border)' }} />
               <span>Ituverava, SP · Brasil</span>
             </div>
           </div>

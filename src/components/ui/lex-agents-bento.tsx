@@ -41,14 +41,20 @@ function CRMPreview() {
     { label: 'Fechado', n: 2 },
   ]
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-lg border border-white/[0.06] bg-black/40 p-3">
-      <div className="mb-2.5 flex items-center justify-between font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/40">
+    <div
+      className="relative h-full w-full overflow-hidden rounded-lg p-3"
+      style={{ border: '1px solid var(--border)', background: 'var(--glass)' }}
+    >
+      <div
+        className="mb-2.5 flex items-center justify-between font-mono text-[0.55rem] uppercase tracking-[0.18em]"
+        style={{ color: 'var(--text-muted)' }}
+      >
         <span>Pipeline · abril</span>
-        <span className="text-[#bfa68e]">25 leads</span>
+        <span style={{ color: 'var(--accent)' }}>25 leads</span>
       </div>
       <div className="relative">
         {/* Track horizontal */}
-        <div className="absolute inset-x-2 top-[22px] h-px bg-white/10" />
+        <div className="absolute inset-x-2 top-[22px] h-px" style={{ background: 'var(--border)' }} />
         {/* Dot que flui pelos 4 stages */}
         <div className="lex-pipeline-dot pointer-events-none absolute left-0 top-[19px] w-[calc(25%-8px)] translate-x-0">
           <div className="ml-[12px] size-[7px] rounded-full bg-[#e6d4bd] shadow-[0_0_12px_rgba(230,212,189,0.9)]" />
@@ -58,12 +64,19 @@ function CRMPreview() {
           {stages.map((s) => (
             <div
               key={s.label}
-              className="rounded-md border border-white/[0.08] bg-white/[0.02] p-2"
+              className="rounded-md p-2"
+              style={{ border: '1px solid var(--border)', background: 'var(--hover)' }}
             >
-              <div className="font-mono text-[0.5rem] uppercase tracking-wider text-white/45">
+              <div
+                className="font-mono text-[0.5rem] uppercase tracking-wider"
+                style={{ color: 'var(--text-muted)' }}
+              >
                 {s.label}
               </div>
-              <div className="mt-1 text-[0.95rem] font-medium tabular-nums text-white">
+              <div
+                className="mt-1 text-[0.95rem] font-medium tabular-nums"
+                style={{ color: 'var(--text-primary)' }}
+              >
                 {s.n}
               </div>
             </div>
@@ -77,10 +90,16 @@ function CRMPreview() {
 function JurimetriaPreview() {
   const bars = [44, 72, 58, 88, 65, 92, 78] // % heights
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-lg border border-white/[0.06] bg-black/40 p-3">
-      <div className="mb-2 flex items-center justify-between font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/40">
+    <div
+      className="relative h-full w-full overflow-hidden rounded-lg p-3"
+      style={{ border: '1px solid var(--border)', background: 'var(--glass)' }}
+    >
+      <div
+        className="mb-2 flex items-center justify-between font-mono text-[0.55rem] uppercase tracking-[0.18em]"
+        style={{ color: 'var(--text-muted)' }}
+      >
         <span>Taxa de exito · 3o grau</span>
-        <span className="text-[#bfa68e]">72%</span>
+        <span style={{ color: 'var(--accent)' }}>72%</span>
       </div>
       <div className="flex h-[60px] items-end gap-1.5">
         {bars.map((h, i) => (
@@ -95,7 +114,10 @@ function JurimetriaPreview() {
           />
         ))}
       </div>
-      <div className="mt-2 flex items-center justify-between font-mono text-[0.52rem] uppercase tracking-wider text-white/40">
+      <div
+        className="mt-2 flex items-center justify-between font-mono text-[0.52rem] uppercase tracking-wider"
+        style={{ color: 'var(--text-muted)' }}
+      >
         <span>jan</span>
         <span>fev</span>
         <span>mar</span>
@@ -117,44 +139,48 @@ function MarketingPreview() {
     { day: '18', kind: 'Reels', bright: true },
   ]
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-lg border border-white/[0.06] bg-black/40 p-3">
-      <div className="mb-2 flex items-center justify-between font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/40">
+    <div
+      className="relative h-full w-full overflow-hidden rounded-lg p-3"
+      style={{ border: '1px solid var(--border)', background: 'var(--glass)' }}
+    >
+      <div
+        className="mb-2 flex items-center justify-between font-mono text-[0.55rem] uppercase tracking-[0.18em]"
+        style={{ color: 'var(--text-muted)' }}
+      >
         <span>Agenda · abr/26</span>
-        <span className="text-[#bfa68e]">OAB-compliant</span>
+        <span style={{ color: 'var(--accent)' }}>OAB-compliant</span>
       </div>
       <div className="grid grid-cols-5 gap-1.5">
         {items.map((it, i) => (
           <div
             key={i}
-            className={cn(
-              'lex-chip-pop flex flex-col rounded-md border p-1.5',
-              it.bright
-                ? 'border-[#bfa68e]/30 bg-[#bfa68e]/[0.08]'
-                : 'border-white/[0.06] bg-white/[0.02]',
-            )}
-            style={{ animationDelay: `${i * 0.08 + 0.15}s` }}
+            className="lex-chip-pop flex flex-col rounded-md p-1.5"
+            style={{
+              animationDelay: `${i * 0.08 + 0.15}s`,
+              border: it.bright ? '1px solid var(--stone-line)' : '1px solid var(--border)',
+              background: it.bright ? 'var(--accent-light)' : 'var(--hover)',
+            }}
           >
             <div
-              className={cn(
-                'font-mono text-[0.9rem] font-medium tabular-nums',
-                it.bright ? 'text-[#e6d4bd]' : 'text-white/70',
-              )}
+              className="font-mono text-[0.9rem] font-medium tabular-nums"
+              style={{ color: it.bright ? 'var(--accent)' : 'var(--text-primary)' }}
             >
               {it.day}
             </div>
             <div
-              className={cn(
-                'font-mono text-[0.48rem] uppercase tracking-wider',
-                it.bright ? 'text-[#bfa68e]' : 'text-white/40',
-              )}
+              className="font-mono text-[0.48rem] uppercase tracking-wider"
+              style={{ color: it.bright ? 'var(--accent)' : 'var(--text-muted)' }}
             >
               {it.kind}
             </div>
           </div>
         ))}
       </div>
-      <div className="mt-2 flex items-center gap-1.5 font-mono text-[0.5rem] uppercase tracking-wider text-white/45">
-        <span className="size-1 rounded-full bg-[#bfa68e]" />
+      <div
+        className="mt-2 flex items-center gap-1.5 font-mono text-[0.5rem] uppercase tracking-wider"
+        style={{ color: 'var(--text-muted)' }}
+      >
+        <span className="size-1 rounded-full" style={{ background: 'var(--accent)' }} />
         5 publicacoes agendadas
       </div>
     </div>
@@ -186,11 +212,11 @@ function ModuleCard({ item, i }: { item: CatalogItem; i: number }) {
     >
       <Link
         href={item.href}
-        className={cn(
-          'group relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 transition-all duration-300',
-          'border-[#bfa68e]/25 bg-gradient-to-br from-[#bfa68e]/[0.08] via-neutral-950 to-neutral-950',
-          'hover:-translate-y-1 hover:border-[#bfa68e]/50 hover:shadow-[0_20px_60px_-20px_rgba(191,166,142,0.38)]',
-        )}
+        className="group relative flex h-full flex-col overflow-hidden rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_-20px_rgba(191,166,142,0.38)]"
+        style={{
+          border: '1px solid var(--stone-line)',
+          background: 'var(--card-bg)',
+        }}
       >
         <div
           aria-hidden
@@ -203,18 +229,34 @@ function ModuleCard({ item, i }: { item: CatalogItem; i: number }) {
 
         {/* Header */}
         <div className="relative mb-4 flex items-start justify-between gap-3">
-          <div className="flex size-11 items-center justify-center rounded-xl border border-[#bfa68e]/30 bg-gradient-to-br from-[#bfa68e]/30 via-[#bfa68e]/10 to-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-            <Icon className="size-5 text-[#e6d4bd]" strokeWidth={1.75} />
+          <div
+            className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#bfa68e]/30 via-[#bfa68e]/10 to-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+            style={{ border: '1px solid var(--stone-line)' }}
+          >
+            <Icon className="size-5" strokeWidth={1.75} style={{ color: 'var(--accent)' }} />
           </div>
-          <span className="inline-flex items-center gap-1 rounded-full border border-[#bfa68e]/30 bg-[#bfa68e]/[0.08] px-2 py-0.5 font-mono text-[0.55rem] uppercase tracking-[0.15em] text-[#e6d4bd]">
+          <span
+            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[0.55rem] uppercase tracking-[0.15em]"
+            style={{
+              border: '1px solid var(--stone-line)',
+              background: 'var(--accent-light)',
+              color: 'var(--accent)',
+            }}
+          >
             Modulo
           </span>
         </div>
 
-        <h3 className="relative text-[1.1rem] font-medium tracking-tight text-white">
+        <h3
+          className="relative text-[1.1rem] font-medium tracking-tight"
+          style={{ color: 'var(--text-primary)' }}
+        >
           {item.label}
         </h3>
-        <p className="relative mt-1.5 text-[13px] leading-relaxed text-white/60">
+        <p
+          className="relative mt-1.5 text-[13px] leading-relaxed"
+          style={{ color: 'var(--text-secondary)' }}
+        >
           {item.desc}
         </p>
 
@@ -224,14 +266,21 @@ function ModuleCard({ item, i }: { item: CatalogItem; i: number }) {
           </div>
         )}
 
-        <div className="relative mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3.5">
-          <span className="inline-flex items-center gap-1.5 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#bfa68e]">
+        <div
+          className="relative mt-4 flex items-center justify-between pt-3.5"
+          style={{ borderTop: '1px solid var(--border)' }}
+        >
+          <span
+            className="inline-flex items-center gap-1.5 font-mono text-[0.6rem] uppercase tracking-[0.18em]"
+            style={{ color: 'var(--accent)' }}
+          >
             <Sparkles className="size-3" strokeWidth={2} />
             Conheca o modulo
           </span>
           <ArrowUpRight
-            className="size-3.5 text-[#bfa68e] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            className="size-3.5 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             strokeWidth={2}
+            style={{ color: 'var(--accent)' }}
           />
         </div>
       </Link>
@@ -254,34 +303,38 @@ function AgentCard({
     <Link
       href={upcoming ? '/dashboard/em-breve?feature=' + item.slug : item.href}
       className={cn(
-        'lex-bento-card group relative flex h-full flex-col overflow-hidden rounded-xl border p-4 transition-all duration-300',
-        upcoming
-          ? 'border-white/[0.05] bg-neutral-950/40 hover:border-white/[0.12]'
-          : 'border-white/[0.08] bg-neutral-950/80 hover:-translate-y-0.5 hover:border-[#bfa68e]/30 hover:bg-neutral-950',
+        'lex-bento-card group relative flex h-full flex-col overflow-hidden rounded-xl p-4 transition-all duration-300',
+        !upcoming && 'hover:-translate-y-0.5',
       )}
-      style={{ animationDelay: `${0.2 + (i % 14) * 0.035}s` }}
+      style={{
+        animationDelay: `${0.2 + (i % 14) * 0.035}s`,
+        border: '1px solid var(--border)',
+        background: upcoming ? 'var(--hover)' : 'var(--card-bg)',
+      }}
     >
       <div className="mb-3 flex items-start justify-between gap-2">
         <div
-          className={cn(
-            'flex size-8 items-center justify-center rounded-lg border transition-colors',
-            upcoming
-              ? 'border-white/[0.06] bg-white/[0.015]'
-              : 'border-white/[0.08] bg-white/[0.02] group-hover:border-[#bfa68e]/30 group-hover:bg-[#bfa68e]/[0.08]',
-          )}
+          className="flex size-8 items-center justify-center rounded-lg transition-colors"
+          style={{
+            border: '1px solid var(--border)',
+            background: upcoming ? 'var(--hover)' : 'var(--accent-light)',
+          }}
         >
           <Icon
-            className={cn(
-              'size-[15px] transition-colors',
-              upcoming
-                ? 'text-white/30'
-                : 'text-white/60 group-hover:text-[#bfa68e]',
-            )}
+            className="size-[15px] transition-colors"
             strokeWidth={1.75}
+            style={{ color: upcoming ? 'var(--text-muted)' : 'var(--accent)' }}
           />
         </div>
         {upcoming && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-1.5 py-0.5 font-mono text-[0.48rem] uppercase tracking-wider text-white/50">
+          <span
+            className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-mono text-[0.48rem] uppercase tracking-wider"
+            style={{
+              border: '1px solid var(--border)',
+              background: 'var(--hover)',
+              color: 'var(--text-muted)',
+            }}
+          >
             <Clock3 className="size-[9px]" strokeWidth={2} />
             Em breve
           </span>
@@ -289,30 +342,30 @@ function AgentCard({
       </div>
 
       <h3
-        className={cn(
-          'text-[0.85rem] font-medium tracking-tight',
-          upcoming ? 'text-white/65' : 'text-white',
-        )}
+        className="text-[0.85rem] font-medium tracking-tight"
+        style={{ color: upcoming ? 'var(--text-secondary)' : 'var(--text-primary)' }}
       >
         {item.label}
       </h3>
       <p
-        className={cn(
-          'mt-1 line-clamp-2 flex-1 text-[11.5px] leading-relaxed',
-          upcoming ? 'text-white/30' : 'text-white/45',
-        )}
+        className="mt-1 line-clamp-2 flex-1 text-[11.5px] leading-relaxed"
+        style={{ color: upcoming ? 'var(--text-muted)' : 'var(--text-secondary)' }}
       >
         {item.desc}
       </p>
 
       {!upcoming && (
         <div className="mt-3 flex items-center justify-between">
-          <span className="font-mono text-[0.5rem] uppercase tracking-[0.18em] text-white/30 transition-colors group-hover:text-[#bfa68e]/80">
+          <span
+            className="font-mono text-[0.5rem] uppercase tracking-[0.18em] transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+          >
             Abrir
           </span>
           <ArrowUpRight
-            className="size-3 text-white/25 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#bfa68e]"
+            className="size-3 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             strokeWidth={2}
+            style={{ color: 'var(--accent)' }}
           />
         </div>
       )}
@@ -331,7 +384,11 @@ export function LexAgentsBento() {
   const upcoming = agentList.filter((a) => !a.implemented) // 8
 
   return (
-    <section id="agentes" className="relative isolate overflow-hidden bg-black py-28">
+    <section
+      id="agentes"
+      className="relative isolate overflow-hidden py-28"
+      style={{ background: 'var(--bg-base)' }}
+    >
       {/* Radial tip topo · sem retro-grid duplicado do hero */}
       <div
         aria-hidden
@@ -339,7 +396,10 @@ export function LexAgentsBento() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+        style={{
+          background: 'linear-gradient(to right, transparent, var(--border), transparent)',
+        }}
       />
 
       <div className="relative mx-auto max-w-6xl px-6">
@@ -351,18 +411,31 @@ export function LexAgentsBento() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto mb-14 max-w-2xl text-center"
         >
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/70">
-            <Scale className="size-3 text-[#bfa68e]" strokeWidth={2} />
+          <div
+            className="mb-5 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.2em]"
+            style={{
+              border: '1px solid var(--border)',
+              background: 'var(--hover)',
+              color: 'var(--text-secondary)',
+            }}
+          >
+            <Scale className="size-3" strokeWidth={2} style={{ color: 'var(--accent)' }} />
             {agentList.length} agentes &middot; {modulesList.length} modulos
           </div>
-          <h2 className="text-balance text-4xl font-medium tracking-tight text-white md:text-5xl">
+          <h2
+            className="text-balance text-4xl font-medium tracking-tight md:text-5xl"
+            style={{ color: 'var(--text-primary)' }}
+          >
             {ready.length} agentes,{' '}
             <span className="text-grad-accent italic">
               todos ativos
             </span>
             .
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-balance text-white/65">
+          <p
+            className="mx-auto mt-5 max-w-xl text-balance"
+            style={{ color: 'var(--text-secondary)' }}
+          >
             Especialistas treinados em funções específicas do Direito brasileiro,
             com CRM, jurimetria e marketing OAB-compliant no mesmo lugar.
           </p>
@@ -370,10 +443,16 @@ export function LexAgentsBento() {
 
         {/* ── Modulos (3 cards grandes com preview) ──────────────── */}
         <div className="mb-3 flex items-center justify-between">
-          <div className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/45">
+          <div
+            className="font-mono text-[0.6rem] uppercase tracking-[0.2em]"
+            style={{ color: 'var(--text-muted)' }}
+          >
             Plataforma &mdash; {modulesList.length} módulos
           </div>
-          <div className="h-px flex-1 ml-4 bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
+          <div
+            className="h-px flex-1 ml-4"
+            style={{ background: 'linear-gradient(to right, var(--border), transparent)' }}
+          />
         </div>
         <div className="mb-14 grid grid-cols-1 gap-5 md:grid-cols-3">
           {modulesList.map((m, i) => (
@@ -383,11 +462,17 @@ export function LexAgentsBento() {
 
         {/* ── Agentes prontos ──────────────────────────────────── */}
         <div className="mb-3 flex items-center justify-between">
-          <div className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+          <div
+            className="font-mono text-[0.6rem] uppercase tracking-[0.2em]"
+            style={{ color: 'var(--accent)' }}
+          >
             <span className="mr-2 inline-block size-1.5 rounded-full bg-emerald-400/80 align-middle" />
             Agentes ativos &mdash; {ready.length} disponíveis
           </div>
-          <div className="h-px flex-1 ml-4 bg-gradient-to-r from-[#bfa68e]/20 via-white/5 to-transparent" />
+          <div
+            className="h-px flex-1 ml-4"
+            style={{ background: 'linear-gradient(to right, var(--stone-line), transparent)' }}
+          />
         </div>
         <div className="mb-12 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
           {ready.map((a, i) => (
@@ -399,11 +484,17 @@ export function LexAgentsBento() {
         {upcoming.length > 0 && (
           <>
             <div className="mb-3 flex items-center justify-between">
-              <div className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/45">
+              <div
+                className="font-mono text-[0.6rem] uppercase tracking-[0.2em]"
+                style={{ color: 'var(--text-muted)' }}
+              >
                 <Clock3 className="mr-2 inline size-3 align-[-2px]" strokeWidth={2} />
                 Em desenvolvimento &mdash; {upcoming.length} chegando
               </div>
-              <div className="h-px flex-1 ml-4 bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
+              <div
+                className="h-px flex-1 ml-4"
+                style={{ background: 'linear-gradient(to right, var(--border), transparent)' }}
+              />
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {upcoming.map((a, i) => (
@@ -414,7 +505,13 @@ export function LexAgentsBento() {
         )}
 
         {/* ── Footer stats ─────────────────────────────────────── */}
-        <div className="mt-16 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-y border-white/10 py-6">
+        <div
+          className="mt-16 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 py-6"
+          style={{
+            borderTop: '1px solid var(--border)',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
           {[
             `${ready.length}/${agentList.length} agentes liberados`,
             '3 modulos de plataforma',
@@ -423,9 +520,10 @@ export function LexAgentsBento() {
           ].map((t) => (
             <div
               key={t}
-              className="flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/55"
+              className="flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.2em]"
+              style={{ color: 'var(--text-secondary)' }}
             >
-              <span className="size-1 rounded-full bg-[#bfa68e]/60" />
+              <span className="size-1 rounded-full" style={{ background: 'var(--accent)' }} />
               {t}
             </div>
           ))}

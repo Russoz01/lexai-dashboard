@@ -23,7 +23,10 @@ import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 export function LexProvimento() {
   return (
-    <section className="relative isolate overflow-hidden bg-black py-28">
+    <section
+      className="relative isolate overflow-hidden py-28"
+      style={{ background: 'var(--bg-base)' }}
+    >
       {/* Ambient mesh leve pra dar respiração visual */}
       <AmbientMesh intensity={0.55} dust dustCount={8} />
       {/* radial glow */}
@@ -40,9 +43,14 @@ export function LexProvimento() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.5 }}
-            className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/65"
+            className="mb-5 inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.22em]"
+            style={{
+              border: '1px solid var(--border)',
+              background: 'var(--hover)',
+              color: 'var(--text-secondary)',
+            }}
           >
-            <Lock className="size-3 text-[#bfa68e]" strokeWidth={2} />
+            <Lock className="size-3" strokeWidth={2} style={{ color: 'var(--accent)' }} />
             OAB · Provimento 205/2021
           </motion.div>
 
@@ -66,10 +74,11 @@ export function LexProvimento() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="mt-2 text-balance font-serif text-2xl text-white md:text-[2rem]"
+            className="mt-2 text-balance font-serif text-2xl md:text-[2rem]"
+            style={{ color: 'var(--text-primary)' }}
           >
             O único Provimento que sua publicidade precisa atender
-            <span className="italic text-[#e6d4bd]"> em 2026</span>.
+            <span className="italic text-grad-accent"> em 2026</span>.
           </motion.h2>
 
           <motion.p
@@ -77,7 +86,8 @@ export function LexProvimento() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="mt-5 max-w-md text-[15px] leading-relaxed text-white/65"
+            className="mt-5 max-w-md text-[15px] leading-relaxed"
+            style={{ color: 'var(--text-secondary)' }}
           >
             A OAB ainda não publicou sucessor ao Provimento 205/2021. Toda saída
             de qualquer agente da Pralvex passa por validação automática — claims
@@ -93,14 +103,29 @@ export function LexProvimento() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="relative"
         >
-          <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.03] to-transparent p-7 backdrop-blur-xl shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)]">
+          <div
+            className="relative overflow-hidden rounded-2xl p-7 backdrop-blur-xl shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)]"
+            style={{
+              border: '1px solid var(--border)',
+              background: 'var(--card-bg)',
+            }}
+          >
             {/* card header */}
-            <div className="mb-6 flex items-center justify-between border-b border-white/[0.06] pb-4">
+            <div
+              className="mb-6 flex items-center justify-between pb-4"
+              style={{ borderBottom: '1px solid var(--border)' }}
+            >
               <div className="flex items-center gap-2.5">
-                <div className="flex size-7 items-center justify-center rounded-md bg-[#bfa68e]/10">
-                  <ScanLine className="size-3.5 text-[#bfa68e]" strokeWidth={2} />
+                <div
+                  className="flex size-7 items-center justify-center rounded-md"
+                  style={{ background: 'var(--accent-light)' }}
+                >
+                  <ScanLine className="size-3.5" strokeWidth={2} style={{ color: 'var(--accent)' }} />
                 </div>
-                <span className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-white/65">
+                <span
+                  className="font-mono text-[0.65rem] uppercase tracking-[0.18em]"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
                   Camada de validação · ativa
                 </span>
               </div>
@@ -142,14 +167,26 @@ export function LexProvimento() {
                   transition={{ duration: 0.4, delay: 0.3 + i * 0.06 }}
                   className="flex items-start gap-3"
                 >
-                  <span className="mt-[3px] flex size-4 shrink-0 items-center justify-center rounded-full border border-[#bfa68e]/30 bg-[#bfa68e]/[0.08]">
-                    <span className="size-1 rounded-full bg-[#bfa68e]" />
+                  <span
+                    className="mt-[3px] flex size-4 shrink-0 items-center justify-center rounded-full"
+                    style={{
+                      border: '1px solid var(--stone-line)',
+                      background: 'var(--accent-light)',
+                    }}
+                  >
+                    <span className="size-1 rounded-full" style={{ background: 'var(--accent)' }} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="text-[13.5px] font-medium text-white/85">
+                    <div
+                      className="text-[13.5px] font-medium"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
                       {item.block}
                     </div>
-                    <div className="mt-0.5 font-mono text-[10.5px] uppercase tracking-[0.08em] text-white/35">
+                    <div
+                      className="mt-0.5 font-mono text-[10.5px] uppercase tracking-[0.08em]"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
                       {item.why}
                     </div>
                   </div>
@@ -158,16 +195,23 @@ export function LexProvimento() {
             </ul>
 
             {/* card footer — audit log */}
-            <div className="mt-7 flex items-center justify-between border-t border-white/[0.06] pt-5">
+            <div
+              className="mt-7 flex items-center justify-between pt-5"
+              style={{ borderTop: '1px solid var(--border)' }}
+            >
               <div className="flex items-center gap-2">
-                <FileSearch className="size-3.5 text-white/40" strokeWidth={1.75} />
-                <span className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/50">
+                <FileSearch className="size-3.5" strokeWidth={1.75} style={{ color: 'var(--text-muted)' }} />
+                <span
+                  className="font-mono text-[0.6rem] uppercase tracking-[0.18em]"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
                   Audit log por usuário
                 </span>
               </div>
               <Link
                 href="/empresas#compliance"
-                className="group inline-flex items-center gap-1 text-[12px] font-medium text-[#e6d4bd] transition-colors hover:text-white"
+                className="group inline-flex items-center gap-1 text-[12px] font-medium transition-colors"
+                style={{ color: 'var(--accent)' }}
               >
                 Ver protocolo
                 <ArrowUpRight
@@ -179,7 +223,10 @@ export function LexProvimento() {
           </div>
 
           {/* footnote CNJ */}
-          <p className="mt-4 text-center text-[11px] text-white/35 lg:text-left">
+          <p
+            className="mt-4 text-center text-[11px] lg:text-left"
+            style={{ color: 'var(--text-muted)' }}
+          >
             Referência cruzada: CNJ Resolução 615/2025 (vigente desde 14/jul/2025)
             estabelece padrões de supervisão humana para uso de IA no judiciário.
           </p>

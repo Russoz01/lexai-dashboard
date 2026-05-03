@@ -24,27 +24,42 @@ const areas = [
 
 export function PralvexAreasMarquee() {
   return (
-    <section className="relative border-y border-[#bfa68e]/[0.08] bg-black py-12">
+    <section
+      className="relative py-12"
+      style={{
+        borderTop: '1px solid var(--stone-line)',
+        borderBottom: '1px solid var(--stone-line)',
+        background: 'var(--bg-base)',
+      }}
+    >
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-8 flex items-center justify-center gap-3">
-          <span className="h-px w-10 bg-[#bfa68e]/30" />
-          <span className="font-mono text-[0.62rem] uppercase tracking-[0.32em] text-[#bfa68e]/65">
+          <span className="h-px w-10" style={{ background: 'var(--stone-line)' }} />
+          <span
+            className="font-mono text-[0.62rem] uppercase tracking-[0.32em]"
+            style={{ color: 'var(--accent)' }}
+          >
             13 áreas do Direito brasileiro
           </span>
-          <span className="h-px w-10 bg-[#bfa68e]/30" />
+          <span className="h-px w-10" style={{ background: 'var(--stone-line)' }} />
         </div>
         <div className="relative [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
           <Marquee>
             {areas.map((a) => (
               <div
                 key={a}
-                className="group flex items-center gap-5 whitespace-nowrap font-serif text-[1.4rem] italic tracking-tight text-white/40 transition-colors duration-500 hover:text-[#e6d4bd]"
+                className="group flex items-center gap-5 whitespace-nowrap font-serif text-[1.4rem] italic tracking-tight transition-colors duration-500"
+                style={{ color: 'var(--text-muted)' }}
               >
                 <span>{a}</span>
                 {/* Rombus champagne separador editorial */}
                 <span
                   aria-hidden
-                  className="size-1.5 rotate-45 border border-[#bfa68e]/40 bg-[#bfa68e]/10 transition-colors duration-500 group-hover:border-[#bfa68e]/80 group-hover:bg-[#bfa68e]/30"
+                  className="size-1.5 rotate-45 transition-colors duration-500"
+                  style={{
+                    border: '1px solid var(--stone-line)',
+                    background: 'var(--accent-light)',
+                  }}
                 />
               </div>
             ))}

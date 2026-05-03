@@ -21,7 +21,10 @@ import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 export function LexManifesto() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#080606] py-32">
+    <section
+      className="relative isolate overflow-hidden py-32"
+      style={{ background: 'var(--bg-base)' }}
+    >
       {/* Ambient mesh sutil — adiciona movimento orgânico atrás da tipografia */}
       <AmbientMesh intensity={0.45} />
 
@@ -32,7 +35,8 @@ export function LexManifesto() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[820px] w-[820px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.03]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[820px] w-[820px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{ border: '1px solid var(--border)' }}
       />
 
       <div className="relative mx-auto max-w-4xl px-6">
@@ -42,11 +46,12 @@ export function LexManifesto() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.5 }}
-          className="mb-14 flex items-center justify-center gap-3 font-mono text-[0.6rem] uppercase tracking-[0.32em] text-white/40"
+          className="mb-14 flex items-center justify-center gap-3 font-mono text-[0.6rem] uppercase tracking-[0.32em]"
+          style={{ color: 'var(--text-muted)' }}
         >
-          <span className="h-px w-10 bg-white/15" />
+          <span className="h-px w-10" style={{ background: 'var(--border)' }} />
           <span>Manifesto</span>
-          <span className="h-px w-10 bg-white/15" />
+          <span className="h-px w-10" style={{ background: 'var(--border)' }} />
         </motion.div>
 
         {/* Quote */}
@@ -58,20 +63,27 @@ export function LexManifesto() {
           className="text-center"
         >
           <Quote
-            className="mx-auto mb-6 size-7 text-[#bfa68e]/60"
+            className="mx-auto mb-6 size-7"
             strokeWidth={1.4}
+            style={{ color: 'var(--accent)' }}
           />
-          <h2 className="font-serif text-3xl leading-[1.15] text-white md:text-5xl lg:text-[3.4rem]">
+          <h2
+            className="font-serif text-3xl leading-[1.15] md:text-5xl lg:text-[3.4rem]"
+            style={{ color: 'var(--text-primary)' }}
+          >
             Generalistas inventam acórdão.
             <br />
-            <span className="italic text-[#e6d4bd]">
+            <span className="italic text-grad-accent">
               Modelos jurídicos recusam quando não sabem.
             </span>
           </h2>
-          <p className="mx-auto mt-10 max-w-2xl text-balance text-[15px] leading-[1.7] text-white/65">
+          <p
+            className="mx-auto mt-10 max-w-2xl text-balance text-[15px] leading-[1.7]"
+            style={{ color: 'var(--text-secondary)' }}
+          >
             ChatGPT cita STJ que não existe porque foi treinado pra parecer útil.
             A Pralvex passa por uma camada de validação que bloqueia citação sem
-            fonte rastreável <span className="text-white/85">antes</span> da peça
+            fonte rastreável <span style={{ color: 'var(--text-primary)' }}>antes</span> da peça
             chegar na sua mesa.
           </p>
         </motion.div>
@@ -121,16 +133,31 @@ export function LexManifesto() {
               }}
               className="text-center"
             >
-              <div className="mx-auto mb-5 flex size-12 items-center justify-center rounded-full border border-[#bfa68e]/20 bg-[#bfa68e]/[0.04]">
-                <p.Icon className="size-5 text-[#e6d4bd]" strokeWidth={1.5} />
+              <div
+                className="mx-auto mb-5 flex size-12 items-center justify-center rounded-full"
+                style={{
+                  border: '1px solid var(--stone-line)',
+                  background: 'var(--accent-light)',
+                }}
+              >
+                <p.Icon className="size-5" strokeWidth={1.5} style={{ color: 'var(--accent)' }} />
               </div>
-              <div className="font-mono text-[0.6rem] uppercase tracking-[0.28em] text-[#bfa68e]/80">
+              <div
+                className="font-mono text-[0.6rem] uppercase tracking-[0.28em]"
+                style={{ color: 'var(--accent)' }}
+              >
                 {p.eyebrow}
               </div>
-              <h3 className="mt-3 font-serif text-xl text-white md:text-[1.4rem]">
+              <h3
+                className="mt-3 font-serif text-xl md:text-[1.4rem]"
+                style={{ color: 'var(--text-primary)' }}
+              >
                 {p.title}
               </h3>
-              <p className="mx-auto mt-3 max-w-[260px] text-[13.5px] leading-[1.65] text-white/55">
+              <p
+                className="mx-auto mt-3 max-w-[260px] text-[13.5px] leading-[1.65]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
                 {p.body}
               </p>
             </motion.div>

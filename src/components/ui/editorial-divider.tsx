@@ -45,22 +45,22 @@ export function EditorialDivider({
       {/* ornamento central */}
       {variant === 'numeral' && numeral ? (
         <span
-          className="font-mono text-[10px] font-semibold tracking-[0.32em] text-[#bfa68e]/70 uppercase"
-          style={{ letterSpacing: '0.32em' }}
+          className="font-mono text-[10px] font-semibold tracking-[0.32em] uppercase"
+          style={{ letterSpacing: '0.32em', color: 'var(--accent)' }}
         >
           {numeral}
         </span>
       ) : (
         <span className="relative flex items-center gap-2">
-          <span className="block size-1 rounded-full bg-[#bfa68e]/50" />
+          <span className="block size-1 rounded-full" style={{ background: 'var(--accent)' }} />
           <span
             className="block size-2 rotate-45"
             style={{
-              border: '1px solid rgba(191,166,142,0.55)',
-              boxShadow: '0 0 12px rgba(191,166,142,0.18)',
+              border: '1px solid var(--stone)',
+              boxShadow: '0 0 12px var(--glow)',
             }}
           />
-          <span className="block size-1 rounded-full bg-[#bfa68e]/50" />
+          <span className="block size-1 rounded-full" style={{ background: 'var(--accent)' }} />
         </span>
       )}
 

@@ -53,10 +53,11 @@ function Item({ q, a, idx }: { q: string; a: string; idx: number }) {
   return (
     <Reveal delay={0.05 + idx * 0.04}>
       <div
-        className={cn(
-          'border-b border-white/[0.08] transition-colors',
-          open && 'bg-white/[0.015]',
-        )}
+        className="transition-colors"
+        style={{
+          borderBottom: '1px solid var(--border)',
+          background: open ? 'var(--hover)' : 'transparent',
+        }}
       >
         <button
           type="button"
@@ -64,16 +65,23 @@ function Item({ q, a, idx }: { q: string; a: string; idx: number }) {
           className="group flex w-full items-center justify-between gap-6 py-5 text-left"
           aria-expanded={open}
         >
-          <span className="text-[15.5px] font-medium tracking-tight text-white transition-colors group-hover:text-[#e6d4bd]">
+          <span
+            className="text-[15.5px] font-medium tracking-tight transition-colors"
+            style={{ color: 'var(--text-primary)' }}
+          >
             {q}
           </span>
           <span
             className={cn(
-              'flex size-7 shrink-0 items-center justify-center rounded-full border transition-all',
-              open
-                ? 'rotate-45 border-[#bfa68e]/40 bg-[#bfa68e]/10 text-[#e6d4bd]'
-                : 'border-white/10 text-white/45 group-hover:border-white/30 group-hover:text-white',
+              'flex size-7 shrink-0 items-center justify-center rounded-full transition-all',
+              open && 'rotate-45',
             )}
+            style={{
+              border: '1px solid',
+              borderColor: open ? 'var(--stone)' : 'var(--border)',
+              background: open ? 'var(--accent-light)' : 'transparent',
+              color: open ? 'var(--accent)' : 'var(--text-muted)',
+            }}
           >
             <Plus className="size-3.5" strokeWidth={2} />
           </span>
@@ -87,7 +95,10 @@ function Item({ q, a, idx }: { q: string; a: string; idx: number }) {
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden"
             >
-              <p className="pb-6 pr-12 text-[14px] leading-[1.7] text-white/65">{a}</p>
+              <p
+                className="pb-6 pr-12 text-[14px] leading-[1.7]"
+                style={{ color: 'var(--text-secondary)' }}
+              >{a}</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -98,15 +109,29 @@ function Item({ q, a, idx }: { q: string; a: string; idx: number }) {
 
 export function LexFaq() {
   return (
-    <section id="faq" className="relative bg-black py-28">
+    <section
+      id="faq"
+      className="relative py-28"
+      style={{ background: 'var(--bg-base)' }}
+    >
       <div className="mx-auto max-w-3xl px-6">
         <Reveal as="div" className="mb-12 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/55">
+          <div
+            className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.22em]"
+            style={{
+              border: '1px solid var(--border)',
+              background: 'var(--hover)',
+              color: 'var(--text-secondary)',
+            }}
+          >
             Perguntas frequentes
           </div>
-          <h2 className="text-balance font-serif text-4xl text-white md:text-5xl">
+          <h2
+            className="text-balance font-serif text-4xl md:text-5xl"
+            style={{ color: 'var(--text-primary)' }}
+          >
             O que sócios{' '}
-            <span className="italic text-[#e6d4bd]">perguntam primeiro</span>.
+            <span className="italic text-grad-accent">perguntam primeiro</span>.
           </h2>
         </Reveal>
 

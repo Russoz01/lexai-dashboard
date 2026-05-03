@@ -157,7 +157,14 @@ export function LexHeroStage() {
             >
               {/* Wrapper interno tem o idle-bob (translateY relativo). Combina
                   com o transform 3D do wrapper externo sem var() em keyframe. */}
-              <div className="lex-stage-card-inner relative flex w-[10rem] items-center gap-2.5 rounded-2xl border border-[#bfa68e]/25 bg-gradient-to-br from-white/[0.10] to-white/[0.025] p-3 shadow-[0_18px_60px_-12px_rgba(0,0,0,0.85),0_0_24px_-4px_rgba(191,166,142,0.18),inset_0_1px_0_rgba(255,255,255,0.10)] backdrop-blur-2xl md:w-[14.5rem] md:gap-3 md:p-3.5" style={{ animationDelay: `${a.delay + 1.4}s` }}>
+              <div
+                className="lex-stage-card-inner relative flex w-[10rem] items-center gap-2.5 rounded-2xl p-3 shadow-[0_18px_60px_-12px_rgba(0,0,0,0.85),0_0_24px_-4px_rgba(191,166,142,0.18),inset_0_1px_0_rgba(255,255,255,0.10)] backdrop-blur-2xl md:w-[14.5rem] md:gap-3 md:p-3.5"
+                style={{
+                  animationDelay: `${a.delay + 1.4}s`,
+                  border: '1px solid var(--stone-line)',
+                  background: 'var(--card-bg)',
+                }}
+              >
                 {/* gold corner glint */}
                 <span
                   aria-hidden
@@ -171,10 +178,16 @@ export function LexHeroStage() {
                   <Icon className={`size-[17px] ${a.tint}`} strokeWidth={1.6} />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[12.5px] font-medium tracking-tight text-white">
+                  <div
+                    className="text-[12.5px] font-medium tracking-tight"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
                     {a.label}
                   </div>
-                  <div className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-[#bfa68e]/75">
+                  <div
+                    className="truncate font-mono text-[10px] uppercase tracking-[0.14em]"
+                    style={{ color: 'var(--accent)' }}
+                  >
                     {a.meta}
                   </div>
                 </div>

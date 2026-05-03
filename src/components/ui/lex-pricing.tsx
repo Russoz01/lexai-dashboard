@@ -13,7 +13,11 @@ import { LexPricingGrid } from '@/components/ui/lex-pricing-grid'
 
 export function LexPricing() {
   return (
-    <section id="precos" className="relative isolate overflow-hidden bg-black py-28">
+    <section
+      id="precos"
+      className="relative isolate overflow-hidden py-28"
+      style={{ background: 'var(--bg-base)' }}
+    >
       {/* radial glow */}
       <div
         aria-hidden
@@ -22,18 +26,31 @@ export function LexPricing() {
 
       <div className="mx-auto max-w-6xl px-6">
         <Reveal as="div" className="mx-auto mb-10 max-w-2xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/65">
+          <div
+            className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.22em]"
+            style={{
+              border: '1px solid var(--border)',
+              background: 'var(--hover)',
+              color: 'var(--text-secondary)',
+            }}
+          >
             Sem contar token · sem cobrar consulta
           </div>
-          <h2 className="text-balance font-serif text-4xl text-white md:text-5xl lg:text-[3.4rem]">
+          <h2
+            className="text-balance font-serif text-4xl md:text-5xl lg:text-[3.4rem]"
+            style={{ color: 'var(--text-primary)' }}
+          >
             Um preço{' '}
-            <span className="italic text-[#e6d4bd]">por advogado</span>.
+            <span className="italic text-grad-accent">por advogado</span>.
             <br />
-            <span className="text-white/60">Transparente do Escritório ao Enterprise.</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Transparente do Escritório ao Enterprise.</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-white/65">
+          <p
+            className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed"
+            style={{ color: 'var(--text-secondary)' }}
+          >
             Astrea cobra R$ 1.379 por usuário com limite de documentos. A Pralvex cobra entre{' '}
-            <span className="font-mono tabular-nums text-white/85">R$ 599 e R$ 1.599</span>{' '}
+            <span className="font-mono tabular-nums" style={{ color: 'var(--text-primary)' }}>R$ 599 e R$ 1.599</span>{' '}
             por advogado registrado — Solo entry-tier, Firma com documentos ilimitados, Enterprise com agentes customizados. Demo grátis de 50 min, sem cartão.
           </p>
         </Reveal>
@@ -45,13 +62,16 @@ export function LexPricing() {
         {/* trust footer — atualizado pós-audit pra remover claims falsos
             (PIX não implementado em subscription Stripe; NFS-e em roadmap) */}
         <Reveal delay={0.35}>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-white/40">
+          <div
+            className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[0.65rem] uppercase tracking-[0.18em]"
+            style={{ color: 'var(--text-muted)' }}
+          >
             <span>Cartão · boleto</span>
-            <span className="size-1 rounded-full bg-white/20" />
+            <span className="size-1 rounded-full" style={{ background: 'var(--border)' }} />
             <span>Recibo eletrônico</span>
-            <span className="size-1 rounded-full bg-white/20" />
+            <span className="size-1 rounded-full" style={{ background: 'var(--border)' }} />
             <span>Sem fidelidade</span>
-            <span className="size-1 rounded-full bg-white/20" />
+            <span className="size-1 rounded-full" style={{ background: 'var(--border)' }} />
             <span>Cancela com 1 clique</span>
           </div>
         </Reveal>

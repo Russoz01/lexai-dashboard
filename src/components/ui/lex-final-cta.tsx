@@ -19,7 +19,10 @@ import { AmbientMesh } from '@/components/ui/ambient-mesh'
 
 export function LexFinalCta() {
   return (
-    <section className="relative isolate overflow-hidden bg-black py-32">
+    <section
+      className="relative isolate overflow-hidden py-32"
+      style={{ background: 'var(--bg-base)' }}
+    >
       <AmbientMesh dust dustCount={10} intensity={0.7} />
       <div className="absolute inset-0 -z-10">
         <RetroGrid opacity={0.22} />
@@ -36,20 +39,27 @@ export function LexFinalCta() {
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mb-7 flex size-16 items-center justify-center rounded-full border border-[#bfa68e]/20 bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent backdrop-blur"
+            className="mx-auto mb-7 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent backdrop-blur"
+            style={{ border: '1px solid var(--stone-line)' }}
           >
-            <Sparkles className="size-6 text-[#e6d4bd]" strokeWidth={1.4} />
+            <Sparkles className="size-6" strokeWidth={1.4} style={{ color: 'var(--accent)' }} />
           </motion.div>
 
-          <h2 className="text-balance font-serif text-4xl leading-[1.05] text-white md:text-6xl">
+          <h2
+            className="text-balance font-serif text-4xl leading-[1.05] md:text-6xl"
+            style={{ color: 'var(--text-primary)' }}
+          >
             Vinte horas por semana.
             <br />
-            <span className="italic text-[#e6d4bd]">
+            <span className="italic text-grad-accent">
               Devolvidas pra advocacia
             </span>
             .
           </h2>
-          <p className="mx-auto mt-7 max-w-xl text-[15.5px] leading-relaxed text-white/65">
+          <p
+            className="mx-auto mt-7 max-w-xl text-[15.5px] leading-relaxed"
+            style={{ color: 'var(--text-secondary)' }}
+          >
             Demo de 50 minutos grátis · Sem cartão · Cancela com um clique. Money-back
             de 7 dias se não economizar vinte horas na primeira semana após assinar.
           </p>
@@ -67,19 +77,27 @@ export function LexFinalCta() {
             </Link>
             <Link
               href="/empresas"
-              className="inline-flex h-14 items-center justify-center rounded-full border border-white/15 bg-white/[0.02] px-7 text-[14px] font-medium text-white backdrop-blur transition hover:border-white/35 hover:bg-white/[0.06]"
+              className="inline-flex h-14 items-center justify-center rounded-full px-7 text-[14px] font-medium backdrop-blur transition"
+              style={{
+                border: '1px solid var(--border)',
+                background: 'var(--hover)',
+                color: 'var(--text-primary)',
+              }}
             >
               Falar com vendas
             </Link>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[0.65rem] uppercase tracking-[0.22em] text-white/35">
+          <div
+            className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[0.65rem] uppercase tracking-[0.22em]"
+            style={{ color: 'var(--text-muted)' }}
+          >
             <span>Infra em São Paulo</span>
-            <span className="size-1 rounded-full bg-white/15" />
+            <span className="size-1 rounded-full" style={{ background: 'var(--border)' }} />
             <span>LGPD nativa</span>
-            <span className="size-1 rounded-full bg-white/15" />
+            <span className="size-1 rounded-full" style={{ background: 'var(--border)' }} />
             <span>Provimento 205 / OAB</span>
-            <span className="size-1 rounded-full bg-white/15" />
+            <span className="size-1 rounded-full" style={{ background: 'var(--border)' }} />
             <span>DPA assinado</span>
           </div>
         </Reveal>

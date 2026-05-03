@@ -278,6 +278,38 @@
   opacity: 0.4;
 }
 
+/* Hero gradient base — visível em dark, transparente em light pra cream surface respirar */
+.lex-hero-gradient {
+  background: linear-gradient(180deg, #0a0f12 0%, #000 50%, #000 100%);
+}
+[data-theme="light"] .lex-hero-gradient {
+  background: transparent;
+}
+
+/* Hero radial overlay (foco no centro) — só em dark, escurece o miolo */
+.lex-hero-radial-dark {
+  background: radial-gradient(50% 45% at 50% 45%, rgba(0,0,0,0.20) 0%, transparent 70%);
+}
+[data-theme="light"] .lex-hero-radial-dark {
+  background: transparent;
+}
+
+/* Stats figure — gradient adaptativo em ambos modes */
+.lex-figure-grad {
+  background: linear-gradient(135deg, #fff 0%, #fff 50%, #bfa68e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+[data-theme="light"] .lex-figure-grad {
+  background: linear-gradient(135deg, #132025 0%, #44372b 50%, #bfa68e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
 /* ── Base reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
