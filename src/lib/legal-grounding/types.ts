@@ -19,6 +19,10 @@ export type Diploma =
   | 'LGPD'
   | 'CTN'
   | 'Lei do Inquilinato'
+  | 'ECA'
+  | 'Marco Civil'
+  | 'Lei Maria da Penha'
+  | 'Lei 8.112/90'
   | 'Provimento CNJ 205'
 
 export type Tribunal = 'STF' | 'STJ' | 'TST' | 'TSE' | 'CNJ'
