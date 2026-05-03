@@ -78,7 +78,7 @@ export function ThemeToggle({ variant = 'header', className = '' }: ThemeToggleP
               borderRadius: 999,
               border: 'none',
               cursor: 'pointer',
-              transition: 'background-color 0.18s ease, color 0.18s ease, transform 0.18s ease',
+              transition: 'background-color var(--duration-fast) var(--ease-snappy), color var(--duration-fast) var(--ease-snappy), transform var(--duration-fast) var(--ease-snappy)',
               background: active
                 ? (isLanding ? 'rgba(191,166,142,0.18)' : 'var(--accent-light)')
                 : 'transparent',

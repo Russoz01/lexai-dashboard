@@ -77,6 +77,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [pref, setPrefState] = useState<ThemePref>('dark')
   const [theme, setTheme] = useState<ThemeEffective>('dark')
   const [mounted, setMounted] = useState(false)
+  // a11y announcement (v11.2) — screen readers leem mudanca de tema.
+  // String vazia inicial evita anuncio espurio no boot.
+  const [announcement, setAnnouncement] = useState('')
 
   // Boot — lê preferência + aplica
   useEffect(() => {
@@ -157,6 +160,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setPrefState(p)
     setTheme(eff)
     applyToDOM(eff)
+    // a11y — anuncia troca pra screen readers (NVDA/JAWS/VoiceOver)
+    setAnnouncement(eff === 'dark' ? 'Tema escuro selecionado' : 'Tema claro selecionado')
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: { pref: p, theme: eff } }))
     }
@@ -175,6 +180,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <ThemeContext.Provider value={{ pref, theme, setPref, toggleTheme }}>
       {children}
+      {/* a11y live region — anuncia troca de tema. role=status === aria-live=polite implicito */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {announcement}
+      </div>
     </ThemeContext.Provider>
   )
 }

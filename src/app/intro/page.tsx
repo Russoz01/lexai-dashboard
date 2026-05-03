@@ -291,6 +291,7 @@ function ManifestoScene({ reduced }: { reduced: boolean }) {
   return (
     <section
       ref={ref}
+      data-intro-scene="manifesto"
       aria-label="Manifesto"
       className="relative flex min-h-[130vh] w-full items-center justify-center bg-[#0a0a0a] text-white"
     >
@@ -373,6 +374,7 @@ function FloatPanel({
 function DashboardPreviewScene({ reduced }: { reduced: boolean }) {
   return (
     <section
+      data-intro-scene="dashboard"
       aria-label="Pré-visualização do produto"
       className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] text-white"
     >
@@ -730,6 +732,48 @@ export default function IntroPage() {
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
   }, [opening, trigger])
+
+  // ─────────────────────────────────────────────────────────────────
+  // AUTO-PLAY (2026-05-03) — Leonardo: "intro nao roda sozinha"
+  // Timeline cinematica:
+  //   0.0s — mount, hero aparece com char-stagger
+  //   3.5s — auto-scroll suave pra ManifestoScene
+  //   7.0s — auto-scroll pra DashboardPreviewScene
+  //  10.5s — trigger vault overlay
+  //  11.7s — push pra / (landing)
+  // User pode interromper rolando manualmente, clicando "Pular intro",
+  // ou ignorar e deixar rodar. prefers-reduced-motion encurta tudo.
+  // ─────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (opening || pushed) return
+    if (typeof window === 'undefined') return
+
+    const userInterrupted = { current: false }
+    const onUserScroll = () => { userInterrupted.current = true }
+    window.addEventListener('wheel', onUserScroll, { passive: true, once: true })
+    window.addEventListener('touchstart', onUserScroll, { passive: true, once: true })
+
+    const scrollTo = (selector: string) => {
+      if (userInterrupted.current) return
+      const el = document.querySelector(selector) as HTMLElement | null
+      if (!el) return
+      window.scrollTo({ top: el.offsetTop, behavior: reduced ? 'auto' : 'smooth' })
+    }
+
+    const t1 = window.setTimeout(() => scrollTo('[data-intro-scene="manifesto"]'), reduced ? 200 : 3500)
+    const t2 = window.setTimeout(() => scrollTo('[data-intro-scene="dashboard"]'), reduced ? 400 : 7000)
+    const t3 = window.setTimeout(() => {
+      if (!userInterrupted.current) trigger()
+    }, reduced ? 600 : 10500)
+
+    return () => {
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
+      window.clearTimeout(t3)
+      window.removeEventListener('wheel', onUserScroll)
+      window.removeEventListener('touchstart', onUserScroll)
+    }
+  }, [opening, pushed, reduced, trigger])
 
   const ctxValue = useMemo<VaultContext>(
     () => ({ opening, trigger }),

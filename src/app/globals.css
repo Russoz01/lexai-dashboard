@@ -25,6 +25,22 @@
   --type-body:      15px;
   --type-meta:      clamp(11px, 0.85vw, 12.5px);
 
+  /* ── Motion tokens (v11.2 · 2026-05-02) ─────────────────────────
+     Independem de tema. Use com `transition: <prop> var(--duration-X)
+     var(--ease-X)` em vez de hex/literais soltos.
+       --ease-editorial   patek-philippe smooth, perfeito pra cards/reveals
+       --ease-snappy      material-style, perfeito pra UI states/buttons
+       --ease-spring      light overshoot pra micro-interactions premium
+       --duration-fast    150ms — hover/focus state changes
+       --duration-base    250ms — standard transitions, color/bg
+       --duration-slow    400ms — page transitions, layout shifts */
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snappy:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast:  150ms;
+  --duration-base:  250ms;
+  --duration-slow:  400ms;
+
   /* Dark default — replicado em [data-theme="dark"] abaixo */
   --primary:        #F3EEE4;
   --primary-light:  #e8dfcf;
@@ -379,7 +395,7 @@ html {
      Padding compensa nav fixed h-16 + folga pra anchors do nav nao colarem. */
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--duration-base) var(--ease-snappy);
 }
 
 /* ── Accessibility — WCAG AA keyboard focus ─────────────────── */
@@ -390,11 +406,53 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 [role="button"]:focus-visible,
+[role="radio"]:focus-visible,
+[role="switch"]:focus-visible,
+[role="menuitem"]:focus-visible,
+[role="tab"]:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 6px;
-  transition: outline-offset 0.1s ease;
+  border-radius: inherit;
+  transition: outline-offset var(--duration-fast) var(--ease-snappy),
+              outline-color var(--duration-fast) var(--ease-snappy);
+}
+
+/* ── Motion utility classes (v11.2 · 2026-05-02) ──────────────
+   Use direto em JSX em vez de classes Tailwind soltas.
+   Ex: <button className="transition-editorial"> pega timing premium */
+.transition-editorial {
+  transition: transform var(--duration-base) var(--ease-editorial),
+              color var(--duration-base) var(--ease-editorial),
+              background-color var(--duration-base) var(--ease-editorial),
+              border-color var(--duration-base) var(--ease-editorial),
+              box-shadow var(--duration-base) var(--ease-editorial),
+              opacity var(--duration-base) var(--ease-editorial);
+}
+.transition-snappy {
+  transition: transform var(--duration-fast) var(--ease-snappy),
+              color var(--duration-fast) var(--ease-snappy),
+              background-color var(--duration-fast) var(--ease-snappy),
+              border-color var(--duration-fast) var(--ease-snappy),
+              box-shadow var(--duration-fast) var(--ease-snappy),
+              opacity var(--duration-fast) var(--ease-snappy);
+}
+.hover-lift {
+  transition: transform var(--duration-base) var(--ease-editorial),
+              box-shadow var(--duration-base) var(--ease-editorial),
+              border-color var(--duration-base) var(--ease-editorial);
+}
+@media (hover: hover) {
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+}
+.press-scale {
+  transition: transform var(--duration-fast) var(--ease-snappy);
+}
+.press-scale:active {
+  transform: scale(0.98);
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -441,7 +499,8 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color var(--duration-base) var(--ease-snappy),
+              color var(--duration-base) var(--ease-snappy);
 }
 
 /* Atelier background — static warm surface, no gradient noise */
@@ -1329,7 +1388,7 @@ input[type="date"] { cursor: pointer; }
   to   { opacity: 1; }
 }
 .animate-in {
-  animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fadeInUp 0.5s var(--ease-editorial) both;
 }
 .delay-1 { animation-delay: 0.05s; }
 .delay-2 { animation-delay: 0.10s; }
@@ -1377,7 +1436,7 @@ input[type="date"] { cursor: pointer; }
 .streak-bar-fill {
   height: 100%; border-radius: 2px;
   background: linear-gradient(90deg, var(--accent), var(--stone));
-  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 1s var(--ease-editorial);
 }
 
 /* Pralvex badge */
@@ -1597,7 +1656,7 @@ input[type="date"] { cursor: pointer; }
 .lex-word-reveal {
   display: inline-block;
   opacity: 0;
-  animation: lex-word-reveal-kf 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: lex-word-reveal-kf 0.65s var(--ease-editorial) forwards;
   will-change: transform, opacity, filter;
 }
 
@@ -1644,7 +1703,7 @@ input[type="date"] { cursor: pointer; }
 }
 .lex-line-draw {
   transform-origin: left center;
-  animation: lex-line-draw 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: lex-line-draw 0.9s var(--ease-editorial) forwards;
   will-change: transform, opacity;
 }
 
@@ -1686,7 +1745,7 @@ input[type="date"] { cursor: pointer; }
   transform-style: preserve-3d;
   animation: lex-stage-fade-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: opacity;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.6s var(--ease-editorial);
 }
 
 /* Idle bob — wrapper INTERNO ao card, translateY relativo. Combina
@@ -1811,7 +1870,7 @@ input[type="date"] { cursor: pointer; }
   display: inline-block;
   opacity: 0;
   transform-origin: 50% 100%;
-  animation: lex-glyph-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: lex-glyph-rise 0.7s var(--ease-editorial) forwards;
   will-change: transform, opacity;
 }
 
@@ -1829,7 +1888,7 @@ input[type="date"] { cursor: pointer; }
 }
 .lex-figure {
   opacity: 0;
-  animation: lex-figure-rise 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: lex-figure-rise 1.2s var(--ease-editorial) forwards;
   will-change: transform, opacity;
 }
 
@@ -1840,7 +1899,7 @@ input[type="date"] { cursor: pointer; }
 }
 .lex-hairline {
   transform-origin: left center;
-  animation: lex-hairline 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: lex-hairline 1.2s var(--ease-editorial) forwards;
 }
 
 /* Manifesto orbit — soft rotate of decorative ring */
@@ -1859,7 +1918,7 @@ input[type="date"] { cursor: pointer; }
 
 /* Tilt card on hover — used em pricing + bento */
 .lex-tilt {
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+  transition: transform 0.5s var(--ease-editorial), box-shadow 0.4s ease;
   transform-style: preserve-3d;
 }
 .lex-tilt:hover {
@@ -2332,7 +2391,7 @@ input[type="date"] { cursor: pointer; }
   font: inherit;
   cursor: pointer;
   transition:
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s var(--ease-editorial),
     border-color 0.35s ease,
     box-shadow 0.35s ease;
   overflow: hidden;
@@ -2351,7 +2410,7 @@ article.atelier-card { cursor: default; }
   height: 1px;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+  transition: transform 0.4s var(--ease-editorial), opacity 0.3s ease;
   pointer-events: none;
   opacity: 0.85;
   z-index: 2;
@@ -2525,7 +2584,7 @@ article.atelier-card { cursor: default; }
     transparent 100%);
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.4s var(--ease-editorial);
   pointer-events: none;
   z-index: 3;
   opacity: 0.85;
