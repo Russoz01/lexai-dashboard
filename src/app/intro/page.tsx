@@ -701,16 +701,19 @@ export default function IntroPage() {
   // a landing page nao redirecione pra intro de novo nessa sessao.
   useEffect(() => {
     if (!opening || pushed) return
+    // Vault door anim leva ~1250ms cinematic. Reduced motion mantem timing
+    // (door parece pop em vez de slide, mas user ve a transicao por 1.25s
+    // antes de cair na landing — evita flash brusco).
     const t = window.setTimeout(
       () => {
         setPushed(true)
         try { sessionStorage.setItem('pralvex-intro-seen', '1') } catch { /* noop */ }
         router.push('/')
       },
-      reduced ? 120 : 1250,
+      1250,
     )
     return () => window.clearTimeout(t)
-  }, [opening, pushed, reduced, router])
+  }, [opening, pushed, router])
 
   // Marca intro como vista TAMBEM se user clicar "Pular intro" ou navegar
   // pra outro lugar antes do vault completar.
@@ -734,15 +737,20 @@ export default function IntroPage() {
   }, [opening, trigger])
 
   // ─────────────────────────────────────────────────────────────────
-  // AUTO-PLAY (2026-05-03) — Leonardo: "intro nao roda sozinha"
+  // AUTO-PLAY (2026-05-03 v2) — Leonardo: "passa em 1s = flash"
+  // BUG v1: prefers-reduced-motion encurtava timeline pra 200/400/600ms
+  // = ~1s total = flash. Brave Shields tem reduced-motion forcado.
+  // FIX v2: mesmo timing pra ambos os perfis (3.5s/7s/10.5s) — user
+  // sempre VE a intro completa. Reduced so muda scroll behavior
+  // (instant em vez de smooth) — preserva acessibilidade sem flash.
+  //
   // Timeline cinematica:
   //   0.0s — mount, hero aparece com char-stagger
-  //   3.5s — auto-scroll suave pra ManifestoScene
+  //   3.5s — auto-scroll pra ManifestoScene
   //   7.0s — auto-scroll pra DashboardPreviewScene
   //  10.5s — trigger vault overlay
   //  11.7s — push pra / (landing)
-  // User pode interromper rolando manualmente, clicando "Pular intro",
-  // ou ignorar e deixar rodar. prefers-reduced-motion encurta tudo.
+  // User pode interromper rolando manualmente OU clicando "Pular intro".
   // ─────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (opening || pushed) return
@@ -757,14 +765,16 @@ export default function IntroPage() {
       if (userInterrupted.current) return
       const el = document.querySelector(selector) as HTMLElement | null
       if (!el) return
+      // Reduced motion: scroll instantaneo (sem motion sickness),
+      // mas o TIMING dos timeouts continua igual (intro completa visivel).
       window.scrollTo({ top: el.offsetTop, behavior: reduced ? 'auto' : 'smooth' })
     }
 
-    const t1 = window.setTimeout(() => scrollTo('[data-intro-scene="manifesto"]'), reduced ? 200 : 3500)
-    const t2 = window.setTimeout(() => scrollTo('[data-intro-scene="dashboard"]'), reduced ? 400 : 7000)
+    const t1 = window.setTimeout(() => scrollTo('[data-intro-scene="manifesto"]'), 3500)
+    const t2 = window.setTimeout(() => scrollTo('[data-intro-scene="dashboard"]'), 7000)
     const t3 = window.setTimeout(() => {
       if (!userInterrupted.current) trigger()
-    }, reduced ? 600 : 10500)
+    }, 10500)
 
     return () => {
       window.clearTimeout(t1)
