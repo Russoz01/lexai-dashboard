@@ -253,33 +253,42 @@
   -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
-/* Light mode mantém TODA a animação decorativa (shaders WebGL,
-   AmbientMesh dust, headline-glow) com mesmas trajetórias do dark.
-   Só blend mode + opacidade adaptam pro fundo cream — multiply faz
-   as decorações dark-themed virarem tons sépia sobre o cream, mantendo
-   o mood editorial sem precisar reescrever os WebGL components.
-   Audit fix 2026-05-02 — Leonardo: "back animado no light mode tmb". */
-[data-theme="light"] .lex-landing-shell canvas,
-[data-theme="light"] .lex-landing-shell .pralvex-shader {
+/* Light mode — backgrounds animados GLOBAIS (2026-05-03)
+   Antes era escopado em .lex-landing-shell (só landing). Agora aplica
+   em TODA pagina: /sobre, /empresas, /privacidade, /termos, /login,
+   /reset-password, /not-found, /share, /docs, /dpa, /status, /roi.
+   Leonardo apontou que outras pages ficavam sem o background animado
+   que dark tinha. mix-blend-mode multiply faz decoracoes dark-themed
+   virarem tons sepia sobre cream, mantendo mood editorial. */
+[data-theme="light"] canvas,
+[data-theme="light"] .pralvex-shader {
   mix-blend-mode: multiply;
   opacity: 0.55;
 }
-[data-theme="light"] .lex-landing-shell .pralvex-mesh {
+[data-theme="light"] .pralvex-mesh,
+[data-theme="light"] [class*="ambient-mesh"],
+[data-theme="light"] [class*="AmbientMesh"] {
   mix-blend-mode: multiply;
   opacity: 0.72;
   filter: saturate(0.85) hue-rotate(-8deg);
 }
-[data-theme="light"] .lex-landing-shell .lex-headline-glow {
+[data-theme="light"] .lex-headline-glow {
   mix-blend-mode: multiply;
   opacity: 0.4;
   filter: hue-rotate(-12deg) saturate(1.2);
 }
 /* Dust/sparkles decorativos — em light viram pontinhos champagne escuro */
-[data-theme="light"] .lex-landing-shell .pralvex-dust,
-[data-theme="light"] .lex-landing-shell .lex-figure[data-decoration],
-[data-theme="light"] .lex-landing-shell [class*="ambient-mesh"] {
+[data-theme="light"] .pralvex-dust,
+[data-theme="light"] .lex-figure[data-decoration] {
   mix-blend-mode: multiply;
   opacity: 0.85;
+}
+/* Radial gradient backgrounds inline (rgba champagne) — também adaptam.
+   Aplica em divs com `background: radial-gradient(...rgba(191,166,142,*)`.
+   Light vira sepia-tinted sem precisar reescrever cada inline style. */
+[data-theme="light"] [aria-hidden="true"][class*="bg-[radial-gradient"] {
+  mix-blend-mode: multiply;
+  opacity: 0.7;
 }
 /* Topo background do dashboard tematizado pra light */
 [data-theme="light"] .lex-topo-background {

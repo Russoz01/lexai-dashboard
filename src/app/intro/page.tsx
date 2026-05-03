@@ -95,35 +95,9 @@ function HeroScene({ reduced }: { reduced: boolean }) {
         Pular intro <span aria-hidden="true">→</span>
       </Link>
 
-      {/* Layer 0 — Drone video background (cinematic loop)
-          Fix React #418 hydration mismatch: SSR/CSR identicos, sem
-          dependencia de useReducedMotion no render. Reduced motion
-          honrado via CSS @media (prefers-reduced-motion) abaixo. */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        aria-hidden="true"
-        suppressHydrationWarning
-        className="lex-intro-drone absolute inset-0 h-full w-full object-cover opacity-55"
-        style={{
-          mixBlendMode: 'screen',
-          filter: 'saturate(0.85) contrast(1.05) brightness(0.75)',
-        }}
-      >
-        <source src="/intro/drone-hero.mp4" type="video/mp4" />
-      </video>
-      {/* Vignette escuro pra garantir leitura do texto */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse 80% 70% at 50% 50%, rgba(10,10,10,0.18) 0%, rgba(10,10,10,0.55) 65%, rgba(10,10,10,0.85) 100%)',
-        }}
-      />
+      {/* Drone video removido 2026-05-03 — congelava o renderer no scroll
+          (mix-blend-mode + filter + 7MB autoplay = OOM em laptop fraco).
+          Voltamos pra layers CSS-only que ja entregam atmosfera editorial. */}
 
       {/* Layer 1 — dot grid */}
       <div
