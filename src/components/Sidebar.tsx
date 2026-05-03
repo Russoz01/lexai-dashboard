@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { usePlan } from '@/hooks/usePlan'
 import { agents, modules, isUnlocked, type CatalogItem, type Plan } from '@/lib/catalog'
@@ -105,6 +105,7 @@ function buildAreaGroups(agentsList: CatalogItem[]): Array<{ label: string; item
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const router = useRouter()
   const supabase = createClient()
   const { plano, trial, loading, founder } = usePlan()
@@ -134,24 +135,34 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     router.refresh()
   }
 
+  /**
+   * Bug fix (2026-05-03 segunda iteracao): items com href apontando pra
+   * /dashboard/em-breve?feature=<slug> faziam pathname.startsWith bater pra
+   * TODOS items implemented:false simultaneamente quando user estava em
+   * /em-breve. Sidebar destacava CNJ + Comparador + Flashcards + Plano + Casos
+   * + CRM + Jurimetria + Marketing TODOS juntos.
+   *
+   * Solucao: rota /em-breve compara feature query especifica. Outras rotas
+   * usam pathname.startsWith normal. useSearchParams hook re-renderiza no
+   * client-side nav (window.location.search nao re-renderiza).
+   */
+  function isActiveItemSlug(slug: string, href: string) {
+    // Caso especial: estamos em /dashboard/em-breve — so o item cuja slug
+    // bate com feature=<slug> fica active.
+    if (pathname === '/dashboard/em-breve') {
+      const feat = searchParams?.get('feature')
+      return feat === slug
+    }
+    // Caso normal: pathname.startsWith comparado com href limpo.
+    const cleanHref = href.split('?')[0]
+    if (cleanHref === '/dashboard') return pathname === '/dashboard'
+    return pathname.startsWith(cleanHref)
+  }
+
+  // Mantem isActive pra outros usos (header sections nao-catalog)
   function isActive(href: string) {
     if (href === '/dashboard') return pathname === '/dashboard'
     return pathname.startsWith(href.split('?')[0])
-  }
-
-  /**
-   * QA P0-7 fix (2026-05-03): items implemented:false redirecionam pra
-   * /dashboard/em-breve?feature=<slug>. Sem checar feature query, sidebar
-   * desativava o item correspondente. Agora extrai feature do search e
-   * compara com slug pra manter highlight correto.
-   */
-  function isActiveItemSlug(slug: string, href: string) {
-    if (isActive(href)) return true
-    if (typeof window !== 'undefined' && pathname === '/dashboard/em-breve') {
-      const feat = new URLSearchParams(window.location.search).get('feature')
-      return feat === slug
-    }
-    return false
   }
 
   const allAgents = useMemo(() => agents(), [])

@@ -220,7 +220,7 @@ export default function SobrePage() {
               +55 34 99302-6456
             </a>
           </li>
-          <li className="flex items-center justify-between border-b px-5 py-4" style={{ borderColor: 'var(--border)' }}>
+          <li className="flex items-center justify-between px-5 py-4">
             <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
               E-mail
             </span>
@@ -229,17 +229,6 @@ export default function SobrePage() {
               className="text-sm text-on-surface transition hover:text-[#bfa68e]"
             >
               contato@pralvex.com.br
-            </a>
-          </li>
-          <li className="flex items-center justify-between px-5 py-4">
-            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
-              Imprensa
-            </span>
-            <a
-              href="mailto:imprensa@pralvex.com.br"
-              className="text-sm text-on-surface transition hover:text-[#bfa68e]"
-            >
-              imprensa@pralvex.com.br
             </a>
           </li>
         </ul>

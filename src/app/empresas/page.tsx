@@ -10,7 +10,7 @@ import { ExitIntent } from '@/components/ExitIntent'
 import { LexPricingGrid } from '@/components/ui/lex-pricing-grid'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
-import { agents } from '@/lib/catalog'
+import { agents, AGENT_COUNT } from '@/lib/catalog'
 import { ThemeToggle } from '@/components/ThemeToggle'
 
 /* ═════════════════════════════════════════════════════════════════════
@@ -168,12 +168,12 @@ export default function EmpresasPage() {
 
           <h1 className="text-balance text-5xl font-medium leading-[1.05] tracking-tight text-on-surface sm:text-6xl" data-reveal>
             Seu escritório.<br />
-            <em className="text-grad-accent italic">27 especialistas.</em><br />
+            <em className="text-grad-accent italic">{AGENT_COUNT.implemented} especialistas.</em><br />
             Uma assinatura.
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-on-surface-muted" data-reveal>
-            27 agentes de IA calibrados para o Direito brasileiro — 6 novos na v10.8 (CNJ, Comparador, Risco, Flashcards, Plano, Casos). Cada um com conhecimento profundo da sua área, disponível agora — sem contratação, sem onboarding de meses.
+            {AGENT_COUNT.implemented} agentes de IA calibrados para o Direito brasileiro — {AGENT_COUNT.preview} em construção (CNJ, Comparador, Flashcards, Plano). Cada um com conhecimento profundo da sua área, disponível agora — sem contratação, sem onboarding de meses.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-reveal>
@@ -196,7 +196,7 @@ export default function EmpresasPage() {
           {/* Stats editoriais */}
           <div className="mt-16 grid grid-cols-2 gap-6 sm:grid-cols-4" data-reveal>
             {[
-              { roman: 'I',   value: '27',      label: 'Agentes especializados' },
+              { roman: 'I',   value: String(AGENT_COUNT.implemented), label: 'Agentes especializados' },
               { roman: 'II',  value: '11',      label: 'Áreas do Direito' },
               { roman: 'III', value: '4 min',   label: 'Por análise' },
               { roman: 'IV',  value: '<24h',    label: 'Setup completo' },
@@ -213,7 +213,7 @@ export default function EmpresasPage() {
 
       <div className="mx-auto h-px max-w-6xl" style={{ background: 'var(--border)' }} />
 
-      {/* AGENTES — vem do catalog.ts (27 agentes pós v10.8) */}
+      {/* AGENTES — vem do catalog.ts (AGENT_COUNT dinamico) */}
       <section className="mx-auto max-w-6xl px-4 py-20">
         <div className="mx-auto max-w-2xl text-center" data-reveal>
           <div className="inline-flex items-center gap-2 rounded-full border border-on-surface bg-[var(--hover)] px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
