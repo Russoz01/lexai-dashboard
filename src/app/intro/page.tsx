@@ -723,13 +723,19 @@ export default function IntroPage() {
     }
   }, [])
 
-  // Auto-trigger vault when user reaches the bottom of the page
+  // Auto-trigger vault when user reaches the bottom of the page.
+  // GUARD (2026-05-03 v3): scrollHeight tem que ser pelo menos 1.8x viewport
+  // pra dispara — evita flash de 1s causado por mount inicial onde scenes
+  // lazy ainda nao calcularam altura, viewH > scrollHeight, bottomReached=true,
+  // vault dispara em ~0ms = intro inteira pula em 1.2s.
   useEffect(() => {
     if (opening) return
     const handler = () => {
-      const bottomReached =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 4
+      const view = window.innerHeight
+      const total = document.documentElement.scrollHeight
+      // Pagina nao tem altura suficiente pra scrollar 3 scenes ainda — skip
+      if (total < view * 1.8) return
+      const bottomReached = view + window.scrollY >= total - 4
       if (bottomReached) trigger()
     }
     window.addEventListener('scroll', handler, { passive: true })

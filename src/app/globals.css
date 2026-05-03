@@ -86,6 +86,26 @@
   --blur:           22px;
 }
 
+/* Light mode body — micro-gradientes champagne sobre cream
+   Adiciona profundidade editorial sutil ao fundo cream puro.
+   3 layers: radial top-left + radial bottom-right + linear vertical.
+   Cada um < 0.04 alpha pra nao competir com leitura.
+   Audit fix 2026-05-03 — Leonardo: "background light com micros gradientes". */
+[data-theme="light"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 12% 8%, rgba(191,166,142,0.08), transparent 55%),
+    radial-gradient(ellipse 50% 60% at 88% 92%, rgba(122,95,72,0.05), transparent 60%),
+    radial-gradient(circle 800px at 50% 0%, rgba(245,232,211,0.18), transparent 65%),
+    linear-gradient(180deg, rgba(255,251,243,0.5) 0%, transparent 30%, transparent 70%, rgba(239,231,218,0.4) 100%);
+}
+/* Garantir que conteudo fica acima do pseudo */
+[data-theme="light"] body > * { position: relative; z-index: 1; }
+
 /* ── Tokens — Light (atelier cream, opt-in via data-theme="light") ── */
 [data-theme="light"] {
   /* Type-scale fluid tokens (audit polish 2026-05-02)
