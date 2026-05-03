@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { validateOabContent } from '@/lib/oab-validator'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
@@ -130,12 +131,12 @@ export async function POST(req: NextRequest) {
         resposta_agente: ((resultado.estrategia as Record<string, unknown> | undefined)?.tipo as string) || 'Analise realizada',
       })
       const tipoEstr = ((resultado.estrategia as Record<string, unknown> | undefined)?.tipo as string) || 'analise'
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'negociador',
         resumo: buildMemorySummary('negociador', situacao.slice(0, 160), tipoEstr),
         fatos: [{ key: 'tipo_estrategia', value: tipoEstr.slice(0, 80) }],
         tags: extractMemoryTags('negociador', undefined, situacao),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:negociador')
     }
 
     // Soft check OAB sobre a proposta de acordo (Provimento 205/2021 — sem
@@ -146,7 +147,7 @@ export async function POST(req: NextRequest) {
       ? oabCheck.violations.map(v => ({ rule: v.rule, severity: v.severity, motivo: v.motivo }))
       : undefined
 
-    events.agentUsed(user.id, 'negociador', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'negociador', 'unknown'), 'events.agentUsed:negociador')
 
     return NextResponse.json({ resultado, oab_warnings })
   } catch (err: unknown) {

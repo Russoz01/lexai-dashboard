@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 import { LEGAL_AREAS_LABEL_MAP, isLegalAreaSlug } from '@/lib/agents/taxonomy'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
@@ -129,14 +130,14 @@ export const POST = withAgentAuth('atendimento', async ({ req, supabase, user })
       resposta_agente: roteiro?.titulo || `Entrevista - ${AREAS[area]}`,
     })
     const tituloOut = (roteiro?.titulo as string) || `Entrevista - ${AREAS[area]}`
-    recordAgentMemory(supabase, usuarioId, {
+    fireAndForget(recordAgentMemory(supabase, usuarioId, {
       agente: 'atendimento',
       resumo: buildMemorySummary('atendimento', `${AREAS[area]}: ${perfil.slice(0, 120)}`, tituloOut),
       fatos: [{ key: 'area', value: AREAS[area] }],
       tags: extractMemoryTags('atendimento', area, perfil),
-    }, { prefs }).catch(() => {})
+    }, { prefs }), 'recordAgentMemory:atendimento')
   }
 
-  events.agentUsed(user.id, 'atendimento', 'unknown').catch(() => {})
+  fireAndForget(events.agentUsed(user.id, 'atendimento', 'unknown'), 'events.agentUsed:atendimento')
   return NextResponse.json({ roteiro })
 })

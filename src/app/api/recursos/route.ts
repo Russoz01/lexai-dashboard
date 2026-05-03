@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
@@ -142,15 +143,15 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Recurso: ${TIPOS_RECURSO[tipo]}`,
         resposta_agente: tituloRecurso,
       })
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'recursos',
         resumo: buildMemorySummary('recursos', `${TIPOS_RECURSO[tipo]}: ${decisao.slice(0, 120)}`, tituloRecurso),
         fatos: [{ key: 'tipo', value: tipo }],
         tags: extractMemoryTags('recursos', tipo, decisao),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:recursos')
     }
 
-    events.agentUsed(user.id, 'recursos', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'recursos', 'unknown'), 'events.agentUsed:recursos')
     return NextResponse.json({ recurso })
   } catch (err: unknown) {
     return safeError('recursos', err)

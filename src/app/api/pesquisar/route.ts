@@ -8,6 +8,7 @@ import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-uti
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -180,7 +181,7 @@ export async function POST(req: NextRequest) {
         resposta_agente: (pesquisa.enquadramento as string)?.slice(0, 200) || 'Pesquisa realizada',
       })
       const enqOut = (pesquisa.enquadramento as string)?.slice(0, 160) || 'pesquisa realizada'
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'pesquisador',
         resumo: buildMemorySummary('pesquisador', query, enqOut),
         fatos: [
@@ -188,7 +189,7 @@ export async function POST(req: NextRequest) {
           ...(safeTribunal !== 'Todos' ? [{ key: 'tribunal', value: safeTribunal }] : []),
         ],
         tags: extractMemoryTags('pesquisador', safeArea !== 'Todas' ? safeArea : undefined, query),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:pesquisador')
     }
 
     const validation = validateCitations(responseText)
@@ -197,7 +198,7 @@ export async function POST(req: NextRequest) {
       safeLog.debug('[API /pesquisar] validation:', validation.stats, 'warnings:', validation.warnings.length)
     }
 
-    events.agentUsed(user.id, 'pesquisador', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'pesquisador', 'unknown'), 'events.agentUsed:pesquisador')
 
     return NextResponse.json({
       pesquisa,

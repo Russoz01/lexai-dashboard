@@ -5,6 +5,7 @@ import { events } from '@/lib/analytics'
 import { parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -141,7 +142,7 @@ export async function POST(req: NextRequest) {
         safeLog.error('[API /tradutor] historico insert error:', histErr.message, histErr.code)
       }
 
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'tradutor',
         resumo: buildMemorySummary('tradutor', `${origem}→${destino} ${tipo}: ${texto.slice(0, 120)}`, 'traducao concluida'),
         fatos: [
@@ -150,10 +151,10 @@ export async function POST(req: NextRequest) {
           { key: 'tipo', value: tipo },
         ],
         tags: extractMemoryTags('tradutor', tipo, texto.slice(0, 800)),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:tradutor')
     }
 
-    events.agentUsed(user.id, 'tradutor', plano).catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'tradutor', plano), 'events.agentUsed:tradutor')
 
     // API contract: response key é `traducao` (não `parecer`).
     // Antes era `parecer` por copy-paste inconsistente que confundia o front.

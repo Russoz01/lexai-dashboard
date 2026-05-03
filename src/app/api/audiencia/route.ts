@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
@@ -127,14 +128,14 @@ export const POST = withAgentAuth('audiencia', async ({ req, supabase, user }) =
       resposta_agente: roteiro?.titulo || TIPOS_AUDIENCIA[tipo],
     })
     const tituloOut = (roteiro?.titulo as string) || TIPOS_AUDIENCIA[tipo]
-    recordAgentMemory(supabase, usuarioId, {
+    fireAndForget(recordAgentMemory(supabase, usuarioId, {
       agente: 'audiencia',
       resumo: buildMemorySummary('audiencia', `${TIPOS_AUDIENCIA[tipo]}: ${caso.slice(0, 120)}`, tituloOut),
       fatos: [{ key: 'tipo', value: tipo }],
       tags: extractMemoryTags('audiencia', tipo, caso),
-    }, { prefs }).catch(() => {})
+    }, { prefs }), 'recordAgentMemory:audiencia')
   }
 
-  events.agentUsed(user.id, 'audiencia', 'unknown').catch(() => {})
+  fireAndForget(events.agentUsed(user.id, 'audiencia', 'unknown'), 'events.agentUsed:audiencia')
   return NextResponse.json({ roteiro })
 })

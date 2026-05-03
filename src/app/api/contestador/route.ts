@@ -8,6 +8,7 @@ import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableErro
 import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { validateOabContent } from '@/lib/oab-validator'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
@@ -174,14 +175,14 @@ export async function POST(req: NextRequest) {
               resposta_agente: (c?.titulo as string) || 'Contestacao elaborada',
             })
             const tituloOut = (c?.titulo as string) || teseInicial.slice(0, 80)
-            recordAgentMemory(supabase, usuarioId, {
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
               agente: 'contestador',
               resumo: buildMemorySummary('contestador', teseInicial, tituloOut),
               fatos: [{ key: 'titulo', value: String(tituloOut).slice(0, 120) }],
               tags: extractMemoryTags('contestador', undefined, `${teseInicial} ${teseDefesa}`),
-            }, { prefs }).catch(() => {})
+            }, { prefs }), 'recordAgentMemory:contestador')
           }
-          events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
+          fireAndForget(events.agentUsed(user.id, 'contestador', 'unknown'), 'events.agentUsed:contestador')
         },
       })
     }
@@ -229,12 +230,12 @@ export async function POST(req: NextRequest) {
       })
 
       const tituloOut2 = (contestacao?.titulo as string) || teseInicial.slice(0, 80)
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'contestador',
         resumo: buildMemorySummary('contestador', teseInicial, tituloOut2),
         fatos: [{ key: 'titulo', value: String(tituloOut2).slice(0, 120) }],
         tags: extractMemoryTags('contestador', undefined, `${teseInicial} ${teseDefesa}`),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:contestador')
     }
 
     const validation = validateCitations(responseText)
@@ -243,7 +244,7 @@ export async function POST(req: NextRequest) {
       safeLog.debug('[API /contestador] validation:', validation.stats)
     }
 
-    events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'contestador', 'unknown'), 'events.agentUsed:contestador')
 
     // Provimento 205/2021 OAB soft check sobre o body da contestação
     const oabCheck = responseText ? validateOabContent(responseText) : null

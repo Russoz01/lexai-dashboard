@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { validateOabContent } from '@/lib/oab-validator'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
@@ -126,14 +127,14 @@ export async function POST(req: NextRequest) {
               resposta_agente: (parsed.titulo as string) || TEMPLATES[template],
             })
             const tituloOut = (parsed?.titulo as string) || TEMPLATES[template]
-            recordAgentMemory(supabase, usuarioId, {
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
               agente: 'redator',
               resumo: buildMemorySummary('redator', `${TEMPLATES[template]}: ${instrucoes.slice(0, 120)}`, tituloOut),
               fatos: [{ key: 'tipo', value: template }, { key: 'titulo', value: String(tituloOut).slice(0, 120) }],
               tags: extractMemoryTags('redator', template, instrucoes),
-            }, { prefs }).catch(() => {})
+            }, { prefs }), 'recordAgentMemory:redator')
           }
-          events.agentUsed(user.id, 'redator', 'unknown').catch(() => {})
+          fireAndForget(events.agentUsed(user.id, 'redator', 'unknown'), 'events.agentUsed:redator')
         },
       })
     }
@@ -177,15 +178,15 @@ export async function POST(req: NextRequest) {
         resposta_agente: peca.titulo || TEMPLATES[template],
       })
       const tituloOut3 = (peca.titulo as string) || TEMPLATES[template]
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'redator',
         resumo: buildMemorySummary('redator', `${TEMPLATES[template]}: ${instrucoes.slice(0, 120)}`, tituloOut3),
         fatos: [{ key: 'tipo', value: template }, { key: 'titulo', value: String(tituloOut3).slice(0, 120) }],
         tags: extractMemoryTags('redator', template, instrucoes),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:redator')
     }
 
-    events.agentUsed(user.id, 'redator', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'redator', 'unknown'), 'events.agentUsed:redator')
 
     // Provimento 205/2021 OAB soft check — peça processual não é publicidade,
     // mas se modelo gerou trecho promocional inadvertido (ex: rodapé de

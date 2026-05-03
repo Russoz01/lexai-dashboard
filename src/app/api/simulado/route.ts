@@ -5,6 +5,7 @@ import { events } from '@/lib/analytics'
 import { parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -203,7 +204,7 @@ export async function POST(req: NextRequest) {
         safeLog.error('[API /simulado] historico insert error:', histErr.message, histErr.code)
       }
 
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'simulado',
         resumo: buildMemorySummary('simulado', `${area} ${tema}: ${contexto.slice(0, 120)}`, 'parecer simulado'),
         fatos: [
@@ -212,10 +213,10 @@ export async function POST(req: NextRequest) {
           ...(tipoParecer ? [{ key: 'tipo', value: tipoParecer }] : []),
         ],
         tags: extractMemoryTags('simulado', area, `${tema} ${contexto}`),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:simulado')
     }
 
-    events.agentUsed(user.id, 'simulado', plano).catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'simulado', plano), 'events.agentUsed:simulado')
 
     return NextResponse.json({ parecer: resultado.parecer ?? null })
   } catch (err: unknown) {

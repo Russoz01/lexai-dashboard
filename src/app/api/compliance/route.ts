@@ -6,6 +6,7 @@ import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/
 import { parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -160,7 +161,7 @@ export async function POST(req: NextRequest) {
         safeLog.error('[API /compliance] historico insert error:', histErr.message, histErr.code)
       }
 
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'compliance',
         resumo: buildMemorySummary('compliance', `${tipo || 'geral'} ${area}: ${descricao.slice(0, 120)}`, String(resultado.score || '')),
         fatos: [
@@ -169,10 +170,10 @@ export async function POST(req: NextRequest) {
           ...(resultado.score ? [{ key: 'score', value: String(resultado.score) }] : []),
         ],
         tags: extractMemoryTags('compliance', area, descricao),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:compliance')
     }
 
-    events.agentUsed(user.id, 'compliance', plano).catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'compliance', plano), 'events.agentUsed:compliance')
 
     const validation = validateCitations(responseText)
     return NextResponse.json({

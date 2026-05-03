@@ -6,6 +6,7 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, withRetry } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, getRecentMemory, formatMemoryForPrompt, recordAgentMemory } from '@/lib/preferences'
 import { buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -413,17 +414,17 @@ export async function POST(req: NextRequest) {
                 const memOutS = rotear
                   ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`
                   : textoResposta.slice(0, 160)
-                recordAgentMemory(supabase, usuarioId, {
+                fireAndForget(recordAgentMemory(supabase, usuarioId, {
                   agente: 'chat',
                   resumo: buildMemorySummary('chat', mensagem.slice(0, 160), memOutS),
                   fatos: rotear ? [{ key: 'rotou_para', value: rotear.agente }] : [],
                   tags: extractMemoryTags('chat', undefined, mensagem),
-                }, { prefs }).catch(() => {})
+                }, { prefs }), 'recordAgentMemory:chat')
               } catch (e: unknown) {
                 safeLog.error('[API /chat?stream=1] historico insert failed:', e instanceof Error ? e.message : String(e))
               }
             }
-            events.agentUsed(user.id, 'chat', rotear?.agente || 'direct').catch(() => {})
+            fireAndForget(events.agentUsed(user.id, 'chat', rotear?.agente || 'direct'), 'events.agentUsed:chat')
           } catch (e: unknown) {
             const message = e instanceof Error ? e.message : 'Erro de stream'
             safeLog.error('[API /chat?stream=1]', message)
@@ -527,15 +528,15 @@ export async function POST(req: NextRequest) {
       const memOut = rotear
         ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`
         : textoResposta.slice(0, 160)
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'chat',
         resumo: buildMemorySummary('chat', mensagem.slice(0, 160), memOut),
         fatos: rotear ? [{ key: 'rotou_para', value: rotear.agente }] : [],
         tags: extractMemoryTags('chat', undefined, mensagem),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:chat')
     }
 
-    events.agentUsed(user.id, 'chat', rotear?.agente || 'direct').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'chat', rotear?.agente || 'direct'), 'events.agentUsed:chat')
 
     return NextResponse.json(payload)
   } catch (err: unknown) {

@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -163,7 +164,7 @@ export async function POST(req: NextRequest) {
       })
       const scoreOut = String(risco?.score_global ?? '-')
       const nivelOut = String(risco?.nivel ?? '-')
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'risco',
         resumo: buildMemorySummary('risco', `${tipo || 'Documento'}: ${documento.slice(0, 120)}`, `score ${scoreOut} ${nivelOut}`),
         fatos: [
@@ -172,12 +173,12 @@ export async function POST(req: NextRequest) {
           { key: 'nivel', value: nivelOut },
         ],
         tags: extractMemoryTags('risco', tipo, documento.slice(0, 800)),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:risco')
     }
 
     const validation = validateCitations(responseText)
 
-    events.agentUsed(user.id, 'risco', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'risco', 'unknown'), 'events.agentUsed:risco')
     return NextResponse.json({
       risco,
       fontes: validation.sources,

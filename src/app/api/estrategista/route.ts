@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
@@ -148,15 +149,15 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Plano: ${caso.slice(0, 200)}`,
         resposta_agente: tituloPlano,
       })
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'estrategista',
         resumo: buildMemorySummary('estrategista', caso.slice(0, 160), tituloPlano),
         fatos: [{ key: 'objetivo', value: objetivo.slice(0, 120) }, { key: 'titulo', value: String(tituloPlano).slice(0, 120) }],
         tags: extractMemoryTags('estrategista', undefined, `${caso} ${objetivo}`),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:estrategista')
     }
 
-    events.agentUsed(user.id, 'estrategista', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'estrategista', 'unknown'), 'events.agentUsed:estrategista')
     return NextResponse.json({ plano })
   } catch (err: unknown) {
     return safeError('estrategista', err)

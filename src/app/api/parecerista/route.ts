@@ -8,6 +8,7 @@ import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/
 import { assertPlanAccess } from '@/lib/plan-access'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -165,7 +166,7 @@ export async function POST(req: NextRequest) {
       })
 
       const tituloOut = (parecer?.titulo as string) || consulta.slice(0, 80)
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'parecerista',
         resumo: buildMemorySummary('parecerista', consulta, tituloOut),
         fatos: [
@@ -173,7 +174,7 @@ export async function POST(req: NextRequest) {
           { key: 'titulo', value: String(tituloOut).slice(0, 120) },
         ],
         tags: extractMemoryTags('parecerista', area, `${consulta} ${tituloOut}`),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:parecerista')
     }
 
     const validation = validateCitations(responseText)
@@ -182,7 +183,7 @@ export async function POST(req: NextRequest) {
       safeLog.debug('[API /parecerista] validation:', validation.stats, 'warnings:', validation.warnings.length)
     }
 
-    events.agentUsed(user.id, 'parecerista', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'parecerista', 'unknown'), 'events.agentUsed:parecerista')
     return NextResponse.json({
       parecer,
       fontes: validation.sources,

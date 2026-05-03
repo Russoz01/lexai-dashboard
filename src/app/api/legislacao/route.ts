@@ -6,6 +6,7 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -129,12 +130,12 @@ export async function POST(req: NextRequest) {
         resposta_agente: resultado.dispositivo || 'Consulta realizada',
       })
       const dispOut = (resultado.dispositivo as string) || 'consulta legislativa'
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'legislacao',
         resumo: buildMemorySummary('legislacao', consulta.slice(0, 160), dispOut),
         fatos: [{ key: 'dispositivo', value: String(dispOut).slice(0, 120) }],
         tags: extractMemoryTags('legislacao', undefined, consulta),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:legislacao')
     }
 
     const validation = validateCitations(responseText)
@@ -143,7 +144,7 @@ export async function POST(req: NextRequest) {
       safeLog.debug('[API /legislacao] validation:', validation.stats)
     }
 
-    events.agentUsed(user.id, 'legislacao', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'legislacao', 'unknown'), 'events.agentUsed:legislacao')
 
     return NextResponse.json({
       resultado,

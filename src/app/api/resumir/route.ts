@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
@@ -136,16 +137,16 @@ export async function POST(req: NextRequest) {
               resposta_agente: typeof parsed.objeto === 'string' ? parsed.objeto.slice(0, 200) : 'Documento analisado',
             })
             const objetoOut = typeof parsed.objeto === 'string' ? parsed.objeto.slice(0, 160) : 'documento analisado'
-            recordAgentMemory(supabase, usuarioId, {
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
               agente: 'resumidor',
               resumo: buildMemorySummary('resumidor', texto.slice(0, 160), objetoOut),
               fatos: typeof parsed.classificacao === 'object' && parsed.classificacao
                 ? [{ key: 'tipo', value: String((parsed.classificacao as Record<string, unknown>).tipo || '').slice(0, 80) }]
                 : [],
               tags: extractMemoryTags('resumidor', undefined, texto.slice(0, 800)),
-            }, { prefs }).catch(() => {})
+            }, { prefs }), 'recordAgentMemory:resumidor')
           }
-          events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})
+          fireAndForget(events.agentUsed(user.id, 'resumidor', 'unknown'), 'events.agentUsed:resumidor')
         },
       })
     }
@@ -189,17 +190,17 @@ export async function POST(req: NextRequest) {
         resposta_agente: typeof analise.objeto === 'string' ? analise.objeto.slice(0, 200) : 'Documento analisado',
       })
       const objetoOut2 = typeof analise.objeto === 'string' ? analise.objeto.slice(0, 160) : 'documento analisado'
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'resumidor',
         resumo: buildMemorySummary('resumidor', texto.slice(0, 160), objetoOut2),
         fatos: typeof analise.classificacao === 'object' && analise.classificacao
           ? [{ key: 'tipo', value: String((analise.classificacao as Record<string, unknown>).tipo || '').slice(0, 80) }]
           : [],
         tags: extractMemoryTags('resumidor', undefined, texto.slice(0, 800)),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:resumidor')
     }
 
-    events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'resumidor', 'unknown'), 'events.agentUsed:resumidor')
 
     return NextResponse.json({ analise })
   } catch (err: unknown) {

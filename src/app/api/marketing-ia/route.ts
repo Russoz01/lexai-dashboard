@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-uti
 import { validateMarketingOutput } from '@/lib/oab-validator'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -169,15 +170,15 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Marketing: ${topico.slice(0, 200)} (${PLATAFORMAS[plataforma]})`,
         resposta_agente: `3 variacoes geradas - ${PLATAFORMAS[plataforma]}`,
       })
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'marketing-ia',
         resumo: buildMemorySummary('marketing-ia', `${PLATAFORMAS[plataforma]}: ${topico.slice(0, 120)}`, '3 variações geradas'),
         fatos: [{ key: 'plataforma', value: plataforma }],
         tags: extractMemoryTags('marketing-ia', plataforma, topico),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:marketing-ia')
     }
 
-    events.agentUsed(user.id, 'marketing-ia', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'marketing-ia', 'unknown'), 'events.agentUsed:marketing-ia')
     return NextResponse.json({
       conteudo,
       // SEC-12: expor violations pra UI mostrar warning amigável ao advogado

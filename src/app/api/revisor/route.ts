@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -136,7 +137,7 @@ export async function POST(req: NextRequest) {
         resposta_agente: `Revisao concluida - Score ${revisao?.score ?? '-'}`,
       })
       const scoreOut = String(revisao?.score ?? '-')
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'revisor',
         resumo: buildMemorySummary('revisor', `${tipo || 'Documento'}: ${documento.slice(0, 120)}`, `score ${scoreOut}`),
         fatos: [
@@ -144,7 +145,7 @@ export async function POST(req: NextRequest) {
           { key: 'score', value: scoreOut },
         ],
         tags: extractMemoryTags('revisor', tipo, documento.slice(0, 800)),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:revisor')
     }
 
     const validation = validateCitations(responseText)
@@ -153,7 +154,7 @@ export async function POST(req: NextRequest) {
       safeLog.debug('[API /revisor] validation:', validation.stats)
     }
 
-    events.agentUsed(user.id, 'revisor', 'unknown').catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'revisor', 'unknown'), 'events.agentUsed:revisor')
     return NextResponse.json({
       revisao,
       fontes: validation.sources,

@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 import { buildAreaContext } from '@/lib/agents/taxonomy'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
@@ -138,15 +139,15 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
       resposta_agente: resultado.tipo_calculo || 'Calculo realizado',
     })
     const tipoOut = (resultado.tipo_calculo as string) || 'calculo'
-    recordAgentMemory(supabase, usuarioId, {
+    fireAndForget(recordAgentMemory(supabase, usuarioId, {
       agente: 'calculador',
       resumo: buildMemorySummary('calculador', consulta.slice(0, 160), tipoOut),
       fatos: [{ key: 'tipo_calculo', value: String(tipoOut).slice(0, 80) }],
       tags: extractMemoryTags('calculador', undefined, consulta),
-    }, { prefs }).catch(() => {})
+    }, { prefs }), 'recordAgentMemory:calculador')
   }
 
-  events.agentUsed(user.id, 'calculador', 'unknown').catch(() => {})
+  fireAndForget(events.agentUsed(user.id, 'calculador', 'unknown'), 'events.agentUsed:calculador')
 
   return NextResponse.json({ resultado })
 })

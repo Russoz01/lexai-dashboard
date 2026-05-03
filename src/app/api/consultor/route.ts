@@ -7,6 +7,7 @@ import { parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -233,7 +234,7 @@ export async function POST(req: NextRequest) {
 
       // Cross-agent memory (fire-forget — never blocks request)
       const tituloOut = (parecerData?.titulo as string) || pergunta.slice(0, 80)
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'consultor',
         resumo: buildMemorySummary('consultor', pergunta, tituloOut),
         fatos: [
@@ -241,10 +242,10 @@ export async function POST(req: NextRequest) {
           { key: 'titulo', value: String(tituloOut).slice(0, 120) },
         ],
         tags: extractMemoryTags('consultor', area, `${pergunta} ${tituloOut}`),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:consultor')
     }
 
-    events.agentUsed(user.id, 'consultor', plano).catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'consultor', plano), 'events.agentUsed:consultor')
 
     return NextResponse.json({
       parecer: parecerData,

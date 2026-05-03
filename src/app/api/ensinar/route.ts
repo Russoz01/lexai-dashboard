@@ -5,6 +5,7 @@ import { events } from '@/lib/analytics'
 import { parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -210,15 +211,15 @@ export async function POST(req: NextRequest) {
         safeLog.error('[API /ensinar] historico insert error:', histErr.message, histErr.code)
       }
 
-      recordAgentMemory(supabase, usuarioId, {
+      fireAndForget(recordAgentMemory(supabase, usuarioId, {
         agente: 'professor',
         resumo: buildMemorySummary('professor', `${areas}${topicos ? ` | ${topicos.slice(0, 80)}` : ''}`, 'monitor legislativo'),
         fatos: [{ key: 'areas', value: String(areas).slice(0, 120) }],
         tags: extractMemoryTags('professor', undefined, `${areas} ${topicos}`),
-      }, { prefs }).catch(() => {})
+      }, { prefs }), 'recordAgentMemory:professor')
     }
 
-    events.agentUsed(user.id, 'professor', plano).catch(() => {})
+    fireAndForget(events.agentUsed(user.id, 'professor', plano), 'events.agentUsed:professor')
 
     return NextResponse.json({ relatorio })
   } catch (err: unknown) {
