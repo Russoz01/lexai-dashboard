@@ -54,10 +54,13 @@ export function PralvexMark({
       // Prefere PNG da Higgsfield (logo-p.png) com fallback pra SVG vetorial,
       // e fallback final pro selo PX text via onError. Quando Leonardo subir
       // o PNG real em /public/logo-p.png, ele aparece automaticamente.
+      // 2026-05-03 fix: tamanho reduzido pra 0.62 + container ganha padding
+      // interno + overflow:hidden — antes a logo PNG (Higgsfield) tocava as
+      // bordas e cortava cantos. Agora respira dentro do selo.
       src="/logo-p.png"
       alt="Pralvex"
-      width={Math.round(size * 0.78)}
-      height={Math.round(size * 0.78)}
+      width={Math.round(size * 0.62)}
+      height={Math.round(size * 0.62)}
       onError={(e) => {
         // 1a falha: tenta SVG. 2a falha (SVG tambem ausente): cai no PX text.
         const target = e.currentTarget
@@ -71,6 +74,8 @@ export function PralvexMark({
         objectFit: 'contain',
         display: 'block',
         filter: `drop-shadow(0 0 8px ${tone}40)`,
+        maxWidth: '100%',
+        maxHeight: '100%',
       }}
     />
   )
@@ -90,6 +95,10 @@ export function PralvexMark({
         background: 'linear-gradient(135deg, #1a1410 0%, #0a0807 100%)',
         border: `1px solid ${tone}55`,
         boxShadow: `inset 0 1px 0 rgba(230,212,189,0.08), 0 4px 20px ${tone}33`,
+        overflow: 'hidden',
+        padding: Math.round(size * 0.08),
+        boxSizing: 'border-box',
+        flexShrink: 0,
       }}
     >
       {inner}

@@ -131,14 +131,23 @@ export async function recordAgentMemory(
     : await getUserPreferences(supabase, usuarioId)
   if (!prefs || !prefs.memory_enabled) return
 
-  // Trunca resumo defensivamente
-  const resumo = entry.resumo.slice(0, 500)
+  // P0-2 LGPD fix (audit elite 2026-05-03): anonimiza resumo + fatos antes de
+  // gravar. Antes inseriamos texto cru com nomes/CPF/CNPJ/email/telefone/CEP
+  // — vazamento futuro = multa ANPD + churn. anonymize() ja existia mas estava
+  // unused. Substitui PII por mascaras [CPF_1], [EMAIL_1] etc. Tags nao precisam
+  // (heuristica sem PII).
+  const { anonymize } = await import('@/lib/anonymizer')
+  const resumoAnonimo = anonymize(entry.resumo.slice(0, 500)).text
+  const fatosAnonimos = (entry.fatos || []).map((f) => ({
+    key: f.key,
+    value: anonymize(f.value).text,
+  }))
 
   await supabase.from('agent_memory').insert({
     usuario_id: usuarioId,
     agente: entry.agente,
-    resumo,
-    fatos: entry.fatos || [],
+    resumo: resumoAnonimo,
+    fatos: fatosAnonimos,
     tags: entry.tags || [],
     historico_id: entry.historico_id || null,
   })

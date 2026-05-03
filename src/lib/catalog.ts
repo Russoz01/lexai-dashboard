@@ -88,7 +88,8 @@ export const CATALOG: CatalogItem[] = [
 
   // ───────── 9 top-tier (Firma R$1.459+ · TODOS 27) ─────────
   { slug: 'compliance',   label: 'Compliance',   href: '/dashboard/compliance',   Icon: ShieldCheck,    desc: 'LGPD, Provimento 205, conformidade',            kind: 'agent', minPlan: 'pro', implemented: true  },
-  { slug: 'marketing-ia', label: 'Marketing IA', href: '/dashboard/marketing-ia', Icon: Megaphone,      desc: 'Conteúdo OAB-compliant para redes',             kind: 'agent', minPlan: 'pro', implemented: true  },
+  // 2026-05-03: temporariamente EM BREVE — backend Anthropic retornando 503 intermitente. Reverter quando estabilizar.
+  { slug: 'marketing-ia', label: 'Marketing IA', href: '/dashboard/marketing-ia', Icon: Megaphone,      desc: 'Conteúdo OAB-compliant para redes',             kind: 'agent', minPlan: 'pro', implemented: false },
   { slug: 'planilhas',    label: 'Planilhas',    href: '/dashboard/planilhas',    Icon: Table2,         desc: 'Timesheet, controle, honorários',               kind: 'agent', minPlan: 'pro', implemented: true  },
   { slug: 'rotina',       label: 'Rotina',       href: '/dashboard/rotina',       Icon: Calendar,       desc: 'Agenda, compromissos, fluxos',                  kind: 'agent', minPlan: 'pro', implemented: true  },
 
@@ -126,3 +127,26 @@ export function agents(): CatalogItem[] {
 export function modules(): CatalogItem[] {
   return CATALOG.filter(i => i.kind === 'module')
 }
+
+/**
+ * AGENT_COUNT — contadores derivados pra UI/marketing/SEO.
+ *
+ * UX P1.2 fix (audit elite 2026-05-03): unifica fonte de verdade. Antes:
+ *   - dashboard/page.tsx dizia "trinta e dois"
+ *   - intro/page.tsx dizia "vinte e dois"
+ *   - login/page.tsx dizia "vinte e sete"
+ *   - planos.tsx + Schema.org Google diziam "27"
+ *   - catalog real tinha 33 itens kind='agent'
+ *
+ * Agora: importa AGENT_COUNT.total/implemented/preview onde precisar.
+ */
+export const AGENT_COUNT = {
+  /** Todos agentes do catalogo (incluindo preview-only). */
+  total: CATALOG.filter(i => i.kind === 'agent').length,
+  /** Agentes com handler real / pagina implementada (uso publico hoje). */
+  implemented: CATALOG.filter(i => i.kind === 'agent' && i.implemented).length,
+  /** Agentes em preview / EM BREVE. */
+  preview: CATALOG.filter(i => i.kind === 'agent' && !i.implemented).length,
+  /** Total de modulos (Casos, CRM, Jurimetria, Marketing). */
+  modules: CATALOG.filter(i => i.kind === 'module').length,
+} as const

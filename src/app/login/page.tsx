@@ -8,6 +8,7 @@ import { ArrowLeft, Check, Eye, EyeOff, Loader2, MailCheck } from 'lucide-react'
 import { PralvexMark } from '@/components/PralvexMark'
 import { AmbientMesh } from '@/components/ui/ambient-mesh'
 import { safeLog } from '@/lib/safe-log'
+import { AGENT_COUNT } from '@/lib/catalog'
 
 /* ═════════════════════════════════════════════════════════════
  * /login — Atelier Login (migrado para Tailwind em 2026-04-17)
@@ -18,8 +19,11 @@ import { safeLog } from '@/lib/safe-log'
  * Cursor-follow glow via CSS custom property (--mx/--my).
  * ═════════════════════════════════════════════════════════════ */
 
+// 2026-05-03 fix Leonardo (UX P1.2 audit): drift de "numero de agentes" eliminado.
+// Antes valor 27 hardcoded em 4 superficies. Agora puxa AGENT_COUNT.implemented
+// de @/lib/catalog (fonte unica de verdade).
 const VALUE_PROPS = [
-  { n: 'I', title: 'Vinte e sete agentes afinados', desc: 'Treinados especificamente para o ordenamento jurídico brasileiro. 6 novos na v10.8.' },
+  { n: 'I', title: `${AGENT_COUNT.implemented} agentes afinados`, desc: `Treinados especificamente para o ordenamento jurídico brasileiro. ${AGENT_COUNT.preview} novos em construção.` },
   { n: 'II', title: 'Demo 50 min grátis', desc: 'Experimente sem cartão. 50 minutos de acesso enterprise pra testar antes de assinar.' },
   { n: 'III', title: 'Segurança e LGPD', desc: 'Dados criptografados em trânsito e em repouso. Nunca utilizados em treinamento.' },
   { n: 'IV', title: 'Feito à mão', desc: 'Não somos mais um SaaS genérico. Somos um atelier.' },
@@ -30,7 +34,7 @@ const FOUNDER_NOTE = {
   signature: 'Pralvex',
   cargo: 'Ofício do atelier · MMXXVI',
   quote:
-    'Escrevi cada agente do zero pensando em um sócio-gestor brasileiro — que vive entre audiência, boletim de compliance e prazo de segunda-feira. Nenhum dos 27 aprende com o seu caso. É um instrumento, não um estagiário digital.',
+    `Escrevi cada agente do zero pensando em um sócio-gestor brasileiro — que vive entre audiência, boletim de compliance e prazo de segunda-feira. Nenhum dos ${AGENT_COUNT.implemented} aprende com o seu caso. É um instrumento, não um estagiário digital.`,
 }
 
 type Strength = 'fraca' | 'media' | 'forte'
