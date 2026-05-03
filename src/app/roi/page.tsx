@@ -103,9 +103,15 @@ export default function RoiCalculator() {
       </div>
 
       <header className="lex-landing-nav-scrolled sticky top-0 z-40 flex items-center justify-between px-6 py-4 backdrop-blur-md md:px-10">
-        <Link href="/" className="group flex items-center gap-2 font-mono text-sm uppercase tracking-[0.3em] text-on-surface">
-          <span className="flex size-7 items-center justify-center rounded-md border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black text-[0.55rem] text-[#bfa68e] shadow-[0_0_12px_rgba(191,166,142,0.2)] transition-all group-hover:border-[#bfa68e]/50">PX</span>
-          Pralvex
+        <Link href="/" className="group flex items-center gap-2.5">
+          <div
+            className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent overflow-hidden"
+            style={{ border: '1px solid var(--border)' }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-p.png" alt="Pralvex" className="size-6 object-contain" style={{ filter: 'drop-shadow(0 0 6px rgba(191,166,142,0.35))' }} />
+          </div>
+          <span className="font-serif text-[15px] tracking-tight" style={{ color: 'var(--text-primary)' }}>Pralvex</span>
         </Link>
         <Link
           href="/empresas"

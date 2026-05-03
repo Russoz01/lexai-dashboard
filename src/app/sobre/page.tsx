@@ -44,8 +44,17 @@ export default function SobrePage() {
       <ScrollProgress />
       <AmbientMesh dust dustCount={8} intensity={0.5} />
       <header className="lex-landing-nav-scrolled sticky top-0 z-40 flex items-center justify-between px-6 py-4 backdrop-blur-md md:px-10">
-        <Link href="/" className="font-mono text-sm uppercase tracking-[0.3em] text-on-surface">
-          Pralvex
+        <Link href="/" className="group flex items-center gap-2.5">
+          <div
+            className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent overflow-hidden"
+            style={{ border: '1px solid var(--border)' }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-p.png" alt="Pralvex" className="size-6 object-contain" style={{ filter: 'drop-shadow(0 0 6px rgba(191,166,142,0.35))' }} />
+          </div>
+          <span className="font-serif text-[15px] tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            Pralvex
+          </span>
         </Link>
         <nav className="flex items-center gap-5 text-sm">
           <Link href="/empresas" className="text-on-surface-muted transition hover:text-on-surface">

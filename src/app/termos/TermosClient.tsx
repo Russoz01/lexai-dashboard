@@ -538,11 +538,15 @@ export default function TermosClient() {
       {/* ═══ NAV ══════════════════════════════════════════════════════ */}
       <header className="lex-landing-nav-scrolled fixed inset-x-0 top-0 z-50 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2 text-on-surface">
-            <div className="flex size-8 items-center justify-center rounded-md border border-on-surface bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
-              <Scale className="size-4 text-[#bfa68e]" strokeWidth={1.75} />
+          <Link href="/" className="flex items-center gap-2.5 text-on-surface">
+            <div
+              className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent overflow-hidden"
+              style={{ border: '1px solid var(--border)' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-p.png" alt="Pralvex" className="size-6 object-contain" style={{ filter: 'drop-shadow(0 0 6px rgba(191,166,142,0.35))' }} />
             </div>
-            <span className="text-sm font-medium tracking-tight">Pralvex</span>
+            <span className="font-serif text-[15px] tracking-tight">Pralvex</span>
           </Link>
           <nav className="flex items-center gap-5">
             <Link

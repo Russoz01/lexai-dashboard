@@ -128,9 +128,15 @@ export default function EmpresasPage() {
       {/* NAV */}
       <nav className="lex-landing-nav-scrolled sticky top-0 z-40 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link href="/" className="group flex items-center gap-2 text-on-surface">
-            <span className="flex size-8 items-center justify-center rounded-md border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-xs tracking-widest text-[#bfa68e] shadow-[0_0_16px_rgba(191,166,142,0.2)] transition-all group-hover:border-[#bfa68e]/50 group-hover:shadow-[0_0_24px_rgba(191,166,142,0.35)]">PX</span>
-            <span className="text-sm font-medium tracking-tight">Pralvex</span>
+          <Link href="/" className="group flex items-center gap-2.5">
+            <div
+              className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent overflow-hidden"
+              style={{ border: '1px solid var(--border)' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-p.png" alt="Pralvex" className="size-6 object-contain" style={{ filter: 'drop-shadow(0 0 6px rgba(191,166,142,0.35))' }} />
+            </div>
+            <span className="font-serif text-[15px] tracking-tight" style={{ color: 'var(--text-primary)' }}>Pralvex</span>
           </Link>
           <div className="flex items-center gap-5">
             <Link href="/" className="hidden text-sm text-on-surface-muted transition hover:text-on-surface sm:inline">Início</Link>
@@ -443,7 +449,13 @@ export default function EmpresasPage() {
       <footer className="border-t border-on-surface" style={{ background: 'var(--bg-base)' }}>
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2">
-            <span className="flex size-6 items-center justify-center rounded border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-[0.6rem] tracking-widest text-[#bfa68e]">PX</span>
+            <span
+              className="flex size-6 items-center justify-center rounded overflow-hidden bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent"
+              style={{ border: '1px solid var(--border)' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-p.png" alt="Pralvex" className="size-4 object-contain" />
+            </span>
             <span className="text-xs text-on-surface-muted">
               © MMXXVI Pralvex
             </span>
