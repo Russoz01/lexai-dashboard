@@ -87,14 +87,16 @@ export default function ConfiguracoesPage() {
   }
 
   // Plan resolvido server-side (antes: localStorage — exploitavel via DevTools)
-  // Audit business P0-1 (2026-05-03): Enterprise bumped 1.599 → 2.499 + Solo entry.
+  // QA P0-9 fix (2026-05-03): Enterprise revertido pra R$1599 (alinhado com
+  // Sidebar e LexPricingGrid). Constraint Leonardo: nao mudar preco bruscamente
+  // — bump pra 2499 era +56%, desfeito.
   const planoMap: Record<string, { nome: string; preco: number }> = {
     solo: { nome: 'Solo', preco: 599 },
     starter: { nome: 'Escritório', preco: 1399 },
     escritorio: { nome: 'Escritório', preco: 1399 },
     pro: { nome: 'Firma', preco: 1459 },
     firma: { nome: 'Firma', preco: 1459 },
-    enterprise: { nome: 'Enterprise', preco: 2499 },
+    enterprise: { nome: 'Enterprise', preco: 1599 },
   }
   const [planoId, setPlanoId] = useState<string>('starter')
   useEffect(() => {
@@ -103,8 +105,11 @@ export default function ConfiguracoesPage() {
       try {
         const res = await fetch('/api/user/plan', { cache: 'no-store' })
         if (!res.ok) return
-        const data = await res.json() as { plan?: string }
-        if (!cancelled && data.plan && planoMap[data.plan]) setPlanoId(data.plan)
+        // QA P0-3 fix (2026-05-03): API retorna `plano`, nao `plan`. Antes
+        // configuracoes lia data.plan e caia silenciosamente em starter pra
+        // todo user Pro/Firma/Enterprise. Agora le data.plano.
+        const data = await res.json() as { plano?: string }
+        if (!cancelled && data.plano && planoMap[data.plano]) setPlanoId(data.plano)
       } catch { /* silent */ }
     })()
     return () => { cancelled = true }
@@ -845,6 +850,113 @@ export default function ConfiguracoesPage() {
           </div>
         </div>
       )}
+
+      {/* CROSS-SELL VANIX SUITE — audit business P1-5 (2026-05-03) */}
+      {/* Mostra os outros produtos da Vanix Corp pra cliente Pralvex que ja */}
+      {/* converteu — LTV expansion sem CAC adicional. UTMs amarrados pra */}
+      {/* attribution no Planora/AlexAI. Cupom 20% off pro cliente Pralvex. */}
+      <div className="section-card" style={{
+        marginTop: 28,
+        padding: '24px 28px',
+        background:
+          'radial-gradient(120% 100% at 50% 0%, rgba(191,166,142,0.06), transparent 70%), var(--card-bg)',
+        border: '1px solid var(--stone-line)',
+        borderRadius: 16,
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-mono, ui-monospace), monospace',
+          fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase',
+          color: 'var(--accent)', marginBottom: 6,
+        }}>
+          Vanix Suite · cross-sell
+        </div>
+        <h3 style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: 22, fontStyle: 'italic', fontWeight: 500,
+          color: 'var(--text-primary)', margin: '0 0 6px',
+          letterSpacing: '-0.01em', lineHeight: 1.2,
+        }}>
+          Outros produtos do nosso atelier
+        </h3>
+        <p style={{
+          fontSize: 13, color: 'var(--text-secondary)',
+          margin: '0 0 18px', lineHeight: 1.55,
+        }}>
+          Cliente Pralvex tem 20% off no primeiro mês. Use o cupom <strong style={{ color: 'var(--accent)' }}>PRALVEX20</strong> ao assinar.
+        </p>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14,
+        }}>
+          {[
+            {
+              nome: 'Planora',
+              tagline: 'Planilha IA pro escritório',
+              corpo: 'Automatize controle financeiro, honorários e prazo médio. A planilha responde em PT-BR — sem fórmula nenhuma.',
+              href: 'https://planora-weld.vercel.app/?utm_source=pralvex&utm_medium=cross_sell&utm_campaign=configuracoes&utm_content=card',
+            },
+            {
+              nome: 'AlexAI',
+              tagline: 'WhatsApp comercial 24h',
+              corpo: 'Atendimento automatizado pra leads novos no WhatsApp. Qualifica, agenda demo e devolve só os quentes pro time.',
+              href: 'https://alexai.com.br/?utm_source=pralvex&utm_medium=cross_sell&utm_campaign=configuracoes&utm_content=card',
+            },
+          ].map((p) => (
+            <a
+              key={p.nome}
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'block', padding: '16px 18px', borderRadius: 12,
+                background: 'var(--hover)',
+                border: '1px solid var(--border)',
+                textDecoration: 'none', color: 'inherit',
+                transition: 'all 0.18s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent)'
+                e.currentTarget.style.transform = 'translateY(-2px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--border)'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
+            >
+              <div style={{
+                display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
+                marginBottom: 4,
+              }}>
+                <div style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: 18, fontStyle: 'italic', fontWeight: 500,
+                  color: 'var(--text-primary)',
+                }}>
+                  {p.nome}
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                  fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase',
+                  color: 'var(--accent)', fontWeight: 700,
+                }}>
+                  Conheça →
+                </div>
+              </div>
+              <div style={{
+                fontSize: 11, color: 'var(--text-muted)',
+                fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8,
+              }}>
+                {p.tagline}
+              </div>
+              <p style={{
+                margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5,
+              }}>
+                {p.corpo}
+              </p>
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

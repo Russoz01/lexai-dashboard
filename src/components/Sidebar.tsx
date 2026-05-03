@@ -114,10 +114,16 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const [filter, setFilter] = useState('')
 
   async function handleLogout() {
-    await supabase.auth.signOut()
+    // QA P0-11 fix (2026-05-03): order matters. Antes signOut + push paralelos
+    // criavam loop login→dashboard→login se signOut demorava >300ms. Agora
+    // aguarda signOut completar ANTES de limpar drafts e redirecionar. Se
+    // signOut falha, NAO limpa drafts (perda injustificada de trabalho).
+    const { error: signOutErr } = await supabase.auth.signOut()
+    if (signOutErr) {
+      // Logout falhou — nao limpa drafts, nao redireciona. User decide retry.
+      return
+    }
     sessionStorage.removeItem('pralvex-plan-cache')
-    // Limpar drafts + caches client-side antes de redirecionar — antes outro
-    // user logando no mesmo browser via dados antigos por alguns segundos.
     try {
       const keysToWipe = Object.keys(localStorage).filter(k =>
         k.startsWith('pralvex-draft-') || k.startsWith('lexai-')
@@ -131,6 +137,21 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   function isActive(href: string) {
     if (href === '/dashboard') return pathname === '/dashboard'
     return pathname.startsWith(href.split('?')[0])
+  }
+
+  /**
+   * QA P0-7 fix (2026-05-03): items implemented:false redirecionam pra
+   * /dashboard/em-breve?feature=<slug>. Sem checar feature query, sidebar
+   * desativava o item correspondente. Agora extrai feature do search e
+   * compara com slug pra manter highlight correto.
+   */
+  function isActiveItemSlug(slug: string, href: string) {
+    if (isActive(href)) return true
+    if (typeof window !== 'undefined' && pathname === '/dashboard/em-breve') {
+      const feat = new URLSearchParams(window.location.search).get('feature')
+      return feat === slug
+    }
+    return false
   }
 
   const allAgents = useMemo(() => agents(), [])
@@ -162,7 +183,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const renderLink = (item: CatalogItem) => {
     const href = resolveHref(item, userPlan)
     const locked = !isUnlocked(item, userPlan)
-    const active = isActive(item.href)
+    // QA P0-7 fix: detecta /em-breve?feature=<slug> como ativo pro item.
+    const active = isActiveItemSlug(item.slug, item.href)
     const Icon = item.Icon
     return (
       <Link

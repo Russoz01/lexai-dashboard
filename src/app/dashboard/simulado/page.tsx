@@ -63,7 +63,10 @@ const EXEMPLOS = [
   { tema: 'Exclusão de sócio minoritário', area: 'Empresarial', contexto: 'Sociedade limitada com 3 sócios. Sócio minoritário (15%) descobriu que os majoritários desviaram R$ 400 mil em contratos simulados com empresa de fachada. O contrato social prevê cláusula de arbitragem, mas não há cláusula específica sobre exclusão.' },
 ]
 
-export default function PareceristaPage() {
+// QA P0-2 fix (2026-05-03): export name corrigido — copy/paste do Parecerista
+// deixou nome errado. Pagina renderiza fluxo de Simulado (parecer treinado),
+// agora nome reflete isso.
+export default function SimuladoPage() {
   const [area, setArea] = useState(AREAS_DIREITO[0])
   const [tema, setTema] = useState('')
   const [contexto, setContexto] = useState('')

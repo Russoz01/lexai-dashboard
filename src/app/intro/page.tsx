@@ -17,7 +17,7 @@
    - Override via ?force-intro=1 ou ?reset-intro=1 (debug + first-touch).
    ══════════════════════════════════════════════════════════════ */
 
-import { useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -45,7 +45,18 @@ const SESSION_KEY = 'pralvex-intro-seen'
 
 type Act = 1 | 2 | 3
 
+// QA fix (2026-05-03): Next.js 14 exige Suspense boundary quando
+// useSearchParams() roda em pagina renderizada estaticamente. Sem Suspense,
+// build prerender falha. Wrapper IntroPage delega pra IntroContent.
 export default function IntroPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#0a0a0a' }} />}>
+      <IntroContent />
+    </Suspense>
+  )
+}
+
+function IntroContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 

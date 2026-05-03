@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { LexPricingGrid, type PlanoId } from '@/components/ui/lex-pricing-grid'
+import { LexComparison } from '@/components/ui/lex-comparison'
 
 const BENEFICIOS_ENTERPRISE = [
   'Onboarding dedicado com especialista jurídico',
@@ -29,6 +30,50 @@ const GUARANTEE_POINTS: { Icon: LucideIcon; text: string }[] = [
   { Icon: Smile,     text: 'Sem perguntas' },
 ]
 
+type CancelReason = 'caro' | 'nao_usei' | 'falta_feature' | 'mudei_sistema' | 'outro'
+type CancelOffer = 'cupom_30' | 'onboarding' | 'beta' | 'pause'
+
+const REASON_LABELS: Record<CancelReason, string> = {
+  caro:           'Está muito caro',
+  nao_usei:       'Não consegui usar direito',
+  falta_feature:  'Falta uma funcionalidade que preciso',
+  mudei_sistema:  'Mudei pra outro sistema',
+  outro:          'Outro motivo',
+}
+
+const REASON_TO_OFFER: Record<CancelReason, { offer: CancelOffer; title: string; body: string; cta: string }> = {
+  caro: {
+    offer: 'cupom_30',
+    title: '30% off por 3 meses pra você ficar',
+    body: 'A gente sabe que orçamento aperta. Aqui está um cupom que reduz a mensalidade em 30% pelos próximos 3 meses — sem mexer no plano.',
+    cta: 'Aceitar 30% off',
+  },
+  nao_usei: {
+    offer: 'onboarding',
+    title: 'Onboarding 1:1 grátis com nosso time',
+    body: 'Provavelmente você não viu metade do que a Pralvex faz. Topa 30 min com a gente pra mostrar atalhos e fluxos? É grátis, agendamos em 24h.',
+    cta: 'Agendar onboarding',
+  },
+  falta_feature: {
+    offer: 'beta',
+    title: 'Conta o que falta — entra no programa beta',
+    body: 'Diz qual funcionalidade você precisa e a gente já te coloca na fila do beta. Você ganha acesso antecipado quando chegar.',
+    cta: 'Quero entrar no beta',
+  },
+  mudei_sistema: {
+    offer: 'pause',
+    title: 'Pausa de 90 dias antes de cancelar',
+    body: 'Em vez de cancelar, pausa por 90 dias. Sua conta fica congelada (sem cobrança) e você reativa quando quiser — sem perder histórico.',
+    cta: 'Pausar 90 dias',
+  },
+  outro: {
+    offer: 'onboarding',
+    title: 'Quer conversar antes de decidir?',
+    body: 'Marque 15 min com nosso time pra conversar sobre o que está te incomodando. Sem pressão de vendas — só queremos entender.',
+    cta: 'Marcar conversa',
+  },
+}
+
 function PlanosPageInner() {
   const searchParams = useSearchParams()
   const [planoAtual, setPlanoAtual] = useState<PlanoId>('starter')
@@ -36,19 +81,27 @@ function PlanosPageInner() {
   const [portalLoading, setPortalLoading] = useState(false)
   const [toast, setToast] = useState<{ kind: 'success' | 'error' | 'info'; msg: string } | null>(null)
 
+  // Save flow modal state — audit business P1-2 (2026-05-03)
+  const [cancelModalOpen, setCancelModalOpen] = useState(false)
+  const [cancelReason, setCancelReason] = useState<CancelReason | null>(null)
+  const [cancelStep, setCancelStep] = useState<'reason' | 'offer'>('reason')
+  const [cancelDetail, setCancelDetail] = useState('')
+
   // Server-side plan source of truth (antes era localStorage exploitavel)
+  // QA P0-3 fix (2026-05-03): API retorna `plano`, nao `plan`. Antes /planos
+  // caia em fallback default 'starter' pra todo Pro/Firma/Enterprise.
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
         const res = await fetch('/api/user/plan', { cache: 'no-store' })
         if (!res.ok) return
-        const data = await res.json() as { plan?: string }
-        const normalized = data.plan === 'firma' ? 'pro'
-          : data.plan === 'escritorio' ? 'starter'
-          : data.plan === 'enterprise' ? 'enterprise'
-          : data.plan === 'pro' ? 'pro'
-          : data.plan === 'starter' ? 'starter'
+        const data = await res.json() as { plano?: string }
+        const normalized = data.plano === 'firma' ? 'pro'
+          : data.plano === 'escritorio' ? 'starter'
+          : data.plano === 'enterprise' ? 'enterprise'
+          : data.plano === 'pro' ? 'pro'
+          : data.plano === 'starter' ? 'starter'
           : null
         if (!cancelled && normalized) setPlanoAtual(normalized as PlanoId)
       } catch { /* silent */ }
@@ -69,14 +122,19 @@ function PlanosPageInner() {
     return () => clearTimeout(t)
   }, [searchParams])
 
-  async function iniciarCheckout(plano: PlanoId) {
+  async function iniciarCheckout(plano: PlanoId, interval: 'monthly' | 'annual' = 'monthly') {
     setLoadingPlan(plano)
     setToast(null)
     try {
+      // P0-2 audit business (2026-05-03): emit InitiateCheckout pra Meta/GA4/LinkedIn
+      // antes do redirect — eventos client-side garantem dedup com server-side Purchase.
+      if (typeof window !== 'undefined' && (window as Window & { pralvexPixels?: { initiateCheckout?: (p: string, i: string) => void } }).pralvexPixels) {
+        (window as Window & { pralvexPixels?: { initiateCheckout?: (p: string, i: string) => void } }).pralvexPixels?.initiateCheckout?.(plano, interval)
+      }
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: plano }),
+        body: JSON.stringify({ plan: plano, interval }),
       })
       const data = await res.json() as { url?: string; error?: string }
       if (res.ok && data.url) {
@@ -95,9 +153,35 @@ function PlanosPageInner() {
     }
   }
 
-  async function abrirPortal() {
+  // P1-2 audit (2026-05-03): em vez de redirecionar direto pro Stripe Portal,
+  // abre o save flow modal pra coletar motivo + oferecer counter-offer.
+  function abrirPortal() {
+    setCancelModalOpen(true)
+    setCancelReason(null)
+    setCancelStep('reason')
+    setCancelDetail('')
+  }
+
+  // Apos modal: redireciona pro Stripe Customer Portal (cancelamento real)
+  async function prosseguirParaPortal() {
     setPortalLoading(true)
     setToast(null)
+    // Registra que usuario decidiu seguir mesmo com counter-offer
+    if (cancelReason) {
+      try {
+        await fetch('/api/cancel-reasons', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reason: cancelReason,
+            detail: cancelDetail || undefined,
+            offered: REASON_TO_OFFER[cancelReason].offer,
+            accepted: false,
+            proceeded: true,
+          }),
+        })
+      } catch { /* nao bloqueia portal */ }
+    }
     try {
       const res = await fetch('/api/stripe/portal', { method: 'POST' })
       const data = await res.json() as { url?: string }
@@ -110,7 +194,28 @@ function PlanosPageInner() {
       setToast({ kind: 'error', msg: 'Erro ao abrir o portal de pagamento.' })
     } finally {
       setPortalLoading(false)
+      setCancelModalOpen(false)
     }
+  }
+
+  // Aceitar counter-offer = registra accepted=true + fecha modal sem ir pro portal
+  async function aceitarCounterOffer() {
+    if (!cancelReason) return
+    try {
+      await fetch('/api/cancel-reasons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reason: cancelReason,
+          detail: cancelDetail || undefined,
+          offered: REASON_TO_OFFER[cancelReason].offer,
+          accepted: true,
+          proceeded: false,
+        }),
+      })
+    } catch { /* silent */ }
+    setCancelModalOpen(false)
+    setToast({ kind: 'success', msg: 'Combinado. Nosso time vai te chamar em breve.' })
   }
 
   // Destaque para o CTA final: o plano mais premium que o usuário ainda não tem
@@ -190,6 +295,14 @@ function PlanosPageInner() {
           onCheckout={iniciarCheckout}
           loadingPlan={loadingPlan}
         />
+      </div>
+
+      {/* COMPARATIVO COMPETITIVO — audit business P0-4 (2026-05-03) */}
+      {/* Pralvex × Astrea/Projuris/Themis em 21 linhas decisivas. */}
+      {/* Se decisor entra ja autenticado pra trocar plano, comparativo */}
+      {/* dilui ansiedade de "sera que vale a pena" e ancora valor. */}
+      <div style={{ marginBottom: 24, marginLeft: -28, marginRight: -28 }}>
+        <LexComparison />
       </div>
 
       {/* GERENCIAR ASSINATURA */}
@@ -587,7 +700,7 @@ function PlanosPageInner() {
           { q: 'Posso trocar de plano depois?', a: 'Sim, você pode fazer upgrade ou downgrade a qualquer momento. A diferença é calculada proporcionalmente. Sem fidelidade nem multa.' },
           { q: 'Como funciona o limite de documentos?', a: 'Cada análise, pesquisa ou peça conta como 1 documento. O contador reseta no início do mês. Se atingir o limite, você recebe aviso e pode fazer upgrade ou aguardar o próximo ciclo.' },
           { q: 'Quanto tempo eu economizo de verdade?', a: 'A média dos nossos usuários é 12 a 20 horas por semana. Uma análise de contrato que levaria 3h leva 45 segundos. Uma peça que você escreveria em 2h sai pronta em 2 minutos.' },
-          { q: 'Como funciona a cobrança por advogado?', a: 'O valor por advogado varia conforme o plano: Escritório R$ 1.399, Firma R$ 1.459 e Enterprise R$ 1.599. Quanto maior o plano, mais agentes e recursos disponíveis por usuário.' },
+          { q: 'Como funciona a cobrança por advogado?', a: 'O valor por advogado varia conforme o plano: Solo R$ 599, Escritório R$ 1.399, Firma R$ 1.459 e Enterprise R$ 2.499. Quanto maior o plano, mais agentes e recursos disponíveis por usuário. Pagamento anual tem 17% de desconto.' },
         ].map((item, i, arr) => (
           <div key={i} style={{
             padding: '16px 0',
@@ -614,6 +727,178 @@ function PlanosPageInner() {
       }}>
         dúvidas? contato@pralvex.com.br
       </div>
+
+      {/* SAVE FLOW MODAL — audit business P1-2 (2026-05-03) */}
+      {/* Antes de redirecionar pro Stripe Customer Portal, oferece counter-offer. */}
+      {cancelModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-modal-title"
+          onClick={() => setCancelModalOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 100,
+            background: 'rgba(0,0,0,0.65)',
+            backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 20,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: 540, width: '100%',
+              padding: 28, borderRadius: 16,
+              background: 'var(--card-solid)',
+              border: '1px solid var(--stone-line)',
+              boxShadow: '0 40px 100px rgba(0,0,0,0.5)',
+            }}
+          >
+            {cancelStep === 'reason' ? (
+              <>
+                <div style={{
+                  fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                  fontSize: 10, letterSpacing: '0.24em', textTransform: 'uppercase',
+                  color: 'var(--accent)', marginBottom: 10,
+                }}>
+                  Antes de você ir
+                </div>
+                <h2 id="cancel-modal-title" style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: 24, fontStyle: 'italic', fontWeight: 500,
+                  color: 'var(--text-primary)', margin: '0 0 8px',
+                  letterSpacing: '-0.01em', lineHeight: 1.2,
+                }}>
+                  conta o que ta faltando?
+                </h2>
+                <p style={{
+                  fontSize: 13.5, color: 'var(--text-secondary)',
+                  margin: '0 0 18px', lineHeight: 1.55,
+                }}>
+                  Sem julgamento. A gente quer entender pra melhorar — e quem sabe achar uma solução melhor pra você antes de cancelar.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
+                  {(Object.keys(REASON_LABELS) as CancelReason[]).map((r) => (
+                    <label
+                      key={r}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '12px 14px', borderRadius: 10, cursor: 'pointer',
+                        border: '1px solid ' + (cancelReason === r ? 'var(--accent)' : 'var(--border)'),
+                        background: cancelReason === r ? 'var(--accent-light)' : 'var(--card-bg)',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="cancel-reason"
+                        value={r}
+                        checked={cancelReason === r}
+                        onChange={() => setCancelReason(r)}
+                        style={{ accentColor: 'var(--accent)' }}
+                      />
+                      <span style={{ fontSize: 14, color: 'var(--text-primary)' }}>
+                        {REASON_LABELS[r]}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                {cancelReason === 'outro' && (
+                  <textarea
+                    value={cancelDetail}
+                    onChange={(e) => setCancelDetail(e.target.value.slice(0, 1000))}
+                    placeholder="Conta um pouco do que está acontecendo..."
+                    style={{
+                      width: '100%', minHeight: 80, padding: 12, borderRadius: 8,
+                      border: '1px solid var(--border)', background: 'var(--hover)',
+                      color: 'var(--text-primary)', fontSize: 13, marginBottom: 14,
+                      fontFamily: 'inherit', resize: 'vertical',
+                    }}
+                  />
+                )}
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    onClick={() => setCancelModalOpen(false)}
+                    style={{
+                      padding: '10px 16px', borderRadius: 8, border: '1px solid var(--border)',
+                      background: 'transparent', color: 'var(--text-secondary)',
+                      fontSize: 13, cursor: 'pointer',
+                    }}
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => cancelReason && setCancelStep('offer')}
+                    disabled={!cancelReason}
+                    style={{
+                      padding: '10px 18px', borderRadius: 8, border: '1px solid var(--stone)',
+                      background: cancelReason ? 'linear-gradient(135deg, #f5e8d3, #bfa68e)' : 'var(--hover)',
+                      color: cancelReason ? '#0a0a0a' : 'var(--text-muted)',
+                      fontSize: 13, fontWeight: 700, cursor: cancelReason ? 'pointer' : 'not-allowed',
+                    }}
+                  >
+                    Continuar
+                  </button>
+                </div>
+              </>
+            ) : (
+              cancelReason && (
+                <>
+                  <div style={{
+                    fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                    fontSize: 10, letterSpacing: '0.24em', textTransform: 'uppercase',
+                    color: 'var(--accent)', marginBottom: 10,
+                  }}>
+                    Antes de você ir · proposta
+                  </div>
+                  <h2 style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontSize: 24, fontStyle: 'italic', fontWeight: 500,
+                    color: 'var(--text-primary)', margin: '0 0 10px',
+                    letterSpacing: '-0.01em', lineHeight: 1.25,
+                  }}>
+                    {REASON_TO_OFFER[cancelReason].title}
+                  </h2>
+                  <p style={{
+                    fontSize: 14, color: 'var(--text-secondary)',
+                    margin: '0 0 22px', lineHeight: 1.6,
+                  }}>
+                    {REASON_TO_OFFER[cancelReason].body}
+                  </p>
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                    <button
+                      type="button"
+                      onClick={prosseguirParaPortal}
+                      disabled={portalLoading}
+                      style={{
+                        padding: '10px 16px', borderRadius: 8,
+                        border: '1px solid var(--border)', background: 'transparent',
+                        color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer',
+                      }}
+                    >
+                      {portalLoading ? 'Abrindo...' : 'Cancelar mesmo assim'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={aceitarCounterOffer}
+                      style={{
+                        padding: '12px 20px', borderRadius: 8, border: '1px solid var(--stone)',
+                        background: 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
+                        color: '#0a0a0a', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                        boxShadow: '0 8px 24px rgba(212,174,106,0.35)',
+                      }}
+                    >
+                      {REASON_TO_OFFER[cancelReason].cta}
+                    </button>
+                  </div>
+                </>
+              )
+            )}
+          </div>
+        </div>
+      )}
 
       <style>{`
         @media (max-width: 1100px) {
