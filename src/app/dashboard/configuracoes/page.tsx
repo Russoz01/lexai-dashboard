@@ -68,16 +68,17 @@ export default function ConfiguracoesPage() {
     if (typeof window !== 'undefined' && !window.confirm('Limpar TODA a memória cross-agent? Esta acao e definitiva.')) return
     setMemoryPurging(true)
     try {
-      const { error } = await supabase
-        .from('agent_memory')
-        .delete()
-        .eq('usuario_id', prefs.usuario_id)
-      if (error) {
-        setErro('Erro ao limpar memoria')
+      // Audit fix (2026-05-03): rota server-side com audit_log LGPD Art. 18.
+      // Antes: DELETE direto via supabase client — funcionava (RLS) mas sem
+      // trail. LGPD exige registro de operações de exclusão de dados pessoais.
+      const res = await fetch('/api/preferences/purge-memory', { method: 'POST' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.ok) {
+        setErro(data?.error || 'Erro ao limpar memoria')
         setTimeout(() => setErro(''), 3500)
       } else {
         setMemoryCount(0)
-        setMsg('Memoria limpa.')
+        setMsg(`Memoria limpa (${data.deleted ?? 0} entradas).`)
         setTimeout(() => setMsg(''), 2500)
       }
     } finally {

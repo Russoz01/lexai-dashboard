@@ -24,6 +24,7 @@ export type AuditAction =
   | 'user.login'
   | 'user.data_export'
   | 'user.data_delete'
+  | 'user.memory_purge'
   | 'user.plan_change'
   | 'user.oauth_connect'
   | 'user.oauth_revoke'
