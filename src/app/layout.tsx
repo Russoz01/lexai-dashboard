@@ -87,7 +87,19 @@ const organizationJsonLd = {
   name: 'Pralvex',
   legalName: 'Pralvex',
   url: SITE_URL,
-  logo: `${SITE_URL}/apple-icon`,
+  // Logo detalhada (Google prefere object com width/height + URL absoluta de PNG estatico)
+  // 2026-05-02: substituido /apple-icon dinamico por /logo-512.png estatico
+  // pra Google/Bing/Brave indexarem favicon nas search results.
+  logo: {
+    '@type': 'ImageObject',
+    '@id': `${SITE_URL}/#logo`,
+    url: `${SITE_URL}/logo-512.png`,
+    contentUrl: `${SITE_URL}/logo-512.png`,
+    width: 512,
+    height: 512,
+    caption: 'Pralvex',
+  },
+  image: `${SITE_URL}/logo-512.png`,
   description: 'Pralvex e a plataforma de inteligencia artificial para escritorios de advocacia brasileiros.',
   foundingDate: '2025',
   sameAs: [

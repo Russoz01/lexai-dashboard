@@ -236,6 +236,15 @@
   color: transparent;
 }
 
+/* /intro — drone video reduced motion fix
+   Quando user prefere reduced motion, pausa o video drone via CSS.
+   Sem JS conditional render (que causava React #418 hydration mismatch). */
+@media (prefers-reduced-motion: reduce) {
+  .lex-intro-drone {
+    display: none;
+  }
+}
+
 /* Landing nav sticky tematizada — substitui bg-black/80 hardcoded */
 .lex-landing-nav-scrolled {
   border-bottom: 1px solid var(--border);

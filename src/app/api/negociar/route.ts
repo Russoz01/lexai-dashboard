@@ -5,6 +5,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { validateOabContent } from '@/lib/oab-validator'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
