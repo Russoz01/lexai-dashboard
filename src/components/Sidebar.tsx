@@ -1,8 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { usePlan } from '@/hooks/usePlan'
 import { agents, modules, isUnlocked, type CatalogItem, type Plan } from '@/lib/catalog'
@@ -105,10 +105,22 @@ function buildAreaGroups(agentsList: CatalogItem[]): Array<{ label: string; item
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const router = useRouter()
   const supabase = createClient()
   const { plano, trial, loading, founder } = usePlan()
+
+  // QA fix (2026-05-03): useSearchParams quebra prerender estatico em todas
+  // as 39 dashboard pages sem Suspense boundary. Em vez disso, le window.location.search
+  // dentro de useEffect quando pathname muda. SSR-safe + re-renderiza em nav.
+  const [featureSlug, setFeatureSlug] = useState<string | null>(null)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (pathname === '/dashboard/em-breve') {
+      setFeatureSlug(new URLSearchParams(window.location.search).get('feature'))
+    } else {
+      setFeatureSlug(null)
+    }
+  }, [pathname])
   // Founder resolve pra enterprise no servidor — usamos como fallback aqui
   const userPlan = (founder ? 'enterprise' : plano || 'free') as Plan
 
@@ -136,24 +148,21 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   }
 
   /**
-   * Bug fix (2026-05-03 segunda iteracao): items com href apontando pra
-   * /dashboard/em-breve?feature=<slug> faziam pathname.startsWith bater pra
-   * TODOS items implemented:false simultaneamente quando user estava em
-   * /em-breve. Sidebar destacava CNJ + Comparador + Flashcards + Plano + Casos
-   * + CRM + Jurimetria + Marketing TODOS juntos.
+   * Bug fix (2026-05-03 v3 — fix prerender break): items com href apontando
+   * pra /dashboard/em-breve?feature=<slug> faziam pathname.startsWith bater
+   * pra TODOS items implemented:false quando user estava em /em-breve.
    *
-   * Solucao: rota /em-breve compara feature query especifica. Outras rotas
-   * usam pathname.startsWith normal. useSearchParams hook re-renderiza no
-   * client-side nav (window.location.search nao re-renderiza).
+   * Solucao: rota /em-breve compara feature query especifica via featureSlug
+   * state (lido em useEffect, SSR-safe). Outras rotas usam pathname.startsWith.
+   *
+   * NOTA: usar useSearchParams() quebra prerender estatico de todas as
+   * dashboard pages sem Suspense boundary. window.location.search via
+   * useState/useEffect resolve sem precisar Suspense.
    */
   function isActiveItemSlug(slug: string, href: string) {
-    // Caso especial: estamos em /dashboard/em-breve — so o item cuja slug
-    // bate com feature=<slug> fica active.
     if (pathname === '/dashboard/em-breve') {
-      const feat = searchParams?.get('feature')
-      return feat === slug
+      return featureSlug === slug
     }
-    // Caso normal: pathname.startsWith comparado com href limpo.
     const cleanHref = href.split('?')[0]
     if (cleanHref === '/dashboard') return pathname === '/dashboard'
     return pathname.startsWith(cleanHref)
