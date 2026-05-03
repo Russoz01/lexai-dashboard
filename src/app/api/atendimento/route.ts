@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 import { LEGAL_AREAS_LABEL_MAP, isLegalAreaSlug } from '@/lib/agents/taxonomy'
@@ -93,7 +93,7 @@ export const POST = withAgentAuth('atendimento', async ({ req, supabase, user })
   const timeoutId = setTimeout(() => controller.abort(), 90_000)
   let message: Anthropic.Messages.Message
   try {
-    message = await client.messages.create({
+    message = await withRetry(() => client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8192,
       system: [
@@ -105,7 +105,7 @@ export const POST = withAgentAuth('atendimento', async ({ req, supabase, user })
         ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
       messages: [{ role: 'user', content: userMessage }],
-    }, { signal: controller.signal })
+    }, { signal: controller.signal }))
   } finally {
     clearTimeout(timeoutId)
   }

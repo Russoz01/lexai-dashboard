@@ -1,9 +1,9 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
     ].filter(Boolean).join('\n')
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
-    const message = await client.messages.create({
+    const message = await withRetry(() => client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8192,
       system: [
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
         },
       ],
       messages: [{ role: 'user', content: userMessage }],
-    })
+    }))
 
     const textBlock = message.content.find(b => b.type === 'text')
     const responseText = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''

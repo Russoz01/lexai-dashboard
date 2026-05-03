@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       safeLog.debug('[API /legislacao] grounding:', gstats)
     }
 
-    const message = await client.messages.create({
+    const message = await withRetry(() => client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       // 6144 (era 4096): explicacao + texto_legal + exemplos + jurisprudencia
       // + artigos_relacionados estourava o teto em artigos longos (CF, CPC).
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
       ],
       tools: [WEB_SEARCH_TOOL],
       messages: [{ role: 'user', content: `Legal provision to explain:\n\n${consulta}` }],
-    })
+    }))
 
     // Concatena TODOS os text blocks (WEB_SEARCH_TOOL gera preambulo + tool_use + JSON)
     const responseText = message.content

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
-import { parseAgentJSON } from '@/lib/api-utils'
+import { parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
 
     let message: Anthropic.Messages.Message
     try {
-      message = await client.messages.create({
+      message = await withRetry(() => client.messages.create({
         model: 'claude-haiku-4-5-20251001',
         // 12000 (era 8192): pareceres com fundamentacao + doutrina + favoraveis
         // + contrarios + recomendacoes estouravam o teto, JSON cortado e parse
@@ -195,7 +195,7 @@ export async function POST(req: NextRequest) {
         ],
         tools: [WEB_SEARCH_TOOL],
         messages: [{ role: 'user', content: userMessage }],
-      }, { signal: controller.signal })
+      }, { signal: controller.signal }))
     } finally {
       clearTimeout(timeoutId)
     }

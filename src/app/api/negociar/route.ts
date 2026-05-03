@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { validateOabContent } from '@/lib/oab-validator'
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
     let message: Anthropic.Messages.Message
     try {
-      message = await client.messages.create({
+      message = await withRetry(() => client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 8192,
         system: [
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
           ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: `Situation to analyze:\n\n${situacao}` }],
-      }, { signal: controller.signal })
+      }, { signal: controller.signal }))
     } finally {
       clearTimeout(timeoutId)
     }

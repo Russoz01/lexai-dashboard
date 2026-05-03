@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 import { buildAreaContext } from '@/lib/agents/taxonomy'
@@ -99,7 +99,7 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
   const timeoutId = setTimeout(() => controller.abort(), 60_000)
   let message: Anthropic.Messages.Message
   try {
-    message = await client.messages.create({
+    message = await withRetry(() => client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       // 6144 (era 4096) — calculos longos com passos[]+base_legal[]+valores{}
       // estouravam o teto e cortavam JSON no meio.
@@ -115,7 +115,7 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
         ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
       messages: [{ role: 'user', content: `Calculation request:\n\n${consulta}` }],
-    }, { signal: controller.signal })
+    }, { signal: controller.signal }))
   } finally {
     clearTimeout(timeoutId)
   }

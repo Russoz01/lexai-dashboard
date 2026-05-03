@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { buscarJurisprudenciaReal, isJusBrasilConfigured } from '@/lib/jusbrasil'
-import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
     const timeoutId = setTimeout(() => abortController.abort(), 90_000)
     let message: Anthropic.Messages.Message
     try {
-      message = await client.messages.create({
+      message = await withRetry(() => client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 8192,
         system: [
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         ],
         tools: [WEB_SEARCH_TOOL],
         messages: [{ role: 'user', content: `Research topic: ${query}${filtros ? `\n\nFilters:\n${filtros}` : ''}` }],
-      }, { signal: abortController.signal })
+      }, { signal: abortController.signal }))
     } finally {
       clearTimeout(timeoutId)
     }

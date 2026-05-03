@@ -3,9 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
+import { safeLog } from '@/lib/safe-log'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -115,7 +117,7 @@ export async function POST(req: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
     let message: Anthropic.Messages.Message
     try {
-      message = await client.messages.create({
+      message = await withRetry(() => client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 8192,
         system: [
@@ -127,7 +129,7 @@ export async function POST(req: NextRequest) {
           ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
-      }, { signal: controller.signal })
+      }, { signal: controller.signal }))
     } finally {
       clearTimeout(timeoutId)
     }

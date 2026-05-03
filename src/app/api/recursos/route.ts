@@ -3,9 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
+import { safeLog } from '@/lib/safe-log'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -102,11 +104,17 @@ export async function POST(req: NextRequest) {
     const prefsContext = buildPreferencesContext(prefs)
     const enhancedSystem = buildAgentPreamble('recursos') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
 
+    // P0-1 (audit elite IA): grounding obrigatorio.
+    // Recurso a tribunal superior cita REsp/RE — sem grounding, jurisprudencia
+    // hallucinated chega na peca filed. Sancao OAB se descoberto.
+    const grounding = buildGroundingContext(decisao.slice(0, 2000), { topK: 8 })
+    const gstats = groundingStats(grounding)
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
     let message: Anthropic.Messages.Message
     try {
-      message = await client.messages.create({
+      message = await withRetry(() => client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 8192,
         system: [
@@ -115,10 +123,15 @@ export async function POST(req: NextRequest) {
             text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          {
+            type: 'text' as const,
+            text: grounding.contextBlock,
+            cache_control: { type: 'ephemeral' as const },
+          },
           ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
-      }, { signal: controller.signal })
+      }, { signal: controller.signal }))
     } finally {
       clearTimeout(timeoutId)
     }
@@ -151,8 +164,18 @@ export async function POST(req: NextRequest) {
       }, { prefs }), 'recordAgentMemory:recursos')
     }
 
+    const validation = validateCitations(responseText)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      safeLog.debug('[API /recursos] validation:', validation.stats)
+    }
+
     fireAndForget(events.agentUsed(user.id, 'recursos', 'unknown'), 'events.agentUsed:recursos')
-    return NextResponse.json({ recurso })
+    return NextResponse.json({
+      recurso,
+      fontes: validation.sources,
+      grounding_stats: { ...gstats, ...validation.stats },
+    })
   } catch (err: unknown) {
     return safeError('recursos', err)
   }

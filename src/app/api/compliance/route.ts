@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
-import { parseAgentJSON } from '@/lib/api-utils'
+import { parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
 
     let message: Anthropic.Messages.Message
     try {
-      message = await client.messages.create({
+      message = await withRetry(() => client.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 8192,
         system: [
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
           ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
-      }, { signal: controller.signal })
+      }, { signal: controller.signal }))
     } finally {
       clearTimeout(timeoutId)
     }

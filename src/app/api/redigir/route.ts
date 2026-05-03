@@ -3,9 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
-import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
+import { resolveUsuarioIdServer, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
+import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { validateOabContent } from '@/lib/oab-validator'
@@ -100,6 +101,13 @@ export async function POST(req: NextRequest) {
     const prefsContext = buildPreferencesContext(prefs)
     const enhancedSystem = buildAgentPreamble('redator') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
 
+    // P0-1 (audit elite IA): grounding obrigatorio.
+    // Redator gera peca processual citando STF/STJ/artigos — sem grounding,
+    // hallucination de REsp na peca filed = sancao OAB. Pattern de pesquisar/contestador.
+    const groundingQuery = instrucoes.slice(0, 2000)
+    const grounding = buildGroundingContext(groundingQuery, { topK: 8 })
+    const gstats = groundingStats(grounding)
+
     // Wave C5: streaming opt-in via ?stream=1
     const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
     if (wantsStream) {
@@ -112,6 +120,7 @@ export async function POST(req: NextRequest) {
           max_tokens: 8192,
           system: [
             { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
             ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
           ],
           messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
@@ -146,7 +155,7 @@ export async function POST(req: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
     let message: Anthropic.Messages.Message
     try {
-      message = await client.messages.create({
+      message = await withRetry(() => client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 8192,
         system: [
@@ -155,10 +164,15 @@ export async function POST(req: NextRequest) {
             text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          {
+            type: 'text' as const,
+            text: grounding.contextBlock,
+            cache_control: { type: 'ephemeral' as const },
+          },
           ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
-      }, { signal: controller.signal })
+      }, { signal: controller.signal }))
     } finally {
       clearTimeout(timeoutId)
     }
@@ -197,7 +211,21 @@ export async function POST(req: NextRequest) {
       ? oabCheck.violations.map(v => ({ rule: v.rule, severity: v.severity, motivo: v.motivo }))
       : undefined
 
-    return NextResponse.json({ peca, oab_warnings })
+    // P0-1 (audit elite IA): valida citacoes contra corpus + extrai fontes.
+    // Texto bruto inclui o documento + referencias_legais; analisa ambos.
+    const fullForValidation = `${oabBody}\n${Array.isArray(peca.referencias_legais) ? (peca.referencias_legais as unknown[]).join('\n') : ''}`
+    const validation = validateCitations(fullForValidation)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      safeLog.debug('[API /redigir] validation:', validation.stats)
+    }
+
+    return NextResponse.json({
+      peca,
+      fontes: validation.sources,
+      grounding_stats: { ...gstats, ...validation.stats },
+      oab_warnings,
+    })
   } catch (err: unknown) {
     const errName = err instanceof Error ? err.name : 'Unknown'
     const msg = err instanceof Error ? err.message : 'Erro interno'
