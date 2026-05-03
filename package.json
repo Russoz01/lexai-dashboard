@@ -10,7 +10,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://pralvex.com.br playwright test"
+    "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://pralvex.com.br playwright test",
+    "typecheck": "tsc --noEmit",
+    "pre-demo-check": "npm run typecheck && npm run lint && npm run build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
