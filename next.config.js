@@ -10,16 +10,16 @@ const nextConfig = {
     instrumentationHook: true,
   },
   async headers() {
-    // CSP updated: script-src + connect-src now allow Sentry CDN + ingest.
-    // Without this the browser blocks Sentry from loading and reporting.
+    // CSP updated: + Sentry CDN/ingest, + Marketing pixels (Meta/GA4/LinkedIn)
+    // pra Agent D MarketingPixels.tsx funcionar sem CSP block.
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com https://static.cloudflareinsights.com https://www.clarity.ms https://*.clarity.ms",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com https://static.cloudflareinsights.com https://www.clarity.ms https://*.clarity.ms https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com https://snap.licdn.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://api.stripe.com https://app.posthog.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://www.clarity.ms https://*.clarity.ms https://cloudflareinsights.com",
-      "frame-src https://js.stripe.com https://hooks.stripe.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://api.stripe.com https://app.posthog.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://www.clarity.ms https://*.clarity.ms https://cloudflareinsights.com https://www.facebook.com https://*.facebook.com https://www.google-analytics.com https://*.google-analytics.com https://stats.g.doubleclick.net https://px.ads.linkedin.com https://snap.licdn.com",
+      "frame-src https://js.stripe.com https://hooks.stripe.com https://www.facebook.com",
       "worker-src 'self' blob:",
       "object-src 'none'",
       "base-uri 'self'",

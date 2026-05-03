@@ -217,7 +217,13 @@ export function LexPricingGrid({
 
   // Anual default selected — empurra pra plano com churn menor (P0-3 audit).
   // Usuario que paga anual normalmente nao cancela mes-a-mes, MRR mais previsivel.
-  const [billingInterval, setBillingInterval] = useState<BillingInterval>('annual')
+  // 2026-05-03 fix P1-1: gate via env var. Se NEXT_PUBLIC_BILLING_ANNUAL=0,
+  // toggle some + default forca 'monthly' pra evitar checkout broken quando
+  // os 4 STRIPE_PRICE_*_ANNUAL ainda nao foram criados no Stripe Dashboard.
+  const annualEnabled = process.env.NEXT_PUBLIC_BILLING_ANNUAL !== '0'
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>(
+    annualEnabled ? 'annual' : 'monthly',
+  )
 
   function handleClick(plano: Plano) {
     if (plano.id === currentPlanId) return
@@ -282,7 +288,10 @@ export function LexPricingGrid({
       )}
 
       {/* BILLING TOGGLE — Mensal / Anual (audit business P0-3 · 2026-05-03)
-          Anual default selected. Badge "Economiza 17%" pra ancorar valor. */}
+          Anual default selected. Badge "Economiza 17%" pra ancorar valor.
+          2026-05-03 fix P1-1: hidden if NEXT_PUBLIC_BILLING_ANNUAL=0 (gate
+          ate criar 4 STRIPE_PRICE_*_ANNUAL no Dashboard). */}
+      {annualEnabled && (
       <div
         role="radiogroup"
         aria-label="Selecionar intervalo de cobrança"
@@ -347,6 +356,7 @@ export function LexPricingGrid({
           </button>
         </div>
       </div>
+      )}
 
       {/* PLAN CARDS */}
       <div

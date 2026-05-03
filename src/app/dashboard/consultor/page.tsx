@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   RotateCcw,
   CheckCircle2,
@@ -59,8 +59,16 @@ export default function ConsultorPage() {
   const [erro, setErro] = useState('')
   const [copiado, setCopiado] = useState(false)
 
+  // Demo P0-1 fix (2026-05-03): AbortController + timeout 90s.
+  const abortRef = useRef<AbortController | null>(null)
+  useEffect(() => () => { abortRef.current?.abort() }, [])
+
   async function gerarParecer() {
     if (!pergunta.trim() || loading) return
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+    const tid = setTimeout(() => ac.abort(), 90_000)
     setLoading(true)
     setErro('')
     setParecer(null)
@@ -76,6 +84,7 @@ export default function ConsultorPage() {
           area: area || undefined,
           contexto: contexto || undefined,
         }),
+        signal: ac.signal,
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar parecer.')
@@ -83,8 +92,13 @@ export default function ConsultorPage() {
       if (Array.isArray(data.fontes)) setFontes(data.fontes)
       if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro ao gerar parecer')
+      if (e instanceof Error && e.name === 'AbortError') {
+        setErro('Cancelado ou demorou demais. Tente uma pergunta mais especifica.')
+      } else {
+        setErro(e instanceof Error ? e.message : 'Erro ao gerar parecer')
+      }
     } finally {
+      clearTimeout(tid)
       setLoading(false)
     }
   }
