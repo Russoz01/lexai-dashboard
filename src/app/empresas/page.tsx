@@ -141,6 +141,7 @@ export default function EmpresasPage() {
           <div className="flex items-center gap-5">
             <Link href="/" className="hidden text-sm text-on-surface-muted transition hover:text-on-surface sm:inline">Início</Link>
             <Link href="/#precos" className="hidden text-sm text-on-surface-muted transition hover:text-on-surface sm:inline">Planos</Link>
+            <Link href="/suporte" className="hidden text-sm text-on-surface-muted transition hover:text-on-surface md:inline">Suporte</Link>
             <Link href="/login" className="text-sm text-on-surface-muted transition hover:text-on-surface">Entrar</Link>
             <ThemeToggle variant="landing" />
             <Link

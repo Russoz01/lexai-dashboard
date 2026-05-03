@@ -63,6 +63,9 @@ export default function SobrePage() {
           <Link href="/roi" className="hidden text-on-surface-muted transition hover:text-on-surface sm:inline">
             Calculadora
           </Link>
+          <Link href="/suporte" className="hidden text-on-surface-muted transition hover:text-on-surface md:inline">
+            Suporte
+          </Link>
           <ThemeToggle variant="landing" />
           <Link
             href="/login"

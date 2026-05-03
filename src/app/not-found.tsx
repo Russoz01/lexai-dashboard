@@ -10,6 +10,7 @@ import {
   Phone,
   Search,
   Compass,
+  LifeBuoy,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -29,7 +30,7 @@ const QUICK_LINKS: QuickLink[] = [
   { href: '/', Icon: Home, label: 'Início', desc: 'Landing com 27 agentes' },
   { href: '/dashboard', Icon: LayoutDashboard, label: 'Dashboard', desc: 'Seu gabinete jurídico' },
   { href: '/dashboard/planos', Icon: CreditCard, label: 'Planos', desc: 'Escritório · Firma · Enterprise' },
-  { href: '/empresas', Icon: Compass, label: 'Para empresas', desc: 'B2B · ROI · casos de uso' },
+  { href: '/suporte', Icon: LifeBuoy, label: 'Suporte', desc: 'Atendimento direto · 4h SLA' },
 ]
 
 const HOT_AGENTS: { href: string; label: string }[] = [
