@@ -700,7 +700,7 @@ function PlanosPageInner() {
           { q: 'Posso trocar de plano depois?', a: 'Sim, você pode fazer upgrade ou downgrade a qualquer momento. A diferença é calculada proporcionalmente. Sem fidelidade nem multa.' },
           { q: 'Como funciona o limite de documentos?', a: 'Cada análise, pesquisa ou peça conta como 1 documento. O contador reseta no início do mês. Se atingir o limite, você recebe aviso e pode fazer upgrade ou aguardar o próximo ciclo.' },
           { q: 'Quanto tempo eu economizo de verdade?', a: 'A média dos nossos usuários é 12 a 20 horas por semana. Uma análise de contrato que levaria 3h leva 45 segundos. Uma peça que você escreveria em 2h sai pronta em 2 minutos.' },
-          { q: 'Como funciona a cobrança por advogado?', a: 'O valor por advogado varia conforme o plano: Solo R$ 599, Escritório R$ 1.399, Firma R$ 1.459 e Enterprise R$ 2.499. Quanto maior o plano, mais agentes e recursos disponíveis por usuário. Pagamento anual tem 17% de desconto.' },
+          { q: 'Como funciona a cobrança por advogado?', a: 'O valor por advogado varia conforme o plano: Solo R$ 599, Escritório R$ 1.399, Firma R$ 1.459 e Enterprise R$ 1.599. Quanto maior o plano, mais agentes e recursos disponíveis por usuário. Pagamento anual tem 17% de desconto.' },
         ].map((item, i, arr) => (
           <div key={i} style={{
             padding: '16px 0',

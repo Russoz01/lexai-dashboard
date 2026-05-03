@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { DM_Sans, Playfair_Display } from 'next/font/google'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { CookieConsent } from '@/components/CookieConsent'
+import { MarketingPixels } from '@/components/MarketingPixels'
 import { MicrosoftClarity } from '@/components/MicrosoftClarity'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { SITE_URL } from '@/lib/site-url'
@@ -60,7 +61,7 @@ const faqJsonLd = {
     {
       '@type': 'Question',
       name: 'Quanto custa a Pralvex?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Os planos comecam em R$ 1.399 por mes por advogado (plano Escritorio, 1-5 advogados). O plano Firma custa R$ 1.459 (6-15 advogados) e o Enterprise R$ 1.599 (16+ advogados). Todos incluem demo de 50 minutos gratis pra testar antes de assinar.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Os planos comecam em R$ 599 por mes por advogado (Solo, advogado autonomo). Escritorio R$ 1.399 (1-5 advogados), Firma R$ 1.459 (6-15 advogados) e Enterprise R$ 1.599 (16+ advogados, agentes customizados + on-premise + white-label). Pagamento anual tem 17% de desconto. Todos incluem demo de 50 minutos gratis pra testar antes de assinar.' },
     },
     {
       '@type': 'Question',
@@ -162,7 +163,7 @@ const jsonLd = {
       { '@type': 'Offer', name: 'Solo',       price: '599',  priceCurrency: 'BRL', category: 'subscription', description: 'Advogado autônomo · 8 agentes essenciais · 50 docs/mês', availability: 'https://schema.org/InStock' },
       { '@type': 'Offer', name: 'Escritório', price: '1399', priceCurrency: 'BRL', category: 'subscription', description: '1-5 advogados · 18 agentes · 200 docs/mês · PDF profissional', availability: 'https://schema.org/InStock' },
       { '@type': 'Offer', name: 'Firma',      price: '1459', priceCurrency: 'BRL', category: 'subscription', description: '6-15 advogados · TODOS 27 agentes · documentos ilimitados · API + onboarding', availability: 'https://schema.org/InStock' },
-      { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', category: 'subscription', description: '16+ advogados · agentes customizados treinados no escritório · DPA + on-premise + white-label', availability: 'https://schema.org/InStock' },
+      { '@type': 'Offer', name: 'Enterprise', price: '1599', priceCurrency: 'BRL', category: 'subscription', description: '16+ advogados · agentes customizados treinados no escritório · DPA + on-premise + white-label · SLA 99.9%', availability: 'https://schema.org/InStock' },
     ],
   },
   featureList: [
@@ -233,6 +234,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <OfflineBanner />
         <ThemeProvider>{children}</ThemeProvider>
         <CookieConsent />
+        <MarketingPixels />
         <MicrosoftClarity />
       </body>
     </html>

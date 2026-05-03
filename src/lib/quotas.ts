@@ -14,11 +14,33 @@ export const PLAN_QUOTAS: Record<string, number> = {
   pro:        100000,
 }
 
+/**
+ * Audit business P1-1 (2026-05-03): warning level baseado em ratio used/limit.
+ *   - 'soft'     : 75% <= ratio < 85% — toast persistente, nao bloqueia
+ *   - 'urgent'   : 85% <= ratio < 100% — modal soft-block, conta restantes
+ *   - 'exceeded' : ratio >= 100% — deadend, CTA upgrade
+ *
+ * Aplicado tanto pre-quota (antes de incrementar — pra UI saber quando
+ * mostrar warning) quanto post-quota (apos incrementar — pra trigger pos-acao).
+ */
+export type QuotaWarning = 'soft' | 'urgent' | 'exceeded' | null
+
+export function quotaWarningFor(used: number, limit: number): QuotaWarning {
+  if (limit <= 0) return null
+  const ratio = used / limit
+  if (ratio >= 1.0) return 'exceeded'
+  if (ratio >= 0.85) return 'urgent'
+  if (ratio >= 0.75) return 'soft'
+  return null
+}
+
 interface QuotaCheckResult {
   ok: boolean
   remaining: number
   used: number
   limit: number
+  /** Nivel de aviso baseado em ratio — UI usa pra mostrar progress bar/modal. */
+  warning?: QuotaWarning
   response?: NextResponse
 }
 
@@ -75,9 +97,10 @@ export async function checkAndIncrementQuota(
       remaining: 0,
       used: currentCount,
       limit,
+      warning: 'exceeded',
       response: NextResponse.json({
         error: `Limite mensal do plano ${effectivePlan} atingido (${currentCount}/${limit}). Faca upgrade para continuar.`,
-        quota: { used: currentCount, limit, plan: effectivePlan },
+        quota: { used: currentCount, limit, plan: effectivePlan, warning: 'exceeded' },
       }, { status: 429 }),
     }
   }
@@ -90,13 +113,21 @@ export async function checkAndIncrementQuota(
     // Don't block the user on quota tracking failure — log and continue
     // eslint-disable-next-line no-console
     safeLog.error('[quota] increment failed:', incErr.message)
-    return { ok: true, remaining: limit - currentCount - 1, used: currentCount + 1, limit }
+    return {
+      ok: true,
+      remaining: limit - currentCount - 1,
+      used: currentCount + 1,
+      limit,
+      warning: quotaWarningFor(currentCount + 1, limit),
+    }
   }
 
+  const finalUsed = newCount ?? currentCount + 1
   return {
     ok: true,
-    remaining: Math.max(0, limit - (newCount ?? currentCount + 1)),
-    used: newCount ?? currentCount + 1,
+    remaining: Math.max(0, limit - finalUsed),
+    used: finalUsed,
     limit,
+    warning: quotaWarningFor(finalUsed, limit),
   }
 }

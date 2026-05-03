@@ -8,15 +8,48 @@ export const runtime = 'nodejs'
 
 /**
  * POST /api/stripe/checkout
- * Body: { plan: 'starter' | 'pro' | 'enterprise' }
+ * Body: { plan: 'solo' | 'starter' | 'pro' | 'enterprise', interval?: 'monthly' | 'annual' }
  *
  * Cria (ou reusa) cliente Stripe do usuário autenticado e devolve a URL da Checkout Session.
  * Substitui os antigos links hardcoded buy.stripe.com/test_* no client.
+ *
+ * Audit business P0-3 (2026-05-03): aceita `interval` pra suportar pagamento
+ * anual (17% off). Cria preços anuais separados no Stripe Dashboard:
+ *   STRIPE_PRICE_SOLO_ANNUAL, STRIPE_PRICE_ESCRITORIO_ANNUAL,
+ *   STRIPE_PRICE_FIRMA_ANNUAL, STRIPE_PRICE_ENTERPRISE_ANNUAL.
+ *
+ * TODO: criar 4 prices anuais no Stripe Dashboard com recurring.interval=year
+ *       e billing_scheme=per_unit. Valor = mensal × 10 (2 meses grátis efetivo).
+ *       Preencher os env vars listados acima em .env.production.
  */
 
 type PlanId = 'solo' | 'starter' | 'pro' | 'enterprise'
+type IntervalId = 'monthly' | 'annual'
 
-function priceIdFor(plan: PlanId): string | null {
+function priceIdFor(plan: PlanId, interval: IntervalId): string | null {
+  // Anual usa env vars _ANNUAL — fallback pro mensal se nao configurado
+  // (graceful degradation enquanto Stripe Dashboard nao tiver os 4 prices).
+  if (interval === 'annual') {
+    switch (plan) {
+      case 'solo':
+        return process.env.STRIPE_PRICE_SOLO_ANNUAL || process.env.STRIPE_PRICE_SOLO || null
+      case 'starter':
+        return process.env.STRIPE_PRICE_ESCRITORIO_ANNUAL
+          || process.env.STRIPE_PRICE_STARTER_ANNUAL
+          || process.env.STRIPE_PRICE_ESCRITORIO
+          || process.env.STRIPE_PRICE_STARTER
+          || null
+      case 'pro':
+        return process.env.STRIPE_PRICE_FIRMA_ANNUAL
+          || process.env.STRIPE_PRICE_PRO_ANNUAL
+          || process.env.STRIPE_PRICE_FIRMA
+          || process.env.STRIPE_PRICE_PRO
+          || null
+      case 'enterprise':
+        return process.env.STRIPE_PRICE_ENTERPRISE_ANNUAL || process.env.STRIPE_PRICE_ENTERPRISE || null
+    }
+  }
+  // Mensal — comportamento legado preservado
   switch (plan) {
     case 'solo':
       return process.env.STRIPE_PRICE_SOLO || null
@@ -31,13 +64,16 @@ function priceIdFor(plan: PlanId): string | null {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({})) as { plan?: string }
+    const body = await req.json().catch(() => ({})) as { plan?: string; interval?: string }
     const plan = body.plan as PlanId | undefined
     if (!plan || !['solo', 'starter', 'pro', 'enterprise'].includes(plan)) {
       return NextResponse.json({ error: 'invalid_plan' }, { status: 400 })
     }
 
-    const priceId = priceIdFor(plan)
+    // Audit business P0-3 (2026-05-03): valida intervalo recebido do toggle.
+    const interval: IntervalId = body.interval === 'annual' ? 'annual' : 'monthly'
+
+    const priceId = priceIdFor(plan, interval)
     if (!priceId) {
       return NextResponse.json({ error: 'price_not_configured' }, { status: 500 })
     }
@@ -83,7 +119,7 @@ export async function POST(req: NextRequest) {
       // eq('email', ...) que permitia sequestro de billing via spoofing de
       // email no Supabase Auth quando email_confirm está off.
       client_reference_id: user.id,
-      metadata: { auth_user_id: user.id, plan },
+      metadata: { auth_user_id: user.id, plan, interval },
       line_items: [{ price: priceId, quantity: 1 }],
       // P1 audit fix (2026-05-02): UI promete PIX/boleto mas backend só
       // enviava 'card' implícito. Stripe BR já suporta os 3 métodos.
@@ -92,7 +128,7 @@ export async function POST(req: NextRequest) {
         // Trial Pralvex e de 50 min DB-side antes do checkout. Quando user
         // chega aqui ele ja decidiu pagar — Stripe cobra imediato. Nao tem
         // trial duplo descoordenado (DB 30min vs Stripe 7 dias).
-        metadata: { plan, auth_user_id: user.id },
+        metadata: { plan, interval, auth_user_id: user.id },
       },
       allow_promotion_codes: true,
       billing_address_collection: 'auto',

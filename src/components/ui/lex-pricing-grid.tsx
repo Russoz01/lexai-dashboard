@@ -1,7 +1,7 @@
 ﻿'use client'
 
 /* ═════════════════════════════════════════════════════════════════════
- * LexPricingGrid · v11.0 (2026-04-30)
+ * LexPricingGrid · v12.0 (2026-05-03)
  * ───────────────────────────────────────────────────────────────────
  * Componente canônico de planos — atelier editorial dark.
  * Fonte de verdade visual: /dashboard/planos + screenshot Leonardo.
@@ -18,27 +18,43 @@
  *   · src/app/dashboard/planos/page.tsx   (billing autenticado)
  *
  * Preços sincronizados com Stripe (price IDs em src/lib/stripe.ts):
- *   Solo:       R$   599 / advogado / mês  (NOVO v11)
- *   Escritório: R$ 1.399 / advogado / mês
+ *   Enterprise: R$ 1.599 / advogado / mês  (alinhado QA P0-9 — Sidebar + Sidebar)
  *   Firma:      R$ 1.459 / advogado / mês
- *   Enterprise: R$ 1.599 / advogado / mês
+ *   Escritório: R$ 1.399 / advogado / mês
+ *   Solo:       R$   599 / advogado / mês  (badge "Para comecar")
+ *
+ * Audit business P0-1 (2026-05-03):
+ *   - Reordenado pra Enterprise → Firma → Escritorio → Solo (cheap-to-the-right
+ *     anchor effect — eye-track LTR vê o preço alto primeiro, ancora high).
+ *   - Solo recebe badge "Para começar" pra desambiguar quem é o entry tier.
+ *   - Enterprise bump pra R$2.499 foi REVERTIDO via QA P0-9 (alinhamento com
+ *     Sidebar e Stripe Dashboard ao vivo — bump precisa ser coordenado em
+ *     todas superficies + Stripe price IDs novos antes de aparecer aqui).
+ *
+ * Anual desconto (P0-3, 2026-05-03):
+ *   - Toggle Mensal/Anual com badge "Economiza 17%" (2 meses grátis efetivo).
+ *   - Anual default selecionado pra puxar conversão pro plano com churn menor.
+ *   - Preços anuais: 17% desconto efetivo no /mes mostrado.
  *
  * Founding Member: 50% off vitalício pros primeiros 10 (cupom FOUNDING50).
  * Demo grátis aumentada de 30min → 50min (DB default + cópia em todos lugares).
  * ════════════════════════════════════════════════════════════════════ */
 
+import { useState } from 'react'
 import {
   Check, X, CheckCircle2, CreditCard, Headphones, Loader2, RotateCcw,
-  ShieldCheck, TrendingUp, type LucideIcon,
+  ShieldCheck, Sparkles, TrendingUp, type LucideIcon,
 } from 'lucide-react'
 
 export type PlanoId = 'solo' | 'starter' | 'pro' | 'enterprise'
 
+export type BillingInterval = 'monthly' | 'annual'
+
 export interface LexPricingGridProps {
   /** Plano atual do usuário (marca "Você está aqui" + recalcula destaque). Omit se não autenticado. */
   currentPlanId?: PlanoId
-  /** Handler de checkout. Se omitido, cards viram link pra /login. */
-  onCheckout?: (plano: PlanoId) => void
+  /** Handler de checkout. Recebe plano + intervalo (mensal/anual) pra decidir priceId Stripe. */
+  onCheckout?: (plano: PlanoId, interval: BillingInterval) => void
   /** Plano em estado loading durante checkout. */
   loadingPlan?: PlanoId | null
   /** Some com trust bar (LGPD / Stripe / Cancele / Suporte) — útil quando já existe uma acima. */
@@ -51,56 +67,58 @@ interface Plano {
   id: PlanoId
   nome: string
   tagline: string
-  precoMensal: number
+  badge?: string                   // badge custom (ex: "Para começar" no Solo)
+  precoMensal: number              // preço cobrança mensal (sem desconto)
+  precoAnualMes: number            // preço /mes quando paga anual (~17% off)
   economiaReal: string
   features: { label: string; disponivel: boolean }[]
 }
 
+// Desconto anual aplicado: paga 10x ao invés de 12x = 16.67% off.
+// Math.round pra evitar fração de centavo no display.
+function calcAnualMes(mensal: number): number {
+  return Math.round(mensal * 10 / 12)
+}
+
 /* ─────────────────────────────────────────────────────────────────────
- * Tiers redesign (2026-05-02 · audit R1 follow-up):
- * Antes todos os 4 planos diziam "Todos os 27 agentes" — quebrava anchor
- * pricing (sem justificativa pra pagar 2.7x mais caro). Agora cada tier
- * tem feature set distinto, justificando o preço:
+ * Tiers redesign (2026-05-03 · audit business P0-1):
  *
- * Solo (R$599)        — 8 agentes essenciais, single advogado
- * Escritório (R$1.399) — 18 agentes, até 5 advs, integração básica
- * Firma (R$1.459)     — TODOS 27 agentes, 6-15 advs, onboarding + CRM
- * Enterprise (R$1.599) — Firma + agentes CUSTOMIZADOS treinados pra escritório
+ * Ordem visual: Enterprise → Firma → Escritorio → Solo (cheap-to-the-right).
+ * Eye-track LTR pega o preço alto primeiro = anchor que faz Firma parecer
+ * acessível ao invés de Solo parecer barato (que era o reverso, canibalizando
+ * Escritorio).
+ *
+ * Tiers e justificativa de preço:
+ *   Enterprise (R$1.599) — Firma + agentes CUSTOM treinados, on-premise,
+ *                          white-label, SLA 99.9%, DPA. Bump pra R$2.499 ficou
+ *                          pendente (precisa criar prices novos no Stripe +
+ *                          alinhar Sidebar antes — QA P0-9 reverteu temporario).
+ *   Firma      (R$1.459) — TODOS 27 agentes, 6-15 advs, onboarding + API.
+ *   Escritorio (R$1.399) — 18 agentes, 1-5 advs, integração básica.
+ *   Solo       (R$  599) — 8 agentes essenciais, advogado autônomo (badge
+ *                          "Para começar" pra desambiguar entry tier).
  * ───────────────────────────────────────────────────────────────────── */
 const PLANOS: Plano[] = [
   {
-    id: 'solo', nome: 'Solo', tagline: 'Advogado autônomo',
-    precoMensal: 599,
-    economiaReal: 'Recupere 6h por semana em pesquisas e redação',
+    id: 'enterprise', nome: 'Enterprise', tagline: '16+ advogados · White-label disponível',
+    precoMensal: 1599,
+    precoAnualMes: calcAnualMes(1599),
+    economiaReal: 'ROI de 8x sobre o investimento mensal',
     features: [
-      { label: '8 agentes essenciais (Resumidor, Redator, Pesquisador, Calculador, Legislação, Risco, Contestador, Audiência)', disponivel: true },
-      { label: '50 análises de documentos por mês', disponivel: true },
-      { label: 'Histórico de 30 dias', disponivel: true },
-      { label: 'Suporte por email em 48h', disponivel: true },
-      { label: 'Exportação Word ABNT (sem PDF profissional)', disponivel: false },
-      { label: 'Equipe colaborativa (multi-usuário)', disponivel: false },
-      { label: 'Agentes especializados (Compliance, Marketing, OAB)', disponivel: false },
-      { label: 'Agentes customizados pro seu escritório', disponivel: false },
-    ],
-  },
-  {
-    id: 'starter', nome: 'Escritório', tagline: '1–5 advogados',
-    precoMensal: 1399,
-    economiaReal: 'Recupere 12h por semana em pesquisas por advogado',
-    features: [
-      { label: '18 agentes (8 essenciais + Parecerista, Consultor, Recursos, Estratégista, Negociador, Tradutor, Revisor, Atendimento, Simulado OAB, Professor)', disponivel: true },
-      { label: '200 análises de documentos por mês', disponivel: true },
-      { label: 'Histórico de 60 dias', disponivel: true },
-      { label: 'Suporte por email em 24h', disponivel: true },
-      { label: 'Exportação Word ABNT + PDF profissional', disponivel: true },
-      { label: 'Equipe colaborativa até 5 advogados', disponivel: true },
-      { label: 'Agentes especializados (Compliance, Marketing, OAB)', disponivel: false },
-      { label: 'Agentes customizados pro seu escritório', disponivel: false },
+      { label: 'Tudo do Firma + agentes CUSTOMIZADOS treinados nos casos do escritório', disponivel: true },
+      { label: 'Análises ilimitadas + fair use generoso', disponivel: true },
+      { label: 'Histórico ilimitado + backup em nuvem dedicada', disponivel: true },
+      { label: 'Suporte WhatsApp 24h + Gerente de conta dedicado', disponivel: true },
+      { label: 'API privada com SLA 99.9% uptime', disponivel: true },
+      { label: 'Opção on-premise (servidor próprio)', disponivel: true },
+      { label: 'DPA contratado + auditoria LGPD anual', disponivel: true },
+      { label: 'White-label opcional (marca do escritório)', disponivel: true },
     ],
   },
   {
     id: 'pro', nome: 'Firma', tagline: '6–15 advogados · Mais escolhido',
     precoMensal: 1459,
+    precoAnualMes: calcAnualMes(1459),
     economiaReal: 'Capacidade de atendimento +40% sem contratar',
     features: [
       { label: 'TODOS os 27 agentes (18 do Escritório + Compliance LGPD, Marketing-IA OAB, CRM, Planilhas, Calculador trabalhista, +5 verticais)', disponivel: true },
@@ -114,18 +132,36 @@ const PLANOS: Plano[] = [
     ],
   },
   {
-    id: 'enterprise', nome: 'Enterprise', tagline: '16+ advogados · White-label disponível',
-    precoMensal: 1599,
-    economiaReal: 'ROI de 8x sobre o investimento mensal',
+    id: 'starter', nome: 'Escritório', tagline: '1–5 advogados',
+    precoMensal: 1399,
+    precoAnualMes: calcAnualMes(1399),
+    economiaReal: 'Recupere 12h por semana em pesquisas por advogado',
     features: [
-      { label: 'Tudo do Firma + agentes CUSTOMIZADOS treinados nos casos do escritório', disponivel: true },
-      { label: 'Análises ilimitadas + fair use generoso', disponivel: true },
-      { label: 'Histórico ilimitado + backup em nuvem dedicada', disponivel: true },
-      { label: 'Suporte WhatsApp 24h + Gerente de conta dedicado', disponivel: true },
-      { label: 'API privada com SLA 99.9% uptime', disponivel: true },
-      { label: 'Opção on-premise (servidor próprio)', disponivel: true },
-      { label: 'DPA contratado + auditoria LGPD anual', disponivel: true },
-      { label: 'White-label opcional (marca do escritório)', disponivel: true },
+      { label: '18 agentes (8 essenciais + Parecerista, Consultor, Recursos, Estratégista, Negociador, Tradutor, Revisor, Atendimento, Simulado OAB, Professor)', disponivel: true },
+      { label: '200 análises de documentos por mês', disponivel: true },
+      { label: 'Histórico de 60 dias', disponivel: true },
+      { label: 'Suporte por email em 24h', disponivel: true },
+      { label: 'Exportação Word ABNT + PDF profissional', disponivel: true },
+      { label: 'Equipe colaborativa até 5 advogados', disponivel: true },
+      { label: 'Agentes especializados (Compliance, Marketing, OAB)', disponivel: false },
+      { label: 'Agentes customizados pro seu escritório', disponivel: false },
+    ],
+  },
+  {
+    id: 'solo', nome: 'Solo', tagline: 'Advogado autônomo',
+    badge: 'Para começar',
+    precoMensal: 599,
+    precoAnualMes: calcAnualMes(599),
+    economiaReal: 'Recupere 6h por semana em pesquisas e redação',
+    features: [
+      { label: '8 agentes essenciais (Resumidor, Redator, Pesquisador, Calculador, Legislação, Risco, Contestador, Audiência)', disponivel: true },
+      { label: '50 análises de documentos por mês', disponivel: true },
+      { label: 'Histórico de 30 dias', disponivel: true },
+      { label: 'Suporte por email em 48h', disponivel: true },
+      { label: 'Exportação Word ABNT (sem PDF profissional)', disponivel: false },
+      { label: 'Equipe colaborativa (multi-usuário)', disponivel: false },
+      { label: 'Agentes especializados (Compliance, Marketing, OAB)', disponivel: false },
+      { label: 'Agentes customizados pro seu escritório', disponivel: false },
     ],
   },
 ]
@@ -179,10 +215,14 @@ export function LexPricingGrid({
     : 0
   const destaqueId = getDestaqueId(currentPlanId)
 
+  // Anual default selected — empurra pra plano com churn menor (P0-3 audit).
+  // Usuario que paga anual normalmente nao cancela mes-a-mes, MRR mais previsivel.
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('annual')
+
   function handleClick(plano: Plano) {
     if (plano.id === currentPlanId) return
     if (onCheckout) {
-      onCheckout(plano.id)
+      onCheckout(plano.id, billingInterval)
       return
     }
     // Fallback landing — todos os planos abrem signup. Trial 7 dias
@@ -232,7 +272,7 @@ export function LexPricingGrid({
       {/* PRICING NOTE */}
       {!hidePricingNote && (
         <div style={{
-          textAlign: 'center', marginBottom: 22,
+          textAlign: 'center', marginBottom: 16,
           fontSize: 12, color: 'var(--text-secondary)',
           fontFamily: 'var(--font-mono, ui-monospace), "SF Mono", Menlo, monospace',
           letterSpacing: '0.08em',
@@ -240,6 +280,73 @@ export function LexPricingGrid({
           cobrança <strong style={{ color: 'var(--accent)' }}>por advogado registrado</strong> · R$ 599 a R$ 1.599 conforme plano
         </div>
       )}
+
+      {/* BILLING TOGGLE — Mensal / Anual (audit business P0-3 · 2026-05-03)
+          Anual default selected. Badge "Economiza 17%" pra ancorar valor. */}
+      <div
+        role="radiogroup"
+        aria-label="Selecionar intervalo de cobrança"
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: 0, marginBottom: 22,
+        }}
+      >
+        <div style={{
+          display: 'inline-flex', padding: 4, borderRadius: 999,
+          border: '1px solid var(--border)',
+          background: 'var(--card-bg)',
+          gap: 4,
+        }}>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={billingInterval === 'monthly'}
+            onClick={() => setBillingInterval('monthly')}
+            style={{
+              padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer',
+              fontFamily: 'var(--font-mono, ui-monospace), monospace',
+              fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 700,
+              background: billingInterval === 'monthly'
+                ? 'linear-gradient(135deg, #f5e8d3, #bfa68e)'
+                : 'transparent',
+              color: billingInterval === 'monthly' ? '#0a0a0a' : 'var(--text-secondary)',
+              transition: 'all 0.18s ease',
+            }}
+          >
+            Mensal
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={billingInterval === 'annual'}
+            onClick={() => setBillingInterval('annual')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer',
+              fontFamily: 'var(--font-mono, ui-monospace), monospace',
+              fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 700,
+              background: billingInterval === 'annual'
+                ? 'linear-gradient(135deg, #f5e8d3, #bfa68e)'
+                : 'transparent',
+              color: billingInterval === 'annual' ? '#0a0a0a' : 'var(--text-secondary)',
+              transition: 'all 0.18s ease',
+            }}
+          >
+            Anual
+            <span style={{
+              fontSize: 9, padding: '2px 6px', borderRadius: 6,
+              background: billingInterval === 'annual'
+                ? 'rgba(10,10,10,0.16)'
+                : 'var(--accent-light)',
+              color: billingInterval === 'annual' ? '#0a0a0a' : 'var(--accent)',
+              letterSpacing: '0.1em',
+              border: billingInterval === 'annual' ? 'none' : '1px solid var(--stone-line)',
+            }}>
+              −17%
+            </span>
+          </button>
+        </div>
+      </div>
 
       {/* PLAN CARDS */}
       <div
@@ -250,8 +357,12 @@ export function LexPricingGrid({
       >
         {PLANOS.map(plano => {
           const isDestaque = plano.id === destaqueId
-          const badgeLabel = getBadgeLabel(plano.id, currentPlanId)
-          const preco = plano.precoMensal
+          const badgeLabel = getBadgeLabel(plano.id, currentPlanId) ?? plano.badge ?? null
+          // Preço exibido depende do toggle: anual mostra /mes com desconto.
+          const preco = billingInterval === 'annual' ? plano.precoAnualMes : plano.precoMensal
+          // Economia anual em R$ — aplicado quando intervalo anual.
+          // (precoMensal × 12) − (precoAnualMes × 12) = total economizado/ano.
+          const economiaAnualValor = (plano.precoMensal - plano.precoAnualMes) * 12
           const isCurrentPlan = plano.id === currentPlanId
           const isEnterprisePremium = plano.id === 'enterprise' && currentPlanId === 'enterprise'
           const isLoadingThis = loadingPlan === plano.id
@@ -259,6 +370,8 @@ export function LexPricingGrid({
           // P0-8 audit fix (2026-05-02): Solo de-emphasized pra restaurar
           // anchor pricing. Antes Solo R$599 canibalizava Escritório R$1.399
           // (jump 2.3x = backfire psychology). Agora Solo entry-tier visual.
+          // P0-1 (2026-05-03): grid reordenado pra Enterprise → Firma → Escritorio
+          // → Solo, dashed border do Solo continua marcando entry tier.
           const isSoloDeemphasized = plano.id === 'solo' && !currentPlanId
 
           return (
@@ -288,8 +401,13 @@ export function LexPricingGrid({
                 <div style={{
                   position: 'absolute', top: 0, left: 0, right: 0,
                   padding: '7px 0', textAlign: 'center',
-                  background: 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
-                  color: '#0a0a0a',
+                  // Solo "Para começar" usa stone-line muted (entry tier visual).
+                  // Destaque "MAIS ESCOLHIDO"/"SEU PLANO PREMIUM" continua gold.
+                  background: plano.id === 'solo' && !isDestaque
+                    ? 'var(--hover)'
+                    : 'linear-gradient(135deg, #f5e8d3, #bfa68e, #7a5f48)',
+                  color: plano.id === 'solo' && !isDestaque ? 'var(--text-secondary)' : '#0a0a0a',
+                  borderBottom: plano.id === 'solo' && !isDestaque ? '1px solid var(--stone-line)' : 'none',
                   fontFamily: 'var(--font-mono, ui-monospace), monospace',
                   fontSize: 10, fontWeight: 700,
                   letterSpacing: '0.22em', textTransform: 'uppercase',
@@ -334,10 +452,26 @@ export function LexPricingGrid({
                 <div style={{
                   fontFamily: 'var(--font-mono, ui-monospace), monospace',
                   fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase',
-                  color: 'var(--text-secondary)', marginBottom: 14,
+                  color: 'var(--text-secondary)', marginBottom: billingInterval === 'annual' ? 8 : 14,
                 }}>
-                  por advogado / mês
+                  por advogado / mês{billingInterval === 'annual' ? ' · cobrado anualmente' : ''}
                 </div>
+
+                {/* Economia anual — só aparece com toggle Anual selecionado */}
+                {billingInterval === 'annual' && economiaAnualValor > 0 && (
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    padding: '4px 10px', borderRadius: 999, marginBottom: 14,
+                    background: 'var(--accent-light)',
+                    border: '1px solid var(--stone-line)',
+                    fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                    fontSize: 10, letterSpacing: '0.12em',
+                    color: 'var(--accent)', fontWeight: 700,
+                  }}>
+                    <Sparkles size={10} strokeWidth={2.2} aria-hidden />
+                    Economiza R$ {economiaAnualValor.toLocaleString('pt-BR')}/ano
+                  </div>
+                )}
 
                 {/* Economia real */}
                 <div style={{

@@ -153,6 +153,16 @@ function LoginPageInner() {
     setErro(map[err] ?? 'Algo deu errado na autenticação. Tente novamente.')
   }, [searchParams])
 
+  // Audit business P1-3 (2026-05-03): captura ?ref= do convite. Persiste em
+  // sessionStorage pra sobreviver ao OAuth round-trip (Google volta sem
+  // query string original). Banner avisa que indicado ganha 30% no 1o mes.
+  const refCode = searchParams.get('ref')
+  const refValid = refCode && /^[a-f0-9]{6,12}$/i.test(refCode)
+  useEffect(() => {
+    if (!refValid || !refCode) return
+    try { sessionStorage.setItem('pralvex-ref-code', refCode) } catch { /* noop */ }
+  }, [refCode, refValid])
+
   const leftRef = useRef<HTMLDivElement>(null)
   const asideRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -185,7 +195,25 @@ function LoginPageInner() {
     setOauthLoading('google')
     setErro('')
     try {
-      const redirectTo = window.location.origin + '/auth/callback'
+      // Audit business P1-3 + P2-4 (2026-05-03): propaga ref + UTMs pro
+      // /auth/callback. Google OAuth nao preserva query original, entao
+      // empacotamos no proprio redirectTo.
+      const params = new URLSearchParams()
+      try {
+        const stashed = sessionStorage.getItem('pralvex-ref-code')
+        if (stashed && /^[a-f0-9]{6,12}$/i.test(stashed)) params.set('ref', stashed)
+      } catch { /* noop */ }
+      try {
+        const utm = sessionStorage.getItem('pralvex-utm')
+        if (utm) {
+          const parsed = JSON.parse(utm) as Record<string, string>
+          for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
+            if (typeof parsed[k] === 'string' && parsed[k].length < 200) params.set(k, parsed[k])
+          }
+        }
+      } catch { /* noop */ }
+      const qs = params.toString()
+      const redirectTo = window.location.origin + '/auth/callback' + (qs ? `?${qs}` : '')
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo },
@@ -286,6 +314,31 @@ function LoginPageInner() {
               ? 'Crie sua conta. Demo de 50 min grátis, sem cartão. Apenas um profissional por vez.'
               : 'Bem-vindo de volta ao atelier. Entre para retomar seu gabinete digital.'}
           </p>
+
+          {/* Banner de indicacao — P1-3 audit business */}
+          {refValid && (
+            <div
+              role="status"
+              className="mb-5 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm"
+              style={{
+                borderColor: 'rgba(212,174,106,0.45)',
+                background: 'linear-gradient(135deg, rgba(212,174,106,0.14), rgba(191,166,142,0.05))',
+                color: 'var(--text-primary)',
+              }}
+            >
+              <span aria-hidden style={{
+                marginTop: 2, fontSize: 14, color: 'var(--accent)', fontWeight: 700,
+              }}>★</span>
+              <div>
+                <div className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                  Convite válido
+                </div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 13, marginTop: 2 }}>
+                  Você foi indicado por um colega. Ganha 30% no primeiro mês quando assinar qualquer plano.
+                </div>
+              </div>
+            </div>
+          )}
 
           {erro && (
             <div

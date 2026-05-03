@@ -4,6 +4,7 @@ import { stripe, planFromPriceId } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog } from '@/lib/safe-log'
 import { audit } from '@/lib/audit'
+import { sendMetaEvent } from '@/lib/meta-capi'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -160,6 +161,29 @@ export async function POST(req: NextRequest) {
             .update({ stripe_customer_id: customerId })
             .eq('auth_user_id', authUserId)
           if (error) throw error
+
+          // Audit business P0-2 (2026-05-03): Meta Conversions API server-side
+          // pra Purchase. Email hashed SHA256 (LGPD irreversivel). Dedup com
+          // pixel client-side via event_id determinístico (session.id).
+          const plan = (session.metadata?.plan as string | undefined) || 'unknown'
+          const valueBRL = session.amount_total ? session.amount_total / 100 : 0
+          const customerEmail = session.customer_details?.email || undefined
+          sendMetaEvent({
+            eventName: 'Purchase',
+            eventId: `purchase:${session.id}`,
+            email: customerEmail,
+            externalId: authUserId,
+            value: valueBRL,
+            currency: (session.currency || 'brl').toUpperCase(),
+            sourceUrl: session.success_url || undefined,
+          }).catch(() => { /* silent */ })
+
+          // Audit business P1-3 (2026-05-03): referral conversion. Se usuario
+          // foi indicado, marca referral 'completed' + cria cupom Stripe 30
+          // dias trial pro indicador (best-effort, nao bloqueia webhook).
+          handleReferralConversion(supabase, authUserId).catch((err) => {
+            safeLog.warn('[stripe webhook] referral handler failed', err instanceof Error ? err.message : 'unknown')
+          })
         } else {
           safeLog.warn('[stripe webhook] checkout.session.completed without auth_user_id metadata — skipping link')
         }
@@ -216,5 +240,78 @@ export async function POST(req: NextRequest) {
     const msg = e instanceof Error ? e.message : 'Unknown error'
     safeLog.error('[stripe webhook] handler error:', msg)
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 })
+  }
+}
+
+/**
+ * Audit business P1-3 (2026-05-03): converte indicacao quando indicado paga.
+ *
+ * Fluxo:
+ *   1. Le usuarios.referred_by do indicado (pode ser null = sem indicacao).
+ *   2. Marca referrals row como completed + reward_applied=true.
+ *   3. Cria cupom Stripe 30 dias trial extension pro indicador (best-effort).
+ *
+ * Tudo idempotente — re-execucao no mesmo session.id nao duplica reward.
+ */
+type AdminClient = ReturnType<typeof createAdminClient>
+async function handleReferralConversion(supabase: AdminClient, indicadoAuthUserId: string): Promise<void> {
+  // 1. Busca indicado + referred_by
+  const { data: indicado } = await supabase
+    .from('usuarios')
+    .select('id, referred_by')
+    .eq('auth_user_id', indicadoAuthUserId)
+    .maybeSingle()
+
+  if (!indicado || !indicado.referred_by) return
+
+  // 2. Marca referrals row como completed (idempotente — reward_applied evita duplicar)
+  const { data: referralRow } = await supabase
+    .from('referrals')
+    .select('id, reward_applied')
+    .eq('referrer_id', indicado.referred_by)
+    .eq('referred_id', indicado.id)
+    .eq('status', 'pending')
+    .maybeSingle()
+
+  if (!referralRow || referralRow.reward_applied) return
+
+  await supabase
+    .from('referrals')
+    .update({
+      status: 'completed',
+      reward_applied: true,
+      completed_at: new Date().toISOString(),
+    })
+    .eq('id', referralRow.id)
+
+  // 3. Cupom Stripe pro indicador (30 dias trial extension)
+  // best-effort — falha aqui nao bloqueia status update acima
+  try {
+    const { data: indicador } = await supabase
+      .from('usuarios')
+      .select('stripe_customer_id, email')
+      .eq('id', indicado.referred_by)
+      .maybeSingle()
+
+    if (indicador?.stripe_customer_id) {
+      // Cupom 100% off por 1 mes (proxy de "30 dias trial extension" — Stripe
+      // SDK desta versao nao tem trial_extension direto via API, entao
+      // damos um mes de mensalidade gratis via percent_off=100 once).
+      const coupon = await stripe.coupons.create({
+        duration: 'once',
+        percent_off: 100,
+        max_redemptions: 1,
+        name: `Bonus indicacao 30 dias`,
+        metadata: { reason: 'referral_reward', referrer_user_id: indicado.referred_by },
+      })
+      await stripe.promotionCodes.create({
+        promotion: { type: 'coupon', coupon: coupon.id },
+        max_redemptions: 1,
+        customer: indicador.stripe_customer_id,
+        metadata: { reason: 'referral_reward' },
+      } as Stripe.PromotionCodeCreateParams)
+    }
+  } catch (err) {
+    safeLog.warn('[referral] coupon creation failed', err instanceof Error ? err.message : 'unknown')
   }
 }
