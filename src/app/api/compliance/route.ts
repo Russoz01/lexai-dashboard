@@ -6,6 +6,8 @@ import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/
 import { parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -108,6 +110,10 @@ export async function POST(req: NextRequest) {
     const grounding = buildGroundingContext(groundingQuery, { topK: 8 })
     const gstats = groundingStats(grounding)
 
+    const prefs = usuarioId ? await getUserPreferences(supabase, usuarioId).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('compliance') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
@@ -119,13 +125,14 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
           {
             type: 'text' as const,
             text: grounding.contextBlock,
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
       }, { signal: controller.signal })
@@ -152,6 +159,17 @@ export async function POST(req: NextRequest) {
       if (histErr) {
         safeLog.error('[API /compliance] historico insert error:', histErr.message, histErr.code)
       }
+
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'compliance',
+        resumo: buildMemorySummary('compliance', `${tipo || 'geral'} ${area}: ${descricao.slice(0, 120)}`, String(resultado.score || '')),
+        fatos: [
+          { key: 'area', value: area },
+          ...(tipo ? [{ key: 'tipo', value: tipo }] : []),
+          ...(resultado.score ? [{ key: 'score', value: String(resultado.score) }] : []),
+        ],
+        tags: extractMemoryTags('compliance', area, descricao),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'compliance', plano).catch(() => {})

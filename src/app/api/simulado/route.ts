@@ -5,6 +5,8 @@ import { events } from '@/lib/analytics'
 import { parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -155,6 +157,10 @@ export async function POST(req: NextRequest) {
     userMessage += `\n\nCONTEXTO E FATOS RELEVANTES:\n${contexto}`
     userMessage += `\n\nRetorne o parecer completo no formato JSON especificado, com todas as secoes preenchidas de forma detalhada e fundamentada.`
 
+    const prefs = usuarioId ? await getUserPreferences(supabase, usuarioId).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('simulado') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
@@ -166,9 +172,10 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
       }, { signal: controller.signal })
@@ -195,6 +202,17 @@ export async function POST(req: NextRequest) {
       if (histErr) {
         safeLog.error('[API /simulado] historico insert error:', histErr.message, histErr.code)
       }
+
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'simulado',
+        resumo: buildMemorySummary('simulado', `${area} ${tema}: ${contexto.slice(0, 120)}`, 'parecer simulado'),
+        fatos: [
+          { key: 'area', value: area },
+          { key: 'tema', value: tema.slice(0, 80) },
+          ...(tipoParecer ? [{ key: 'tipo', value: tipoParecer }] : []),
+        ],
+        tags: extractMemoryTags('simulado', area, `${tema} ${contexto}`),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'simulado', plano).catch(() => {})

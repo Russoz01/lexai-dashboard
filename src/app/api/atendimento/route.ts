@@ -4,6 +4,8 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 import { LEGAL_AREAS_LABEL_MAP, isLegalAreaSlug } from '@/lib/agents/taxonomy'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -81,6 +83,11 @@ export const POST = withAgentAuth('atendimento', async ({ req, supabase, user })
   const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
   const userMessage = `Area do caso: ${AREAS[area]}\n\nPerfil do cliente e contexto inicial:\n${perfil}`
 
+  const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+  const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+  const prefsContext = buildPreferencesContext(prefs)
+  const enhancedSystem = buildAgentPreamble('atendimento') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 90_000)
   let message: Anthropic.Messages.Message
@@ -91,9 +98,10 @@ export const POST = withAgentAuth('atendimento', async ({ req, supabase, user })
       system: [
         {
           type: 'text' as const,
-          text: SYSTEM_PROMPT,
+          text: enhancedSystem,
           cache_control: { type: 'ephemeral' as const },
         },
+        ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
       messages: [{ role: 'user', content: userMessage }],
     }, { signal: controller.signal })
@@ -112,7 +120,7 @@ export const POST = withAgentAuth('atendimento', async ({ req, supabase, user })
   )
   const roteiro = (parsed?.roteiro as Record<string, unknown> | undefined) ?? parsed
 
-  const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+  const usuarioId = usuarioIdEarly
   if (usuarioId) {
     await supabase.from('historico').insert({
       usuario_id: usuarioId,
@@ -120,6 +128,13 @@ export const POST = withAgentAuth('atendimento', async ({ req, supabase, user })
       mensagem_usuario: `Entrevista: ${AREAS[area]}`,
       resposta_agente: roteiro?.titulo || `Entrevista - ${AREAS[area]}`,
     })
+    const tituloOut = (roteiro?.titulo as string) || `Entrevista - ${AREAS[area]}`
+    recordAgentMemory(supabase, usuarioId, {
+      agente: 'atendimento',
+      resumo: buildMemorySummary('atendimento', `${AREAS[area]}: ${perfil.slice(0, 120)}`, tituloOut),
+      fatos: [{ key: 'area', value: AREAS[area] }],
+      tags: extractMemoryTags('atendimento', area, perfil),
+    }).catch(() => {})
   }
 
   events.agentUsed(user.id, 'atendimento', 'unknown').catch(() => {})

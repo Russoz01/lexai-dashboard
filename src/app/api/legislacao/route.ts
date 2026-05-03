@@ -6,6 +6,8 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -77,6 +79,11 @@ export async function POST(req: NextRequest) {
 
     const grounding = buildGroundingContext(consulta, { topK: 8 })
     const gstats = groundingStats(grounding)
+
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('legislacao') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       safeLog.debug('[API /legislacao] grounding:', gstats)
@@ -90,13 +97,14 @@ export async function POST(req: NextRequest) {
       system: [
         {
           type: 'text' as const,
-          text: SYSTEM_PROMPT,
+          text: enhancedSystem,
           cache_control: { type: 'ephemeral' as const },
         },
         {
           type: 'text' as const,
           text: grounding.contextBlock,
         },
+        ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
       tools: [WEB_SEARCH_TOOL],
       messages: [{ role: 'user', content: `Legal provision to explain:\n\n${consulta}` }],
@@ -113,13 +121,20 @@ export async function POST(req: NextRequest) {
       { explicacao: responseText, erro_parse: true },
     )
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId, agente: 'legislacao',
         mensagem_usuario: `Legislacao: ${consulta.slice(0, 100)}`,
         resposta_agente: resultado.dispositivo || 'Consulta realizada',
       })
+      const dispOut = (resultado.dispositivo as string) || 'consulta legislativa'
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'legislacao',
+        resumo: buildMemorySummary('legislacao', consulta.slice(0, 160), dispOut),
+        fatos: [{ key: 'dispositivo', value: String(dispOut).slice(0, 120) }],
+        tags: extractMemoryTags('legislacao', undefined, consulta),
+      }).catch(() => {})
     }
 
     const validation = validateCitations(responseText)

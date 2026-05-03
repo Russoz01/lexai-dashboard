@@ -4,6 +4,8 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { withAgentAuth } from '@/lib/with-agent-auth'
 import { buildAreaContext } from '@/lib/agents/taxonomy'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -79,6 +81,11 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
     .maybeSingle()
   const areaContext = buildAreaContext(profile?.area_juridica_padrao)
 
+  const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+  const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+  const prefsContext = buildPreferencesContext(prefs)
+  const enhancedSystem = buildAgentPreamble('calculador') + buildSystemPrompt() + areaContext + buildAntiHallucinationFooter()
+
   const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 60_000)
@@ -92,9 +99,10 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
       system: [
         {
           type: 'text' as const,
-          text: buildSystemPrompt() + areaContext,
+          text: enhancedSystem,
           cache_control: { type: 'ephemeral' as const },
         },
+        ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
       messages: [{ role: 'user', content: `Calculation request:\n\n${consulta}` }],
     }, { signal: controller.signal })
@@ -112,7 +120,7 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
     { resultado: responseText, erro_parse: true },
   )
 
-  const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+  const usuarioId = usuarioIdEarly
   if (usuarioId) {
     await supabase.from('historico').insert({
       usuario_id: usuarioId,
@@ -120,6 +128,13 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
       mensagem_usuario: `Calculo: ${consulta.slice(0, 100)}`,
       resposta_agente: resultado.tipo_calculo || 'Calculo realizado',
     })
+    const tipoOut = (resultado.tipo_calculo as string) || 'calculo'
+    recordAgentMemory(supabase, usuarioId, {
+      agente: 'calculador',
+      resumo: buildMemorySummary('calculador', consulta.slice(0, 160), tipoOut),
+      fatos: [{ key: 'tipo_calculo', value: String(tipoOut).slice(0, 80) }],
+      tags: extractMemoryTags('calculador', undefined, consulta),
+    }).catch(() => {})
   }
 
   events.agentUsed(user.id, 'calculador', 'unknown').catch(() => {})

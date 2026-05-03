@@ -5,6 +5,8 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -102,6 +104,11 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const userMessage = `Descricao do caso:\n${caso}\n\nObjetivo do cliente:\n${objetivo}`
 
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('estrategista') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     // AbortController evita lambda travado em 300s sob 529 overload
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
@@ -113,9 +120,10 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
       }, { signal: controller.signal })
@@ -132,7 +140,7 @@ export async function POST(req: NextRequest) {
     const plano = (parsed?.plano ?? parsed) as Record<string, unknown>
     const tituloPlano = (plano?.titulo as string) || 'Plano estrategico'
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId,
@@ -140,6 +148,12 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Plano: ${caso.slice(0, 200)}`,
         resposta_agente: tituloPlano,
       })
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'estrategista',
+        resumo: buildMemorySummary('estrategista', caso.slice(0, 160), tituloPlano),
+        fatos: [{ key: 'objetivo', value: objetivo.slice(0, 120) }, { key: 'titulo', value: String(tituloPlano).slice(0, 120) }],
+        tags: extractMemoryTags('estrategista', undefined, `${caso} ${objetivo}`),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'estrategista', 'unknown').catch(() => {})

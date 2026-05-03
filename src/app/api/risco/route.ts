@@ -7,6 +7,8 @@ import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -113,6 +115,11 @@ export async function POST(req: NextRequest) {
     const grounding = buildGroundingContext(groundingQuery, { topK: 8 })
     const gstats = groundingStats(grounding)
 
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('risco') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
     let message: Anthropic.Messages.Message
@@ -123,13 +130,14 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
           {
             type: 'text' as const,
             text: grounding.contextBlock,
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
       }, { signal: controller.signal })
@@ -145,7 +153,7 @@ export async function POST(req: NextRequest) {
     )
     const risco = ((parsed as Record<string, unknown>)?.risco ?? parsed) as Record<string, unknown>
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId,
@@ -153,6 +161,18 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Risco: ${tipo || 'Documento'} (${documento.length} chars)`,
         resposta_agente: `Score ${risco?.score_global ?? '-'}/100 (${risco?.nivel ?? '-'})`,
       })
+      const scoreOut = String(risco?.score_global ?? '-')
+      const nivelOut = String(risco?.nivel ?? '-')
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'risco',
+        resumo: buildMemorySummary('risco', `${tipo || 'Documento'}: ${documento.slice(0, 120)}`, `score ${scoreOut} ${nivelOut}`),
+        fatos: [
+          ...(tipo ? [{ key: 'tipo', value: tipo }] : []),
+          { key: 'score', value: scoreOut },
+          { key: 'nivel', value: nivelOut },
+        ],
+        tags: extractMemoryTags('risco', tipo, documento.slice(0, 800)),
+      }).catch(() => {})
     }
 
     const validation = validateCitations(responseText)

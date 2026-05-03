@@ -6,6 +6,8 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { validateOabContent } from '@/lib/oab-validator'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -85,6 +87,12 @@ export async function POST(req: NextRequest) {
     }
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
+
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('negociador') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     // AbortController evita lambda travado em 300s sob 529 overload
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
@@ -96,9 +104,10 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: `Situation to analyze:\n\n${situacao}` }],
       }, { signal: controller.signal })
@@ -113,18 +122,33 @@ export async function POST(req: NextRequest) {
       { estrategia: { abordagem: responseText }, erro_parse: true },
     )
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId, agente: 'negociador',
         mensagem_usuario: `Negociacao: ${situacao.slice(0, 100)}`,
         resposta_agente: ((resultado.estrategia as Record<string, unknown> | undefined)?.tipo as string) || 'Analise realizada',
       })
+      const tipoEstr = ((resultado.estrategia as Record<string, unknown> | undefined)?.tipo as string) || 'analise'
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'negociador',
+        resumo: buildMemorySummary('negociador', situacao.slice(0, 160), tipoEstr),
+        fatos: [{ key: 'tipo_estrategia', value: tipoEstr.slice(0, 80) }],
+        tags: extractMemoryTags('negociador', undefined, situacao),
+      }).catch(() => {})
     }
+
+    // Soft check OAB sobre a proposta de acordo (Provimento 205/2021 — sem
+    // garantia de êxito, sem mercantilização). Não bloqueia, só sinaliza.
+    const propostaTxt = typeof resultado.proposta_acordo === 'string' ? resultado.proposta_acordo : ''
+    const oabCheck = propostaTxt ? validateOabContent(propostaTxt) : null
+    const oab_warnings = oabCheck && oabCheck.violations.length > 0
+      ? oabCheck.violations.map(v => ({ rule: v.rule, severity: v.severity, motivo: v.motivo }))
+      : undefined
 
     events.agentUsed(user.id, 'negociador', 'unknown').catch(() => {})
 
-    return NextResponse.json({ resultado })
+    return NextResponse.json({ resultado, oab_warnings })
   } catch (err: unknown) {
     return safeError('negociar', err)
   }

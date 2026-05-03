@@ -7,6 +7,8 @@ import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-uti
 import { validateMarketingOutput } from '@/lib/oab-validator'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -110,6 +112,11 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const userMessage = `Topico: ${topico}\n\nPlataforma: ${PLATAFORMAS[plataforma]}\n\nGere 3 variacoes de post juridico 100% compliant com Provimento 205/2021 da OAB.`
 
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('marketing') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     // AbortController evita lambda travado em 300s sob 529 overload
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
@@ -121,9 +128,10 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
       }, { signal: controller.signal })
@@ -153,7 +161,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId,
@@ -161,6 +169,12 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Marketing: ${topico.slice(0, 200)} (${PLATAFORMAS[plataforma]})`,
         resposta_agente: `3 variacoes geradas - ${PLATAFORMAS[plataforma]}`,
       })
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'marketing-ia',
+        resumo: buildMemorySummary('marketing-ia', `${PLATAFORMAS[plataforma]}: ${topico.slice(0, 120)}`, '3 variações geradas'),
+        fatos: [{ key: 'plataforma', value: plataforma }],
+        tags: extractMemoryTags('marketing-ia', plataforma, topico),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'marketing-ia', 'unknown').catch(() => {})

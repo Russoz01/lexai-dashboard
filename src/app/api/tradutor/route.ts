@@ -5,6 +5,8 @@ import { events } from '@/lib/analytics'
 import { parseAgentJSON } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -93,6 +95,10 @@ export async function POST(req: NextRequest) {
 
     const userMessage = `Traduza o seguinte documento juridico:\n\nIDIOMA DE ORIGEM: ${origem}\nIDIOMA DE DESTINO: ${destino}\nTIPO DE DOCUMENTO: ${tipo}\n\nTEXTO A TRADUZIR:\n${texto}\n\nRetorne a traducao completa no formato JSON especificado, com glossario terminologico e alertas juridicos.`
 
+    const prefs = usuarioId ? await getUserPreferences(supabase, usuarioId).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('tradutor') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
@@ -104,9 +110,10 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
       }, { signal: controller.signal })
@@ -133,6 +140,17 @@ export async function POST(req: NextRequest) {
       if (histErr) {
         safeLog.error('[API /tradutor] historico insert error:', histErr.message, histErr.code)
       }
+
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'tradutor',
+        resumo: buildMemorySummary('tradutor', `${origem}→${destino} ${tipo}: ${texto.slice(0, 120)}`, 'traducao concluida'),
+        fatos: [
+          { key: 'origem', value: origem },
+          { key: 'destino', value: destino },
+          { key: 'tipo', value: tipo },
+        ],
+        tags: extractMemoryTags('tradutor', tipo, texto.slice(0, 800)),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'tradutor', plano).catch(() => {})
