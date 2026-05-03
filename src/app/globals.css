@@ -223,14 +223,20 @@
   -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
-/* Em light mode, esconde decorações dark-only (shaders, ambient mesh,
-   gradients editoriais que só fazem sentido no fundo dark editorial).
-   Mantém wireframe + cards + texto, que adaptam via tokens. */
+/* Em light mode, decorações de fundo (shaders WebGL, AmbientMesh dust,
+   headline-glow) são reduzidas em opacidade — manter "lines passando"
+   visíveis mas sutis em cream. Não escondemos mais (Leonardo apontou
+   que light mode deve manter o background editorial igual ao dark,
+   só com paleta cream em vez de noir). */
 [data-theme="light"] .lex-landing-shell .pralvex-shader,
+[data-theme="light"] .lex-landing-shell canvas {
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+}
 [data-theme="light"] .lex-landing-shell .pralvex-mesh,
-[data-theme="light"] .lex-landing-shell .lex-headline-glow,
-[data-theme="light"] .lex-landing-shell [data-decoration="dark-only"] {
-  display: none;
+[data-theme="light"] .lex-landing-shell .lex-headline-glow {
+  opacity: 0.55;
+  filter: invert(1) hue-rotate(180deg);
 }
 
 /* ── Base reset ─────────────────────────────────────────────── */
