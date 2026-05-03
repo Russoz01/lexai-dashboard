@@ -112,6 +112,13 @@ export async function POST(req: NextRequest) {
     const prefsContext = buildPreferencesContext(prefs)
     const enhancedSystem = buildAgentPreamble('estrategista') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
 
+    // P0-1 (audit elite IA): grounding obrigatorio.
+    // Plano estrategico cita base legal por fase + matriz risco com sumulas.
+    // Estrategista define rumo do litigio — alucinacao aqui mata caso.
+    const groundingQuery = `${caso.slice(0, 1500)} ${objetivo.slice(0, 500)}`
+    const grounding = buildGroundingContext(groundingQuery, { topK: 8 })
+    const gstats = groundingStats(grounding)
+
     // AbortController evita lambda travado em 300s sob 529 overload
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
@@ -124,6 +131,11 @@ export async function POST(req: NextRequest) {
           {
             type: 'text' as const,
             text: enhancedSystem,
+            cache_control: { type: 'ephemeral' as const },
+          },
+          {
+            type: 'text' as const,
+            text: grounding.contextBlock,
             cache_control: { type: 'ephemeral' as const },
           },
           ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
@@ -159,8 +171,18 @@ export async function POST(req: NextRequest) {
       }, { prefs }), 'recordAgentMemory:estrategista')
     }
 
+    const validation = validateCitations(responseText)
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      safeLog.debug('[API /estrategista] validation:', validation.stats)
+    }
+
     fireAndForget(events.agentUsed(user.id, 'estrategista', 'unknown'), 'events.agentUsed:estrategista')
-    return NextResponse.json({ plano })
+    return NextResponse.json({
+      plano,
+      fontes: validation.sources,
+      grounding_stats: { ...gstats, ...validation.stats },
+    })
   } catch (err: unknown) {
     return safeError('estrategista', err)
   }
