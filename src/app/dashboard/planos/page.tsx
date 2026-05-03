@@ -826,7 +826,9 @@ function PlanosPageInner() {
                     type="button"
                     onClick={() => setCancelModalOpen(false)}
                     style={{
-                      padding: '10px 16px', borderRadius: 8, border: '1px solid var(--border)',
+                      // Match com botao primary ao lado: era 10px 16px, primary
+                      // tinha 10px 18px — agora ambos 12/20 = mesma height (44px).
+                      padding: '12px 20px', borderRadius: 8, border: '1px solid var(--border)',
                       background: 'transparent', color: 'var(--text-secondary)',
                       fontSize: 13, cursor: 'pointer',
                     }}
@@ -838,7 +840,7 @@ function PlanosPageInner() {
                     onClick={() => cancelReason && setCancelStep('offer')}
                     disabled={!cancelReason}
                     style={{
-                      padding: '10px 18px', borderRadius: 8, border: '1px solid var(--stone)',
+                      padding: '12px 20px', borderRadius: 8, border: '1px solid var(--stone)',
                       background: cancelReason ? 'linear-gradient(135deg, #f5e8d3, #bfa68e)' : 'var(--hover)',
                       color: cancelReason ? '#0a0a0a' : 'var(--text-muted)',
                       fontSize: 13, fontWeight: 700, cursor: cancelReason ? 'pointer' : 'not-allowed',
@@ -878,7 +880,9 @@ function PlanosPageInner() {
                       onClick={prosseguirParaPortal}
                       disabled={portalLoading}
                       style={{
-                        padding: '10px 16px', borderRadius: 8,
+                        // Antes 10px 16px — gerava 40px height enquanto o botao
+                        // primary ao lado tinha 44px. Mesmo row, alturas diferentes.
+                        padding: '12px 20px', borderRadius: 8,
                         border: '1px solid var(--border)', background: 'transparent',
                         color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer',
                       }}

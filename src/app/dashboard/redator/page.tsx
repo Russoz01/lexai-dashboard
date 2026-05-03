@@ -493,7 +493,7 @@ export default function RedatorPage() {
                     background: modo === 'livre' ? 'var(--card-bg)' : 'transparent',
                     color: modo === 'livre' ? 'var(--text-primary)' : 'var(--text-muted)',
                     boxShadow: modo === 'livre' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: 'var(--font-dm-sans), sans-serif',
                     transition: 'all 0.15s ease',
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                   }}
@@ -509,7 +509,7 @@ export default function RedatorPage() {
                     background: modo === 'guiado' ? 'var(--card-bg)' : 'transparent',
                     color: modo === 'guiado' ? 'var(--text-primary)' : 'var(--text-muted)',
                     boxShadow: modo === 'guiado' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: 'var(--font-dm-sans), sans-serif',
                     transition: 'all 0.15s ease',
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                   }}
@@ -616,7 +616,7 @@ export default function RedatorPage() {
               onChange={e => setInstrucoes(e.target.value)}
               placeholder={`Descreva os fatos relevantes, partes envolvidas, pedidos e qualquer informação necessária para a elaboração da peça...\n\nEx: Autor: João Silva, CPF 123.456.789-00. Réu: Empresa XYZ Ltda. Fato: inadimplemento contratual desde jan/2024...`}
               className="form-input"
-              style={{ resize: 'vertical', minHeight: 180, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.6 }}
+              style={{ resize: 'vertical', minHeight: 180, fontFamily: 'var(--font-dm-sans), sans-serif', fontSize: 13, lineHeight: 1.6 }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 12, color: 'var(--text-muted)' }}>
               <span>{instrucoes.length > 0 ? `${instrucoes.length} caracteres` : 'Aguardando instruções...'}</span>
@@ -747,7 +747,7 @@ export default function RedatorPage() {
                             placeholder={field.placeholder}
                             rows={4}
                             className="form-input"
-                            style={{ resize: 'vertical', minHeight: 90, fontFamily: "'DM Sans',sans-serif", fontSize: 13, lineHeight: 1.55 }}
+                            style={{ resize: 'vertical', minHeight: 90, fontFamily: 'var(--font-dm-sans), sans-serif', fontSize: 13, lineHeight: 1.55 }}
                           />
                         )}
                         {field.type === 'select' && (
@@ -892,7 +892,7 @@ export default function RedatorPage() {
               <textarea readOnly value={peca.documento} style={{
                 flex: 1, minHeight: 400, resize: 'none', border: 'none', outline: 'none',
                 background: 'var(--input-bg)', borderRadius: 8, padding: 14,
-                fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: 'var(--text-primary)',
+                fontFamily: 'var(--font-dm-sans), sans-serif', fontSize: 13, color: 'var(--text-primary)',
                 lineHeight: 1.7,
               }} />
 
@@ -935,7 +935,7 @@ export default function RedatorPage() {
                   background: 'none', border: '1px dashed var(--border)',
                   borderRadius: 10, color: 'var(--text-muted)',
                   fontSize: 13, fontWeight: 500, cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s ease',
+                  fontFamily: 'var(--font-dm-sans), sans-serif', transition: 'all 0.15s ease',
                 }}
               >
                 <RotateCcw size={14} strokeWidth={1.75} aria-hidden /> Nova peça
@@ -992,7 +992,7 @@ export default function RedatorPage() {
                         onClick={() => loadDraft(d)}
                         style={{
                           flex: 1, textAlign: 'left', background: 'none', border: 'none',
-                          cursor: 'pointer', padding: 0, fontFamily: "'DM Sans', sans-serif",
+                          cursor: 'pointer', padding: 0, fontFamily: 'var(--font-dm-sans), sans-serif',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -1059,7 +1059,7 @@ export default function RedatorPage() {
                       box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
                       border-color 0.2s ease,
                       background 0.2s ease;
-          font-family: 'DM Sans', sans-serif;
+          font-family: var(--font-dm-sans), sans-serif;
         }
         .template-card:hover {
           transform: translateY(-2px);

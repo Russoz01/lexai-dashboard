@@ -137,14 +137,18 @@ export default function LandingPage() {
                 className="size-6 object-contain"
                 style={{ filter: 'drop-shadow(0 0 6px rgba(191,166,142,0.35))' }}
               />
-              {/* corner glints */}
+              {/* corner glints — usa var(--stone-line) pra ficar visivel
+                  em light mode (era border-[#bfa68e]/40 hardcoded, sumia
+                  no cream bg). */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute -left-px -top-px size-2 rounded-tl-lg border-l border-t border-[#bfa68e]/40"
+                className="pointer-events-none absolute -left-px -top-px size-2 rounded-tl-lg border-l border-t"
+                style={{ borderColor: 'var(--stone-line)' }}
               />
               <span
                 aria-hidden
-                className="pointer-events-none absolute -bottom-px -right-px size-2 rounded-br-lg border-b border-r border-[#bfa68e]/40"
+                className="pointer-events-none absolute -bottom-px -right-px size-2 rounded-br-lg border-b border-r"
+                style={{ borderColor: 'var(--stone-line)' }}
               />
             </div>
             <span
@@ -326,8 +330,16 @@ export default function LandingPage() {
               }}
             >
               <span className="relative flex size-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#bfa68e] opacity-60" />
-                <span className="relative inline-flex size-2 rounded-full bg-[#bfa68e]" />
+                {/* ping dot — antes bg-[#bfa68e] hardcoded, agora var(--accent)
+                    pra cobrir light/dark sem hard-coded hex. */}
+                <span
+                  className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
+                  style={{ background: 'var(--accent)' }}
+                />
+                <span
+                  className="relative inline-flex size-2 rounded-full"
+                  style={{ background: 'var(--accent)' }}
+                />
               </span>
               <span
                 className="font-mono text-[0.62rem] uppercase tracking-[0.24em]"

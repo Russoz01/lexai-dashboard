@@ -40,7 +40,10 @@ const FOUNDER_NOTE = {
 type Strength = 'fraca' | 'media' | 'forte'
 
 function scorePassword(pwd: string): { score: number; label: Strength; color: string } {
-  if (!pwd) return { score: 0, label: 'fraca', color: 'rgba(255,255,255,0.15)' }
+  // Empty senha: retorna token mode-aware em vez de white-only.
+  // O strength meter so renderiza quando senha.length > 0, mas o score 0
+  // ainda eh referenciado em logica de cor. var(--text-muted) cobre os 2 temas.
+  if (!pwd) return { score: 0, label: 'fraca', color: 'var(--text-muted)' }
   let score = 0
   if (pwd.length >= 8) score++
   if (pwd.length >= 12) score++
@@ -454,7 +457,10 @@ function LoginPageInner() {
                         key={n}
                         className="h-1 flex-1 rounded-full transition-colors"
                         style={{
-                          background: n <= strength.score ? strength.color : 'rgba(255,255,255,0.1)',
+                          // Empty track antes era rgba(255,255,255,0.1) hardcoded
+                          // — ficava invisivel sobre cream em light mode.
+                          // var(--border) cobre os 2 temas.
+                          background: n <= strength.score ? strength.color : 'var(--border)',
                         }}
                       />
                     ))}

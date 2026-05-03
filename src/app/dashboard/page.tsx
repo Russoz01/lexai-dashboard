@@ -639,7 +639,9 @@ export default function DashboardPage() {
                           {/* Nome + descrição */}
                           <div style={{ position: 'relative', zIndex: 1 }}>
                             <div style={{
-                              fontFamily: "'Playfair Display', Georgia, serif",
+                              // Antes "'Playfair Display', Georgia, serif" hardcoded.
+                              // var(--font-playfair) eh injetado pelo next/font no layout.
+                              fontFamily: 'var(--font-playfair, Georgia), serif',
                               fontStyle: 'italic', fontWeight: 500,
                               fontSize: 19, letterSpacing: '-0.01em',
                               color: locked ? 'var(--text-secondary)' : 'var(--text-primary)',
