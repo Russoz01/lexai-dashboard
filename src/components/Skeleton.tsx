@@ -22,16 +22,7 @@ export function Skeleton({ width = '100%', height = 16, circle = false, style = 
   )
 }
 
-export function SkeletonCard() {
-  return (
-    <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <Skeleton height={20} width="60%" />
-      <Skeleton height={12} width="100%" />
-      <Skeleton height={12} width="80%" />
-      <Skeleton height={12} width="90%" />
-    </div>
-  )
-}
+// SkeletonCard removido em 2026-05-03 (review elite: 0 callers externos).
 
 export function SkeletonResult() {
   return (
