@@ -31,11 +31,12 @@ export function ThemeToggle({ variant = 'header', className = '' }: ThemeToggleP
   const isLanding = variant === 'landing'
 
   // Cores tematizadas via tokens — funciona em ambos modes.
-  // Landing tem fundo preto fixo, então força paleta champagne sobre noir.
+  // v11.2 (2026-05-03): landing variant agora usa tokens tematizados também.
+  // Antes hardcoded white/55 sobre preto = invisivel no light cream.
   const wrapperStyle: React.CSSProperties = isLanding
     ? {
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(191,166,142,0.18)',
+        background: 'var(--hover)',
+        border: '1px solid var(--glass-border)',
       }
     : {
         background: 'var(--glass)',
@@ -79,21 +80,17 @@ export function ThemeToggle({ variant = 'header', className = '' }: ThemeToggleP
               border: 'none',
               cursor: 'pointer',
               transition: 'background-color var(--duration-fast) var(--ease-snappy), color var(--duration-fast) var(--ease-snappy), transform var(--duration-fast) var(--ease-snappy)',
-              background: active
-                ? (isLanding ? 'rgba(191,166,142,0.18)' : 'var(--accent-light)')
-                : 'transparent',
-              color: active
-                ? (isLanding ? '#f5e8d3' : 'var(--accent)')
-                : (isLanding ? 'rgba(255,255,255,0.55)' : 'var(--text-muted)'),
+              background: active ? 'var(--accent-light)' : 'transparent',
+              color: active ? 'var(--accent)' : 'var(--text-muted)',
             }}
             onMouseEnter={e => {
               if (!active) {
-                e.currentTarget.style.color = isLanding ? 'rgba(255,255,255,0.85)' : 'var(--text-primary)'
+                e.currentTarget.style.color = 'var(--text-primary)'
               }
             }}
             onMouseLeave={e => {
               if (!active) {
-                e.currentTarget.style.color = isLanding ? 'rgba(255,255,255,0.55)' : 'var(--text-muted)'
+                e.currentTarget.style.color = 'var(--text-muted)'
               }
             }}
           >

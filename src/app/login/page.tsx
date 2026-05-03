@@ -286,7 +286,12 @@ function LoginPageInner() {
           {erro && (
             <div
               role="alert"
-              className="mb-5 rounded-lg border border-red-500/30 bg-red-500/[0.08] px-4 py-3 text-sm text-red-200"
+              className="mb-5 rounded-lg border px-4 py-3 text-sm"
+              style={{
+                borderColor: 'var(--danger)',
+                background: 'var(--danger-light)',
+                color: 'var(--danger)',
+              }}
             >
               {erro}
             </div>
@@ -295,12 +300,17 @@ function LoginPageInner() {
           {signupSent && (
             <div
               role="status"
-              className="mb-5 flex items-start gap-3 rounded-lg border border-green-400/25 bg-green-400/[0.06] px-4 py-3 text-sm text-green-100"
+              className="mb-5 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm"
+              style={{
+                borderColor: 'var(--success)',
+                background: 'var(--success-light)',
+                color: 'var(--success)',
+              }}
             >
-              <MailCheck size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-green-300" />
+              <MailCheck size={18} strokeWidth={1.75} className="mt-0.5 shrink-0" style={{ color: 'var(--success)' }} />
               <div>
-                <div className="font-medium text-green-50">Conta criada</div>
-                <div className="text-green-200/80">Enviamos um link para <strong className="text-white">{signupSent}</strong>. Confirme o email para entrar.</div>
+                <div className="font-medium" style={{ color: 'var(--text-primary)' }}>Conta criada</div>
+                <div style={{ color: 'var(--text-secondary)' }}>Enviamos um link para <strong style={{ color: 'var(--text-primary)' }}>{signupSent}</strong>. Confirme o email para entrar.</div>
               </div>
             </div>
           )}
@@ -464,8 +474,8 @@ function LoginPageInner() {
       <aside
         ref={asideRef}
         aria-hidden="true"
-        className="relative hidden min-h-screen overflow-hidden border-l border-white/10 bg-gradient-to-br from-[#0f0b08] via-[#0a0807] to-black lg:block"
-        style={{ '--mx': '60%', '--my': '40%' } as React.CSSProperties}
+        className="surface-base relative hidden min-h-screen overflow-hidden border-l lg:block"
+        style={{ '--mx': '60%', '--my': '40%', borderColor: 'var(--border)' } as React.CSSProperties}
       >
         {/* Ambient mesh — blobs champagne flutuando + dust dourado.
             Soma o movimento ambiente ao cursor-follow glow ja existente. */}
@@ -484,18 +494,18 @@ function LoginPageInner() {
 
         <div className="relative flex h-full min-h-screen flex-col justify-between gap-12 px-12 py-16 xl:px-20">
           <div>
-            <div className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[#bfa68e]">
+            <div className="font-mono text-[0.62rem] uppercase tracking-[0.28em]" style={{ color: 'var(--accent)' }}>
               Atelier · MMXXVI
             </div>
-            <h2 className="mt-4 text-balance text-4xl font-light leading-[1.08] tracking-tight text-white xl:text-5xl">
+            <h2 className="mt-4 text-balance text-4xl font-light leading-[1.08] tracking-tight text-on-surface xl:text-5xl">
               Um gabinete digital,
               <br />
-              <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
+              <em className="text-grad-accent italic">
                 feito à mão
               </em>
               .
             </h2>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-white/60">
+            <p className="mt-5 max-w-md text-base leading-relaxed text-on-surface-muted">
               Vinte e sete agentes afinados para o exercício da advocacia no Brasil.
               Estratégia e precisão para quem trata Direito como ofício.
             </p>
@@ -503,34 +513,45 @@ function LoginPageInner() {
 
           <div className="grid grid-cols-2 gap-5">
             {VALUE_PROPS.map((v) => (
-              <div key={v.title} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-                <div className="mb-2 font-mono text-xs tracking-[0.22em] text-[#bfa68e]/80">
+              <div
+                key={v.title}
+                className="rounded-xl border p-4 transition-editorial hover-lift"
+                style={{ borderColor: 'var(--border)', background: 'var(--card-bg)' }}
+              >
+                <div className="mb-2 font-mono text-xs tracking-[0.22em]" style={{ color: 'var(--accent)' }}>
                   {v.n}
                 </div>
-                <div className="mb-1 text-sm font-medium text-white">{v.title}</div>
-                <div className="text-xs leading-relaxed text-white/55">{v.desc}</div>
+                <div className="mb-1 text-sm font-medium text-on-surface">{v.title}</div>
+                <div className="text-xs leading-relaxed text-on-surface-muted">{v.desc}</div>
               </div>
             ))}
           </div>
 
-          <figure className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-6">
+          <figure
+            className="relative overflow-hidden rounded-2xl border p-6"
+            style={{ borderColor: 'var(--border)', background: 'var(--card-bg)' }}
+          >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#bfa68e]/60 to-transparent"
+              className="pointer-events-none absolute inset-x-0 top-0 h-px"
+              style={{ background: 'linear-gradient(to right, transparent, var(--accent), transparent)', opacity: 0.6 }}
             />
-            <div className="mb-3 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/45">
+            <div className="mb-3 font-mono text-[0.6rem] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
               Nota do atelier
             </div>
-            <blockquote className="font-serif text-[0.98rem] italic leading-relaxed text-white/80">
+            <blockquote className="font-serif text-[0.98rem] italic leading-relaxed text-on-surface">
               &ldquo;{FOUNDER_NOTE.quote}&rdquo;
             </blockquote>
             <figcaption className="mt-5 flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-xs tracking-wider text-[#bfa68e]">
+              <div
+                className="flex size-10 items-center justify-center rounded-full border font-mono text-xs tracking-wider"
+                style={{ borderColor: 'var(--border)', background: 'var(--bg-raise)', color: 'var(--accent)' }}
+              >
                 {FOUNDER_NOTE.initials}
               </div>
               <div>
-                <div className="text-sm font-medium text-white">{FOUNDER_NOTE.signature}</div>
-                <div className="text-xs text-white/50">{FOUNDER_NOTE.cargo}</div>
+                <div className="text-sm font-medium text-on-surface">{FOUNDER_NOTE.signature}</div>
+                <div className="text-xs text-on-surface-muted">{FOUNDER_NOTE.cargo}</div>
               </div>
             </figcaption>
           </figure>
