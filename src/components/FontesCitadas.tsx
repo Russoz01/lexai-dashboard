@@ -159,7 +159,10 @@ export default function FontesCitadas({ fontes, stats, title = 'Fontes citadas' 
                         background: 'transparent',
                       }}
                     >
-                      abrir <ExternalLink size={10} strokeWidth={2.2} />
+                      {fonte.tipo === 'jurisprudencia' && fonte.verificacao === 'unverified_ai'
+                        ? 'verificar no tribunal'
+                        : 'abrir'}
+                      <ExternalLink size={10} strokeWidth={2.2} />
                     </a>
                   )}
                   {hasDetail && (

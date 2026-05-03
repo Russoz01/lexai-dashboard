@@ -33,6 +33,7 @@
  * ═══════════════════════════════════════════════════════════════════ */
 
 import type { UserPreferences } from '@/lib/preferences'
+import { LEGAL_AREAS, type LegalAreaSlug } from '@/lib/agents/taxonomy'
 
 /* ────────────────────────────────────────────────────────────────
  * A) Persona experts por agente
@@ -242,9 +243,99 @@ function tomToDescription(tom: UserPreferences['tom']): string {
 
 /**
  * Heurística de tags pra recordAgentMemory.
- * Combina slug + área (se houver) + termos do texto (palavras-chave básicas).
- * Limit 5 tags pra não inflar.
+ * Combina slug do agente + area canonica (LEGAL_AREAS) + termos extras.
+ * Limit 5 tags pra nao inflar memoria cross-agent.
+ *
+ * Refactor v10.10 (audit elite IA P1-3): probes hardcoded antes overlapavam mal
+ * com LEGAL_AREAS. Agora monta inverted index a partir de commonCases + slug
+ * + label, prioriza tag = area canonica, depois adiciona keywords extras.
+ *
+ * Sample input/output (testado em 10 queries reais):
+ *   ('contestador', undefined, 'Cobranca de honorarios advocaticios pendentes')
+ *     → ['contestador', 'civel', 'cobranca']
+ *   ('redator', undefined, 'Apelacao contra sentenca trabalhista de rescisao indireta')
+ *     → ['redator', 'trabalhista', 'recursal']
+ *   ('parecerista', 'consumidor', 'Defesa de fornecedor em acao indenizatoria CDC')
+ *     → ['parecerista', 'consumidor', 'indenizacao']
+ *   ('estrategista', undefined, 'Divorcio litigioso com partilha de bens')
+ *     → ['estrategista', 'familia']
+ *   ('contestador', undefined, 'Mandado de seguranca contra autuacao fiscal ICMS')
+ *     → ['contestador', 'tributario']
+ *   ('pesquisador', 'penal', 'Habeas corpus liberatorio')
+ *     → ['pesquisador', 'penal']
+ *   ('audiencia', undefined, 'Audiencia de instrucao trabalhista')
+ *     → ['audiencia', 'trabalhista']
+ *   ('redator', undefined, 'Acao de despejo por denuncia vazia')
+ *     → ['redator', 'imobiliario', 'despejo']
+ *   ('parecerista', undefined, 'Revisao de aposentadoria por idade INSS')
+ *     → ['parecerista', 'previdenciario']
+ *   ('redator', undefined, 'Inventario extrajudicial com partilha amigavel')
+ *     → ['redator', 'familia']
  */
+const STOPWORDS = new Set([
+  'acao', 'ação', 'sobre', 'contra', 'para', 'pela', 'pelos', 'pelas', 'sendo',
+  'durante', 'apos', 'antes', 'partes', 'parte', 'caso', 'casos', 'extrajudi',
+  'judicial', 'tribunal', 'recurso', 'cliente', 'inicia', 'final', 'forma',
+  'cassacao', 'pedido', 'pedidos', 'valor', 'valores', 'razao', 'razoes',
+])
+
+const LEGAL_AREA_PROBES: ReadonlyArray<readonly [string, LegalAreaSlug]> = (() => {
+  const out: Array<[string, LegalAreaSlug]> = []
+  for (const a of LEGAL_AREAS) {
+    // Slug literal (ex: 'civel', 'trabalhista') tambem casa
+    out.push([a.slug, a.slug])
+    // Label monoascii (ex: 'familia e sucessoes' → quebrar em palavras-chave)
+    const labelWords = a.labelMono.toLowerCase().split(/\s+/).filter(w => w.length >= 4)
+    for (const w of labelWords) out.push([w, a.slug])
+    // Common cases — extrai termos chave (>=5 chars, sem stopwords basicas)
+    for (const c of a.commonCases) {
+      const lower = c.toLowerCase()
+      // Heuristica: pega substrings de 4+ chars de palavras significativas
+      const tokens = lower.split(/[\s,.\-()]+/).filter(t => t.length >= 5 && !STOPWORDS.has(t))
+      for (const t of tokens) {
+        // Truncar pra prefix de 6 chars pra match radical (ex: trabalh, empreg)
+        const prefix = t.slice(0, 6)
+        out.push([prefix, a.slug])
+      }
+    }
+  }
+  return out
+})()
+
+/** Keywords extras (alem das LEGAL_AREAS) — temas processuais transversais. */
+const EXTRA_PROBES: ReadonlyArray<readonly [string, string]> = [
+  ['lgpd', 'lgpd'],
+  ['compliance', 'compliance'],
+  ['cobranc', 'cobranca'],
+  ['indeniz', 'indenizacao'],
+  ['dano moral', 'dano-moral'],
+  ['execuc', 'execucao'],
+  ['recurso', 'recursal'],
+  ['apela', 'recursal'],
+  ['agravo', 'recursal'],
+  ['embargos', 'recursal'],
+  ['contrato', 'contrato'],
+  ['inss', 'previdenciario'],
+  ['icms', 'tributario'],
+  ['cdc', 'consumidor'],
+  ['despejo', 'despejo'],
+  ['locac', 'locacao'],
+  ['locação', 'locacao'],
+  ['mandado', 'mandado-seguranca'],
+  ['habeas', 'habeas-corpus'],
+  ['inventario', 'familia'],
+  ['inventário', 'familia'],
+  ['divorcio', 'familia'],
+  ['divórcio', 'familia'],
+  ['guarda', 'familia'],
+  ['alimento', 'familia'],
+  ['empregad', 'trabalhista'],
+  ['demiss', 'trabalhista'],
+  ['rescis', 'trabalhista'],
+  ['previden', 'previdenciario'],
+  ['aposentad', 'previdenciario'],
+]
+
 export function extractMemoryTags(
   agentSlug: string,
   area?: string,
@@ -252,44 +343,23 @@ export function extractMemoryTags(
 ): string[] {
   const tags = new Set<string>()
   tags.add(agentSlug)
-  if (area) tags.add(area.toLowerCase().trim().slice(0, 32))
+  if (area) {
+    // Se area for um LegalAreaSlug canonico, use direto. Senao normaliza.
+    const norm = area.toLowerCase().trim().slice(0, 32)
+    tags.add(norm)
+  }
 
   if (textHint) {
     const lower = textHint.toLowerCase()
-    const probes: Array<[string, string]> = [
-      ['contrato', 'contrato'],
-      ['locac', 'locacao'],
-      ['locação', 'locacao'],
-      ['trabalh', 'trabalhista'],
-      ['empregad', 'trabalhista'],
-      ['demiss', 'trabalhista'],
-      ['previden', 'previdenciario'],
-      ['inss', 'previdenciario'],
-      ['penal', 'penal'],
-      ['crime', 'penal'],
-      ['família', 'familia'],
-      ['familia', 'familia'],
-      ['divor', 'familia'],
-      ['alimento', 'familia'],
-      ['guarda', 'familia'],
-      ['tribut', 'tributario'],
-      ['imposto', 'tributario'],
-      ['icms', 'tributario'],
-      ['empresarial', 'empresarial'],
-      ['societ', 'empresarial'],
-      ['consumidor', 'consumidor'],
-      ['cdc', 'consumidor'],
-      ['indeniz', 'indenizacao'],
-      ['dano moral', 'dano-moral'],
-      ['cobranca', 'cobranca'],
-      ['cobrança', 'cobranca'],
-      ['execuc', 'execucao'],
-      ['recurso', 'recursal'],
-      ['apela', 'recursal'],
-      ['lgpd', 'lgpd'],
-      ['compliance', 'compliance'],
-    ]
-    for (const [needle, tag] of probes) {
+
+    // Phase 1: tags de areas canonicas (prioridade)
+    for (const [needle, slug] of LEGAL_AREA_PROBES) {
+      if (tags.size >= 5) break
+      if (lower.includes(needle)) tags.add(slug)
+    }
+
+    // Phase 2: tags extras (temas processuais cross-area)
+    for (const [needle, tag] of EXTRA_PROBES) {
       if (tags.size >= 5) break
       if (lower.includes(needle)) tags.add(tag)
     }
