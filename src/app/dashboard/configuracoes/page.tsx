@@ -22,6 +22,7 @@ import {
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 import { AreaSelector } from '@/components/AreaSelector'
+import { usePreferences } from '@/hooks/usePreferences'
 
 // Removida aba 'integracoes' por hora — toggles ainda nao tem backend wired
 // (Google Calendar/WhatsApp/Drive/Notion/Telegram). Reentra quando handlers
@@ -39,11 +40,50 @@ function maskTel(v: string) {
 export default function ConfiguracoesPage() {
   const supabase = createClient()
   const fileRef = useRef<HTMLInputElement>(null)
+  const { prefs, loading: prefsLoading, update: updatePrefs } = usePreferences()
 
   const [tab, setTab]         = useState<Tab>('perfil')
   const [loading, setLoading] = useState(false)
   const [msg, setMsg]         = useState('')
   const [erro, setErro]       = useState('')
+
+  // Memória cross-agent — contagem + purge
+  const [memoryCount, setMemoryCount]   = useState<number | null>(null)
+  const [memoryPurging, setMemoryPurging] = useState(false)
+  useEffect(() => {
+    if (!prefs.usuario_id) return
+    let cancelled = false
+    ;(async () => {
+      const { count } = await supabase
+        .from('agent_memory')
+        .select('id', { count: 'exact', head: true })
+        .eq('usuario_id', prefs.usuario_id)
+      if (!cancelled) setMemoryCount(count ?? 0)
+    })()
+    return () => { cancelled = true }
+  }, [prefs.usuario_id, supabase])
+
+  async function handleMemoryPurge() {
+    if (!prefs.usuario_id) return
+    if (typeof window !== 'undefined' && !window.confirm('Limpar TODA a memória cross-agent? Esta acao e definitiva.')) return
+    setMemoryPurging(true)
+    try {
+      const { error } = await supabase
+        .from('agent_memory')
+        .delete()
+        .eq('usuario_id', prefs.usuario_id)
+      if (error) {
+        setErro('Erro ao limpar memoria')
+        setTimeout(() => setErro(''), 3500)
+      } else {
+        setMemoryCount(0)
+        setMsg('Memoria limpa.')
+        setTimeout(() => setMsg(''), 2500)
+      }
+    } finally {
+      setMemoryPurging(false)
+    }
+  }
 
   // Plan resolvido server-side (antes: localStorage — exploitavel via DevTools)
   const planoMap: Record<string, { nome: string; preco: number }> = {
@@ -341,6 +381,107 @@ export default function ConfiguracoesPage() {
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
           <div className="section-card" style={{ padding:'20px 24px' }}>
             <AreaSelector />
+          </div>
+
+          {/* ───────── Tom de voz da IA ───────── */}
+          <div className="section-card" style={{ padding:'20px 24px' }}>
+            <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Tom da IA</div>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:10 }}>
+              {([
+                { id:'parceiro', label:'Parceiro', sub:'Caloroso, técnico, direto' },
+                { id:'profissional', label:'Profissional', sub:'Formal, períodos curtos' },
+                { id:'casual', label:'Casual', sub:'Linguagem do dia a dia' },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  disabled={prefsLoading}
+                  onClick={() => updatePrefs({ tom: opt.id })}
+                  style={{
+                    textAlign:'left',
+                    padding:'12px 14px',
+                    borderRadius:10,
+                    border:'1px solid ' + (prefs.tom === opt.id ? 'var(--accent)' : 'var(--border)'),
+                    background: prefs.tom === opt.id ? 'var(--accent-light)' : 'var(--card-bg)',
+                    color:'var(--text-primary)',
+                    cursor: prefsLoading ? 'wait' : 'pointer',
+                    transition:'all 0.18s ease',
+                  }}
+                >
+                  <div style={{ fontSize:13, fontWeight:600, marginBottom:2 }}>{opt.label}</div>
+                  <div style={{ fontSize:11, color:'var(--text-muted)' }}>{opt.sub}</div>
+                </button>
+              ))}
+            </div>
+            <div style={{ marginTop:10, fontSize:11, color:'var(--text-muted)' }}>
+              Aplica-se a TODOS os 21 agentes — Chat, Consultor, Parecerista, etc.
+            </div>
+          </div>
+
+          {/* ───────── Memória & sugestões inteligentes ───────── */}
+          <div className="section-card" style={{ padding:'20px 24px' }}>
+            <div style={{ fontSize:12, fontWeight:600, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:16 }}>Memória cross-agent</div>
+
+            {/* Toggle smart suggestions */}
+            <label style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 14px', borderRadius:10, border:'1px solid var(--border)', background:'var(--card-bg)', cursor:'pointer', marginBottom:10 }}>
+              <input
+                type="checkbox"
+                checked={prefs.smart_suggestions}
+                disabled={prefsLoading}
+                onChange={(e) => updatePrefs({ smart_suggestions: e.target.checked })}
+                style={{ width:18, height:18, accentColor:'var(--accent)' }}
+              />
+              <div style={{ flex:1 }}>
+                <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)' }}>Sugestões inteligentes</div>
+                <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:2 }}>
+                  O Chat sugere o próximo agente com base no que você acabou de fazer (ex: depois do Resumidor, oferece Risco)
+                </div>
+              </div>
+            </label>
+
+            {/* Toggle memory enabled */}
+            <label style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 14px', borderRadius:10, border:'1px solid var(--border)', background:'var(--card-bg)', cursor:'pointer', marginBottom:10 }}>
+              <input
+                type="checkbox"
+                checked={prefs.memory_enabled}
+                disabled={prefsLoading}
+                onChange={(e) => updatePrefs({ memory_enabled: e.target.checked })}
+                style={{ width:18, height:18, accentColor:'var(--accent)' }}
+              />
+              <div style={{ flex:1 }}>
+                <div style={{ fontWeight:600, fontSize:14, color:'var(--text-primary)' }}>Memória ativa</div>
+                <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:2 }}>
+                  {memoryCount === null ? 'Carregando…' : `${memoryCount} ${memoryCount === 1 ? 'interação memorizada' : 'interações memorizadas'} · auto-expira em 90 dias`}
+                </div>
+              </div>
+            </label>
+
+            {/* Purge button + LGPD note */}
+            <div style={{ display:'flex', gap:10, alignItems:'center', flexWrap:'wrap', marginTop:6 }}>
+              <button
+                type="button"
+                onClick={handleMemoryPurge}
+                disabled={memoryPurging || memoryCount === 0 || memoryCount === null}
+                style={{
+                  padding:'10px 16px',
+                  borderRadius:8,
+                  border:'1px solid var(--border)',
+                  background:'transparent',
+                  color: memoryCount && memoryCount > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
+                  fontSize:12,
+                  fontWeight:600,
+                  cursor: memoryPurging || !memoryCount ? 'not-allowed' : 'pointer',
+                  opacity: memoryPurging ? 0.6 : 1,
+                  transition:'all 0.18s ease',
+                }}
+              >
+                {memoryPurging ? 'Limpando…' : 'Limpar memória agora'}
+              </button>
+              <div style={{ fontSize:11, color:'var(--text-muted)', display:'flex', alignItems:'center', gap:6 }}>
+                <ShieldCheck size={13} strokeWidth={1.75} aria-hidden />
+                LGPD Art. 18 — sua memória é privada, nunca treina modelo público
+              </div>
+            </div>
           </div>
 
           <div className="section-card" style={{ padding:'20px 24px' }}>
