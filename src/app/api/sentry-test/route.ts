@@ -5,7 +5,7 @@ import { timingSafeEqual } from 'crypto'
 export const dynamic = 'force-dynamic'
 
 /**
- * GET /api/_sentry-test — Sentry healthcheck endpoint.
+ * GET /api/sentry-test — Sentry healthcheck endpoint.
  *
  * Audit elite v4 #10 (2026-05-03): operador precisava forma rapida de
  * confirmar que Sentry production esta recebendo events antes da demo.
@@ -19,9 +19,9 @@ export const dynamic = 'force-dynamic'
  * por crawlers/atacantes.
  *
  * Uso:
- *   curl -H "Authorization: Bearer $CRON_SECRET" https://pralvex.com.br/api/_sentry-test
+ *   curl -H "Authorization: Bearer $CRON_SECRET" https://pralvex.com.br/api/sentry-test
  *   ou local em dev com NEXT_PUBLIC_SENTRY_TEST_ENABLED=1:
- *   curl http://localhost:3006/api/_sentry-test
+ *   curl http://localhost:3006/api/sentry-test
  */
 
 const CRON_SECRET = process.env.CRON_SECRET
