@@ -78,13 +78,13 @@ export default function NotFound() {
             fontSize: 'clamp(36px, 6.5vw, 72px)',
             lineHeight: 1.05,
             letterSpacing: '-0.01em',
-            color: '#f5e8d3',
+            color: 'var(--text-primary)',
             animationDelay: '0.18s',
-            textShadow: '0 0 60px rgba(191,166,142,0.18)',
+            textShadow: '0 0 60px var(--glow)',
           }}
         >
           Esta página{' '}
-          <span style={{ color: '#bfa68e' }}>não consta</span>
+          <span className="text-grad-accent">não consta</span>
           {' '}no sumário.
         </h1>
 
