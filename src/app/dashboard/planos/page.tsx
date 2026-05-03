@@ -97,11 +97,15 @@ function PlanosPageInner() {
         const res = await fetch('/api/user/plan', { cache: 'no-store' })
         if (!res.ok) return
         const data = await res.json() as { plano?: string }
+        // Demo wave3 fix (2026-05-03): cobre 'solo' e 'free' que cairam em null
+        // antes e deixavam usuario stuck em 'starter' default na UI.
         const normalized = data.plano === 'firma' ? 'pro'
           : data.plano === 'escritorio' ? 'starter'
           : data.plano === 'enterprise' ? 'enterprise'
           : data.plano === 'pro' ? 'pro'
           : data.plano === 'starter' ? 'starter'
+          : data.plano === 'solo' ? 'solo'
+          : data.plano === 'free' ? 'solo'
           : null
         if (!cancelled && normalized) setPlanoAtual(normalized as PlanoId)
       } catch { /* silent */ }
@@ -220,9 +224,10 @@ function PlanosPageInner() {
 
   // Destaque para o CTA final: o plano mais premium que o usuário ainda não tem
   const destaqueId: PlanoId =
-    planoAtual === 'starter' ? 'pro'
-      : planoAtual === 'pro' ? 'enterprise'
-        : 'enterprise'
+    planoAtual === 'solo' ? 'starter'
+      : planoAtual === 'starter' ? 'pro'
+        : planoAtual === 'pro' ? 'enterprise'
+          : 'enterprise'
 
   return (
     <div className="agent-page" style={{ maxWidth: 1400 }}>

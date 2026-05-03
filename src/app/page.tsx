@@ -569,8 +569,8 @@ export default function LandingPage() {
                 title: 'Recursos',
                 links: [
                   { l: 'FAQ', h: '#faq' },
-                  { l: 'Documentação', h: '/empresas' },
                   { l: 'Sobre', h: '/sobre' },
+                  { l: 'Empresas', h: '/empresas' },
                   { l: 'Entrar', h: '/login' },
                 ],
               },

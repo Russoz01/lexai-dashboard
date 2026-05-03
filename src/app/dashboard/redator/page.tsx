@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState, useEffect, type ComponentType, type SVGProps } from 'react'
+import { useState, useEffect, useRef, type ComponentType, type SVGProps } from 'react'
 import {
   FileText, FileSignature, ShieldCheck, Mail, BookText, ScrollText,
   Users, UserSquare, Folder, Package, Settings, MailWarning, HelpCircle, ClipboardList,
@@ -253,6 +253,16 @@ export default function RedatorPage() {
 
   const wizardSections = WIZARD_FIELDS[template] || []
 
+  // Demo wave3 fix (2026-05-03): AbortController + timeout 90s. Antes fetch
+  // sem abort travava UI infinitamente em 503/network durante demo. Cleanup
+  // aborta na unmount pra evitar setState em componente desmontado.
+  const abortRef = useRef<AbortController | null>(null)
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [])
+
   // Reset wizard when template or mode changes
   useEffect(() => {
     setCurrentStep(0)
@@ -274,6 +284,10 @@ export default function RedatorPage() {
   async function gerar(instrucoesOverride?: string) {
     const payloadInstrucoes = (instrucoesOverride ?? instrucoes).trim()
     if (!template || !payloadInstrucoes) return
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+    const timeoutId = setTimeout(() => ac.abort(), 90_000)
     setGerando(true); setPeca(null); setErro(''); setSavedBadge(false)
 
     try {
@@ -281,9 +295,10 @@ export default function RedatorPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ template, instrucoes: payloadInstrucoes }),
+        signal: ac.signal,
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Erro ao gerar documento')
+      if (!res.ok) throw new Error(data.error || 'Falha ao gerar documento. Tente em 30s.')
       setPeca(data.peca)
       clearDraft('pralvex-draft-redator')
 
@@ -298,8 +313,13 @@ export default function RedatorPage() {
         })
         .catch(err => safeLog.error('[redator/saveDraft]', err))
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro ao gerar peça')
+      if (e instanceof Error && e.name === 'AbortError') {
+        setErro('A geração demorou demais. Verifique sua conexão e tente em 30s.')
+      } else {
+        setErro(e instanceof Error ? e.message : 'Falha ao gerar peça. Tente em 30s.')
+      }
     } finally {
+      clearTimeout(timeoutId)
       setGerando(false)
     }
   }
@@ -379,7 +399,7 @@ export default function RedatorPage() {
       const safeTitle = (peca.titulo || 'peca').replace(/[^\w\s-]/g, '').trim().slice(0, 60) || 'peca'
       downloadBlob(blob, `${safeTitle}.docx`)
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro ao exportar Word')
+      setErro(e instanceof Error ? e.message : 'Falha ao exportar Word. Tente novamente.')
     } finally {
       setExportandoWord(false)
     }

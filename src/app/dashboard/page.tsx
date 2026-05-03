@@ -324,7 +324,7 @@ export default function DashboardPage() {
             roman="IV"
             moneyValue={fmt(stats.saldo)}
             label="Saldo"
-            caption={stats.saldo >= 0 ? 'Positivo' : 'Negativo'}
+            caption={stats.saldo === 0 ? 'Sem lançamentos' : stats.saldo > 0 ? 'Positivo' : 'Negativo'}
             warning={stats.saldo < 0}
             href="/dashboard/financeiro"
           />
@@ -746,6 +746,9 @@ export default function DashboardPage() {
                   <CalendarCheck size={20} strokeWidth={1.5} aria-hidden />
                   <div className={s.dashEmptyTitle}>Agenda em silêncio</div>
                   <div className={s.dashEmptySub}>Sem prazo no radar. Cadastre o primeiro e o alerta começa a rodar.</div>
+                  <Link href="/dashboard/prazos" className={s.dashEmptyCta}>
+                    Cadastrar prazo <ArrowRight size={12} strokeWidth={2} aria-hidden />
+                  </Link>
                 </div>
               ) : (
                 stats.prazosList.map((p, i) => {
