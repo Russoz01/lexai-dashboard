@@ -582,7 +582,8 @@ export default function LandingPage() {
                 links: [
                   { l: 'FAQ', h: '#faq' },
                   { l: 'Sobre', h: '/sobre' },
-                  { l: 'Empresas', h: '/empresas' },
+                  { l: 'Suporte', h: '/suporte' },
+                  { l: 'Status', h: '/status' },
                   { l: 'Entrar', h: '/login' },
                 ],
               },
@@ -591,7 +592,8 @@ export default function LandingPage() {
                 links: [
                   { l: 'Privacidade LGPD', h: '/privacidade' },
                   { l: 'Termos de uso', h: '/termos' },
-                  { l: 'DPA assinado', h: '/privacidade' },
+                  { l: 'DPA assinado', h: '/dpa' },
+                  { l: 'Suporte', h: '/suporte' },
                 ],
               },
             ].map((col) => (

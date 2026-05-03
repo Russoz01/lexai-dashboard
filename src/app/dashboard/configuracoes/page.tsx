@@ -37,6 +37,20 @@ function maskTel(v: string) {
   return v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3').replace(/-$/, '')
 }
 
+// Plan map — module-level const pra estabilidade no useEffect dep array.
+// Antes era declarado dentro do componente -> recriado a cada render ->
+// ESLint react-hooks/exhaustive-deps warning + risco de stale closure.
+// QA P0-9 fix (2026-05-03): Enterprise revertido pra R$1599 (alinhado com
+// Sidebar e LexPricingGrid). Constraint Leonardo: nao mudar preco bruscamente.
+const PLANO_MAP: Record<string, { nome: string; preco: number }> = {
+  solo: { nome: 'Solo', preco: 599 },
+  starter: { nome: 'Escritório', preco: 1399 },
+  escritorio: { nome: 'Escritório', preco: 1399 },
+  pro: { nome: 'Firma', preco: 1459 },
+  firma: { nome: 'Firma', preco: 1459 },
+  enterprise: { nome: 'Enterprise', preco: 1599 },
+}
+
 export default function ConfiguracoesPage() {
   const supabase = createClient()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -86,18 +100,8 @@ export default function ConfiguracoesPage() {
     }
   }
 
-  // Plan resolvido server-side (antes: localStorage — exploitavel via DevTools)
-  // QA P0-9 fix (2026-05-03): Enterprise revertido pra R$1599 (alinhado com
-  // Sidebar e LexPricingGrid). Constraint Leonardo: nao mudar preco bruscamente
-  // — bump pra 2499 era +56%, desfeito.
-  const planoMap: Record<string, { nome: string; preco: number }> = {
-    solo: { nome: 'Solo', preco: 599 },
-    starter: { nome: 'Escritório', preco: 1399 },
-    escritorio: { nome: 'Escritório', preco: 1399 },
-    pro: { nome: 'Firma', preco: 1459 },
-    firma: { nome: 'Firma', preco: 1459 },
-    enterprise: { nome: 'Enterprise', preco: 1599 },
-  }
+  // Plan resolvido server-side (antes: localStorage — exploitavel via DevTools).
+  // PLANO_MAP movido pra module-level const acima (lint exhaustive-deps fix).
   const [planoId, setPlanoId] = useState<string>('starter')
   useEffect(() => {
     let cancelled = false
@@ -109,12 +113,12 @@ export default function ConfiguracoesPage() {
         // configuracoes lia data.plan e caia silenciosamente em starter pra
         // todo user Pro/Firma/Enterprise. Agora le data.plano.
         const data = await res.json() as { plano?: string }
-        if (!cancelled && data.plano && planoMap[data.plano]) setPlanoId(data.plano)
+        if (!cancelled && data.plano && PLANO_MAP[data.plano]) setPlanoId(data.plano)
       } catch { /* silent */ }
     })()
     return () => { cancelled = true }
   }, [])
-  const planoAtual = planoMap[planoId] || planoMap.starter
+  const planoAtual = PLANO_MAP[planoId] || PLANO_MAP.starter
 
   // Perfil
   const [nome, setNome]       = useState('')
