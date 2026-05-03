@@ -3,8 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { safeLog } from './safe-log'
 
-const MAX_INPUT_LENGTH = 50000 // 50k chars max
-
 /**
  * Resolves public.usuarios.id from an auth.users.id.
  * Every FK in the schema points to usuarios.id — never insert auth.users.id
@@ -79,15 +77,8 @@ export async function validateAuth() {
   return { user, supabase, error: null }
 }
 
-export function validateInput(text: string | undefined, minLength: number, fieldName: string) {
-  if (!text || text.trim().length < minLength) {
-    return NextResponse.json({ error: `${fieldName} muito curto. Minimo ${minLength} caracteres.` }, { status: 400 })
-  }
-  if (text.length > MAX_INPUT_LENGTH) {
-    return NextResponse.json({ error: `${fieldName} excede o limite de ${MAX_INPUT_LENGTH} caracteres.` }, { status: 400 })
-  }
-  return null
-}
+// validateInput removido em 2026-05-03 (review elite: 0 callers; rotas usam Zod schemas
+// inline ou check manual via api-input-validation.ts). Re-adicionar se padrao mudar.
 
 export function safeError(context: string, err: unknown) {
   const msg = err instanceof Error ? err.message : 'Erro interno'
