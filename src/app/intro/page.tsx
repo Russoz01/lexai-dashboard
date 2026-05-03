@@ -720,19 +720,29 @@ export default function IntroPage() {
 
   // When the vault door animation is "done" (triggered via AnimatePresence
   // exit callback OR the timeout safety net), route to / (landing).
-  // 2026-05-02: Leonardo pediu redirect pra landing em vez de login —
-  // intro é entrada cinematográfica do brand, não funil de auth.
+  // 2026-05-02: Leonardo pediu redirect pra landing em vez de login.
+  // Marca sessionStorage('pralvex-intro-seen','1') antes do push pra que
+  // a landing page nao redirecione pra intro de novo nessa sessao.
   useEffect(() => {
     if (!opening || pushed) return
     const t = window.setTimeout(
       () => {
         setPushed(true)
+        try { sessionStorage.setItem('pralvex-intro-seen', '1') } catch { /* noop */ }
         router.push('/')
       },
       reduced ? 120 : 1250,
     )
     return () => window.clearTimeout(t)
   }, [opening, pushed, reduced, router])
+
+  // Marca intro como vista TAMBEM se user clicar "Pular intro" ou navegar
+  // pra outro lugar antes do vault completar.
+  useEffect(() => {
+    return () => {
+      try { sessionStorage.setItem('pralvex-intro-seen', '1') } catch { /* noop */ }
+    }
+  }, [])
 
   // Auto-trigger vault when user reaches the bottom of the page
   useEffect(() => {

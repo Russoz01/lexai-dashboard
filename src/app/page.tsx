@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   ArrowRight,
   CalendarCheck,
@@ -65,14 +66,49 @@ import { ThemeToggle } from '@/components/ThemeToggle'
  * ═══════════════════════════════════════════════════════════════════ */
 
 export default function LandingPage() {
+  const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  // Bloqueia render da landing ate decidir se vai pra /intro
+  const [introCheck, setIntroCheck] = useState<'pending' | 'show'>('pending')
+
+  // Intro gate (2026-05-02 — Leonardo):
+  // - Primeira visita da sessao: redireciona pra /intro (cinematografica)
+  // - Visitas seguintes na mesma sessao: vai direto pra landing
+  // - sessionStorage zera quando user fecha o browser/tab — proxima
+  //   abertura ve intro de novo
+  // - Bypass via ?skip=1 ou referrer == /intro (evita loop)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const skipFlag = params.get('skip') === '1'
+      const seen = sessionStorage.getItem('pralvex-intro-seen') === '1'
+      const cameFromIntro = document.referrer.includes('/intro')
+
+      if (!seen && !skipFlag && !cameFromIntro) {
+        // Marca antes de redirect pra evitar loop em caso de back-button
+        sessionStorage.setItem('pralvex-intro-seen', '1')
+        router.replace('/intro')
+        return
+      }
+      setIntroCheck('show')
+    } catch {
+      // sessionStorage indisponivel (private mode etc) — mostra landing direto
+      setIntroCheck('show')
+    }
+  }, [router])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Render placeholder bem leve enquanto decide redirect — evita flash da
+  // landing antes do router.replace('/intro') executar.
+  if (introCheck === 'pending') {
+    return <div className="min-h-screen surface-base" aria-hidden />
+  }
 
   return (
     <div className="min-h-screen overflow-x-hidden surface-base lex-landing-shell">
