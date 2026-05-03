@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, AlertTriangle, BookOpen, Calendar, ExternalLink, ChevronDown, ChevronUp, User, Clipboard, Check, CheckCircle2, NotebookText, Layers, Hourglass, FileX, Clock, ShieldCheck, Gauge } from 'lucide-react'
 import ConfidenceBadge, { PoweredByPralvex, VerifiedBadge } from '@/components/ConfidenceBadge'
 import { SkeletonResult } from '@/components/Skeleton'
@@ -58,9 +58,22 @@ export default function PesquisadorPage() {
   const [fontes, setFontes]     = useState<Fonte[]>([])
   const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
 
+  // Demo P1 fix (2026-05-03): AbortController + timeout 90s. Antes fetch sem
+  // abort travava UI infinitamente em 503/network. Cleanup aborta na unmount.
+  const abortRef = useRef<AbortController | null>(null)
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [])
+
   async function buscar(e: React.FormEvent) {
     e.preventDefault()
     if (!query.trim()) return
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+    const timeoutId = setTimeout(() => ac.abort(), 90_000)
     setBuscando(true); setBuscou(false); setPesquisa(null); setErro(''); setFontes([]); setGroundingStats(null)
 
     try {
@@ -68,6 +81,7 @@ export default function PesquisadorPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query, tribunal, area, periodo }),
+        signal: ac.signal,
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro na pesquisa')
@@ -75,8 +89,13 @@ export default function PesquisadorPage() {
       if (Array.isArray(data.fontes)) setFontes(data.fontes)
       if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro ao pesquisar')
+      if (e instanceof Error && e.name === 'AbortError') {
+        setErro('Busca cancelada ou demorou demais. Tente uma query mais curta.')
+      } else {
+        setErro(e instanceof Error ? e.message : 'Erro ao pesquisar')
+      }
     } finally {
+      clearTimeout(timeoutId)
       setBuscou(true)
       setBuscando(false)
     }

@@ -1,5 +1,5 @@
 ﻿'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import ConfidenceBadge, { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { Search, BookOpen, Landmark, ShieldAlert, FileText, NotebookText, Gavel, Briefcase, ShoppingBag, Coins, CheckSquare, ShieldCheck, Globe, Bookmark, ExternalLink, RotateCcw, Clock, Gauge } from 'lucide-react'
 import { AgentHero } from '@/components/AgentHero'
@@ -15,13 +15,22 @@ export default function LegislacaoPage() {
   const [fontes, setFontes] = useState<Fonte[]>([])
   const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
 
+  // Demo P1 fix (2026-05-03): AbortController + timeout 90s.
+  const abortRef = useRef<AbortController | null>(null)
+  useEffect(() => () => { abortRef.current?.abort() }, [])
+
   async function pesquisar() {
     if (!consulta.trim() || loading) return
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+    const tid = setTimeout(() => ac.abort(), 90_000)
     setLoading(true); setErro(''); setResultado(null); setFontes([]); setGroundingStats(null)
     try {
       const res = await fetch('/api/legislacao', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ consulta }),
+        signal: ac.signal,
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao consultar dispositivo.')
@@ -29,8 +38,12 @@ export default function LegislacaoPage() {
       if (Array.isArray(data.fontes)) setFontes(data.fontes)
       if (data.grounding_stats) setGroundingStats(data.grounding_stats)
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro na pesquisa')
-    } finally { setLoading(false) }
+      if (e instanceof Error && e.name === 'AbortError') {
+        setErro('Consulta cancelada ou demorou demais. Tente uma query mais especifica.')
+      } else {
+        setErro(e instanceof Error ? e.message : 'Erro na pesquisa')
+      }
+    } finally { clearTimeout(tid); setLoading(false) }
   }
 
   return (

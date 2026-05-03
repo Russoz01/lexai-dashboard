@@ -1,5 +1,5 @@
 ﻿'use client'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Landmark,
   CalendarRange,
@@ -180,20 +180,33 @@ export default function CalculadorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rapidoResultado])
 
+  // Demo P1 fix (2026-05-03): AbortController + timeout 90s.
+  const calcularAbortRef = useRef<AbortController | null>(null)
+  useEffect(() => () => { calcularAbortRef.current?.abort() }, [])
+
   async function calcular() {
     if (!consulta.trim() || loading) return
+    calcularAbortRef.current?.abort()
+    const ac = new AbortController()
+    calcularAbortRef.current = ac
+    const tid = setTimeout(() => ac.abort(), 90_000)
     setLoading(true); setErro(''); setResultado(null)
     try {
       const res = await fetch('/api/calcular', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ consulta }),
+        signal: ac.signal,
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro no cálculo. Tente novamente.')
       setResultado(data.resultado)
     } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : 'Erro no cálculo')
-    } finally { setLoading(false) }
+      if (e instanceof Error && e.name === 'AbortError') {
+        setErro('Cálculo cancelado ou demorou demais. Tente um pedido mais específico.')
+      } else {
+        setErro(e instanceof Error ? e.message : 'Erro no cálculo')
+      }
+    } finally { clearTimeout(tid); setLoading(false) }
   }
 
   return (
