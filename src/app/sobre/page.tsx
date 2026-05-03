@@ -43,21 +43,22 @@ export default function SobrePage() {
     <div className="relative isolate min-h-screen overflow-hidden surface-base">
       <ScrollProgress />
       <AmbientMesh dust dustCount={8} intensity={0.5} />
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur-md md:px-10">
-        <Link href="/" className="font-mono text-sm uppercase tracking-[0.3em] text-white">
+      <header className="lex-landing-nav-scrolled sticky top-0 z-40 flex items-center justify-between px-6 py-4 backdrop-blur-md md:px-10">
+        <Link href="/" className="font-mono text-sm uppercase tracking-[0.3em] text-on-surface">
           Pralvex
         </Link>
         <nav className="flex items-center gap-5 text-sm">
-          <Link href="/empresas" className="text-white/60 transition hover:text-white">
+          <Link href="/empresas" className="text-on-surface-muted transition hover:text-on-surface">
             Empresas
           </Link>
-          <Link href="/roi" className="hidden text-white/60 transition hover:text-white sm:inline">
+          <Link href="/roi" className="hidden text-on-surface-muted transition hover:text-on-surface sm:inline">
             Calculadora
           </Link>
           <ThemeToggle variant="landing" />
           <Link
             href="/login"
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-white transition hover:border-[#bfa68e]/40 hover:bg-white/10"
+            style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+            className="rounded-full border px-4 py-1.5 text-sm transition hover:border-[#bfa68e]/40"
           >
             Entrar
           </Link>
@@ -69,7 +70,7 @@ export default function SobrePage() {
           Nº 005 · Sobre · MMXXVI
         </div>
 
-        <h1 className="text-balance text-4xl font-light leading-[1.08] tracking-tight text-white sm:text-5xl md:text-[3.5rem]">
+        <h1 className="text-balance text-4xl font-light leading-[1.08] tracking-tight text-on-surface sm:text-5xl md:text-[3.5rem]">
           Construído por quem{' '}
           <em className="text-grad-accent italic">
             escreve peças
@@ -77,49 +78,50 @@ export default function SobrePage() {
           de verdade.
         </h1>
 
-        <p className="mt-8 text-base leading-relaxed text-white/70 md:text-lg">
+        <p className="mt-8 text-base leading-relaxed text-on-surface-muted md:text-lg">
           A Pralvex nasceu em 2026 com uma premissa desconfortável
           para a indústria de IA generalista: um modelo não treinado no Direito brasileiro
           não serve para advogado brasileiro. Não adianta empacotar Claude em uma
           interface bonita se o advogado precisa conferir cada citação.
         </p>
-        <p className="mt-5 text-base leading-relaxed text-white/70 md:text-lg">
+        <p className="mt-5 text-base leading-relaxed text-on-surface-muted md:text-lg">
           Nós escolhemos o caminho mais difícil: curar o corpus, calibrar o modelo,
           rastrear origem, e negar a resposta quando ela não puder ser sustentada.
           Temos cliente com medo de IA virando erro na OAB. Nosso trabalho é fazer
           a IA pedir socorro antes de mentir.
         </p>
 
-        <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+        <div className="my-14 h-px w-full" style={{ background: 'linear-gradient(to right, transparent, var(--border), transparent)' }} />
 
-        <h2 className="mb-8 text-2xl font-medium tracking-tight text-white md:text-3xl">
+        <h2 className="mb-8 text-2xl font-medium tracking-tight text-on-surface md:text-3xl">
           Quatro pilares não-negociáveis
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {pillars.map((p) => (
             <article
               key={p.n}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-6 transition hover:border-[#bfa68e]/30"
+              className="group relative overflow-hidden rounded-2xl border border-on-surface p-6 transition hover:border-[#bfa68e]/30"
+              style={{ background: 'var(--card-bg)' }}
             >
               <div className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-[#bfa68e]/80">
                 {p.n}
               </div>
-              <h3 className="mb-2 text-lg font-medium text-white">{p.title}</h3>
-              <p className="text-sm leading-relaxed text-white/60">{p.body}</p>
+              <h3 className="mb-2 text-lg font-medium text-on-surface">{p.title}</h3>
+              <p className="text-sm leading-relaxed text-on-surface-muted">{p.body}</p>
             </article>
           ))}
         </div>
 
-        <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+        <div className="my-14 h-px w-full" style={{ background: 'linear-gradient(to right, transparent, var(--border), transparent)' }} />
 
         <div className="mb-4 font-mono text-[0.65rem] uppercase tracking-[0.28em] text-[#bfa68e]">
           Nº 005/I · Carta do sócio-gestor
         </div>
-        <h2 className="mb-8 text-2xl font-medium tracking-tight text-white md:text-3xl">
+        <h2 className="mb-8 text-2xl font-medium tracking-tight text-on-surface md:text-3xl">
           Por que isso existe
         </h2>
 
-        <figure className="relative mb-10 rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-8 md:p-10">
+        <figure className="relative mb-10 rounded-2xl border border-on-surface p-8 md:p-10" style={{ background: 'var(--card-bg)' }}>
           <div
             aria-hidden="true"
             className="absolute left-0 top-8 h-[calc(100%-4rem)] w-px bg-gradient-to-b from-transparent via-[#bfa68e]/60 to-transparent"
@@ -136,7 +138,7 @@ export default function SobrePage() {
             jurisprudência de madrugada e o advogado assinar sem conferir.
           </blockquote>
 
-          <div className="space-y-4 text-[0.95rem] leading-relaxed text-white/70 md:text-base">
+          <div className="space-y-4 text-[0.95rem] leading-relaxed text-on-surface-muted md:text-base">
             <p>
               Sou o Renato, sócio-gestor do produto. Advogo em contencioso desde
               2008, com pé em vara cível e de família no interior de Minas. O Leonardo
@@ -165,68 +167,68 @@ export default function SobrePage() {
             </p>
           </div>
 
-          <figcaption className="mt-8 flex flex-col gap-1 border-t border-white/10 pt-5 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
-            <span className="text-white/75">— Renato, sócio-gestor</span>
+          <figcaption className="mt-8 flex flex-col gap-1 border-t border-on-surface pt-5 font-mono text-[0.7rem] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
+            <span className="text-on-surface-muted">— Renato, sócio-gestor</span>
             <span>Leonardo, engenheiro fundador</span>
             <span>Pralvex · MMXXVI</span>
           </figcaption>
         </figure>
 
-        <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+        <div className="my-14 h-px w-full" style={{ background: 'linear-gradient(to right, transparent, var(--border), transparent)' }} />
 
-        <h2 className="mb-6 text-2xl font-medium tracking-tight text-white md:text-3xl">
+        <h2 className="mb-6 text-2xl font-medium tracking-tight text-on-surface md:text-3xl">
           O time
         </h2>
-        <p className="text-base leading-relaxed text-white/70 md:text-lg">
-          A <strong className="text-white">Pralvex</strong> é um estúdio de software
+        <p className="text-base leading-relaxed text-on-surface-muted md:text-lg">
+          A <strong className="text-on-surface">Pralvex</strong> é um estúdio de software
           do interior de Minas. Trabalhamos em células pequenas: dois engenheiros,
           um designer, um operador jurídico em residência, uma diretora de
           conformidade. Sem vendedor, sem gerente de produto. Quem escreve a feature
           fala com quem usa.
         </p>
-        <p className="mt-5 text-base leading-relaxed text-white/70 md:text-lg">
+        <p className="mt-5 text-base leading-relaxed text-on-surface-muted md:text-lg">
           Nosso compromisso com o escritório médio: suporte por WhatsApp em menos
           de 4 horas úteis, resposta de bug crítico em 24h, e roadmap público que
           você ajuda a votar.
         </p>
 
-        <div className="my-14 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+        <div className="my-14 h-px w-full" style={{ background: 'linear-gradient(to right, transparent, var(--border), transparent)' }} />
 
-        <h2 className="mb-6 text-2xl font-medium tracking-tight text-white md:text-3xl">
+        <h2 className="mb-6 text-2xl font-medium tracking-tight text-on-surface md:text-3xl">
           Como chegar na gente
         </h2>
-        <ul className="divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]">
-          <li className="flex items-center justify-between px-5 py-4">
-            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
+        <ul className="overflow-hidden rounded-2xl border border-on-surface" style={{ background: 'var(--card-bg)' }}>
+          <li className="flex items-center justify-between border-b px-5 py-4" style={{ borderColor: 'var(--border)' }}>
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
               Comercial
             </span>
             <a
               href="https://wa.me/5534993026456"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-white transition hover:text-[#bfa68e]"
+              className="text-sm text-on-surface transition hover:text-[#bfa68e]"
             >
               +55 34 99302-6456
             </a>
           </li>
-          <li className="flex items-center justify-between px-5 py-4">
-            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
+          <li className="flex items-center justify-between border-b px-5 py-4" style={{ borderColor: 'var(--border)' }}>
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
               E-mail
             </span>
             <a
               href="mailto:contato@pralvex.com.br"
-              className="text-sm text-white transition hover:text-[#bfa68e]"
+              className="text-sm text-on-surface transition hover:text-[#bfa68e]"
             >
               contato@pralvex.com.br
             </a>
           </li>
           <li className="flex items-center justify-between px-5 py-4">
-            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white/50">
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
               Imprensa
             </span>
             <a
               href="mailto:imprensa@pralvex.com.br"
-              className="text-sm text-white transition hover:text-[#bfa68e]"
+              className="text-sm text-on-surface transition hover:text-[#bfa68e]"
             >
               imprensa@pralvex.com.br
             </a>
@@ -243,19 +245,20 @@ export default function SobrePage() {
           </Link>
           <Link
             href="/roi"
-            className="inline-flex items-center rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm text-white/80 backdrop-blur transition hover:border-[#bfa68e]/40 hover:text-white"
+            style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-secondary)' }}
+            className="inline-flex items-center rounded-full border px-5 py-2.5 text-sm backdrop-blur transition hover:border-[#bfa68e]/40 hover:text-on-surface"
           >
             Calcular ROI
           </Link>
         </div>
 
-        <footer className="mt-20 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-white/40 sm:flex-row sm:items-center">
+        <footer className="mt-20 flex flex-col items-start justify-between gap-3 border-t border-on-surface pt-6 font-mono text-[0.7rem] uppercase tracking-[0.2em] sm:flex-row sm:items-center" style={{ color: 'var(--text-muted)' }}>
           <span>© MMXXVI Pralvex</span>
           <div className="flex flex-wrap items-center gap-4">
-            <Link href="/privacidade" className="transition hover:text-white">
+            <Link href="/privacidade" className="transition hover:text-on-surface">
               Privacidade
             </Link>
-            <Link href="/termos" className="transition hover:text-white">
+            <Link href="/termos" className="transition hover:text-on-surface">
               Termos
             </Link>
             <a href="tel:+5534993026456" className="text-[#bfa68e]/80 transition hover:text-[#e6d4bd]">

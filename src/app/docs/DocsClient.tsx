@@ -40,7 +40,7 @@ const CHAPTERS: Chapter[] = [
           Depois do signup a plataforma cria seu gabinete. Voce entra com uma
           demo de 50 minutos com acesso enterprise aos 27 agentes. Nao exige cartao.
         </p>
-        <ol className="mt-4 space-y-2 pl-5 text-[14px] leading-[1.7] text-white/70 [counter-reset:step]">
+        <ol className="mt-4 space-y-2 pl-5 text-[14px] leading-[1.7] text-on-surface-muted [counter-reset:step]">
           <li className="relative pl-8 before:absolute before:left-0 before:top-0 before:font-mono before:text-[11px] before:font-bold before:tracking-[0.22em] before:text-[#bfa68e] before:content-['01']">
             Abra o Chat orquestrador e digite a intencao (&ldquo;analise este contrato&rdquo;, &ldquo;prazo de embargos&rdquo;).
           </li>
@@ -83,8 +83,8 @@ const CHAPTERS: Chapter[] = [
                 <Icon className="size-4" strokeWidth={1.6} />
               </div>
               <div>
-                <div className="text-[13px] font-medium text-white">{name}</div>
-                <div className="text-[11.5px] text-white/50">{desc}</div>
+                <div className="text-[13px] font-medium text-on-surface">{name}</div>
+                <div className="text-[11.5px] text-on-surface-muted">{desc}</div>
               </div>
             </div>
           ))}
@@ -125,9 +125,10 @@ const CHAPTERS: Chapter[] = [
           ].map(s => (
             <div
               key={s.desc}
-              className="flex items-center justify-between border-b border-white/5 py-2 text-[13.5px]"
+              className="flex items-center justify-between border-b py-2 text-[13.5px]"
+              style={{ borderColor: 'var(--border)' }}
             >
-              <span className="text-white/75">{s.desc}</span>
+              <span className="text-on-surface-muted">{s.desc}</span>
               <span className="flex gap-1.5">
                 {s.keys.map(k => (
                   <kbd
@@ -156,17 +157,17 @@ const CHAPTERS: Chapter[] = [
           Agentes juridicos trabalham melhor com <strong>contexto curto mas preciso</strong>.
           Tres regras de ofi­cio:
         </p>
-        <ol className="mt-4 space-y-3 text-[14px] leading-[1.7] text-white/70">
+        <ol className="mt-4 space-y-3 text-[14px] leading-[1.7] text-on-surface-muted">
           <li>
-            <strong className="text-white">Seja especifico no tribunal</strong> — &ldquo;pesquisa STJ&rdquo;
+            <strong className="text-on-surface">Seja especifico no tribunal</strong> — &ldquo;pesquisa STJ&rdquo;
             rende acordaos mais relevantes que &ldquo;pesquisa geral&rdquo;.
           </li>
           <li>
-            <strong className="text-white">Cite a tese</strong> — &ldquo;boa-fe objetiva em M&amp;A&rdquo; e
+            <strong className="text-on-surface">Cite a tese</strong> — &ldquo;boa-fe objetiva em M&amp;A&rdquo; e
             melhor que &ldquo;contratos&rdquo;.
           </li>
           <li>
-            <strong className="text-white">Declare o formato</strong> — &ldquo;me retorne em topicos
+            <strong className="text-on-surface">Declare o formato</strong> — &ldquo;me retorne em topicos
             para a peca&rdquo; evita texto corrido.
           </li>
         </ol>
@@ -174,7 +175,7 @@ const CHAPTERS: Chapter[] = [
           <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#bfa68e]/80">
             Exemplo · Pesquisador
           </div>
-          <p className="font-mono text-[13px] leading-[1.6] text-white/85">
+          <p className="font-mono text-[13px] leading-[1.6] text-on-surface">
             Pesquisa STJ, 2020 em diante, sobre exclusao de socio minoritario em SCP
             por quebra de affectio societatis. Quero 3 acordaos com ementa e RR.
           </p>
@@ -194,21 +195,21 @@ const CHAPTERS: Chapter[] = [
           Integracoes ativam-se em <Link href="/dashboard/configuracoes" className="text-[#bfa68e] underline decoration-[#bfa68e]/40 underline-offset-2 hover:decoration-[#bfa68e]">Configuracoes</Link>.
           Todas usam OAuth — Pralvex nunca armazena senha.
         </p>
-        <ul className="mt-4 space-y-3 text-[14px] leading-[1.7] text-white/70">
+        <ul className="mt-4 space-y-3 text-[14px] leading-[1.7] text-on-surface-muted">
           <li>
-            <strong className="text-white">Google Calendar</strong> — sincroniza prazos e
+            <strong className="text-on-surface">Google Calendar</strong> — sincroniza prazos e
             agenda do agente Rotina. Escopo leitura + escrita.
           </li>
           <li>
-            <strong className="text-white">WhatsApp Business</strong> — encaminha peticoes
+            <strong className="text-on-surface">WhatsApp Business</strong> — encaminha peticoes
             e alerta de prazo via AlexAI.
           </li>
           <li>
-            <strong className="text-white">PJe Conectividade</strong> — consulta processual
+            <strong className="text-on-surface">PJe Conectividade</strong> — consulta processual
             por OAB e CPF (beta, apenas TJSP).
           </li>
           <li>
-            <strong className="text-white">Resend</strong> — entrega emails transacionais
+            <strong className="text-on-surface">Resend</strong> — entrega emails transacionais
             com dominio proprio.
           </li>
         </ul>
@@ -227,12 +228,12 @@ const CHAPTERS: Chapter[] = [
           Plano Firma e Enterprise tem acesso a API. Auth via Bearer token.
           Rate limit 60 req/min no Firma, 600 req/min no Enterprise.
         </p>
-        <div className="mt-5 rounded-xl border border-[#bfa68e]/15 bg-black/50 p-4">
+        <div className="mt-5 rounded-xl border border-[#bfa68e]/15 p-4" style={{ background: 'var(--card-solid)' }}>
           <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#bfa68e]/80">
             <Terminal className="size-3" strokeWidth={1.8} />
             POST /api/v1/agents/pesquisador
           </div>
-          <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.65] text-white/80">
+          <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.65] text-on-surface">
 {`curl -X POST https://api.pralvex.com.br/v1/agents/pesquisador \\
   -H "Authorization: Bearer lx_live_xxx" \\
   -H "Content-Type: application/json" \\
@@ -265,28 +266,28 @@ const CHAPTERS: Chapter[] = [
         </p>
         <div className="mt-5 space-y-4">
           <div className="rounded-xl border border-[#bfa68e]/12 bg-[#bfa68e]/[0.03] p-4">
-            <div className="mb-2 text-[13.5px] font-semibold text-white">
+            <div className="mb-2 text-[13.5px] font-semibold text-on-surface">
               &ldquo;O Pesquisador nao achou nada&rdquo;
             </div>
-            <p className="text-[13px] text-white/65">
+            <p className="text-[13px] text-on-surface-muted">
               Agente recusa quando nao tem fonte rastreavel — e feature, nao bug.
               Refine o prompt com tribunal + tese + ano.
             </p>
           </div>
           <div className="rounded-xl border border-[#bfa68e]/12 bg-[#bfa68e]/[0.03] p-4">
-            <div className="mb-2 text-[13.5px] font-semibold text-white">
+            <div className="mb-2 text-[13.5px] font-semibold text-on-surface">
               &ldquo;Export de peca saiu sem formatacao&rdquo;
             </div>
-            <p className="text-[13px] text-white/65">
+            <p className="text-[13px] text-on-surface-muted">
               Use o botao &ldquo;Copiar com formatacao&rdquo; antes de colar no Word.
               Markdown convertido preserva negrito, italico e numeracao.
             </p>
           </div>
           <div className="rounded-xl border border-[#bfa68e]/12 bg-[#bfa68e]/[0.03] p-4">
-            <div className="mb-2 text-[13.5px] font-semibold text-white">
+            <div className="mb-2 text-[13.5px] font-semibold text-on-surface">
               &ldquo;Agente trava em loop&rdquo;
             </div>
-            <p className="text-[13px] text-white/65">
+            <p className="text-[13px] text-on-surface-muted">
               Clique em &ldquo;Nova consulta&rdquo; — reset do contexto. Se persistir,
               fale com Renato: contato@pralvex.com.br, resposta em 24h.
             </p>
@@ -299,7 +300,7 @@ const CHAPTERS: Chapter[] = [
 
 export default function DocsClient() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#0a0a0a] text-white antialiased">
+    <main className="surface-base relative min-h-screen overflow-hidden antialiased">
       {/* Ambient champagne glow */}
       <div
         aria-hidden
@@ -318,7 +319,7 @@ export default function DocsClient() {
       <div className="relative mx-auto max-w-5xl px-6 pt-10">
         <Link
           href="/"
-          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white/50 transition-colors hover:text-[#bfa68e]"
+          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-on-surface-muted transition-colors hover:text-[#bfa68e]"
         >
           <ArrowLeft
             size={12}
@@ -347,7 +348,7 @@ export default function DocsClient() {
               do ofi&shy;cio.
             </span>
           </h1>
-          <p className="mt-6 max-w-2xl text-[16px] leading-[1.75] text-white/65">
+          <p className="mt-6 max-w-2xl text-[16px] leading-[1.75] text-on-surface-muted">
             Guia pratico para advogados que usam a Pralvex como parte do ritual de
             trabalho. Sete capitulos, linguagem direta, exemplos reais. Atualizado
             a cada release.
@@ -367,11 +368,11 @@ export default function DocsClient() {
           >
             <Play className="size-4 text-[#e6d4bd]" strokeWidth={1.6} />
             <div className="flex-1">
-              <div className="text-[13px] font-semibold text-white">Inicio rapido</div>
-              <div className="text-[11.5px] text-white/55">7 minutos</div>
+              <div className="text-[13px] font-semibold text-on-surface">Inicio rapido</div>
+              <div className="text-[11.5px] text-on-surface-muted">7 minutos</div>
             </div>
             <ArrowUpRight
-              className="size-4 text-white/40 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#bfa68e]"
+              className="size-4 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#bfa68e]" style={{ color: 'var(--text-muted)' }}
               strokeWidth={1.8}
             />
           </a>
@@ -381,11 +382,11 @@ export default function DocsClient() {
           >
             <Code2 className="size-4 text-[#e6d4bd]" strokeWidth={1.6} />
             <div className="flex-1">
-              <div className="text-[13px] font-semibold text-white">API + SDK</div>
-              <div className="text-[11.5px] text-white/55">REST + webhook</div>
+              <div className="text-[13px] font-semibold text-on-surface">API + SDK</div>
+              <div className="text-[11.5px] text-on-surface-muted">REST + webhook</div>
             </div>
             <ArrowUpRight
-              className="size-4 text-white/40 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#bfa68e]"
+              className="size-4 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#bfa68e]" style={{ color: 'var(--text-muted)' }}
               strokeWidth={1.8}
             />
           </a>
@@ -395,11 +396,11 @@ export default function DocsClient() {
           >
             <LifeBuoy className="size-4 text-[#e6d4bd]" strokeWidth={1.6} />
             <div className="flex-1">
-              <div className="text-[13px] font-semibold text-white">Travou?</div>
-              <div className="text-[11.5px] text-white/55">Renato responde em 24h</div>
+              <div className="text-[13px] font-semibold text-on-surface">Travou?</div>
+              <div className="text-[11.5px] text-on-surface-muted">Renato responde em 24h</div>
             </div>
             <ArrowUpRight
-              className="size-4 text-white/40 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#bfa68e]"
+              className="size-4 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#bfa68e]" style={{ color: 'var(--text-muted)' }}
               strokeWidth={1.8}
             />
           </a>
@@ -430,12 +431,12 @@ export default function DocsClient() {
                   <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.28em] text-[#bfa68e]/80">
                     Capitulo {c.n} · {c.caption}
                   </div>
-                  <h2 className="font-serif text-[28px] italic leading-[1.1] tracking-tight text-white md:text-[34px]">
+                  <h2 className="font-serif text-[28px] italic leading-[1.1] tracking-tight text-on-surface md:text-[34px]">
                     {c.title}
                   </h2>
                 </div>
               </header>
-              <div className="ml-0 space-y-4 text-[14.5px] leading-[1.75] text-white/70 md:ml-[68px]">
+              <div className="ml-0 space-y-4 text-[14.5px] leading-[1.75] text-on-surface-muted md:ml-[68px]">
                 {c.body}
               </div>
             </motion.article>
@@ -464,10 +465,10 @@ export default function DocsClient() {
             <Zap className="size-3" strokeWidth={1.8} />
             Duvida fora do manual
           </div>
-          <h3 className="font-serif text-[28px] leading-[1.1] text-white md:text-[40px]">
+          <h3 className="font-serif text-[28px] leading-[1.1] text-on-surface md:text-[40px]">
             Renato te responde <em className="italic text-[#e6d4bd]">pessoalmente</em>.
           </h3>
-          <p className="mx-auto mt-4 max-w-xl text-[14.5px] text-white/60">
+          <p className="mx-auto mt-4 max-w-xl text-[14.5px] text-on-surface-muted">
             Sem chatbot, sem ticket, sem copy de onboarding. Voce escreve,
             o socio-gestor responde em ate 24h.
           </p>
@@ -484,7 +485,7 @@ export default function DocsClient() {
             </a>
             <Link
               href="/status"
-              className="font-mono text-[12px] uppercase tracking-[0.3em] text-white/55 transition-colors hover:text-[#bfa68e]"
+              className="font-mono text-[12px] uppercase tracking-[0.3em] text-on-surface-muted transition-colors hover:text-[#bfa68e]"
             >
               Ver status da plataforma
             </Link>

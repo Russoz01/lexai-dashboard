@@ -57,9 +57,9 @@ interface StageAgent {
 const STAGE: StageAgent[] = [
   { Icon: PenLine,     label: 'Redator',     meta: 'peca em 4min',     x: -28, y: -16, z: 80,  rot: -7, delay: 0.05, parallax: 1.4, tint: 'text-[#e6d4bd]' },
   { Icon: Search,      label: 'Pesquisador', meta: 'STF · STJ · TJs',  x:  24, y: -22, z: 110, rot:  6, delay: 0.10, parallax: 1.6, tint: 'text-[#e6d4bd]' },
-  { Icon: Calculator,  label: 'Calculador',  meta: 'INPC · IGPM · IPCA', x: -32, y:  18, z: 30,  rot: -3, delay: 0.20, parallax: 0.7, tint: 'text-white/80' },
+  { Icon: Calculator,  label: 'Calculador',  meta: 'INPC · IGPM · IPCA', x: -32, y:  18, z: 30,  rot: -3, delay: 0.20, parallax: 0.7, tint: 'text-[#e6d4bd]' },
   { Icon: ShieldCheck, label: 'Compliance',  meta: 'Provimento 205',   x:  30, y:  22, z: 60,  rot:  9, delay: 0.25, parallax: 1.1, tint: 'text-[#e6d4bd]' },
-  { Icon: FileText,    label: 'Resumidor',   meta: '60 acordaos/min',  x:  -2, y: -34, z: 140, rot:  2, delay: 0.30, parallax: 2.0, tint: 'text-white/85' },
+  { Icon: FileText,    label: 'Resumidor',   meta: '60 acordaos/min',  x:  -2, y: -34, z: 140, rot:  2, delay: 0.30, parallax: 2.0, tint: 'text-[#e6d4bd]' },
   { Icon: Handshake,   label: 'Negociador',  meta: 'BATNA · ZOPA',     x:   4, y:  32, z: 100, rot: -2, delay: 0.35, parallax: 1.5, tint: 'text-[#e6d4bd]' },
 ]
 

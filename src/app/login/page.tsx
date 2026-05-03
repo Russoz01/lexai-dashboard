@@ -79,7 +79,7 @@ type FieldProps = {
 function Field({ id, label, type, value, onChange, placeholder, autoComplete, required, trailing, ariaInvalid }: FieldProps) {
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em] text-white/50">
+      <label htmlFor={id} className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>
         {label}
       </label>
       <div className="relative">
@@ -92,7 +92,8 @@ function Field({ id, label, type, value, onChange, placeholder, autoComplete, re
           autoComplete={autoComplete}
           required={required}
           aria-invalid={ariaInvalid || undefined}
-          className={`w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#bfa68e]/50 focus:bg-white/[0.06] aria-[invalid=true]:border-red-500/50 ${
+          style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+          className={`w-full rounded-lg border px-4 py-3 text-sm outline-none transition placeholder:opacity-50 focus:border-[#bfa68e]/50 aria-[invalid=true]:border-red-500/50 ${
             trailing ? 'pr-20' : ''
           }`}
         />
@@ -254,7 +255,7 @@ function LoginPageInner() {
 
         <Link
           href="/"
-          className="group relative z-10 mb-10 inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-[0.22em] text-white/50 transition hover:text-white"
+          className="group relative z-10 mb-10 inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-[0.22em] text-on-surface-muted transition hover:text-on-surface"
         >
           <ArrowLeft size={12} strokeWidth={1.75} className="transition-transform group-hover:-translate-x-0.5" />
           voltar ao site
@@ -276,7 +277,7 @@ function LoginPageInner() {
             </div>
           </div>
 
-          <p className="mb-7 text-sm leading-relaxed text-white/60">
+          <p className="mb-7 text-sm leading-relaxed text-on-surface-muted">
             {isSignUp
               ? 'Crie sua conta. Demo de 50 min grátis, sem cartão. Apenas um profissional por vez.'
               : 'Bem-vindo de volta ao atelier. Entre para retomar seu gabinete digital.'}
@@ -308,7 +309,8 @@ function LoginPageInner() {
             type="button"
             onClick={signInGoogle}
             disabled={anyLoading}
-            className="mb-5 flex w-full items-center justify-center gap-3 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-3 text-sm font-medium text-white transition hover:border-[#bfa68e]/40 hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+            className="mb-5 flex w-full items-center justify-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium transition hover:border-[#bfa68e]/40 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {oauthLoading === 'google' ? (
               <Loader2 size={16} className="animate-spin" />
@@ -319,11 +321,11 @@ function LoginPageInner() {
           </button>
 
           <div className="mb-5 flex items-center gap-3">
-            <div className="h-px flex-1 bg-white/10" />
-            <span className="font-mono text-[0.6rem] uppercase tracking-[0.25em] text-white/40">
+            <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
+            <span className="font-mono text-[0.6rem] uppercase tracking-[0.25em]" style={{ color: 'var(--text-muted)' }}>
               ou continuar com email
             </span>
-            <div className="h-px flex-1 bg-white/10" />
+            <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
           </div>
 
           <form onSubmit={submitEmail} noValidate className="space-y-4">
@@ -369,7 +371,8 @@ function LoginPageInner() {
                     onClick={() => setShowSenha((v) => !v)}
                     tabIndex={-1}
                     aria-label={showSenha ? 'Ocultar senha' : 'Mostrar senha'}
-                    className="mr-1 rounded p-2 text-white/50 transition hover:bg-white/5 hover:text-white"
+                    style={{ color: 'var(--text-muted)' }}
+                    className="mr-1 rounded p-2 transition hover:opacity-100"
                   >
                     {showSenha ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -400,7 +403,7 @@ function LoginPageInner() {
 
               {!isSignUp && (
                 <div className="mt-2 flex justify-end">
-                  <Link href="/reset-password" className="text-xs text-white/50 underline-offset-4 transition hover:text-[#bfa68e] hover:underline focus-visible:outline-none focus-visible:text-[#bfa68e] focus-visible:underline">
+                  <Link href="/reset-password" className="text-xs text-on-surface-muted underline-offset-4 transition hover:text-[#bfa68e] hover:underline focus-visible:outline-none focus-visible:text-[#bfa68e] focus-visible:underline">
                     Esqueceu a senha?
                   </Link>
                 </div>
@@ -432,7 +435,7 @@ function LoginPageInner() {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-white/60">
+          <div className="mt-6 text-center text-sm text-on-surface-muted">
             {isSignUp ? 'Já tem conta?' : 'Ainda não tem conta?'}{' '}
             <button
               type="button"
@@ -443,13 +446,13 @@ function LoginPageInner() {
             </button>
           </div>
 
-          <div className="mt-6 text-center text-[0.7rem] leading-relaxed text-white/40">
+          <div className="mt-6 text-center text-[0.7rem] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
             Ao continuar, você concorda com os{' '}
-            <Link href="/termos" className="underline decoration-white/20 underline-offset-2 hover:text-white">
+            <Link href="/termos" className="underline underline-offset-2 hover:text-on-surface" style={{ textDecorationColor: 'var(--border)' }}>
               Termos de Uso
             </Link>{' '}
             e a{' '}
-            <Link href="/privacidade" className="underline decoration-white/20 underline-offset-2 hover:text-white">
+            <Link href="/privacidade" className="underline underline-offset-2 hover:text-on-surface" style={{ textDecorationColor: 'var(--border)' }}>
               Política de Privacidade
             </Link>
             .

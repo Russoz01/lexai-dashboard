@@ -109,7 +109,7 @@ export default function StatusClient() {
   )
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#0a0a0a] text-white antialiased">
+    <main className="surface-base relative min-h-screen overflow-hidden antialiased">
       {/* Ambient glow */}
       <div
         aria-hidden
@@ -128,7 +128,7 @@ export default function StatusClient() {
       <div className="relative mx-auto max-w-5xl px-6 pt-10">
         <Link
           href="/"
-          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white/50 transition-colors hover:text-[#bfa68e]"
+          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-on-surface-muted transition-colors hover:text-[#bfa68e]"
         >
           <ArrowLeft size={12} strokeWidth={1.8} className="transition-transform group-hover:-translate-x-0.5" />
           voltar ao site
@@ -149,7 +149,7 @@ export default function StatusClient() {
           <h1 className="font-serif text-[clamp(42px,6vw,72px)] leading-[1.05] tracking-tight">
             Tudo <em className="italic text-grad-accent">funcionando</em>.
           </h1>
-          <p className="mt-5 max-w-2xl text-[15px] leading-[1.75] text-white/65">
+          <p className="mt-5 max-w-2xl text-[15px] leading-[1.75] text-on-surface-muted">
             Metrica publica. Atualiza a cada 30s. Todos os componentes do
             sistema rodam em sa-east-1 (Sao Paulo) com replica em us-east-1.
           </p>
@@ -182,10 +182,10 @@ export default function StatusClient() {
                 <CheckCircle2 className="relative size-8" strokeWidth={1.6} />
               </div>
               <div>
-                <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
+                <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
                   Ultima verificacao · ha 23 segundos
                 </div>
-                <div className="font-serif text-[28px] italic leading-tight text-white md:text-[34px]">
+                <div className="font-serif text-[28px] italic leading-tight text-on-surface md:text-[34px]">
                   {allOperational
                     ? 'Todos os sistemas operam normalmente.'
                     : 'Sistema degradado — investigando.'}
@@ -198,7 +198,7 @@ export default function StatusClient() {
                 <div className="font-serif text-[32px] font-semibold leading-none text-[#e6d4bd]">
                   {overallUptime}%
                 </div>
-                <div className="mt-1.5 font-mono text-[9.5px] uppercase tracking-[0.22em] text-white/45">
+                <div className="mt-1.5 font-mono text-[9.5px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
                   Uptime 90d
                 </div>
               </div>
@@ -206,7 +206,7 @@ export default function StatusClient() {
                 <div className="font-serif text-[32px] font-semibold leading-none text-[#e6d4bd]">
                   {avgLatency}ms
                 </div>
-                <div className="mt-1.5 font-mono text-[9.5px] uppercase tracking-[0.22em] text-white/45">
+                <div className="mt-1.5 font-mono text-[9.5px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
                   Latencia media
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function StatusClient() {
                 <div className="font-serif text-[32px] font-semibold leading-none text-[#e6d4bd]">
                   8
                 </div>
-                <div className="mt-1.5 font-mono text-[9.5px] uppercase tracking-[0.22em] text-white/45">
+                <div className="mt-1.5 font-mono text-[9.5px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
                   Componentes
                 </div>
               </div>
@@ -237,7 +237,7 @@ export default function StatusClient() {
           <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.28em] text-[#bfa68e]/80">
             Componentes · 90 dias
           </div>
-          <h2 className="font-serif text-[32px] italic leading-tight text-white md:text-[38px]">
+          <h2 className="font-serif text-[32px] italic leading-tight text-on-surface md:text-[38px]">
             Cada pilar, medido.
           </h2>
         </motion.div>
@@ -253,7 +253,7 @@ export default function StatusClient() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.5, delay: Math.min(i * 0.03, 0.2) }}
-                className="rounded-2xl border border-white/8 bg-white/[0.02] p-5 transition-colors hover:border-[#bfa68e]/20 hover:bg-white/[0.04]"
+                className="rounded-2xl border border-on-surface p-5 transition-colors hover:border-[#bfa68e]/20" style={{ background: 'var(--card-bg)' }}
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div className="flex items-center gap-4 md:w-[40%]">
@@ -264,8 +264,8 @@ export default function StatusClient() {
                       <c.Icon className="size-5" strokeWidth={1.6} />
                     </div>
                     <div>
-                      <div className="text-[14.5px] font-medium text-white">{c.name}</div>
-                      <div className="mt-0.5 text-[12px] text-white/50">{c.caption}</div>
+                      <div className="text-[14.5px] font-medium text-on-surface">{c.name}</div>
+                      <div className="mt-0.5 text-[12px] text-on-surface-muted">{c.caption}</div>
                     </div>
                   </div>
 
@@ -299,7 +299,7 @@ export default function StatusClient() {
                       <div className="font-mono text-[12px] font-semibold text-[#e6d4bd]">
                         {c.uptime90}%
                       </div>
-                      <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
+                      <div className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--text-muted)' }}>
                         {c.latencyMs}ms
                       </div>
                     </div>
@@ -325,10 +325,10 @@ export default function StatusClient() {
           <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.28em] text-[#bfa68e]/80">
             Historico · 90 dias
           </div>
-          <h2 className="font-serif text-[32px] italic leading-tight text-white md:text-[38px]">
+          <h2 className="font-serif text-[32px] italic leading-tight text-on-surface md:text-[38px]">
             Incidentes recentes.
           </h2>
-          <p className="mt-3 max-w-2xl text-[14px] text-white/55">
+          <p className="mt-3 max-w-2xl text-[14px] text-on-surface-muted">
             Cada evento e publicado em no maximo 15 minutos apos deteccao.
             Pos-mortem completo em ate 72h apos resolucao.
           </p>
@@ -349,7 +349,7 @@ export default function StatusClient() {
                   className="h-2 w-2 rounded-full"
                   style={{ background: severityColor(inc.severity) }}
                 />
-                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-on-surface-muted">
                   {inc.date} · Duracao {inc.duration}
                 </span>
                 <span
@@ -363,8 +363,8 @@ export default function StatusClient() {
                   {inc.severity === 'resolved' ? 'Resolvido' : inc.severity === 'maintenance' ? 'Manutencao' : 'Investigando'}
                 </span>
               </div>
-              <div className="font-serif text-[20px] italic text-white">{inc.title}</div>
-              <p className="mt-2 text-[13.5px] leading-[1.6] text-white/65">{inc.desc}</p>
+              <div className="font-serif text-[20px] italic text-on-surface">{inc.title}</div>
+              <p className="mt-2 text-[13.5px] leading-[1.6] text-on-surface-muted">{inc.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -383,10 +383,10 @@ export default function StatusClient() {
             <Clock className="size-3" strokeWidth={1.8} />
             Avisar por email
           </div>
-          <h3 className="font-serif text-[28px] leading-[1.1] text-white md:text-[36px]">
+          <h3 className="font-serif text-[28px] leading-[1.1] text-on-surface md:text-[36px]">
             Receba alertas <em className="italic text-[#e6d4bd]">antes</em> do incidente escalar.
           </h3>
-          <p className="mx-auto mt-3 max-w-xl text-[14px] text-white/60">
+          <p className="mx-auto mt-3 max-w-xl text-[14px] text-on-surface-muted">
             Avisamos por email e Slack em degradacao, manutencao programada e
             todo pos-mortem publicado. Zero spam.
           </p>
@@ -400,7 +400,7 @@ export default function StatusClient() {
             </a>
             <Link
               href="/docs"
-              className="font-mono text-[12px] uppercase tracking-[0.3em] text-white/55 transition-colors hover:text-[#bfa68e]"
+              className="font-mono text-[12px] uppercase tracking-[0.3em] text-on-surface-muted transition-colors hover:text-[#bfa68e]"
             >
               Documentacao
             </Link>

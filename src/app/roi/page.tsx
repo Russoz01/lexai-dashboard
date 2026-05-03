@@ -86,13 +86,15 @@ export default function RoiCalculator() {
     }
   }
 
+  // Input class — usa CSS vars via inline style do parent (CSS Tailwind nao acessa
+  // var() inline, entao deixamos placeholder e color via parent inline style).
   const inputCls =
-    'w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#bfa68e]/50 focus:bg-white/[0.06]'
+    'w-full rounded-lg border border-on-surface bg-[var(--hover)] px-3 py-2.5 text-sm text-on-surface outline-none transition placeholder:opacity-50 focus:border-[#bfa68e]/50'
   const rangeCls =
     'mt-3 w-full accent-[#bfa68e]'
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden bg-[#0a0807] text-white antialiased">
+    <div className="surface-base relative isolate min-h-screen overflow-hidden antialiased">
       <ScrollProgress />
       <AmbientMesh dust dustCount={9} intensity={0.55} />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[620px] overflow-hidden">
@@ -100,14 +102,15 @@ export default function RoiCalculator() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:96px_96px] [mask-image:radial-gradient(ellipse_70%_55%_at_50%_0%,black,transparent_75%)]" />
       </div>
 
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#0a0807]/75 px-6 py-4 backdrop-blur-md md:px-10">
-        <Link href="/" className="group flex items-center gap-2 font-mono text-sm uppercase tracking-[0.3em] text-white">
+      <header className="lex-landing-nav-scrolled sticky top-0 z-40 flex items-center justify-between px-6 py-4 backdrop-blur-md md:px-10">
+        <Link href="/" className="group flex items-center gap-2 font-mono text-sm uppercase tracking-[0.3em] text-on-surface">
           <span className="flex size-7 items-center justify-center rounded-md border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black text-[0.55rem] text-[#bfa68e] shadow-[0_0_12px_rgba(191,166,142,0.2)] transition-all group-hover:border-[#bfa68e]/50">PX</span>
           Pralvex
         </Link>
         <Link
           href="/empresas"
-          className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-white transition hover:border-[#bfa68e]/40 hover:bg-white/10"
+          style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+          className="rounded-full border px-4 py-1.5 text-sm transition hover:border-[#bfa68e]/40"
         >
           Ver planos
         </Link>
@@ -122,14 +125,14 @@ export default function RoiCalculator() {
             </span>
           </motion.div>
 
-          <motion.h1 variants={heroItem} className="text-balance text-4xl font-light leading-[1.08] tracking-tight text-white sm:text-5xl md:text-[3.25rem]">
+          <motion.h1 variants={heroItem} className="text-balance text-4xl font-light leading-[1.08] tracking-tight text-on-surface sm:text-5xl md:text-[3.25rem]">
             Quanto seu escritório{' '}
             <em className="text-grad-accent italic">
               economiza
             </em>{' '}
             com a Pralvex?
           </motion.h1>
-          <motion.p variants={heroItem} className="mt-5 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
+          <motion.p variants={heroItem} className="mt-5 max-w-2xl text-base leading-relaxed text-on-surface-muted md:text-lg">
             Resultado em 30 segundos. Nenhum cadastro. Compartilhe o link com quem
             decide o orçamento.
           </motion.p>
@@ -144,11 +147,12 @@ export default function RoiCalculator() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <section
-            className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-6 md:p-7"
+            className="rounded-2xl border border-on-surface p-6 md:p-7"
+            style={{ background: 'var(--card-bg)' }}
             aria-label="Parâmetros"
           >
             <div className="mb-6">
-              <label htmlFor="roi-adv" className="mb-1 block text-sm font-medium text-white">
+              <label htmlFor="roi-adv" className="mb-1 block text-sm font-medium text-on-surface">
                 Número de advogados no escritório
               </label>
               <div className="relative">
@@ -161,7 +165,7 @@ export default function RoiCalculator() {
                   onChange={(e) => setAdvogados(Math.max(1, Math.min(500, Number(e.target.value) || 1)))}
                   className={`${inputCls} pr-14 tabular-nums`}
                 />
-                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[0.7rem] uppercase tracking-wider text-white/40">
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[0.7rem] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
                   advs
                 </span>
               </div>
@@ -177,10 +181,10 @@ export default function RoiCalculator() {
             </div>
 
             <div className="mb-6">
-              <label htmlFor="roi-hrs" className="mb-1 block text-sm font-medium text-white">
+              <label htmlFor="roi-hrs" className="mb-1 block text-sm font-medium text-on-surface">
                 Horas/mês por adv. em tarefas repetitivas
               </label>
-              <p className="mb-2 text-xs text-white/50">
+              <p className="mb-2 text-xs text-on-surface-muted">
                 Resumo de processos, pesquisa de jurisprudência, primeira versão de peças.
               </p>
               <div className="relative">
@@ -193,7 +197,7 @@ export default function RoiCalculator() {
                   onChange={(e) => setHorasMes(Math.max(1, Math.min(200, Number(e.target.value) || 1)))}
                   className={`${inputCls} pr-16 tabular-nums`}
                 />
-                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[0.7rem] uppercase tracking-wider text-white/40">
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[0.7rem] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
                   horas
                 </span>
               </div>
@@ -209,14 +213,14 @@ export default function RoiCalculator() {
             </div>
 
             <div>
-              <label htmlFor="roi-vh" className="mb-1 block text-sm font-medium text-white">
+              <label htmlFor="roi-vh" className="mb-1 block text-sm font-medium text-on-surface">
                 Valor/hora faturado por advogado
               </label>
-              <p className="mb-2 text-xs text-white/50">
+              <p className="mb-2 text-xs text-on-surface-muted">
                 Valor médio de billing. Se você não cobra por hora, use o custo/hora carregado.
               </p>
               <div className="relative">
-                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-white/50">
+                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm" style={{ color: 'var(--text-muted)' }}>
                   R$
                 </span>
                 <input
@@ -242,14 +246,15 @@ export default function RoiCalculator() {
               />
             </div>
 
-            <p className="mt-6 border-t border-white/10 pt-4 text-xs leading-relaxed text-white/50">
-              Premissa: <strong className="text-white/80">{PCT.format(AUTOMATION_RATE)}</strong> do tempo
+            <p className="mt-6 border-t border-on-surface pt-4 text-xs leading-relaxed text-on-surface-muted">
+              Premissa: <strong className="text-on-surface">{PCT.format(AUTOMATION_RATE)}</strong> do tempo
               repetitivo é automatizado por advogado (base: pilotos em 60+ escritórios).
             </p>
           </section>
 
           <section
-            className="relative overflow-hidden rounded-2xl border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] via-neutral-950 to-black p-6 shadow-[0_30px_90px_-40px_rgba(191,166,142,0.35)] md:p-7"
+            className="relative overflow-hidden rounded-2xl border border-[#bfa68e]/30 p-6 shadow-[0_30px_90px_-40px_rgba(191,166,142,0.35)] md:p-7"
+            style={{ background: 'var(--card-bg)' }}
             aria-label="Resultado"
           >
             <div className="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full bg-[#bfa68e]/10 blur-3xl" />
@@ -258,42 +263,42 @@ export default function RoiCalculator() {
               <div className="font-mono text-[0.65rem] uppercase tracking-[0.25em] text-[#bfa68e]">
                 Ganho líquido no primeiro ano
               </div>
-              <div className="mt-2 text-balance text-5xl font-light tabular-nums leading-none text-white sm:text-6xl">
+              <div className="mt-2 text-balance text-5xl font-light tabular-nums leading-none text-on-surface sm:text-6xl">
                 {BRL.format(Math.max(0, computed.ganhoLiquidoAno))}
               </div>
-              <div className="mt-3 text-sm text-white/60">
-                ROI: <strong className="text-white">{PCT.format(Math.max(0, computed.roiPct))}</strong> ·
-                Payback em <strong className="text-white">{computed.paybackDias} dias</strong>
+              <div className="mt-3 text-sm text-on-surface-muted">
+                ROI: <strong className="text-on-surface">{PCT.format(Math.max(0, computed.roiPct))}</strong> ·
+                Payback em <strong className="text-on-surface">{computed.paybackDias} dias</strong>
               </div>
 
-              <dl className="mt-6 grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
+              <dl className="mt-6 grid grid-cols-2 gap-3 border-t border-on-surface pt-5">
                 <div>
-                  <dt className="font-mono text-[0.6rem] uppercase tracking-wider text-white/40">
+                  <dt className="font-mono text-[0.6rem] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
                     Horas economizadas/mês
                   </dt>
-                  <dd className="mt-1 text-lg font-medium tabular-nums text-white">
+                  <dd className="mt-1 text-lg font-medium tabular-nums text-on-surface">
                     {computed.horasEconomizadasMes.toFixed(0)}h
                   </dd>
                 </div>
                 <div>
-                  <dt className="font-mono text-[0.6rem] uppercase tracking-wider text-white/40">
+                  <dt className="font-mono text-[0.6rem] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
                     Economia/mês
                   </dt>
-                  <dd className="mt-1 text-lg font-medium tabular-nums text-white">
+                  <dd className="mt-1 text-lg font-medium tabular-nums text-on-surface">
                     {BRL.format(computed.economiaMes)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="font-mono text-[0.6rem] uppercase tracking-wider text-white/40">
+                  <dt className="font-mono text-[0.6rem] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
                     Plano indicado
                   </dt>
-                  <dd className="mt-1 text-lg font-medium text-white">{computed.plan.label}</dd>
+                  <dd className="mt-1 text-lg font-medium text-on-surface">{computed.plan.label}</dd>
                 </div>
                 <div>
-                  <dt className="font-mono text-[0.6rem] uppercase tracking-wider text-white/40">
+                  <dt className="font-mono text-[0.6rem] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
                     Investimento/mês
                   </dt>
-                  <dd className="mt-1 text-lg font-medium tabular-nums text-white">
+                  <dd className="mt-1 text-lg font-medium tabular-nums text-on-surface">
                     {BRL.format(computed.custoMes)}
                   </dd>
                 </div>
@@ -309,7 +314,8 @@ export default function RoiCalculator() {
                 </Link>
                 <button
                   onClick={copyShareLink}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm text-white/80 backdrop-blur transition hover:border-[#bfa68e]/40 hover:text-white"
+                  style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+                  className="inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm backdrop-blur transition hover:border-[#bfa68e]/40"
                 >
                   <Link2 size={13} strokeWidth={1.75} />
                   {copied ? 'Link copiado!' : 'Copiar link do resultado'}
@@ -319,16 +325,16 @@ export default function RoiCalculator() {
           </section>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-white/40">
-          <Link href="/empresas" className="transition hover:text-white">
+        <div className="mt-12 flex flex-wrap items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>
+          <Link href="/empresas" className="transition hover:text-on-surface">
             Página B2B
           </Link>
           <span>·</span>
-          <Link href="/" className="transition hover:text-white">
+          <Link href="/" className="transition hover:text-on-surface">
             Início
           </Link>
           <span>·</span>
-          <Link href="/privacidade" className="transition hover:text-white">
+          <Link href="/privacidade" className="transition hover:text-on-surface">
             Privacidade
           </Link>
         </div>

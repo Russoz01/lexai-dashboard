@@ -126,20 +126,21 @@ export default function EmpresasPage() {
       `}</style>
 
       {/* NAV */}
-      <nav className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur">
+      <nav className="lex-landing-nav-scrolled sticky top-0 z-40 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link href="/" className="group flex items-center gap-2 text-white">
+          <Link href="/" className="group flex items-center gap-2 text-on-surface">
             <span className="flex size-8 items-center justify-center rounded-md border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-xs tracking-widest text-[#bfa68e] shadow-[0_0_16px_rgba(191,166,142,0.2)] transition-all group-hover:border-[#bfa68e]/50 group-hover:shadow-[0_0_24px_rgba(191,166,142,0.35)]">PX</span>
             <span className="text-sm font-medium tracking-tight">Pralvex</span>
           </Link>
           <div className="flex items-center gap-5">
-            <Link href="/" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Início</Link>
-            <Link href="/#precos" className="hidden text-sm text-white/70 transition hover:text-white sm:inline">Planos</Link>
-            <Link href="/login" className="text-sm text-white/70 transition hover:text-white">Entrar</Link>
+            <Link href="/" className="hidden text-sm text-on-surface-muted transition hover:text-on-surface sm:inline">Início</Link>
+            <Link href="/#precos" className="hidden text-sm text-on-surface-muted transition hover:text-on-surface sm:inline">Planos</Link>
+            <Link href="/login" className="text-sm text-on-surface-muted transition hover:text-on-surface">Entrar</Link>
             <ThemeToggle variant="landing" />
             <Link
               href="/login"
-              className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium transition hover:bg-white/10"
+              style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+              className="rounded-lg border px-4 py-2 text-sm font-medium transition"
             >
               Demo 50 min grátis
             </Link>
@@ -154,32 +155,33 @@ export default function EmpresasPage() {
         <AmbientMesh dust dustCount={10} intensity={0.6} />
         <div className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(60%_50%_at_50%_0%,#bfa68e1a,transparent_60%)]" />
         <div className="relative mx-auto max-w-4xl px-4 pb-20 pt-20 text-center sm:pt-28">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-on-surface bg-[var(--hover)] px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
             <span className="size-1.5 rounded-full bg-[#bfa68e]" />
             Pralvex para escritórios e bancas
           </div>
 
-          <h1 className="text-balance text-5xl font-medium leading-[1.05] tracking-tight text-white sm:text-6xl" data-reveal>
+          <h1 className="text-balance text-5xl font-medium leading-[1.05] tracking-tight text-on-surface sm:text-6xl" data-reveal>
             Seu escritório.<br />
             <em className="text-grad-accent italic">27 especialistas.</em><br />
             Uma assinatura.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-white/60" data-reveal>
+          <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-on-surface-muted" data-reveal>
             27 agentes de IA calibrados para o Direito brasileiro — 6 novos na v10.8 (CNJ, Comparador, Risco, Flashcards, Plano, Casos). Cada um com conhecimento profundo da sua área, disponível agora — sem contratação, sem onboarding de meses.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-reveal>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-5 py-3 text-sm font-medium text-[#0a0807] transition hover:brightness-110"
             >
               <CalendarCheck size={16} />
               Demo 50 min grátis
             </Link>
             <Link
               href="#casos"
-              className="rounded-lg border border-white/15 bg-white/[0.02] px-5 py-3 text-sm text-white/80 transition hover:bg-white/[0.06]"
+              style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+              className="rounded-lg border px-5 py-3 text-sm transition"
             >
               Ver casos de uso
             </Link>
@@ -194,29 +196,29 @@ export default function EmpresasPage() {
               { roman: 'IV',  value: '<24h',    label: 'Setup completo' },
             ].map((st) => (
               <div key={st.roman} className="text-center">
-                <div className="font-mono text-[0.6rem] uppercase tracking-[0.3em] text-white/30">{st.roman}</div>
-                <div className="mt-2 text-3xl font-medium tabular-nums text-white">{st.value}</div>
-                <div className="mt-1 text-xs text-white/50">{st.label}</div>
+                <div className="font-mono text-[0.6rem] uppercase tracking-[0.3em]" style={{ color: 'var(--text-muted)' }}>{st.roman}</div>
+                <div className="mt-2 text-3xl font-medium tabular-nums text-on-surface">{st.value}</div>
+                <div className="mt-1 text-xs text-on-surface-muted">{st.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <div className="mx-auto h-px max-w-6xl bg-white/10" />
+      <div className="mx-auto h-px max-w-6xl" style={{ background: 'var(--border)' }} />
 
       {/* AGENTES — vem do catalog.ts (27 agentes pós v10.8) */}
       <section className="mx-auto max-w-6xl px-4 py-20">
         <div className="mx-auto max-w-2xl text-center" data-reveal>
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-on-surface bg-[var(--hover)] px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
             <span className="size-1.5 rounded-full bg-[#bfa68e]" />
             Capítulo I · Atelier
           </div>
-          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white">
+          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-on-surface">
             O gabinete completo,<br />
             <em className="italic text-[#bfa68e]/90">já disponível</em>
           </h2>
-          <p className="mt-4 text-white/60">
+          <p className="mt-4 text-on-surface-muted">
             Todos os especialistas que seu escritório precisaria contratar — em uma única plataforma, com custo por advogado, sem mensalidade extra por agente.
           </p>
         </div>
@@ -230,11 +232,14 @@ export default function EmpresasPage() {
                 key={a.slug}
                 className={`group relative overflow-hidden rounded-xl border p-5 transition ${
                   isNew
-                    ? 'border-[#bfa68e]/35 bg-gradient-to-br from-[#1a1410]/80 via-neutral-950 to-black hover:border-[#bfa68e]/55 hover:shadow-[0_0_28px_rgba(191,166,142,0.25)]'
-                    : 'border-white/10 bg-neutral-950 hover:border-white/20 hover:bg-neutral-900'
+                    ? 'border-[#bfa68e]/35 hover:border-[#bfa68e]/55 hover:shadow-[0_0_28px_rgba(191,166,142,0.25)]'
+                    : 'border-on-surface'
                 }`}
                 data-reveal
-                style={{ '--reveal-delay': `${Math.min(i * 30, 300)}ms` } as React.CSSProperties}
+                style={{
+                  '--reveal-delay': `${Math.min(i * 30, 300)}ms`,
+                  background: 'var(--card-bg)',
+                } as React.CSSProperties}
               >
                 {isNew && (
                   <span className="pointer-events-none absolute -right-8 top-3 rotate-[35deg] bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] px-8 py-0.5 font-mono text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[#0a0807] shadow-[0_0_10px_rgba(191,166,142,0.45)]">
@@ -246,37 +251,37 @@ export default function EmpresasPage() {
                     className={`flex size-10 items-center justify-center rounded-lg border text-[#bfa68e] transition ${
                       isNew
                         ? 'border-[#bfa68e]/35 bg-[#bfa68e]/[0.08] group-hover:border-[#bfa68e]/55 group-hover:shadow-[0_0_12px_rgba(191,166,142,0.3)]'
-                        : 'border-white/10 bg-white/5 group-hover:border-[#bfa68e]/30'
+                        : 'border-on-surface group-hover:border-[#bfa68e]/30'
                     }`}
                   >
                     <Icon size={18} aria-hidden />
                   </div>
-                  <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/30">
+                  <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 </div>
-                <h3 className="mt-4 text-base font-medium text-white">{a.label}</h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-white/50">{a.desc}</p>
+                <h3 className="mt-4 text-base font-medium text-on-surface">{a.label}</h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-on-surface-muted">{a.desc}</p>
               </div>
             )
           })}
         </div>
       </section>
 
-      <div className="mx-auto h-px max-w-6xl bg-white/10" />
+      <div className="mx-auto h-px max-w-6xl" style={{ background: 'var(--border)' }} />
 
       {/* CASOS DE USO */}
       <section id="casos" className="mx-auto max-w-6xl px-4 py-20">
         <div className="mx-auto max-w-2xl text-center" data-reveal>
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-on-surface bg-[var(--hover)] px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
             <span className="size-1.5 rounded-full bg-[#bfa68e]" />
             Capítulo II · Perfis
           </div>
-          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white">
+          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-on-surface">
             Feito para<br />
             <em className="italic text-[#bfa68e]/90">seu perfil</em>
           </h2>
-          <p className="mt-4 text-white/60">
+          <p className="mt-4 text-on-surface-muted">
             O mesmo sistema de agentes se adapta a bancas de nicho, advocacia de massa e departamentos jurídicos corporativos.
           </p>
         </div>
@@ -287,9 +292,12 @@ export default function EmpresasPage() {
             return (
               <div
                 key={c.persona}
-                className="rounded-xl border border-white/10 bg-neutral-950 p-6"
+                className="rounded-xl border border-on-surface p-6"
                 data-reveal
-                style={{ '--reveal-delay': `${i * 80}ms` } as React.CSSProperties}
+                style={{
+                  '--reveal-delay': `${i * 80}ms`,
+                  background: 'var(--card-bg)',
+                } as React.CSSProperties}
               >
                 <div
                   className="flex size-12 items-center justify-center rounded-lg border"
@@ -297,21 +305,21 @@ export default function EmpresasPage() {
                 >
                   <Icon size={22} aria-hidden />
                 </div>
-                <h3 className="mt-4 text-lg font-medium text-white">{c.persona}</h3>
-                <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/40">{c.size}</div>
+                <h3 className="mt-4 text-lg font-medium text-on-surface">{c.persona}</h3>
+                <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>{c.size}</div>
 
-                <div className="mt-5 space-y-4 border-t border-white/10 pt-5">
+                <div className="mt-5 space-y-4 border-t border-on-surface pt-5">
                   <div>
                     <div className="mb-1.5 inline-flex rounded-full bg-red-500/10 px-2 py-0.5 text-[0.65rem] font-medium uppercase tracking-wider text-red-400">
                       Dor
                     </div>
-                    <p className="text-sm text-white/60">{c.pains}</p>
+                    <p className="text-sm text-on-surface-muted">{c.pains}</p>
                   </div>
                   <div>
                     <div className="mb-1.5 inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[0.65rem] font-medium uppercase tracking-wider text-emerald-400">
                       Solução Pralvex
                     </div>
-                    <p className="text-sm text-white/80">{c.solution}</p>
+                    <p className="text-sm text-on-surface">{c.solution}</p>
                   </div>
                 </div>
               </div>
@@ -320,20 +328,20 @@ export default function EmpresasPage() {
         </div>
       </section>
 
-      <div className="mx-auto h-px max-w-6xl bg-white/10" />
+      <div className="mx-auto h-px max-w-6xl" style={{ background: 'var(--border)' }} />
 
       {/* PLANOS */}
       <section className="mx-auto max-w-6xl px-4 py-20">
         <div className="mx-auto max-w-2xl text-center" data-reveal>
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-on-surface bg-[var(--hover)] px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
             <span className="size-1.5 rounded-full bg-[#bfa68e]" />
             Capítulo III · Investimento
           </div>
-          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white">
+          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-on-surface">
             Valor por advogado,<br />
             <em className="italic text-[#bfa68e]/90">não por feature</em>
           </h2>
-          <p className="mt-4 text-white/60">
+          <p className="mt-4 text-on-surface-muted">
             Preço único por assento. Sem cobrança extra por agente, sem limite de documentos no Firma e Enterprise. Plano escolhido pelo tamanho da equipe.
           </p>
         </div>
@@ -342,87 +350,89 @@ export default function EmpresasPage() {
           <LexPricingGrid />
         </div>
 
-        <p className="mx-auto mt-8 max-w-xl text-center text-xs text-white/40" data-reveal>
+        <p className="mx-auto mt-8 max-w-xl text-center text-xs" style={{ color: 'var(--text-muted)' }} data-reveal>
           Todos os planos incluem demo de 50 min grátis · Cancelamento a qualquer momento · Sem taxa de setup
         </p>
       </section>
 
-      <div className="mx-auto h-px max-w-6xl bg-white/10" />
+      <div className="mx-auto h-px max-w-6xl" style={{ background: 'var(--border)' }} />
 
       {/* COMPARATIVO */}
       <section className="mx-auto max-w-5xl px-4 py-20" data-reveal>
         <div className="mx-auto max-w-2xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-on-surface bg-[var(--hover)] px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
             <span className="size-1.5 rounded-full bg-[#bfa68e]" />
             Capítulo IV · Comparativo
           </div>
-          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white">
+          <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-on-surface">
             Por que <em className="italic text-[#bfa68e]/90">não</em> usar ChatGPT para peça?
           </h2>
-          <p className="mt-4 text-white/60">
+          <p className="mt-4 text-on-surface-muted">
             Um modelo generalista não foi treinado para jurisprudência brasileira.
             Pior: ele inventa citação para parecer útil. A Pralvex recusa antes de fabricar.
           </p>
         </div>
 
-        <div className="mt-10 overflow-hidden rounded-xl border border-white/10 bg-neutral-950">
-          <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-0 border-b border-white/10 bg-neutral-900 px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.2em]">
+        <div className="mt-10 overflow-hidden rounded-xl border border-on-surface" style={{ background: 'var(--card-bg)' }}>
+          <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-0 border-b border-on-surface px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.2em]" style={{ background: 'var(--hover)' }}>
             <div />
-            <div className="text-white/40">ChatGPT / Gemini</div>
+            <div style={{ color: 'var(--text-muted)' }}>ChatGPT / Gemini</div>
             <div className="text-[#bfa68e]">Pralvex</div>
           </div>
           {COMPARATIVO.map((row) => (
             <div
               key={row.k}
-              className="grid grid-cols-[1.2fr_1fr_1fr] gap-0 border-b border-white/5 px-4 py-4 text-sm last:border-b-0"
+              className="grid grid-cols-[1.2fr_1fr_1fr] gap-0 border-b px-4 py-4 text-sm last:border-b-0"
+              style={{ borderColor: 'var(--border)' }}
             >
-              <div className="pr-3 text-white/70">{row.k}</div>
+              <div className="pr-3 text-on-surface-muted">{row.k}</div>
               <div className="flex items-start gap-2 pr-3 text-red-400/80">
                 <X size={14} className="mt-0.5 flex-none" aria-hidden />
-                <span className="text-white/50">{row.them}</span>
+                <span className="text-on-surface-muted">{row.them}</span>
               </div>
               <div className="flex items-start gap-2 text-emerald-400/90">
                 <Check size={14} className="mt-0.5 flex-none" aria-hidden />
-                <span className="text-white/80">{row.us}</span>
+                <span className="text-on-surface">{row.us}</span>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <div className="mx-auto h-px max-w-6xl bg-white/10" />
+      <div className="mx-auto h-px max-w-6xl" style={{ background: 'var(--border)' }} />
 
       {/* CTA FINAL */}
       <section className="mx-auto max-w-5xl px-4 py-20" data-reveal>
-        <div className="relative overflow-hidden rounded-2xl border border-[#bfa68e]/20 bg-gradient-to-br from-neutral-900 via-neutral-950 to-black p-10 text-center sm:p-16">
+        <div className="relative overflow-hidden rounded-2xl border border-[#bfa68e]/20 p-10 text-center sm:p-16" style={{ background: 'var(--card-bg)' }}>
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_50%_at_50%_0%,#bfa68e1f,transparent_60%)]" />
           <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-on-surface bg-[var(--hover)] px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#bfa68e]">
               <span className="size-1.5 rounded-full bg-[#bfa68e]" />
               Capítulo V · Próximo Passo
             </div>
-            <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-white sm:text-5xl">
+            <h2 className="mt-4 text-balance text-4xl font-medium leading-tight text-on-surface sm:text-5xl">
               Pronto para conhecer<br />a Pralvex <em className="italic text-[#bfa68e]/90">na prática?</em>
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-white/60">
+            <p className="mx-auto mt-4 max-w-xl text-on-surface-muted">
               Demonstração ao vivo de 50 minutos. Nenhum compromisso de assinatura. Proposta no mesmo dia.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-6 py-3 text-sm font-medium text-[#0a0807] transition hover:brightness-110"
               >
                 <CalendarCheck size={16} />
                 Demo 50 min grátis
               </Link>
               <Link
                 href="/"
-                className="rounded-lg border border-white/15 bg-white/[0.02] px-6 py-3 text-sm text-white/80 transition hover:bg-white/[0.06]"
+                style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+                className="rounded-lg border px-6 py-3 text-sm transition"
               >
                 Ver a plataforma completa
               </Link>
             </div>
-            <div className="mt-6 font-mono text-[0.65rem] uppercase tracking-[0.25em] text-white/40">
+            <div className="mt-6 font-mono text-[0.65rem] uppercase tracking-[0.25em]" style={{ color: 'var(--text-muted)' }}>
               50 minutos &nbsp;·&nbsp; Sem compromisso &nbsp;·&nbsp; Proposta em até 24h
             </div>
           </div>
@@ -430,20 +440,20 @@ export default function EmpresasPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/10 bg-black">
+      <footer className="border-t border-on-surface" style={{ background: 'var(--bg-base)' }}>
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2">
             <span className="flex size-6 items-center justify-center rounded border border-[#bfa68e]/30 bg-gradient-to-br from-[#1a1410] to-black font-mono text-[0.6rem] tracking-widest text-[#bfa68e]">PX</span>
-            <span className="text-xs text-white/50">
+            <span className="text-xs text-on-surface-muted">
               © MMXXVI Pralvex
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/60">
-            <Link href="/" className="transition hover:text-white">Início</Link>
-            <Link href="/#precos" className="transition hover:text-white">Planos</Link>
-            <Link href="/empresas" className="transition hover:text-white">Para Empresas</Link>
-            <Link href="/privacidade" className="transition hover:text-white">Privacidade (LGPD)</Link>
-            <Link href="/termos" className="transition hover:text-white">Termos de Uso</Link>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-on-surface-muted">
+            <Link href="/" className="transition hover:text-on-surface">Início</Link>
+            <Link href="/#precos" className="transition hover:text-on-surface">Planos</Link>
+            <Link href="/empresas" className="transition hover:text-on-surface">Para Empresas</Link>
+            <Link href="/privacidade" className="transition hover:text-on-surface">Privacidade (LGPD)</Link>
+            <Link href="/termos" className="transition hover:text-on-surface">Termos de Uso</Link>
             <a href="tel:+5534993026456" className="text-[#bfa68e]/80 transition hover:text-[#e6d4bd]">
               (34) 99302-6456
             </a>

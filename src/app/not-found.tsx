@@ -100,7 +100,7 @@ export default function NotFound() {
 
         {/* Lede */}
         <p
-          className="lex-figure max-w-xl text-balance text-center text-[15px] leading-[1.7] text-white/65"
+          className="lex-figure max-w-xl text-balance text-center text-[15px] leading-[1.7] text-on-surface-muted"
           style={{ animationDelay: '0.42s' }}
         >
           O endereço que você tentou acessar não existe ou foi movido. Use os
@@ -121,7 +121,8 @@ export default function NotFound() {
           </Link>
           <Link
             href="/dashboard"
-            className="inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-7 text-[13px] font-medium text-white/85 backdrop-blur transition hover:border-[#bfa68e]/40 hover:bg-white/[0.05]"
+            style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+            className="inline-flex h-12 items-center gap-2 rounded-full border px-7 text-[13px] font-medium backdrop-blur transition hover:border-[#bfa68e]/40"
           >
             <LayoutDashboard size={14} strokeWidth={1.75} />
             Abrir dashboard
@@ -130,10 +131,10 @@ export default function NotFound() {
 
         {/* Quick links cards */}
         <div className="mt-4 w-full max-w-3xl">
-          <div className="mb-5 flex items-center justify-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em] text-white/35">
-            <span className="h-px w-8 bg-white/15" />
+          <div className="mb-5 flex items-center justify-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--text-muted)' }}>
+            <span className="h-px w-8" style={{ background: 'var(--border)' }} />
             Atalhos do atelier
-            <span className="h-px w-8 bg-white/15" />
+            <span className="h-px w-8" style={{ background: 'var(--border)' }} />
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {QUICK_LINKS.map((q, i) => {
@@ -142,20 +143,21 @@ export default function NotFound() {
                 <Link
                   key={q.href}
                   href={q.href}
-                  className="lex-figure group relative flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 backdrop-blur transition-all hover:-translate-y-0.5 hover:border-[#bfa68e]/30 hover:bg-white/[0.05]"
-                  style={{ animationDelay: `${0.65 + i * 0.06}s` }}
+                  className="lex-figure group relative flex flex-col gap-2 rounded-xl border p-4 backdrop-blur transition-all hover:-translate-y-0.5 hover:border-[#bfa68e]/30"
+                  style={{ animationDelay: `${0.65 + i * 0.06}s`, borderColor: 'var(--border)', background: 'var(--card-bg)' }}
                 >
                   <div className="flex size-9 items-center justify-center rounded-lg border border-[#bfa68e]/25 bg-gradient-to-br from-[#bfa68e]/[0.14] to-transparent text-[#e6d4bd] transition-colors group-hover:border-[#bfa68e]/45 group-hover:from-[#bfa68e]/[0.22]">
                     <Icon size={15} strokeWidth={1.75} />
                   </div>
                   <div>
-                    <div className="text-[13px] font-medium text-white/90">{q.label}</div>
-                    <div className="mt-0.5 text-[11px] text-white/45">{q.desc}</div>
+                    <div className="text-[13px] font-medium text-on-surface">{q.label}</div>
+                    <div className="mt-0.5 text-[11px] text-on-surface-muted">{q.desc}</div>
                   </div>
                   <ArrowRight
                     size={11}
                     strokeWidth={2}
-                    className="absolute right-3 top-3 text-white/25 transition-all group-hover:translate-x-0.5 group-hover:text-[#bfa68e]/80"
+                    className="absolute right-3 top-3 transition-all group-hover:translate-x-0.5 group-hover:text-[#bfa68e]/80"
+                    style={{ color: 'var(--text-muted)' }}
                   />
                 </Link>
               )
@@ -165,7 +167,7 @@ export default function NotFound() {
 
         {/* Hot agents — chips clickable */}
         <div className="mt-2 w-full max-w-3xl">
-          <div className="mb-3 flex items-center justify-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em] text-white/35">
+          <div className="mb-3 flex items-center justify-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em]" style={{ color: 'var(--text-muted)' }}>
             <Search size={11} strokeWidth={2} className="text-[#bfa68e]/60" />
             Talvez você esteja procurando
           </div>
@@ -174,8 +176,8 @@ export default function NotFound() {
               <Link
                 key={a.href}
                 href={a.href}
-                className="lex-figure inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.015] px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-white/55 transition hover:border-[#bfa68e]/35 hover:bg-[#bfa68e]/[0.08] hover:text-[#e6d4bd]"
-                style={{ animationDelay: `${0.95 + i * 0.04}s` }}
+                className="lex-figure inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] transition hover:border-[#bfa68e]/35 hover:bg-[#bfa68e]/[0.08] hover:text-[#e6d4bd]"
+                style={{ animationDelay: `${0.95 + i * 0.04}s`, borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-secondary)' }}
               >
                 <span className="size-1 rounded-full bg-[#bfa68e]/40" />
                 {a.label}
@@ -186,10 +188,10 @@ export default function NotFound() {
 
         {/* Contato — telefone + email */}
         <div
-          className="lex-figure mt-6 flex flex-wrap items-center justify-center gap-4 border-t border-white/[0.06] pt-6 font-mono text-[11px] uppercase tracking-[0.22em] text-white/40"
-          style={{ animationDelay: '1.25s' }}
+          className="lex-figure mt-6 flex flex-wrap items-center justify-center gap-4 border-t pt-6 font-mono text-[11px] uppercase tracking-[0.22em]"
+          style={{ animationDelay: '1.25s', borderColor: 'var(--border)', color: 'var(--text-muted)' }}
         >
-          <span className="text-white/30">Atendimento direto</span>
+          <span style={{ color: 'var(--text-muted)' }}>Atendimento direto</span>
           <a
             href="tel:+5534993026456"
             className="inline-flex items-center gap-2 text-[#bfa68e]/85 transition hover:text-[#e6d4bd]"
@@ -197,7 +199,7 @@ export default function NotFound() {
             <Phone size={11} strokeWidth={2.2} />
             (34) 99302-6456
           </a>
-          <span className="text-white/15">·</span>
+          <span style={{ color: 'var(--text-muted)', opacity: 0.4 }}>·</span>
           <a
             href="mailto:contato@pralvex.com.br"
             className="inline-flex items-center gap-2 text-[#bfa68e]/85 transition hover:text-[#e6d4bd]"

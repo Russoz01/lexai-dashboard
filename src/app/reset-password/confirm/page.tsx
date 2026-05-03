@@ -130,7 +130,7 @@ export default function ResetPasswordConfirmPage() {
 
         <Link
           href="/login"
-          className="group relative z-10 mb-10 inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-[0.22em] text-white/50 transition hover:text-white"
+          className="group relative z-10 mb-10 inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-[0.22em] text-on-surface-muted transition hover:text-on-surface"
         >
           <ArrowLeft size={12} strokeWidth={1.75} className="transition-transform group-hover:-translate-x-0.5" />
           voltar para login
@@ -153,7 +153,7 @@ export default function ResetPasswordConfirmPage() {
           </div>
 
           {ready === 'loading' && (
-            <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-4 py-6 text-sm text-white/60">
+            <div className="flex items-center gap-3 rounded-lg border px-4 py-6 text-sm text-on-surface-muted" style={{ borderColor: 'var(--border)', background: 'var(--hover)' }}>
               <Loader2 size={16} className="animate-spin text-[#bfa68e]" />
               Validando link de recuperação...
             </div>
@@ -167,7 +167,7 @@ export default function ResetPasswordConfirmPage() {
               <h2 className="mb-3 text-lg font-light leading-tight">
                 Não conseguimos validar este link
               </h2>
-              <p className="mb-5 text-sm leading-relaxed text-white/60">
+              <p className="mb-5 text-sm leading-relaxed text-on-surface-muted">
                 Links de recuperação valem 1 hora. Se já passou do prazo, solicite um novo.
               </p>
               <Link
@@ -181,7 +181,7 @@ export default function ResetPasswordConfirmPage() {
 
           {ready === 'ok' && (
             <>
-              <p className="mb-7 text-sm leading-relaxed text-white/60">
+              <p className="mb-7 text-sm leading-relaxed text-on-surface-muted">
                 Escolha uma nova senha. Mínimo 8 caracteres. Recomendamos combinar letras, números e um caractere especial.
               </p>
 
@@ -196,7 +196,7 @@ export default function ResetPasswordConfirmPage() {
 
               <form onSubmit={submit} noValidate className="space-y-4">
                 <div>
-                  <label htmlFor="px-new-pwd" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em] text-white/50">
+                  <label htmlFor="px-new-pwd" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>
                     Nova senha
                   </label>
                   <div className="relative">
@@ -210,14 +210,16 @@ export default function ResetPasswordConfirmPage() {
                       required
                       autoFocus
                       aria-invalid={!!erro || undefined}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 pr-12 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#bfa68e]/50 focus:bg-white/[0.06] aria-[invalid=true]:border-red-500/50"
+                      style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+                      className="w-full rounded-lg border px-4 py-3 pr-12 text-sm outline-none transition placeholder:opacity-50 focus:border-[#bfa68e]/50 aria-[invalid=true]:border-red-500/50"
                     />
                     <button
                       type="button"
                       onClick={() => setShowSenha((v) => !v)}
                       tabIndex={-1}
                       aria-label={showSenha ? 'Ocultar senha' : 'Mostrar senha'}
-                      className="absolute inset-y-0 right-2 flex items-center rounded p-2 text-white/50 transition hover:bg-white/5 hover:text-white"
+                      style={{ color: 'var(--text-muted)' }}
+                      className="absolute inset-y-0 right-2 flex items-center rounded p-2 transition"
                     >
                       {showSenha ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -247,7 +249,7 @@ export default function ResetPasswordConfirmPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="px-confirma" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em] text-white/50">
+                  <label htmlFor="px-confirma" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>
                     Confirmar senha
                   </label>
                   <div className="relative">
@@ -260,7 +262,8 @@ export default function ResetPasswordConfirmPage() {
                       autoComplete="new-password"
                       required
                       aria-invalid={mismatch || undefined}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#bfa68e]/50 focus:bg-white/[0.06] aria-[invalid=true]:border-red-500/50"
+                      style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+                      className="w-full rounded-lg border px-4 py-3 text-sm outline-none transition placeholder:opacity-50 focus:border-[#bfa68e]/50 aria-[invalid=true]:border-red-500/50"
                     />
                   </div>
                   {mismatch && (
@@ -296,7 +299,7 @@ export default function ResetPasswordConfirmPage() {
                 </button>
               </form>
 
-              <div className="mt-6 flex items-start gap-2 rounded-lg border border-white/5 bg-black/30 px-4 py-3 text-[0.72rem] leading-relaxed text-white/50">
+              <div className="mt-6 flex items-start gap-2 rounded-lg border px-4 py-3 text-[0.72rem] leading-relaxed text-on-surface-muted" style={{ borderColor: 'var(--border)', background: 'var(--hover)' }}>
                 <ShieldCheck size={14} strokeWidth={1.75} className="mt-0.5 shrink-0 text-[#bfa68e]" />
                 <span>
                   Sua senha é armazenada criptografada (bcrypt). Nunca a enviamos por email e não temos acesso ao valor em texto puro.
@@ -306,7 +309,7 @@ export default function ResetPasswordConfirmPage() {
           )}
         </div>
 
-        <footer className="relative z-10 mt-10 text-center font-mono text-[0.58rem] uppercase tracking-[0.3em] text-white/25">
+        <footer className="relative z-10 mt-10 text-center font-mono text-[0.58rem] uppercase tracking-[0.3em]" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
           Pralvex · MMXXVI · Atelier
         </footer>
       </section>

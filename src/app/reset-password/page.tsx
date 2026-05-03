@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
 
         <Link
           href="/login"
-          className="group relative z-10 mb-10 inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-[0.22em] text-white/50 transition hover:text-white"
+          className="group relative z-10 mb-10 inline-flex w-fit items-center gap-2 font-mono text-xs uppercase tracking-[0.22em] text-on-surface-muted transition hover:text-on-surface"
         >
           <ArrowLeft size={12} strokeWidth={1.75} className="transition-transform group-hover:-translate-x-0.5" />
           voltar para login
@@ -101,7 +101,7 @@ export default function ResetPasswordPage() {
 
           {!sent ? (
             <>
-              <p className="mb-7 text-sm leading-relaxed text-white/60">
+              <p className="mb-7 text-sm leading-relaxed text-on-surface-muted">
                 Informe o email cadastrado. Enviaremos um link seguro para você criar uma nova senha. Válido por 1 hora.
               </p>
 
@@ -116,7 +116,7 @@ export default function ResetPasswordPage() {
 
               <form onSubmit={submit} noValidate className="space-y-4">
                 <div>
-                  <label htmlFor="px-reset-email" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em] text-white/50">
+                  <label htmlFor="px-reset-email" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>
                     Email
                   </label>
                   <div className="relative">
@@ -130,7 +130,8 @@ export default function ResetPasswordPage() {
                       required
                       autoFocus
                       aria-invalid={!!erro || undefined}
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#bfa68e]/50 focus:bg-white/[0.06] aria-[invalid=true]:border-red-500/50"
+                      style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+                      className="w-full rounded-lg border px-4 py-3 text-sm outline-none transition placeholder:opacity-50 focus:border-[#bfa68e]/50 aria-[invalid=true]:border-red-500/50"
                     />
                   </div>
                 </div>
@@ -154,15 +155,15 @@ export default function ResetPasswordPage() {
                 </button>
               </form>
 
-              <p className="mt-6 text-center text-xs text-white/40">
+              <p className="mt-6 text-center text-xs" style={{ color: 'var(--text-muted)' }}>
                 Lembrou a senha?{' '}
-                <Link href="/login" className="text-white/70 underline-offset-4 transition hover:text-[#bfa68e] hover:underline">
+                <Link href="/login" className="text-on-surface-muted underline-offset-4 transition hover:text-[#bfa68e] hover:underline">
                   Voltar ao login
                 </Link>
               </p>
             </>
           ) : (
-            <div className="rounded-2xl border border-[#bfa68e]/25 bg-gradient-to-br from-[#1a1410]/80 to-black/60 p-7 shadow-[0_0_40px_rgba(191,166,142,0.12)]">
+            <div className="rounded-2xl border border-[#bfa68e]/25 p-7 shadow-[0_0_40px_rgba(191,166,142,0.12)]" style={{ background: 'var(--card-bg)' }}>
               <div className="mb-4 flex size-12 items-center justify-center rounded-full border border-green-400/30 bg-green-400/10 text-green-300">
                 <Check size={22} strokeWidth={2.2} />
               </div>
@@ -172,23 +173,24 @@ export default function ResetPasswordPage() {
               <h2 className="mb-3 text-xl font-light leading-tight">
                 Verifique sua caixa de entrada
               </h2>
-              <p className="mb-6 text-sm leading-relaxed text-white/60">
-                Enviamos um link seguro para <strong className="text-white/80">{email}</strong>. Abra o email, clique no botão e defina sua nova senha. Se não encontrar, confira o spam.
+              <p className="mb-6 text-sm leading-relaxed text-on-surface-muted">
+                Enviamos um link seguro para <strong className="text-on-surface">{email}</strong>. Abra o email, clique no botão e defina sua nova senha. Se não encontrar, confira o spam.
               </p>
 
-              <div className="mb-6 grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 rounded-lg border border-white/5 bg-black/40 p-4 text-xs text-white/60">
-                <span className="font-mono uppercase tracking-[0.2em] text-white/40">Validade</span>
+              <div className="mb-6 grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 rounded-lg border p-4 text-xs text-on-surface-muted" style={{ borderColor: 'var(--border)', background: 'var(--hover)' }}>
+                <span className="font-mono uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>Validade</span>
                 <span>1 hora a partir do envio</span>
-                <span className="font-mono uppercase tracking-[0.2em] text-white/40">Remetente</span>
+                <span className="font-mono uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>Remetente</span>
                 <span>noreply@pralvex.com.br</span>
-                <span className="font-mono uppercase tracking-[0.2em] text-white/40">Suporte</span>
+                <span className="font-mono uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>Suporte</span>
                 <span>contato@pralvex.com.br</span>
               </div>
 
               <div className="flex flex-col gap-2 sm:flex-row">
                 <button
                   onClick={() => { setSent(false); setEmail('') }}
-                  className="flex-1 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-2.5 text-sm text-white/80 transition hover:border-[#bfa68e]/40 hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bfa68e] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                  style={{ borderColor: 'var(--border)', background: 'var(--hover)', color: 'var(--text-primary)' }}
+                  className="flex-1 rounded-lg border px-4 py-2.5 text-sm transition hover:border-[#bfa68e]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bfa68e] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                 >
                   Usar outro email
                 </button>
@@ -203,7 +205,7 @@ export default function ResetPasswordPage() {
           )}
         </div>
 
-        <footer className="relative z-10 mt-10 text-center font-mono text-[0.58rem] uppercase tracking-[0.3em] text-white/25">
+        <footer className="relative z-10 mt-10 text-center font-mono text-[0.58rem] uppercase tracking-[0.3em]" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
           Pralvex · MMXXVI · Atelier
         </footer>
       </section>

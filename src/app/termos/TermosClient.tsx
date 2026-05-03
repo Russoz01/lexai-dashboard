@@ -494,29 +494,29 @@ const SECTIONS: Array<{
       <>
         <p>Para duvidas, reclamacoes, solicitacoes ou suporte, entre em contato:</p>
 
-        <div className="not-prose mt-6 space-y-3 rounded-xl border border-white/10 bg-white/[0.02] p-6">
-          <div className="flex items-start gap-3 text-sm text-white/70">
+        <div className="not-prose mt-6 space-y-3 rounded-xl border border-on-surface p-6" style={{ background: 'var(--card-bg)' }}>
+          <div className="flex items-start gap-3 text-sm text-on-surface-muted">
             <Mail
               className="mt-0.5 size-4 shrink-0 text-[#bfa68e]"
               strokeWidth={1.75}
             />
             <div>
-              <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/50">
+              <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em]" style={{ color: 'var(--text-muted)' }}>
                 E-mail
               </div>
-              <div className="mt-0.5 text-white">contato@pralvex.com.br</div>
+              <div className="mt-0.5 text-on-surface">contato@pralvex.com.br</div>
             </div>
           </div>
-          <div className="flex items-start gap-3 text-sm text-white/70">
+          <div className="flex items-start gap-3 text-sm text-on-surface-muted">
             <MapPin
               className="mt-0.5 size-4 shrink-0 text-[#bfa68e]"
               strokeWidth={1.75}
             />
             <div>
-              <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/50">
+              <div className="font-mono text-[0.6rem] uppercase tracking-[0.18em]" style={{ color: 'var(--text-muted)' }}>
                 Endereco
               </div>
-              <div className="mt-0.5 text-white">
+              <div className="mt-0.5 text-on-surface">
                 Ituverava, Sao Paulo &mdash; Brasil
               </div>
             </div>
@@ -536,10 +536,10 @@ export default function TermosClient() {
   return (
     <div className="min-h-screen surface-base">
       {/* ═══ NAV ══════════════════════════════════════════════════════ */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/75 backdrop-blur-xl">
+      <header className="lex-landing-nav-scrolled fixed inset-x-0 top-0 z-50 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-md border border-white/10 bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
+          <Link href="/" className="flex items-center gap-2 text-on-surface">
+            <div className="flex size-8 items-center justify-center rounded-md border border-on-surface bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
               <Scale className="size-4 text-[#bfa68e]" strokeWidth={1.75} />
             </div>
             <span className="text-sm font-medium tracking-tight">Pralvex</span>
@@ -547,19 +547,19 @@ export default function TermosClient() {
           <nav className="flex items-center gap-5">
             <Link
               href="/"
-              className="hidden text-sm text-white/70 transition-colors hover:text-white sm:inline"
+              className="hidden text-sm text-on-surface-muted transition-colors hover:text-on-surface sm:inline"
             >
               Inicio
             </Link>
             <Link
               href="/privacidade"
-              className="hidden text-sm text-white/70 transition-colors hover:text-white sm:inline"
+              className="hidden text-sm text-on-surface-muted transition-colors hover:text-on-surface sm:inline"
             >
               Privacidade
             </Link>
             <Link
               href="/login"
-              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-white px-4 text-xs font-medium text-black transition hover:bg-white/90"
+              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-gradient-to-br from-[#f5e8d3] via-[#bfa68e] to-[#8a6f55] px-4 text-xs font-medium text-[#0a0807] transition hover:brightness-110"
             >
               Entrar
             </Link>
@@ -588,7 +588,7 @@ export default function TermosClient() {
           <Reveal>
             <Link
               href="/"
-              className="mb-10 inline-flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/55 transition-colors hover:text-white"
+              className="mb-10 inline-flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-on-surface-muted transition-colors hover:text-on-surface"
             >
               <ArrowLeft className="size-3" strokeWidth={2} />
               Voltar para o inicio
@@ -609,7 +609,7 @@ export default function TermosClient() {
 
           {/* H1 — gradient line sem WordReveal (bg-clip-text nao convive com
               inline-block do word-reveal; usamos Reveal simples para animar) */}
-          <h1 className="text-balance text-4xl font-medium leading-[1.1] tracking-tight md:text-5xl lg:text-6xl">
+          <h1 className="text-balance text-4xl font-medium leading-[1.1] tracking-tight text-on-surface md:text-5xl lg:text-6xl">
             <WordReveal text="Termos de" className="block" stagger={0.06} />
             <Reveal delay={0.35}>
               <span className="mt-1 block text-grad-accent">
@@ -619,7 +619,7 @@ export default function TermosClient() {
           </h1>
 
           <Reveal delay={0.45}>
-            <p className="mx-auto mt-6 max-w-xl text-sm text-white/60 md:text-base">
+            <p className="mx-auto mt-6 max-w-xl text-sm text-on-surface-muted md:text-base">
               Ultima atualizacao: 07 de abril de 2026. Regidos pela legislacao
               brasileira &mdash; Lei 10.406/2002 (Codigo Civil) e Lei 8.078/1990 (CDC).
             </p>
@@ -628,15 +628,16 @@ export default function TermosClient() {
       </section>
 
       {/* ═══ CORPO ═════════════════════════════════════════════════════ */}
-      <main className="relative bg-black pb-24">
+      <main className="relative pb-24" style={{ background: 'var(--bg-base)' }}>
         <div className="mx-auto max-w-3xl px-6">
           {/* Indice rapido */}
           <Reveal>
             <nav
               aria-label="Indice"
-              className="mb-16 rounded-2xl border border-white/10 bg-neutral-950/60 p-6 backdrop-blur"
+              className="mb-16 rounded-2xl border border-on-surface p-6 backdrop-blur"
+              style={{ background: 'var(--card-bg)' }}
             >
-              <div className="mb-4 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/50">
+              <div className="mb-4 font-mono text-[0.6rem] uppercase tracking-[0.18em]" style={{ color: 'var(--text-muted)' }}>
                 Indice
               </div>
               <ol className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
@@ -644,7 +645,7 @@ export default function TermosClient() {
                   <li key={s.id}>
                     <a
                       href={`#${s.id}`}
-                      className="group flex items-center gap-3 py-1 text-sm text-white/65 transition-colors hover:text-white"
+                      className="group flex items-center gap-3 py-1 text-sm text-on-surface-muted transition-colors hover:text-on-surface"
                     >
                       <span className="font-mono text-[0.65rem] tabular-nums text-[#bfa68e]/70 group-hover:text-[#bfa68e]">
                         {s.n}
@@ -672,7 +673,7 @@ export default function TermosClient() {
                           'flex size-11 items-center justify-center rounded-xl border ' +
                           (danger
                             ? 'border-red-400/30 bg-gradient-to-br from-red-400/15 to-transparent'
-                            : 'border-white/10 bg-gradient-to-br from-[#bfa68e]/15 to-transparent')
+                            : 'border-on-surface bg-gradient-to-br from-[#bfa68e]/15 to-transparent')
                         }
                       >
                         <Icon
@@ -685,14 +686,12 @@ export default function TermosClient() {
                       </div>
                       <div>
                         <div
-                          className={
-                            'font-mono text-[0.6rem] uppercase tracking-[0.2em] ' +
-                            (danger ? 'text-red-300/70' : 'text-white/40')
-                          }
+                          className="font-mono text-[0.6rem] uppercase tracking-[0.2em]"
+                          style={{ color: danger ? 'rgba(252,165,165,0.7)' : 'var(--text-muted)' }}
                         >
                           {danger ? 'Atencao — Secao ' + s.n : 'Secao ' + s.n}
                         </div>
-                        <h2 className="text-2xl font-medium tracking-tight text-white md:text-[1.75rem]">
+                        <h2 className="text-2xl font-medium tracking-tight text-on-surface md:text-[1.75rem]">
                           {s.title}
                         </h2>
                       </div>
@@ -717,12 +716,12 @@ export default function TermosClient() {
       </main>
 
       {/* ═══ FOOTER ═══════════════════════════════════════════════════════ */}
-      <footer className="relative border-t border-white/10 bg-black">
+      <footer className="relative border-t border-on-surface" style={{ background: 'var(--bg-base)' }}>
         <div className="mx-auto max-w-6xl px-6 py-14">
           <div className="flex flex-wrap items-start justify-between gap-8">
             <div>
-              <Link href="/" className="inline-flex items-center gap-2">
-                <div className="flex size-8 items-center justify-center rounded-md border border-white/10 bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
+              <Link href="/" className="inline-flex items-center gap-2 text-on-surface">
+                <div className="flex size-8 items-center justify-center rounded-md border border-on-surface bg-gradient-to-br from-[#bfa68e]/20 to-transparent">
                   <Scale
                     className="size-4 text-[#bfa68e]"
                     strokeWidth={1.75}
@@ -730,7 +729,7 @@ export default function TermosClient() {
                 </div>
                 <span className="text-sm font-medium tracking-tight">Pralvex</span>
               </Link>
-              <p className="mt-3 max-w-xs text-sm text-white/50">
+              <p className="mt-3 max-w-xs text-sm text-on-surface-muted">
                 Ferramenta de apoio. Resultados devem ser revisados por advogado
                 habilitado pela OAB.
               </p>
@@ -746,7 +745,7 @@ export default function TermosClient() {
                 <li key={l.l}>
                   <Link
                     href={l.h}
-                    className="text-white/60 transition-colors hover:text-white"
+                    className="text-on-surface-muted transition-colors hover:text-on-surface"
                   >
                     {l.l}
                   </Link>
@@ -754,9 +753,9 @@ export default function TermosClient() {
               ))}
             </ul>
           </div>
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 font-mono text-[0.65rem] uppercase tracking-[0.15em] text-white/45">
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-on-surface pt-6 font-mono text-[0.65rem] uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>
             <span>© MMXXVI · Pralvex</span>
-            <span className="text-white/35">contato@pralvex.com.br</span>
+            <span style={{ color: 'var(--text-muted)', opacity: 0.7 }}>contato@pralvex.com.br</span>
           </div>
         </div>
       </footer>
@@ -764,7 +763,7 @@ export default function TermosClient() {
       {/* ═══ Tipografia legal (compartilhada com /privacidade) ═════════ */}
       <style jsx global>{`
         .legal-prose {
-          color: rgba(255, 255, 255, 0.72);
+          color: var(--text-secondary);
           font-size: 0.95rem;
           line-height: 1.78;
         }
@@ -775,7 +774,7 @@ export default function TermosClient() {
           margin-bottom: 0;
         }
         .legal-prose h3 {
-          color: #fff;
+          color: var(--text-primary);
           font-size: 0.95rem;
           font-weight: 600;
           letter-spacing: -0.01em;
@@ -802,7 +801,7 @@ export default function TermosClient() {
           opacity: 0.7;
         }
         .legal-prose strong {
-          color: #fff;
+          color: var(--text-primary);
           font-weight: 600;
         }
       `}</style>

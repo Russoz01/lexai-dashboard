@@ -102,19 +102,19 @@ const SECTIONS: Section[] = [
         <p>Lista nao-exaustiva do que a plataforma processa:</p>
         <ul className="mt-4 space-y-2 pl-5">
           <li className="relative pl-4 before:absolute before:left-0 before:top-[10px] before:h-1 before:w-1.5 before:bg-[#bfa68e]">
-            <strong className="text-white">Cadastrais da Controladora</strong>: nome, CPF, OAB, email, telefone, endereco profissional.
+            <strong className="text-on-surface">Cadastrais da Controladora</strong>: nome, CPF, OAB, email, telefone, endereco profissional.
           </li>
           <li className="relative pl-4 before:absolute before:left-0 before:top-[10px] before:h-1 before:w-1.5 before:bg-[#bfa68e]">
-            <strong className="text-white">Conteudo gerado pela Controladora</strong>: prompts, peticoes, contratos, pareceres, calculos, historico de interacoes.
+            <strong className="text-on-surface">Conteudo gerado pela Controladora</strong>: prompts, peticoes, contratos, pareceres, calculos, historico de interacoes.
           </li>
           <li className="relative pl-4 before:absolute before:left-0 before:top-[10px] before:h-1 before:w-1.5 before:bg-[#bfa68e]">
-            <strong className="text-white">Dados de terceiros inseridos pela Controladora</strong>: clientes do escritorio, partes contrarias, testemunhas, processos. <em className="text-[#bfa68e]">Voce permanece a Controladora desses dados.</em>
+            <strong className="text-on-surface">Dados de terceiros inseridos pela Controladora</strong>: clientes do escritorio, partes contrarias, testemunhas, processos. <em className="text-[#bfa68e]">Voce permanece a Controladora desses dados.</em>
           </li>
           <li className="relative pl-4 before:absolute before:left-0 before:top-[10px] before:h-1 before:w-1.5 before:bg-[#bfa68e]">
-            <strong className="text-white">Tecnicos</strong>: IP, user-agent, timestamp, pais de acesso, device, latencia de requisicao.
+            <strong className="text-on-surface">Tecnicos</strong>: IP, user-agent, timestamp, pais de acesso, device, latencia de requisicao.
           </li>
           <li className="relative pl-4 before:absolute before:left-0 before:top-[10px] before:h-1 before:w-1.5 before:bg-[#bfa68e]">
-            <strong className="text-white">Pagamento</strong>: processado por Stripe sob PCI DSS. Pralvex nao armazena numero de cartao, apenas token opaco.
+            <strong className="text-on-surface">Pagamento</strong>: processado por Stripe sob PCI DSS. Pralvex nao armazena numero de cartao, apenas token opaco.
           </li>
         </ul>
       </>
@@ -141,8 +141,8 @@ const SECTIONS: Section[] = [
                 <m.Icon className="size-4" strokeWidth={1.6} />
               </div>
               <div>
-                <div className="text-[13.5px] font-medium text-white">{m.title}</div>
-                <div className="mt-0.5 text-[12px] text-white/55">{m.desc}</div>
+                <div className="text-[13.5px] font-medium text-on-surface">{m.title}</div>
+                <div className="mt-0.5 text-[12px] text-on-surface-muted">{m.desc}</div>
               </div>
             </div>
           ))}
@@ -171,11 +171,11 @@ const SECTIONS: Section[] = [
                 <th className="pb-3 font-mono font-semibold">Salvaguarda</th>
               </tr>
             </thead>
-            <tbody className="text-white/70">
+            <tbody className="text-on-surface-muted">
               {SUB_PROCESSORS.map(s => (
-                <tr key={s.name} className="border-b border-white/5">
-                  <td className="py-3 pr-4 font-medium text-white">{s.name}</td>
-                  <td className="py-3 pr-4 text-white/55">{s.country}</td>
+                <tr key={s.name} className="border-b" style={{ borderColor: 'var(--border)' }}>
+                  <td className="py-3 pr-4 font-medium text-on-surface">{s.name}</td>
+                  <td className="py-3 pr-4 text-on-surface-muted">{s.country}</td>
                   <td className="py-3 pr-4">{s.purpose}</td>
                   <td className="py-3 text-[12px] text-[#bfa68e]/85">{s.safeguard}</td>
                 </tr>
@@ -183,8 +183,8 @@ const SECTIONS: Section[] = [
             </tbody>
           </table>
         </div>
-        <p className="mt-4 text-[13px] text-white/55">
-          <strong className="text-white/75">Importante:</strong> a Pralvex nunca envia
+        <p className="mt-4 text-[13px] text-on-surface-muted">
+          <strong className="text-on-surface">Importante:</strong> a Pralvex nunca envia
           o conteudo de peticoes/pareceres para treinar modelos de terceiros. O
           acordo zero-retention com a Anthropic garante que prompts sao deletados
           em no maximo 30 dias apos processamento.
@@ -202,7 +202,7 @@ const SECTIONS: Section[] = [
         <p>
           A LGPD art. 18 garante aos titulares de dados o direito de:
         </p>
-        <div className="mt-4 space-y-2 text-[14px] leading-[1.7] text-white/70">
+        <div className="mt-4 space-y-2 text-[14px] leading-[1.7] text-on-surface-muted">
           {[
             'Confirmacao da existencia de tratamento',
             'Acesso aos dados',
@@ -220,7 +220,7 @@ const SECTIONS: Section[] = [
           ))}
         </div>
         <p className="mt-5">
-          Solicitacoes sao atendidas em <strong className="text-white">15 dias corridos</strong> por padrao,
+          Solicitacoes sao atendidas em <strong className="text-on-surface">15 dias corridos</strong> por padrao,
           ou em ate 30 dias para casos que exijam analise juridica.
         </p>
       </>
@@ -235,7 +235,7 @@ const SECTIONS: Section[] = [
       <>
         <p>
           Em caso de incidente de seguranca que afete dados pessoais, a Pralvex
-          notifica a Controladora em ate <strong className="text-white">72 horas</strong> apos
+          notifica a Controladora em ate <strong className="text-on-surface">72 horas</strong> apos
           ciencia, contendo:
         </p>
         <ul className="mt-4 space-y-2 pl-5">
@@ -275,18 +275,18 @@ const SECTIONS: Section[] = [
         </p>
         <div className="mt-4 space-y-3">
           <div className="rounded-xl border border-[#bfa68e]/12 bg-[#bfa68e]/[0.03] p-4">
-            <div className="mb-1 text-[13.5px] font-semibold text-white">
+            <div className="mb-1 text-[13.5px] font-semibold text-on-surface">
               Export completo em formato estruturado
             </div>
-            <div className="text-[12.5px] text-white/60">
+            <div className="text-[12.5px] text-on-surface-muted">
               JSON + PDF em ate 7 dias corridos. Inclui historico, peticoes, contratos e anexos.
             </div>
           </div>
           <div className="rounded-xl border border-[#bfa68e]/12 bg-[#bfa68e]/[0.03] p-4">
-            <div className="mb-1 text-[13.5px] font-semibold text-white">
+            <div className="mb-1 text-[13.5px] font-semibold text-on-surface">
               Eliminacao completa
             </div>
-            <div className="text-[12.5px] text-white/60">
+            <div className="text-[12.5px] text-on-surface-muted">
               Dados primarios apagados em 30 dias. Backups em 90 dias. Logs de auditoria retidos por 5 anos conforme CPC art. 1.007-a.
             </div>
           </div>
@@ -298,7 +298,7 @@ const SECTIONS: Section[] = [
 
 export default function DpaClient() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#0a0a0a] text-white antialiased">
+    <main className="surface-base relative min-h-screen overflow-hidden antialiased">
       {/* Ambient glow */}
       <div
         aria-hidden
@@ -317,7 +317,7 @@ export default function DpaClient() {
       <div className="relative mx-auto max-w-4xl px-6 pt-10">
         <Link
           href="/"
-          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white/50 transition-colors hover:text-[#bfa68e]"
+          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-on-surface-muted transition-colors hover:text-[#bfa68e]"
         >
           <ArrowLeft size={12} strokeWidth={1.8} className="transition-transform group-hover:-translate-x-0.5" />
           voltar ao site
@@ -342,7 +342,7 @@ export default function DpaClient() {
               processamento de dados.
             </em>
           </h1>
-          <p className="mt-6 max-w-2xl text-[15px] leading-[1.75] text-white/65">
+          <p className="mt-6 max-w-2xl text-[15px] leading-[1.75] text-on-surface-muted">
             Voce e Controladora. A Pralvex e Operadora. Este DPA formaliza essa
             relacao em conformidade com a LGPD (Lei 13.709/18) e, quando
             aplicavel, GDPR + Standard Contractual Clauses.
@@ -367,7 +367,7 @@ export default function DpaClient() {
               className="inline-flex items-center gap-2 rounded-full border border-[#bfa68e]/18 bg-[#bfa68e]/[0.04] px-3 py-1.5"
             >
               <p.icon className="size-3 text-[#bfa68e]" strokeWidth={1.8} />
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface-muted">
                 {p.label}
               </span>
             </div>
@@ -390,7 +390,7 @@ export default function DpaClient() {
           </a>
           <a
             href="mailto:dpo@pralvex.com.br"
-            className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white/55 transition-colors hover:text-[#bfa68e]"
+            className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-on-surface-muted transition-colors hover:text-[#bfa68e]"
           >
             <Mail className="size-3" strokeWidth={1.8} />
             dpo@pralvex.com.br
@@ -421,12 +421,12 @@ export default function DpaClient() {
                   <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.28em] text-[#bfa68e]/80">
                     Clausula {s.n}
                   </div>
-                  <h2 className="font-serif text-[26px] italic leading-[1.15] tracking-tight text-white md:text-[32px]">
+                  <h2 className="font-serif text-[26px] italic leading-[1.15] tracking-tight text-on-surface md:text-[32px]">
                     {s.title}
                   </h2>
                 </div>
               </header>
-              <div className="space-y-4 text-[14.5px] leading-[1.75] text-white/70 md:ml-[68px]">
+              <div className="space-y-4 text-[14.5px] leading-[1.75] text-on-surface-muted md:ml-[68px]">
                 {s.body}
               </div>
             </motion.article>
@@ -447,10 +447,10 @@ export default function DpaClient() {
             <Scale className="size-3" strokeWidth={1.8} />
             Duvida contratual
           </div>
-          <h3 className="font-serif text-[28px] leading-[1.1] text-white md:text-[40px]">
+          <h3 className="font-serif text-[28px] leading-[1.1] text-on-surface md:text-[40px]">
             Quer DPA com <em className="italic text-[#e6d4bd]">sua propria clausula</em>?
           </h3>
-          <p className="mx-auto mt-4 max-w-xl text-[14.5px] text-white/60">
+          <p className="mx-auto mt-4 max-w-xl text-[14.5px] text-on-surface-muted">
             Enterprise aceita DPA customizado. Escritorios com operacao internacional
             tambem fecham contrato com GDPR + SCC. Escreva para o DPO.
           </p>
@@ -464,7 +464,7 @@ export default function DpaClient() {
             </a>
             <Link
               href="/privacidade"
-              className="font-mono text-[12px] uppercase tracking-[0.3em] text-white/55 transition-colors hover:text-[#bfa68e]"
+              className="font-mono text-[12px] uppercase tracking-[0.3em] text-on-surface-muted transition-colors hover:text-[#bfa68e]"
             >
               Ver Politica de Privacidade
             </Link>
