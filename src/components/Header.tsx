@@ -8,6 +8,12 @@ import { ThemeToggle } from './ThemeToggle'
 import { createClient } from '@/lib/supabase'
 import { resolveUsuarioId } from '@/lib/usuario'
 
+/** Wave R3 UX P0.4 (2026-05-03): hint pra command palette futuro. */
+function getCmdSymbol(): string {
+  if (typeof navigator === 'undefined') return 'Ctrl'
+  return /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl'
+}
+
 /* ════════════════════════════════════════════════════════════════
  * Header (v11.0 · 2026-05-02)
  * ────────────────────────────────────────────────────────────────
@@ -28,9 +34,11 @@ export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onT
   const [showHelp, setShowHelp] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [hasUrgentPrazos, setHasUrgentPrazos] = useState(false)
+  const [cmdSymbol, setCmdSymbol] = useState('Ctrl')
 
   useEffect(() => {
     setMounted(true)
+    setCmdSymbol(getCmdSymbol())
     function tick() {
       setTime(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
     }
@@ -102,6 +110,35 @@ export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onT
 
       <div className="header-user">
         <ThemeToggle variant="header" />
+
+        {/* Cmd+K hint — UX P0.4 (2026-05-03). Hoje so visual ate command
+            palette real ficar pronto, mas ja sinaliza power-user affordance.
+            suppressHydrationWarning porque cmdSymbol resolve no client. */}
+        <kbd
+          aria-hidden
+          suppressHydrationWarning
+          title="Em breve: paleta de comandos"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 3,
+            padding: '3px 7px',
+            border: '1px solid var(--stone-line, var(--border))',
+            borderRadius: 6,
+            fontFamily: 'var(--font-mono, ui-monospace), monospace',
+            fontSize: 10,
+            fontWeight: 600,
+            color: 'var(--text-muted)',
+            background: 'var(--hover, transparent)',
+            letterSpacing: '0.04em',
+            userSelect: 'none',
+            opacity: mounted ? 0.85 : 0,
+            transition: 'opacity 0.3s ease',
+          }}
+        >
+          <span>{mounted ? cmdSymbol : ''}</span>
+          <span>K</span>
+        </kbd>
 
         <button className="notif-bell" title="Ajuda e tour do Pralvex" onClick={() => setShowHelp(true)}>
           <HelpCircle size={16} strokeWidth={1.75} aria-hidden />

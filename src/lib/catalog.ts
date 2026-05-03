@@ -59,6 +59,12 @@ export interface CatalogItem {
    * Campo deixa explicito o "quando usar este vs aquele".
    */
   differentiation?: string
+  /**
+   * Wave R3 (2026-05-03): destaca em onboarding modal + first-run hero.
+   * Top picks pra novo usuario testar primeiro. Mantem flat na config
+   * (top 5 hardcoded) ate analytics dizer quem sao os reais top picks.
+   */
+  featured?: boolean
 }
 
 /**
@@ -71,11 +77,11 @@ export const CATALOG: CatalogItem[] = [
   // Wave R1 audit (2026-05-02): minPlan ajustado pra alinhar com novo
   // pricing tier — Solo libera os 8 essenciais que cobrem 80% do uso
   // diário (pesquisa + redação + cálculo + audiência + risco básico).
-  { slug: 'chat',         label: 'Chat',         href: '/dashboard/chat',         Icon: MessageSquare,  desc: 'Orquestrador · roteia para o agente certo',     kind: 'agent', minPlan: 'free',    implemented: true,  differentiation: 'orquestrador conversacional · escolhe o agente certo' },
-  { slug: 'resumidor',    label: 'Resumidor',    href: '/dashboard/resumidor',    Icon: FileText,       desc: 'Contratos, acórdãos e petições',                kind: 'agent', minPlan: 'solo',    implemented: true,  differentiation: 'comprime documento longo em 1-2 paginas + extrai pontos chave' },
-  { slug: 'pesquisador',  label: 'Pesquisador',  href: '/dashboard/pesquisador',  Icon: Search,         desc: 'Jurisprudência STF, STJ e tribunais',           kind: 'agent', minPlan: 'solo',    implemented: true,  differentiation: 'busca jurisprudencia + doutrina por tese, com web search' },
-  { slug: 'redator',      label: 'Redator',      href: '/dashboard/redator',      Icon: PenLine,        desc: 'Peças processuais com fundamentação',           kind: 'agent', minPlan: 'solo',    implemented: true,  differentiation: 'escreve peca processual do zero a partir de fatos' },
-  { slug: 'calculador',   label: 'Calculador',   href: '/dashboard/calculador',   Icon: Calculator,     desc: 'Prazos, juros, correção, custas',               kind: 'agent', minPlan: 'solo',    implemented: true,  differentiation: 'calcula prazo + valores monetarios com indices oficiais' },
+  { slug: 'chat',         label: 'Chat',         href: '/dashboard/chat',         Icon: MessageSquare,  desc: 'Orquestrador · roteia para o agente certo',     kind: 'agent', minPlan: 'free',    implemented: true,  featured: true,  differentiation: 'orquestrador conversacional · escolhe o agente certo' },
+  { slug: 'resumidor',    label: 'Resumidor',    href: '/dashboard/resumidor',    Icon: FileText,       desc: 'Contratos, acórdãos e petições',                kind: 'agent', minPlan: 'solo',    implemented: true,  featured: true,  differentiation: 'comprime documento longo em 1-2 paginas + extrai pontos chave' },
+  { slug: 'pesquisador',  label: 'Pesquisador',  href: '/dashboard/pesquisador',  Icon: Search,         desc: 'Jurisprudência STF, STJ e tribunais',           kind: 'agent', minPlan: 'solo',    implemented: true,  featured: true,  differentiation: 'busca jurisprudencia + doutrina por tese, com web search' },
+  { slug: 'redator',      label: 'Redator',      href: '/dashboard/redator',      Icon: PenLine,        desc: 'Peças processuais com fundamentação',           kind: 'agent', minPlan: 'solo',    implemented: true,  featured: true,  differentiation: 'escreve peca processual do zero a partir de fatos' },
+  { slug: 'calculador',   label: 'Calculador',   href: '/dashboard/calculador',   Icon: Calculator,     desc: 'Prazos, juros, correção, custas',               kind: 'agent', minPlan: 'solo',    implemented: true,  featured: true,  differentiation: 'calcula prazo + valores monetarios com indices oficiais' },
   { slug: 'legislacao',   label: 'Legislação',   href: '/dashboard/legislacao',   Icon: BookOpen,       desc: 'Artigos de lei explicados',                     kind: 'agent', minPlan: 'solo',    implemented: true,  differentiation: 'consulta artigo de lei especifico com aplicacao pratica' },
   { slug: 'risco',        label: 'Risco',        href: '/dashboard/risco',        Icon: AlertTriangle,  desc: 'Score 0-100 de risco contratual',               kind: 'agent', minPlan: 'solo',    implemented: true,  differentiation: 'score executivo 0-100 + top 3 issues pra reuniao com cliente' },
   { slug: 'contestador',  label: 'Contestador',  href: '/dashboard/contestador',  Icon: Scale,          desc: 'Gera contestações com réplicas',                kind: 'agent', minPlan: 'solo',    implemented: true,  differentiation: 'responde a uma peca recebida (contestacao + replicas)' },
@@ -133,6 +139,15 @@ export function agents(): CatalogItem[] {
 
 export function modules(): CatalogItem[] {
   return CATALOG.filter(i => i.kind === 'module')
+}
+
+/**
+ * Wave R3 (2026-05-03): top picks pra onboarding modal + first-run hero.
+ * Filtra agents implementados marcados featured. Mantemos N=5 pra UI
+ * (sidebar "Mais usados", onboarding mostra 3 desses primeiros).
+ */
+export function featuredAgents(): CatalogItem[] {
+  return CATALOG.filter(i => i.kind === 'agent' && i.implemented && i.featured)
 }
 
 /**

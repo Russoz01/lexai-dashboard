@@ -1,13 +1,16 @@
-﻿'use client'
+'use client'
 
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { usePlan } from '@/hooks/usePlan'
 import { agents, modules, isUnlocked, type CatalogItem, type Plan } from '@/lib/catalog'
+import { LEGAL_AREAS } from '@/lib/agents/taxonomy'
 import {
   LayoutDashboard, Folder, History, CalendarCheck, Wallet,
   Gem, Settings, LogOut, Sparkles, Lock, Crown,
+  Search as SearchIcon, Star,
 } from 'lucide-react'
 import { PralvexMark } from '@/components/PralvexMark'
 import s from './Sidebar.module.css'
@@ -19,6 +22,14 @@ import s from './Sidebar.module.css'
  * - Item implemented:false   → /dashboard/em-breve?feature=<slug>
  * - Item !isUnlocked         → /dashboard/planos
  * - Caso contrário           → item.href normal
+ *
+ * Wave R3 audit (2026-05-03 UX P0.4): de 33 itens flat pra grupos:
+ *   - Mais usados (top 5 hardcoded — chat, resumidor, redator,
+ *     pesquisador, calculador)
+ *   - Por area: agrupa restantes via LEGAL_AREAS quando agente
+ *     marca relevantAgents[]. Catch-all "Outros" pra agentes nao
+ *     mapeados.
+ *   - Filtro client-side por label/slug/desc no topo da secao.
  *
  * Mantém classes globais (.sidebar, .sidebar-link, etc) do layout
  * pra não quebrar o margin-left:240px do main-content. Apenas
@@ -32,6 +43,9 @@ const PLANOS: Record<string, { nome: string; preco: string }> = {
   pro:        { nome: 'Firma',        preco: 'R$ 1.459 / advogado' },
   enterprise: { nome: 'Enterprise',   preco: 'R$ 1.599 / advogado' },
 }
+
+/** Top 5 mais usados — hardcoded ate analytics dizer quem sao. */
+const MAIS_USADOS = ['chat', 'resumidor', 'redator', 'pesquisador', 'calculador']
 
 /** Links fixos fora do catálogo — módulos de conta/infra */
 const PRINCIPAL = [
@@ -62,6 +76,33 @@ function resolveHref(item: CatalogItem, userPlan: Plan): string {
   return item.href
 }
 
+function normalizeQuery(q: string): string {
+  return q
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim()
+}
+
+/** Mapeia agentes pra LEGAL_AREA via relevantAgents[]. Multi-area: pega 1a hit. */
+function buildAreaGroups(agentsList: CatalogItem[]): Array<{ label: string; items: CatalogItem[] }> {
+  const claimed = new Set<string>()
+  const groups: Array<{ label: string; items: CatalogItem[] }> = []
+
+  for (const area of LEGAL_AREAS) {
+    const items = agentsList.filter(a =>
+      area.relevantAgents.includes(a.slug) && !claimed.has(a.slug)
+    )
+    if (items.length === 0) continue
+    items.forEach(i => claimed.add(i.slug))
+    groups.push({ label: area.label, items })
+  }
+
+  const outros = agentsList.filter(a => !claimed.has(a.slug))
+  if (outros.length > 0) groups.push({ label: 'Outros', items: outros })
+  return groups
+}
+
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -69,6 +110,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { plano, trial, loading, founder } = usePlan()
   // Founder resolve pra enterprise no servidor — usamos como fallback aqui
   const userPlan = (founder ? 'enterprise' : plano || 'free') as Plan
+
+  const [filter, setFilter] = useState('')
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -90,6 +133,32 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     return pathname.startsWith(href.split('?')[0])
   }
 
+  const allAgents = useMemo(() => agents(), [])
+  const allModules = useMemo(() => modules(), [])
+
+  /* Divide agentes em "Mais usados" e o resto. Filtro client-side aplica
+     antes do split pra reordenar quando user busca termo especifico. */
+  const filteredAgents = useMemo(() => {
+    const norm = normalizeQuery(filter)
+    if (!norm) return allAgents
+    return allAgents.filter(a => {
+      const hay = normalizeQuery(`${a.label} ${a.slug} ${a.desc} ${a.differentiation ?? ''}`)
+      return hay.includes(norm)
+    })
+  }, [allAgents, filter])
+
+  const maisUsados = useMemo(
+    () => filteredAgents.filter(a => MAIS_USADOS.includes(a.slug)),
+    [filteredAgents],
+  )
+
+  const restAgents = useMemo(
+    () => filteredAgents.filter(a => !MAIS_USADOS.includes(a.slug)),
+    [filteredAgents],
+  )
+
+  const areaGroups = useMemo(() => buildAreaGroups(restAgents), [restAgents])
+
   const renderLink = (item: CatalogItem) => {
     const href = resolveHref(item, userPlan)
     const locked = !isUnlocked(item, userPlan)
@@ -102,7 +171,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         onClick={onClose}
         className={`sidebar-link ${active ? 'active' : ''}`}
         aria-disabled={locked || undefined}
-        title={locked ? `Disponível no plano ${item.minPlan}` : item.desc}
+        title={locked ? `Disponível no plano ${item.minPlan}` : (item.differentiation || item.desc)}
       >
         <Icon size={15} strokeWidth={1.75} className={s.navIcon} aria-hidden />
         <span className={locked ? s.linkLocked : ''}>{item.label}</span>
@@ -144,12 +213,58 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
         <div className="sidebar-section">
           <div className="sidebar-section-title">Agentes IA</div>
-          {agents().map(renderLink)}
+
+          {/* Filtro client-side — UX P0.4. Sem debounce porque eh local-only.
+              Tab order natural: filter > grupos > links. */}
+          <div className={s.filterWrap}>
+            <SearchIcon size={12} strokeWidth={1.75} className={s.filterIcon} aria-hidden />
+            <input
+              type="text"
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
+              placeholder="Buscar agente..."
+              className={s.filterInput}
+              aria-label="Filtrar agentes"
+            />
+            {filter && (
+              <button
+                type="button"
+                onClick={() => setFilter('')}
+                className={s.filterClear}
+                aria-label="Limpar filtro"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+          {filteredAgents.length === 0 && (
+            <div className={s.filterEmpty}>
+              Nenhum agente bate com &quot;{filter}&quot;
+            </div>
+          )}
+
+          {maisUsados.length > 0 && (
+            <div className={s.subgroup}>
+              <div className={s.subgroupHead}>
+                <Star size={9} strokeWidth={2} aria-hidden />
+                Mais usados
+              </div>
+              {maisUsados.map(renderLink)}
+            </div>
+          )}
+
+          {areaGroups.map(group => (
+            <div key={group.label} className={s.subgroup}>
+              <div className={s.subgroupHead}>{group.label}</div>
+              {group.items.map(renderLink)}
+            </div>
+          ))}
         </div>
 
         <div className="sidebar-section">
           <div className="sidebar-section-title">Módulos</div>
-          {modules().map(renderLink)}
+          {allModules.map(renderLink)}
         </div>
 
         <div className="sidebar-section">

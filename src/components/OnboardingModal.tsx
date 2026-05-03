@@ -1,20 +1,18 @@
-﻿'use client'
-import { useState, useEffect, useCallback } from 'react'
+'use client'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ArrowLeft, ArrowRight, BookMarked, Check, ChevronRight,
-  PenSquare, TextQuote, type LucideIcon,
+  ArrowLeft, ArrowRight, Check, ChevronRight, type LucideIcon,
 } from 'lucide-react'
 import s from './OnboardingModal.module.css'
+import { featuredAgents, type CatalogItem } from '@/lib/catalog'
 
 /* ------------------------------------------------------------------ */
 /*  Agent definitions                                                  */
 /* ------------------------------------------------------------------ */
 
-type AgentKey = 'resumidor' | 'pesquisador' | 'redator'
-
 interface AgentDef {
-  key: AgentKey
+  key: string
   Icon: LucideIcon
   label: string
   serial: string
@@ -25,42 +23,60 @@ interface AgentDef {
   href: string
 }
 
-const AGENTS: AgentDef[] = [
-  {
-    key: 'resumidor',
-    Icon: TextQuote,
-    label: 'Resumidor',
-    serial: 'N\u00b0 001 \u00b7 GABINETE \u00b7 MMXXVI',
-    desc: 'Análise estruturada de contratos, petições e acórdãos com cláusulas críticas e prazos.',
-    sampleTitle: 'Cláusula contratual de exemplo',
-    sampleBody:
-      'O locatário obriga-se a devolver o imóvel no estado em que o recebeu, ressalvado o desgaste natural, sob pena de multa equivalente a três aluguéis vigentes, sem prejuízo de perdas e danos.',
+/**
+ * Sample-prompts canonicos por agente. Wave R3 (2026-05-03): em vez de
+ * hardcoded AgentKey union, deriva de featuredAgents() do catalog. Quando
+ * marcamos novo agente featured:true ele aparece aqui automatico.
+ * Top 3 featured viram cards do step 0; sample-text aqui bate por slug.
+ */
+const AGENT_SAMPLES: Record<string, { sampleTitle: string; sampleBody: string; cta: string }> = {
+  chat: {
+    sampleTitle: 'Pergunta de exemplo',
+    sampleBody: 'Tenho um cliente com prazo de embargos de declaracao vencendo terca, qual agente uso?',
+    cta: 'Abrir chat',
+  },
+  resumidor: {
+    sampleTitle: 'Clausula contratual de exemplo',
+    sampleBody: 'O locatario obriga-se a devolver o imovel no estado em que o recebeu, ressalvado o desgaste natural, sob pena de multa equivalente a tres alugueis vigentes, sem prejuizo de perdas e danos.',
     cta: 'Analisar agora',
-    href: '/dashboard/resumidor?sample=1',
   },
-  {
-    key: 'pesquisador',
-    Icon: BookMarked,
-    label: 'Pesquisador',
-    serial: 'N\u00b0 002 \u00b7 GABINETE \u00b7 MMXXVI',
-    desc: 'Jurisprudência do STF, STJ, TRFs e TJs com ementa, tribunal e data verificados.',
+  pesquisador: {
     sampleTitle: 'Consulta de exemplo',
-    sampleBody: 'Jurisprudência sobre dano moral em relação de consumo',
+    sampleBody: 'Jurisprudencia sobre dano moral em relacao de consumo',
     cta: 'Pesquisar agora',
-    href: '/dashboard/pesquisador?sample=1',
   },
-  {
-    key: 'redator',
-    Icon: PenSquare,
-    label: 'Redator',
-    serial: 'N\u00b0 003 \u00b7 GABINETE \u00b7 MMXXVI',
-    desc: 'Petições, recursos e contestações com fundamentação doutrinária e jurisprudencial.',
+  redator: {
     sampleTitle: 'Modelo de exemplo',
-    sampleBody: 'Petição inicial de indenização por dano moral',
+    sampleBody: 'Peticao inicial de indenizacao por dano moral',
     cta: 'Redigir agora',
-    href: '/dashboard/redator?sample=1',
   },
-]
+  calculador: {
+    sampleTitle: 'Calculo de exemplo',
+    sampleBody: 'Calcule prazo de apelacao a partir de 03/04/2026 com feriado municipal SP',
+    cta: 'Calcular agora',
+  },
+}
+
+function buildAgentDefs(items: CatalogItem[]): AgentDef[] {
+  return items.slice(0, 3).map((item, idx) => {
+    const sample = AGENT_SAMPLES[item.slug] ?? {
+      sampleTitle: 'Exemplo',
+      sampleBody: item.desc,
+      cta: 'Abrir agora',
+    }
+    return {
+      key: item.slug,
+      Icon: item.Icon,
+      label: item.label,
+      serial: `N° ${String(idx + 1).padStart(3, '0')} · GABINETE · MMXXVI`,
+      desc: item.differentiation || item.desc,
+      sampleTitle: sample.sampleTitle,
+      sampleBody: sample.sampleBody,
+      cta: sample.cta,
+      href: `${item.href}?sample=1`,
+    }
+  })
+}
 
 const TOTAL_STEPS = 3
 
@@ -81,6 +97,19 @@ export default function OnboardingModal({
   const [direction, setDirection] = useState<'forward' | 'back'>('forward')
   /* key forces re-mount of the animated wrapper so the CSS animation replays */
   const [animKey, setAnimKey] = useState(0)
+  /* AGENTS deriva do catalog featuredAgents() — auto-syncs quando marcamos
+     novo agente featured:true. Memoized pra nao recomputar a cada render.
+     Pega top 3 featured implementados (chat, resumidor, pesquisador hoje). */
+  const AGENTS = useMemo(() => {
+    const featured = featuredAgents()
+    // Garante que onboarding nunca abre vazio. Se nada featured, pega 3 primeiros
+    // implementados como fallback. Slug 'chat' raramente eh feature, prefere
+    // workflow agents (resumidor/pesquisador/redator) na ordem catalog.
+    const picked = featured.length >= 3
+      ? featured.filter(a => a.slug !== 'chat').slice(0, 3)
+      : featured.slice(0, 3)
+    return buildAgentDefs(picked)
+  }, [])
 
   /* Reset when re-opened */
   useEffect(() => {
