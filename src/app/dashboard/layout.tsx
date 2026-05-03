@@ -75,7 +75,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           userRole={user?.role}
           onToggleSidebar={() => setSidebarOpen(v => !v)}
         />
-        <div style={{ animation: 'fadeInPage 0.4s ease both' }}>
+        <div style={{ animation: 'fadeInPage var(--duration-slow) var(--ease-editorial) both' }}>
           {children}
         </div>
       </div>
@@ -89,6 +89,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         @keyframes fadeInPage {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          @keyframes fadeInPage {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
         }
       `}</style>
     </>
