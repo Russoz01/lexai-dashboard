@@ -7,6 +7,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { userCanAccessAgent, getUpgradeMessage, getMinPlanFor } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError, type DemoFallbackKey, DEMO_FALLBACKS } from '@/lib/demo-fallback'
+import { audit } from '@/lib/audit'
 
 /* ═════════════════════════════════════════════════════════════
  * withAgentAuth — v10.10 agent route guard
@@ -30,7 +31,8 @@ import { getDemoFallback, isDemoFallbackEnabled, isRetryableError, type DemoFall
  *  - Rate-limit + quota passam a ser impossíveis de esquecer
  *  - Error shape idêntico entre agentes (melhor UX no front)
  *  - Detecção central de 529/overloaded do Anthropic
- *  - Audit log (agente, user, ts) via eventos de telemetria (TODO)
+ *  - Audit log (agente, user, ts) via eventos de telemetria — Wave R3 (2026-05-03)
+ *    cobre LGPD Art. 37 com 'agent.invoke' fire-and-forget apos checks passarem
  *
  * Fail-open em Supabase: rate-limit já é fail-open no checkRateLimit.
  * ═════════════════════════════════════════════════════════════ */
@@ -89,21 +91,22 @@ export function withAgentAuth(
       // Cada plano libera um subset distinto de agentes. Solo R$599 só
       // tem 8 essenciais; Firma R$1.459 libera todos 27. Sem isso,
       // pricing era cosmético — backend liberava qualquer agente.
+      let userPlan: string | undefined
       if (!options.skipPlanCheck) {
         const { data: planoRow } = await supabase
           .from('usuarios')
           .select('plano')
           .eq('auth_user_id', user.id)
           .maybeSingle()
-        const plano = planoRow?.plano as string | undefined
-        if (!userCanAccessAgent(plano, agentSlug)) {
+        userPlan = planoRow?.plano as string | undefined
+        if (!userCanAccessAgent(userPlan, agentSlug)) {
           const minPlan = getMinPlanFor(agentSlug)
           return NextResponse.json(
             {
               error: getUpgradeMessage(agentSlug),
               code: 'plan_upgrade_required',
               required_plan: minPlan,
-              current_plan: plano || 'unknown',
+              current_plan: userPlan || 'unknown',
             },
             { status: 403 },
           )
@@ -121,6 +124,19 @@ export function withAgentAuth(
         const quota = await checkAndIncrementQuota(supabase, user.id, agentSlug)
         if (!quota.ok && quota.response) return quota.response
       }
+
+      // 5.5) Audit log telemetria — fire-and-forget pra nao bloquear handler.
+      // 2026-05-03 audit: cobre LGPD Art. 37 — todo invoke registrado pra trail.
+      // Sem PII no metadata, so plan + ts. usuarioId resolvido depois (auth.user_id
+      // != usuarios.id; trail aceita auth_user_id como fallback identificador).
+      audit({
+        usuarioId: user.id,
+        action: 'agent.invoke',
+        entityType: 'agent',
+        entityId: agentSlug,
+        metadata: { plan: userPlan ?? 'unknown', ts: Date.now() },
+        request: req,
+      }).catch(() => {})
 
       // 6) Delega pra lógica do agente
       return await handler({ req, supabase, user, agentSlug })

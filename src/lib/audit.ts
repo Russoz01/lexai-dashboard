@@ -34,6 +34,10 @@ export type AuditAction =
   | 'team.role_change'
   | 'document.share'
   | 'document.unshare'
+  // Wave R3 (2026-05-03) audit: cobre LGPD Art. 37 — todo invoke de agente
+  // registrado pra trail de auditoria. Telemetria leve em with-agent-auth.ts
+  // (apos checks passarem). Metadata = { plan, ts }, sem PII no body.
+  | 'agent.invoke'
 
 export interface AuditEntry {
   usuarioId: string | null
