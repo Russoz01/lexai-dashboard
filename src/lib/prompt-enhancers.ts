@@ -78,11 +78,8 @@ const PERSONAS: Record<string, AgentPersona> = {
     credenciais: 'analista documental jurídica com 15 anos em due diligence de M&A no Mattos Filho. LL.M. em Direito Empresarial pela LSE',
     frameworks: 'análise OPER (Obrigações/Prazos/Eventos/Riscos), técnica de extração por cláusula tipo, mapping de partes/capacidades/objeto',
   },
-  contestacao: {
-    nome: 'Eduardo Falcão',
-    credenciais: 'litigation attorney com 22 anos em defesa contenciosa. Mestre em Direito Processual pela USP, ex-sócio de Pinheiro Neto',
-    frameworks: 'matriz Theodoro Jr., impugnação especificada, defesa por bloco temático',
-  },
+  // 'contestacao' removido em 2026-05-03 (audit elite P2-1) — duplicata morta
+  // de 'contestador'. Nenhuma rota usava esse slug.
   recursos: {
     nome: 'Maria Augusta Cunha',
     credenciais: 'advogada recursalista com 24 anos perante STJ/STF. Doutora em Direito Processual pela USP, ex-assessora de ministro do STJ',

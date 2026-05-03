@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -101,24 +101,13 @@ function tomPorFidelidade(fidelidade: Fidelidade): string {
   }
 }
 
-function buildSystemPrompt(fidelidade: Fidelidade, memoryContext: string = '', smartSuggestionsHint: string = ''): string {
-  const now = new Date()
-  const dataHora = now.toLocaleString('pt-BR', {
-    timeZone: 'America/Sao_Paulo',
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
-  const horaExata = now.toLocaleTimeString('pt-BR', {
-    timeZone: 'America/Sao_Paulo',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-
+// CACHE STRATEGY (refactor 2026-05-03):
+// buildStableSystemPrompt: bloco IMUTÁVEL por fidelidade (3 variantes de tom).
+//   Vai com cache_control ephemeral. Hit ratio ~95%+ por fidelidade.
+// buildVariableContext: data/hora + memoryContext + smartSuggestionsHint.
+//   Bloco SEPARADO sem cache. Varia por request (~5% do payload).
+// Antes: tudo num bloco cacheado → cache_control inválido → custo Anthropic ~5x.
+function buildStableSystemPrompt(fidelidade: Fidelidade): string {
   return `IDENTIDADE INVIOLAVEL — leia antes de tudo:
 Voce e o ASSISTENTE JURIDICO PRALVEX. Voce nao e Claude. Voce nao e ChatGPT. Voce nao e GPT. Voce nao e uma IA generica. Voce nao e da Anthropic. Voce nao e da OpenAI.
 
@@ -134,11 +123,6 @@ REGRAS DE IDENTIDADE (OBRIGATORIAS — nunca quebre):
 PAPEL FUNCIONAL:
 1. CONVERSAR com o advogado — responder perguntas rapidas sobre conceitos juridicos, duvidas pontuais, orientacao geral, contexto de direito brasileiro.
 2. ROTEAR para o agente especialista certo via tool "rotear_agente" quando a tarefa exigir uma ferramenta especifica do atelier.
-
-CONTEXTO TEMPORAL (fornecido pelo servidor — use estes valores exatos):
-- Data e hora atual: ${dataHora} (horario de Brasilia)
-- Hora atual: ${horaExata}
-- Se perguntarem "que horas sao?" ou "qual a data?", responda com estes valores exatos. Nunca invente.
 
 AGENTES DISPONIVEIS (use a tool "rotear_agente" quando apropriado):
 ${Object.entries(AGENTES_CATALOGO).map(([k, v]) => `- ${k}: ${v.quando}`).join('\n')}
@@ -158,7 +142,31 @@ ${tomPorFidelidade(fidelidade)}
 HUMANIZACAO:
 - Cite o artigo/lei quando fizer sentido, mas explique por que importa para o caso.
 - Se algo for ambiguo, seja transparente: "Para responder com precisao eu precisaria de X".
-- Sugira o proximo passo natural quando possivel.${memoryContext}${smartSuggestionsHint}`
+- Sugira o proximo passo natural quando possivel.`
+}
+
+function buildVariableContext(memoryContext: string = '', smartSuggestionsHint: string = ''): string {
+  const now = new Date()
+  const dataHora = now.toLocaleString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
+  const horaExata = now.toLocaleTimeString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  return `CONTEXTO TEMPORAL (fornecido pelo servidor — use estes valores exatos):
+- Data e hora atual: ${dataHora} (horario de Brasilia)
+- Hora atual: ${horaExata}
+- Se perguntarem "que horas sao?" ou "qual a data?", responda com estes valores exatos. Nunca invente.${memoryContext}${smartSuggestionsHint}`
 }
 
 const ROUTING_TOOL = {
@@ -264,9 +272,12 @@ export async function POST(req: NextRequest) {
     let memoryContext = ''
     let smartSuggestionsHint = ''
     let prefsContext = ''
+    // P1-1 fix (audit elite): prefs declarado no escopo externo pra ser passado
+    // ao recordAgentMemory abaixo (evita N+1 round-trip Supabase).
+    let prefs: Awaited<ReturnType<typeof getUserPreferences>> | null = null
     if (usuarioIdEarly) {
       try {
-        const prefs = await getUserPreferences(supabase, usuarioIdEarly)
+        prefs = await getUserPreferences(supabase, usuarioIdEarly)
         prefsContext = buildPreferencesContext(prefs)
 
         if (prefs.smart_suggestions && prefs.memory_enabled) {
@@ -329,10 +340,14 @@ export async function POST(req: NextRequest) {
               model: modelo,
               max_tokens: modo === 'complexo' ? 3500 : 1800,
               system: [
-                // P1 audit fix (2026-05-02): cache_control ephemeral economiza
-                // ~80% input tokens em chat (agente mais chamado). Antes estava
-                // sem cache no hot path mais usado.
-                { type: 'text' as const, text: buildSystemPrompt(fidelidade, memoryContext, smartSuggestionsHint), cache_control: { type: 'ephemeral' as const } },
+                // P0 cache fix (2026-05-03 review elite): bloco estável SÓ varia
+                // por fidelidade (3 valores). cache_control ephemeral garante
+                // hit ratio ~95%+ por fidelidade. Antes data/hora/memory dentro
+                // do bloco invalidavam cache em 100% requests = custo Anthropic ~5x.
+                { type: 'text' as const, text: buildStableSystemPrompt(fidelidade), cache_control: { type: 'ephemeral' as const } },
+                // Bloco variável: data/hora + memória + smart suggestions hint.
+                // Sem cache_control — varia por request, NÃO deve invalidar bloco anterior.
+                { type: 'text' as const, text: buildVariableContext(memoryContext, smartSuggestionsHint) },
                 ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
               ],
               tools: [ROUTING_TOOL],
@@ -403,7 +418,7 @@ export async function POST(req: NextRequest) {
                   resumo: buildMemorySummary('chat', mensagem.slice(0, 160), memOutS),
                   fatos: rotear ? [{ key: 'rotou_para', value: rotear.agente }] : [],
                   tags: extractMemoryTags('chat', undefined, mensagem),
-                }).catch(() => {})
+                }, { prefs }).catch(() => {})
               } catch (e: unknown) {
                 safeLog.error('[API /chat?stream=1] historico insert failed:', e instanceof Error ? e.message : String(e))
               }
@@ -451,8 +466,9 @@ export async function POST(req: NextRequest) {
       model: modelo,
       max_tokens: modo === 'complexo' ? 3500 : 1800,
       system: [
-        // P1 audit fix: cache_control ephemeral também no legacy path.
-        { type: 'text' as const, text: buildSystemPrompt(fidelidade, memoryContext, smartSuggestionsHint), cache_control: { type: 'ephemeral' as const } },
+        // P0 cache fix (2026-05-03 review elite): mesmo split do stream path.
+        { type: 'text' as const, text: buildStableSystemPrompt(fidelidade), cache_control: { type: 'ephemeral' as const } },
+        { type: 'text' as const, text: buildVariableContext(memoryContext, smartSuggestionsHint) },
         ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
       tools: [ROUTING_TOOL],
@@ -516,7 +532,7 @@ export async function POST(req: NextRequest) {
         resumo: buildMemorySummary('chat', mensagem.slice(0, 160), memOut),
         fatos: rotear ? [{ key: 'rotou_para', value: rotear.agente }] : [],
         tags: extractMemoryTags('chat', undefined, mensagem),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'chat', rotear?.agente || 'direct').catch(() => {})

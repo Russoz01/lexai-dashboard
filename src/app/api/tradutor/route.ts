@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
           { key: 'tipo', value: tipo },
         ],
         tags: extractMemoryTags('tradutor', tipo, texto.slice(0, 800)),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'tradutor', plano).catch(() => {})

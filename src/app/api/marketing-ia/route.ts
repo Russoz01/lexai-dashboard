@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
         resumo: buildMemorySummary('marketing-ia', `${PLATAFORMAS[plataforma]}: ${topico.slice(0, 120)}`, '3 variações geradas'),
         fatos: [{ key: 'plataforma', value: plataforma }],
         tags: extractMemoryTags('marketing-ia', plataforma, topico),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'marketing-ia', 'unknown').catch(() => {})

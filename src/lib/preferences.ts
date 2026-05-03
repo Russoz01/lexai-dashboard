@@ -120,10 +120,16 @@ export async function recordAgentMemory(
     tags?: string[]
     historico_id?: string
   },
+  opts?: { prefs?: UserPreferences | null },
 ): Promise<void> {
-  // Check memory_enabled antes de gravar
-  const prefs = await getUserPreferences(supabase, usuarioId)
-  if (!prefs.memory_enabled) return
+  // P1-1 fix (audit elite 2026-05-03): aceita prefs cacheado pelo caller
+  // pra evitar N+1. Caller (route handler do agente) já chama getUserPreferences
+  // antes pra montar prefsContext — passar aqui economiza 1 round-trip Supabase
+  // por execução × 21 agentes.
+  const prefs = opts?.prefs !== undefined
+    ? opts.prefs
+    : await getUserPreferences(supabase, usuarioId)
+  if (!prefs || !prefs.memory_enabled) return
 
   // Trunca resumo defensivamente
   const resumo = entry.resumo.slice(0, 500)

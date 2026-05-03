@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
         resumo: buildMemorySummary('estrategista', caso.slice(0, 160), tituloPlano),
         fatos: [{ key: 'objetivo', value: objetivo.slice(0, 120) }, { key: 'titulo', value: String(tituloPlano).slice(0, 120) }],
         tags: extractMemoryTags('estrategista', undefined, `${caso} ${objetivo}`),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'estrategista', 'unknown').catch(() => {})

@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
           { key: 'titulo', value: String(tituloOut).slice(0, 120) },
         ],
         tags: extractMemoryTags('parecerista', area, `${consulta} ${tituloOut}`),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     const validation = validateCitations(responseText)

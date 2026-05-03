@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
         resumo: buildMemorySummary('negociador', situacao.slice(0, 160), tipoEstr),
         fatos: [{ key: 'tipo_estrategia', value: tipoEstr.slice(0, 80) }],
         tags: extractMemoryTags('negociador', undefined, situacao),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     // Soft check OAB sobre a proposta de acordo (Provimento 205/2021 — sem

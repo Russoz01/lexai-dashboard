@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
                 ? [{ key: 'tipo', value: String((parsed.classificacao as Record<string, unknown>).tipo || '').slice(0, 80) }]
                 : [],
               tags: extractMemoryTags('resumidor', undefined, texto.slice(0, 800)),
-            }).catch(() => {})
+            }, { prefs }).catch(() => {})
           }
           events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})
         },
@@ -196,7 +196,7 @@ export async function POST(req: NextRequest) {
           ? [{ key: 'tipo', value: String((analise.classificacao as Record<string, unknown>).tipo || '').slice(0, 80) }]
           : [],
         tags: extractMemoryTags('resumidor', undefined, texto.slice(0, 800)),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})

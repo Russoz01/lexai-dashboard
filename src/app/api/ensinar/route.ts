@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
         resumo: buildMemorySummary('professor', `${areas}${topicos ? ` | ${topicos.slice(0, 80)}` : ''}`, 'monitor legislativo'),
         fatos: [{ key: 'areas', value: String(areas).slice(0, 120) }],
         tags: extractMemoryTags('professor', undefined, `${areas} ${topicos}`),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'professor', plano).catch(() => {})

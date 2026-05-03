@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
@@ -134,7 +134,7 @@ export const POST = withAgentAuth('atendimento', async ({ req, supabase, user })
       resumo: buildMemorySummary('atendimento', `${AREAS[area]}: ${perfil.slice(0, 120)}`, tituloOut),
       fatos: [{ key: 'area', value: AREAS[area] }],
       tags: extractMemoryTags('atendimento', area, perfil),
-    }).catch(() => {})
+    }, { prefs }).catch(() => {})
   }
 
   events.agentUsed(user.id, 'atendimento', 'unknown').catch(() => {})

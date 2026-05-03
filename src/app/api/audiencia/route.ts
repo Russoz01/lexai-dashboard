@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
@@ -132,7 +132,7 @@ export const POST = withAgentAuth('audiencia', async ({ req, supabase, user }) =
       resumo: buildMemorySummary('audiencia', `${TIPOS_AUDIENCIA[tipo]}: ${caso.slice(0, 120)}`, tituloOut),
       fatos: [{ key: 'tipo', value: tipo }],
       tags: extractMemoryTags('audiencia', tipo, caso),
-    }).catch(() => {})
+    }, { prefs }).catch(() => {})
   }
 
   events.agentUsed(user.id, 'audiencia', 'unknown').catch(() => {})

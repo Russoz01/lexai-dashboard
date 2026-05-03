@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
               resumo: buildMemorySummary('contestador', teseInicial, tituloOut),
               fatos: [{ key: 'titulo', value: String(tituloOut).slice(0, 120) }],
               tags: extractMemoryTags('contestador', undefined, `${teseInicial} ${teseDefesa}`),
-            }).catch(() => {})
+            }, { prefs }).catch(() => {})
           }
           events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
         },
@@ -234,7 +234,7 @@ export async function POST(req: NextRequest) {
         resumo: buildMemorySummary('contestador', teseInicial, tituloOut2),
         fatos: [{ key: 'titulo', value: String(tituloOut2).slice(0, 120) }],
         tags: extractMemoryTags('contestador', undefined, `${teseInicial} ${teseDefesa}`),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     const validation = validateCitations(responseText)

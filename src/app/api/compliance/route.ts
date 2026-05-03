@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { events } from '@/lib/analytics'
@@ -169,7 +169,7 @@ export async function POST(req: NextRequest) {
           ...(resultado.score ? [{ key: 'score', value: String(resultado.score) }] : []),
         ],
         tags: extractMemoryTags('compliance', area, descricao),
-      }).catch(() => {})
+      }, { prefs }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'compliance', plano).catch(() => {})

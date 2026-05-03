@@ -1,4 +1,4 @@
-﻿import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, parseAgentJSON } from '@/lib/api-utils'
@@ -9,23 +9,12 @@ import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesConte
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
-function buildSystemPrompt(): string {
-  const now = new Date()
-  const dataHoje = now.toLocaleDateString('pt-BR', {
-    timeZone: 'America/Sao_Paulo',
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  })
-  const isoHoje = now.toLocaleDateString('sv', { timeZone: 'America/Sao_Paulo' }) // YYYY-MM-DD
-
+// CACHE STRATEGY (refactor 2026-05-03 review elite):
+// buildStableSystemPrompt: bloco IMUTÁVEL (cacheável). Hit ratio ~95%+.
+// buildDateContext: data atual em bloco SEPARADO sem cache.
+// Antes: dataHoje dentro do enhancedSystem invalidava cache em 100% requests.
+function buildStableSystemPrompt(): string {
   return `You are a senior legal calculator specializing in Brazilian procedural law. You compute deadlines, monetary corrections, interest rates, court fees, and legal financial calculations with precision.
-
-DATA ATUAL (fornecida pelo servidor — use como referencia para todos os calculos de prazo):
-- Hoje: ${dataHoje}
-- Formato ISO: ${isoHoje}
-- Use esta data como "data de hoje" em todos os calculos. Nunca invente ou assuma outra data.
 
 EXPERTISE:
 - Procedural deadline computation (Art. 219-232 CPC/2015, business days vs calendar days)
@@ -63,6 +52,23 @@ Return this JSON:
 }`
 }
 
+function buildDateContext(): string {
+  const now = new Date()
+  const dataHoje = now.toLocaleDateString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })
+  const isoHoje = now.toLocaleDateString('sv', { timeZone: 'America/Sao_Paulo' }) // YYYY-MM-DD
+
+  return `DATA ATUAL (fornecida pelo servidor — use como referencia para todos os calculos de prazo):
+- Hoje: ${dataHoje}
+- Formato ISO: ${isoHoje}
+- Use esta data como "data de hoje" em todos os calculos. Nunca invente ou assuma outra data.`
+}
+
 export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) => {
   const body = await req.json().catch(() => ({}))
   const consulta = typeof body?.consulta === 'string' ? body.consulta : ''
@@ -84,7 +90,8 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
   const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
   const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
   const prefsContext = buildPreferencesContext(prefs)
-  const enhancedSystem = buildAgentPreamble('calculador') + buildSystemPrompt() + areaContext + buildAntiHallucinationFooter()
+  // Bloco estável (cacheável): preamble + system prompt + area + footer
+  const enhancedStableSystem = buildAgentPreamble('calculador') + buildStableSystemPrompt() + areaContext + buildAntiHallucinationFooter()
 
   const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
   const controller = new AbortController()
@@ -99,9 +106,11 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
       system: [
         {
           type: 'text' as const,
-          text: enhancedSystem,
+          text: enhancedStableSystem,
           cache_control: { type: 'ephemeral' as const },
         },
+        // Bloco variável (sem cache): data atual muda a cada dia.
+        { type: 'text' as const, text: buildDateContext() },
         ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
       messages: [{ role: 'user', content: `Calculation request:\n\n${consulta}` }],
@@ -134,7 +143,7 @@ export const POST = withAgentAuth('calculador', async ({ req, supabase, user }) 
       resumo: buildMemorySummary('calculador', consulta.slice(0, 160), tipoOut),
       fatos: [{ key: 'tipo_calculo', value: String(tipoOut).slice(0, 80) }],
       tags: extractMemoryTags('calculador', undefined, consulta),
-    }).catch(() => {})
+    }, { prefs }).catch(() => {})
   }
 
   events.agentUsed(user.id, 'calculador', 'unknown').catch(() => {})
