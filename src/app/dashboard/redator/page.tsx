@@ -609,17 +609,27 @@ export default function RedatorPage() {
               </div>
             )}
 
-            <button
-              onClick={() => gerar()}
-              disabled={!template || !instrucoes.trim() || gerando}
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 8 }}
-            >
-              {gerando
-                ? <><svg width="17" height="17" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}><circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" /></svg> Gerando peça com IA...</>
-                : <><Wand2 size={14} strokeWidth={1.75} aria-hidden /> Gerar Peça</>
-              }
-            </button>
+            {/* Sticky CTA mobile — modo manual. Desktop nao muda (display: contents). */}
+            <div className="sticky-cta-mobile" style={{ marginTop: 12 }}>
+              <div className="sticky-cta-mobile-step">
+                {!template
+                  ? 'Escolha um template'
+                  : !instrucoes.trim()
+                    ? 'Adicione as instruções'
+                    : 'Pronto · gerar peça'}
+              </div>
+              <button
+                onClick={() => gerar()}
+                disabled={!template || !instrucoes.trim() || gerando}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center', display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 48 }}
+              >
+                {gerando
+                  ? <><svg width="17" height="17" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}><circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2.5" strokeDasharray="40 20" strokeLinecap="round" /></svg> Gerando peça com IA...</>
+                  : <><Wand2 size={14} strokeWidth={1.75} aria-hidden /> Gerar Peça</>
+                }
+              </button>
+            </div>
           </div>
           )}
 

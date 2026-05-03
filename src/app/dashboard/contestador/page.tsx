@@ -254,20 +254,32 @@ export default function ContestadorPage() {
               }}
             />
           </div>
-          <button
-            onClick={gerar}
-            disabled={teseInicial.trim().length < 30 || teseDefesa.trim().length < 30 || loading}
-            style={{
-              width: '100%', padding: '12px 20px', borderRadius: 8,
-              background: 'var(--accent)', color: 'var(--bg-base)',
-              border: 'none', fontSize: 14, fontWeight: 600,
-              cursor: (teseInicial.trim().length < 30 || teseDefesa.trim().length < 30 || loading) ? 'not-allowed' : 'pointer',
-              opacity: (teseInicial.trim().length < 30 || teseDefesa.trim().length < 30 || loading) ? 0.5 : 1,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}
-          >
-            <Sparkles size={16} aria-hidden /> {loading ? 'Redigindo contestacao...' : 'Gerar contestacao'}
-          </button>
+          {/* Sticky CTA mobile — botao Gerar ancora no rodape da viewport em
+              telas <768px. Indicador mostra qual tese ainda falta preencher. */}
+          <div className="sticky-cta-mobile">
+            <div className="sticky-cta-mobile-step">
+              {teseInicial.trim().length < 30
+                ? 'Passo 1 de 2 · Tese da inicial'
+                : teseDefesa.trim().length < 30
+                  ? 'Passo 2 de 2 · Tese da defesa'
+                  : 'Pronto · gerar contestacao'}
+            </div>
+            <button
+              onClick={gerar}
+              disabled={teseInicial.trim().length < 30 || teseDefesa.trim().length < 30 || loading}
+              style={{
+                width: '100%', padding: '12px 20px', borderRadius: 8,
+                background: 'var(--accent)', color: 'var(--bg-base)',
+                border: 'none', fontSize: 14, fontWeight: 600,
+                cursor: (teseInicial.trim().length < 30 || teseDefesa.trim().length < 30 || loading) ? 'not-allowed' : 'pointer',
+                opacity: (teseInicial.trim().length < 30 || teseDefesa.trim().length < 30 || loading) ? 0.5 : 1,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                minHeight: 48,
+              }}
+            >
+              <Sparkles size={16} aria-hidden /> {loading ? 'Redigindo contestacao...' : 'Gerar contestacao'}
+            </button>
+          </div>
         </div>
 
         <div style={{

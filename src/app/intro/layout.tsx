@@ -3,7 +3,7 @@
 export const metadata: Metadata = {
   title: 'Apresentando — Pralvex',
   description:
-    'Vinte e sete agentes. Um compromisso: nunca inventar. Pralvex, o sistema operacional da advocacia brasileira.',
+    '33 agentes IA juridicos. Um compromisso: nunca inventar. Pralvex, atelier de inteligencia juridica.',
   robots: { index: false, follow: true },
 }
 

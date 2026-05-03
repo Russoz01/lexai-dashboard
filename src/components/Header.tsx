@@ -1,10 +1,12 @@
 ﻿'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Bell, HelpCircle, Menu } from 'lucide-react'
 import OnboardingModal from './OnboardingModal'
 import { ThemeToggle } from './ThemeToggle'
+import { createClient } from '@/lib/supabase'
+import { resolveUsuarioId } from '@/lib/usuario'
 
 /* ════════════════════════════════════════════════════════════════
  * Header (v11.0 · 2026-05-02)
@@ -21,9 +23,11 @@ interface HeaderProps {
 
 export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onToggleSidebar }: HeaderProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const [time, setTime] = useState('')
   const [showHelp, setShowHelp] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [hasUrgentPrazos, setHasUrgentPrazos] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -35,11 +39,43 @@ export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onT
     return () => clearInterval(id)
   }, [])
 
+  // Auto-open onboarding so quando user esta no dashboard root e ainda nao
+  // concluiu o tour. Antes marcava onboarded:1 ANTES do user concluir, então
+  // se user fechasse o navegador no meio nunca mais via o tour. Agora a marca
+  // vai pra dentro do OnboardingModal (handleAction/handleFinish). Skip via
+  // Esc/backdrop NAO persiste — user reabre via botao Help.
   useEffect(() => {
+    if (pathname !== '/dashboard') return
+    if (typeof window === 'undefined') return
     if (!localStorage.getItem('pralvex-onboarded')) {
       setShowHelp(true)
-      localStorage.setItem('pralvex-onboarded', '1')
     }
+  }, [pathname])
+
+  // Notif bell: so renderiza dot vermelho se ha prazo urgente real (cry-wolf
+  // fix). Antes pulsava sempre, mesmo sem prazo, treinando user a ignorar.
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const usuarioId = await resolveUsuarioId()
+        if (!usuarioId || cancelled) return
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('prazos')
+          .select('data_limite,status')
+          .eq('usuario_id', usuarioId)
+          .eq('status', 'pendente')
+        if (cancelled) return
+        const hoje = new Date()
+        const urgente = (data ?? []).some(p => {
+          const diff = (new Date(p.data_limite + 'T00:00:00').getTime() - hoje.getTime()) / 86400000
+          return diff >= 0 && diff <= 7
+        })
+        setHasUrgentPrazos(urgente)
+      } catch { /* silent — sem prazo nao quebra header */ }
+    })()
+    return () => { cancelled = true }
   }, [])
 
   const initials = userName
@@ -73,12 +109,12 @@ export default function Header({ userName = 'Usuario', userRole = 'Pralvex', onT
 
         <button
           className="notif-bell"
-          title="Notificações — ver prazos"
-          aria-label="Ver prazos e notificações"
+          title={hasUrgentPrazos ? 'Notificações — ver prazos urgentes' : 'Sem prazos urgentes'}
+          aria-label={hasUrgentPrazos ? 'Prazos urgentes pendentes — abrir' : 'Sem prazos urgentes — abrir agenda'}
           onClick={() => router.push('/dashboard/prazos')}
         >
           <Bell size={16} strokeWidth={1.75} aria-hidden />
-          <span className="notif-dot" />
+          {hasUrgentPrazos && <span className="notif-dot" />}
         </button>
 
         <div className="header-user-info">

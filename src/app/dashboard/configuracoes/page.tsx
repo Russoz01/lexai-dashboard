@@ -87,12 +87,14 @@ export default function ConfiguracoesPage() {
   }
 
   // Plan resolvido server-side (antes: localStorage — exploitavel via DevTools)
+  // Audit business P0-1 (2026-05-03): Enterprise bumped 1.599 → 2.499 + Solo entry.
   const planoMap: Record<string, { nome: string; preco: number }> = {
+    solo: { nome: 'Solo', preco: 599 },
     starter: { nome: 'Escritório', preco: 1399 },
     escritorio: { nome: 'Escritório', preco: 1399 },
     pro: { nome: 'Firma', preco: 1459 },
     firma: { nome: 'Firma', preco: 1459 },
-    enterprise: { nome: 'Enterprise', preco: 1599 },
+    enterprise: { nome: 'Enterprise', preco: 2499 },
   }
   const [planoId, setPlanoId] = useState<string>('starter')
   useEffect(() => {
@@ -125,20 +127,48 @@ export default function ConfiguracoesPage() {
   const [contatoEnviado, setContatoEnviado] = useState(false)
 
   // CEP lookup (consulta gratuita via BrasilAPI/ViaCEP)
+  // 2026-05-03: rework completo — antes nao distinguia erro local de upstream,
+  // permitia submeter "00000-000" (placeholder) como CEP real, e nao limpava
+  // mensagem de erro quando user corrigia. Agora: mascara automatica 99999-999,
+  // auto-search no 8o digito, mensagens distintas pra cada classe de erro.
   type CepResult = { logradouro: string; bairro: string; cidade: string; uf: string; cep: string }
   const [cepInput, setCepInput]     = useState('')
   const [cepLoading, setCepLoading] = useState(false)
   const [cepResult, setCepResult]   = useState<CepResult | null>(null)
   const [cepError, setCepError]     = useState('')
 
+  /** Aplica mascara 99999-999 enquanto user digita (so digitos sao mantidos). */
+  function maskCep(raw: string): string {
+    const digits = raw.replace(/\D/g, '').slice(0, 8)
+    if (digits.length <= 5) return digits
+    return `${digits.slice(0, 5)}-${digits.slice(5)}`
+  }
+
+  function handleCepInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const masked = maskCep(e.target.value)
+    setCepInput(masked)
+    // Limpa erro/result anterior assim que user comeca a corrigir
+    if (cepError) setCepError('')
+    if (cepResult) setCepResult(null)
+  }
+
   async function handleCepLookup() {
-    if (!cepInput.trim()) return
+    const digits = cepInput.replace(/\D/g, '')
+    if (digits.length === 0) return
+    if (digits.length < 8) {
+      setCepError('CEP precisa ter 8 dígitos.')
+      return
+    }
+    if (digits === '00000000') {
+      setCepError('CEP inválido.')
+      return
+    }
     setCepLoading(true); setCepError(''); setCepResult(null)
     try {
       const { lookupCEP, formatCep } = await import('@/lib/brasil-api')
       const data = await lookupCEP(cepInput)
       if (!data) {
-        setCepError('CEP não encontrado')
+        setCepError('CEP não encontrado.')
         return
       }
       setCepResult({
@@ -149,11 +179,24 @@ export default function ConfiguracoesPage() {
         cep: formatCep(data.cep),
       })
     } catch {
-      setCepError('Erro ao consultar CEP. Tente novamente.')
+      setCepError('Erro ao consultar. Tente em 30s.')
     } finally {
       setCepLoading(false)
     }
   }
+
+  // Auto-search debounced ao completar 8 digitos — UX P1: usuario nao precisa
+  // clicar em "Buscar" pro caso comum. Cancelamos o timeout se user continua
+  // digitando ou apaga; tambem nao re-disparamos se ja temos resultado.
+  useEffect(() => {
+    const digits = cepInput.replace(/\D/g, '')
+    if (digits.length !== 8) return
+    if (digits === '00000000') return
+    if (cepResult) return
+    const t = setTimeout(() => { handleCepLookup() }, 500)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cepInput])
 
   useEffect(() => {
     // cleanup flag — antes setState rodava após unmount se user navegasse
@@ -355,10 +398,13 @@ export default function ConfiguracoesPage() {
             <div style={{ display: 'flex', gap: 8, marginBottom: cepResult ? 12 : 0 }}>
               <input
                 type="text"
+                inputMode="numeric"
+                autoComplete="postal-code"
                 value={cepInput}
-                onChange={e => setCepInput(e.target.value)}
+                onChange={handleCepInputChange}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleCepLookup() } }}
                 placeholder="00000-000"
+                maxLength={9}
                 className="form-input"
                 style={{ flex: 1, maxWidth: 200 }}
               />

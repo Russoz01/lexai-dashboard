@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import {
   ArrowRight, BarChart3, CalendarCheck, Circle, Clock, Lock,
   Sparkles, Timer, Crown, Flame,
+  FileText, Search, PenLine,
   type LucideIcon,
 } from 'lucide-react'
 import { UsagePanel } from '@/components/UsagePanel'
@@ -93,8 +94,11 @@ interface RecentItem {
 /* Lookup O(1) por slug para resolver agente → CatalogItem */
 const BY_SLUG = new Map(CATALOG.map(item => [item.slug, item]))
 
-/* Agentes novos introduzidos na v10.8 (2026-04-23) — ganham ribbon NOVO */
-const NEW_V10_8 = new Set(['cnj', 'comparador', 'risco', 'flashcards', 'plano', 'casos'])
+/* Agentes EM BREVE (2026-05-03) — Risco saiu do set porque virou essencial Solo;
+   Casos é módulo (aparece em outra rota); restam 4 agentes preview: CNJ,
+   Comparador, Flashcards, Plano. Ganham ribbon EM BREVE no card e roteiam
+   pra /dashboard/em-breve por causa do implemented:false. */
+const NEW_V10_8 = new Set(['cnj', 'comparador', 'flashcards', 'plano'])
 
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
 
@@ -236,7 +240,7 @@ export default function DashboardPage() {
     const essenciais = agentList.filter(a => !NEW_V10_8.has(a.slug) && (a.minPlan === 'free' || a.minPlan === 'starter'))
     const avancados = agentList.filter(a => !NEW_V10_8.has(a.slug) && (a.minPlan === 'pro' || a.minPlan === 'enterprise'))
     return [
-      { key: 'novos',       label: 'Novos · v10.8', caption: 'Recém-lançados · beta aberto', Icon: Flame,    items: novos,      highlight: true  },
+      { key: 'novos',       label: 'Em breve · Próximos lançamentos', caption: 'Em desenvolvimento · aviso quando lançar', Icon: Flame,    items: novos,      highlight: true  },
       { key: 'essenciais',  label: 'Essenciais',    caption: 'Disponíveis a partir do Escritório',  Icon: Sparkles, items: essenciais, highlight: false },
       { key: 'avancados',   label: 'Avançados',     caption: 'Liberados na Firma e Enterprise',     Icon: Crown,    items: avancados,  highlight: false },
     ].filter(g => g.items.length > 0)
@@ -286,38 +290,46 @@ export default function DashboardPage() {
         />
       </motion.header>
 
-      <section className={s.dashProvas} aria-label="Indicadores do gabinete">
-        <ProvaCell
-          roman="I"
-          value={stats.totalInteracoesSemana}
-          label="Interações"
-          caption="Últimos 7 dias"
-          href="/dashboard/historico"
-        />
-        <ProvaCell
-          roman="II"
-          value={stats.documentos}
-          label="Documentos"
-          caption="Analisados pela IA"
-          href="/dashboard/resumidor"
-        />
-        <ProvaCell
-          roman="III"
-          value={stats.prazosUrgentes}
-          label="Prazos"
-          caption="Próximos 7 dias"
-          warning={stats.prazosUrgentes > 0}
-          href="/dashboard/prazos"
-        />
-        <ProvaCell
-          roman="IV"
-          moneyValue={fmt(stats.saldo)}
-          label="Saldo"
-          caption={stats.saldo >= 0 ? 'Positivo' : 'Negativo'}
-          warning={stats.saldo < 0}
-          href="/dashboard/financeiro"
-        />
-      </section>
+      {/* FirstRunHero substitui ProvaCells quando user nunca usou — primeira impressao
+          de "0/0/0/R$0,00" matava ativacao. Trocamos por CTA grande + 3 quick-starts
+          com ?sample=1 que pre-popula agente. Quando user faz a primeira analise,
+          totalInteracoesSemana sobe e os ProvaCells voltam automaticamente. */}
+      {!dataLoading && stats.totalInteracoesSemana === 0 && stats.documentos === 0 ? (
+        <FirstRunHero />
+      ) : (
+        <section className={s.dashProvas} aria-label="Indicadores do gabinete">
+          <ProvaCell
+            roman="I"
+            value={stats.totalInteracoesSemana}
+            label="Interações"
+            caption="Últimos 7 dias"
+            href="/dashboard/historico"
+          />
+          <ProvaCell
+            roman="II"
+            value={stats.documentos}
+            label="Documentos"
+            caption="Analisados pela IA"
+            href="/dashboard/resumidor"
+          />
+          <ProvaCell
+            roman="III"
+            value={stats.prazosUrgentes}
+            label="Prazos"
+            caption="Próximos 7 dias"
+            warning={stats.prazosUrgentes > 0}
+            href="/dashboard/prazos"
+          />
+          <ProvaCell
+            roman="IV"
+            moneyValue={fmt(stats.saldo)}
+            label="Saldo"
+            caption={stats.saldo >= 0 ? 'Positivo' : 'Negativo'}
+            warning={stats.saldo < 0}
+            href="/dashboard/financeiro"
+          />
+        </section>
+      )}
 
       <section className={s.dashPanelsRow} aria-label="Consumo e indicação">
         <UsagePanel />
@@ -411,6 +423,9 @@ export default function DashboardPage() {
                 <Clock size={22} strokeWidth={1.5} aria-hidden />
                 <div className={s.dashEmptyTitle}>O diário abre em branco</div>
                 <div className={s.dashEmptySub}>Toda consulta vira linha do arquivo, em ordem cronológica.</div>
+                <Link href="/dashboard/historico" className={s.dashEmptyCta}>
+                  Abrir arquivo <ArrowRight size={12} strokeWidth={2} aria-hidden />
+                </Link>
               </div>
             ) : (
               recent.map((r, i) => {
@@ -449,7 +464,7 @@ export default function DashboardPage() {
               <div className={s.dashCardCap}>CAPÍTULO III · ATELIER · {totalAgents} ESPECIALISTAS</div>
               <h2 className={s.dashCardTitle}>{numberToPt(totalAgents)} <em>agentes</em></h2>
               <p className={s.dashCardSub}>
-                Cada um treinado num recorte específico do Direito BR · <span style={{ color: 'var(--warning)', fontWeight: 600 }}>6 novos na v10.8</span> · clique pra abrir o atelier
+                Cada um treinado num recorte específico do Direito BR · <span style={{ color: 'var(--warning)', fontWeight: 600 }}>4 em breve</span> · clique pra abrir o atelier
               </p>
             </div>
             <Link href="/dashboard/chat" className={s.dashCardAction}>
@@ -535,6 +550,11 @@ export default function DashboardPage() {
                           href={href}
                           title={locked ? `Disponível no plano ${ag.minPlan}` : detail.longDesc}
                           aria-disabled={locked || undefined}
+                          // Hover via classe CSS (.dashAgentCard) gated em
+                          // @media (hover: hover) — antes era onMouseEnter inline
+                          // que disparava no primeiro tap em iOS Safari, gerando
+                          // glitch de "tap pra hover, tap dnv pra navegar".
+                          className={`${s.dashAgentCard} ${locked ? s.dashAgentCardLocked : ''}`}
                           style={{
                             display: 'flex', flexDirection: 'column', gap: 12,
                             padding: 16, borderRadius: 14, height: '100%',
@@ -547,17 +567,6 @@ export default function DashboardPage() {
                             opacity: locked ? 0.62 : 1,
                             textDecoration: 'none', color: 'inherit',
                             position: 'relative', overflow: 'hidden',
-                            transition: 'border-color 0.25s, box-shadow 0.25s',
-                          }}
-                          onMouseEnter={e => {
-                            if (locked) return
-                            e.currentTarget.style.borderColor = 'var(--accent)'
-                            e.currentTarget.style.boxShadow = '0 12px 36px var(--shadow), 0 0 0 1px var(--accent-light)'
-                          }}
-                          onMouseLeave={e => {
-                            if (locked) return
-                            e.currentTarget.style.borderColor = 'var(--stone-line)'
-                            e.currentTarget.style.boxShadow = ''
                           }}
                         >
                           {/* Spotlight gold no hover (decorativo) */}
@@ -572,16 +581,18 @@ export default function DashboardPage() {
                             }} />
                           )}
 
-                          {/* Ribbon NOVO — canto superior direito, gradient champagne */}
+                          {/* Ribbon EM BREVE — canto superior direito, gradient champagne.
+                              Antes era "Novo" pros agentes v10.8 recem-lancados; em 2026-05-03
+                              viraram preview-only ate backend ficar pronto. */}
                           {isNew && (
                             <span
-                              aria-label="Novo agente"
+                              aria-label="Agente em breve"
                               style={{
-                                position: 'absolute', top: 12, right: -34,
+                                position: 'absolute', top: 16, right: -38,
                                 transform: 'rotate(35deg)',
-                                padding: '2px 36px',
+                                padding: '2px 38px',
                                 fontFamily: 'var(--font-mono, ui-monospace), monospace',
-                                fontSize: 9, letterSpacing: '0.28em',
+                                fontSize: 9, letterSpacing: '0.24em',
                                 fontWeight: 700, textTransform: 'uppercase',
                                 background: 'linear-gradient(90deg, #f5e8d3, #bfa68e, #8a6f55)',
                                 color: '#1a1410',
@@ -589,7 +600,7 @@ export default function DashboardPage() {
                                 zIndex: 2,
                               }}
                             >
-                              Novo
+                              Em breve
                             </span>
                           )}
 
@@ -851,5 +862,72 @@ function ProvaCell({
         <div className={warning ? s.provaCaptionWarn : s.provaCaption}>{caption}</div>
       </Link>
     </motion.div>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * FirstRunHero — substitui ProvaCells "0/0/0/R$0,00" pra users novos
+ * ─────────────────────────────────────────────────────────────────────────
+ * Primeira impressao do dashboard era 4 zeros gigantes. UX P0 fix:
+ * troca por hero + 3 quick-starts com ?sample=1 que pre-popula o agente.
+ * Quando user roda a primeira analise os ProvaCells voltam.
+ * ───────────────────────────────────────────────────────────────────────── */
+function FirstRunHero() {
+  const cards: { Icon: LucideIcon; label: string; desc: string; href: string }[] = [
+    { Icon: FileText, label: 'Resumir contrato', desc: 'Cláusulas críticas + prazos em 30s', href: '/dashboard/resumidor?sample=1' },
+    { Icon: Search,   label: 'Pesquisar súmula', desc: 'STF, STJ e tribunais com link verificado', href: '/dashboard/pesquisador?sample=1' },
+    { Icon: PenLine,  label: 'Redigir petição',  desc: 'Inicial, contestação ou recurso fundamentado', href: '/dashboard/redator?sample=1' },
+  ]
+
+  return (
+    <motion.section
+      className={s.dashFirstRun}
+      aria-label="Comece pelo primeiro agente"
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className={s.dashFirstRunHead}>
+        <span className={s.dashFirstRunSerial}>
+          <span className={s.dashSerialDot} />
+          ATELIER · PRIMEIRO USO
+        </span>
+        <h2 className={s.dashFirstRunH2}>
+          Faça sua primeira <em>análise em 45s</em>.
+        </h2>
+        <p className={s.dashFirstRunSub}>
+          Escolha um caminho abaixo. A gente preenche um exemplo pra você ver como funciona, sem digitar nada.
+        </p>
+      </div>
+
+      <div className={s.dashFirstRunGrid}>
+        {cards.map((c, i) => {
+          const Icon = c.Icon
+          return (
+            <motion.div
+              key={c.href}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Link href={c.href} className={s.dashFirstRunCard}>
+                <div className={s.dashFirstRunCardIcon}>
+                  <Icon size={18} strokeWidth={1.7} aria-hidden />
+                </div>
+                <div className={s.dashFirstRunCardTitle}>{c.label}</div>
+                <div className={s.dashFirstRunCardDesc}>{c.desc}</div>
+                <span className={s.dashFirstRunCardCta}>
+                  Começar com exemplo <ArrowRight size={12} strokeWidth={2} aria-hidden />
+                </span>
+              </Link>
+            </motion.div>
+          )
+        })}
+      </div>
+
+      <Link href="/dashboard/chat" className={s.dashFirstRunSkip}>
+        Prefiro abrir o Chat orquestrador <ArrowRight size={11} strokeWidth={2} aria-hidden />
+      </Link>
+    </motion.section>
   )
 }

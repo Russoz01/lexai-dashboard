@@ -161,20 +161,30 @@ export default function RecursosPage() {
               {decisao.length.toLocaleString('pt-BR')} / 50.000
             </div>
           </div>
-          <button
-            onClick={gerar}
-            disabled={decisao.trim().length < 50 || loading}
-            style={{
-              width: '100%', padding: '12px 20px', borderRadius: 8,
-              background: 'var(--accent)', color: 'var(--bg-base)',
-              border: 'none', fontSize: 14, fontWeight: 600,
-              cursor: (decisao.trim().length < 50 || loading) ? 'not-allowed' : 'pointer',
-              opacity: (decisao.trim().length < 50 || loading) ? 0.5 : 1,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}
-          >
-            <Sparkles size={16} aria-hidden /> {loading ? 'Elaborando recurso...' : 'Gerar recurso'}
-          </button>
+          {/* Sticky CTA mobile — em viewports < 768px o botao ancora no rodape
+              da viewport. Desktop nao muda (display: contents reseta o sticky). */}
+          <div className="sticky-cta-mobile">
+            <div className="sticky-cta-mobile-step">
+              {decisao.trim().length < 50
+                ? 'Cole a decisão · mínimo 50 caracteres'
+                : `Pronto · ${decisao.length.toLocaleString('pt-BR')} caracteres`}
+            </div>
+            <button
+              onClick={gerar}
+              disabled={decisao.trim().length < 50 || loading}
+              style={{
+                width: '100%', padding: '12px 20px', borderRadius: 8,
+                background: 'var(--accent)', color: 'var(--bg-base)',
+                border: 'none', fontSize: 14, fontWeight: 600,
+                cursor: (decisao.trim().length < 50 || loading) ? 'not-allowed' : 'pointer',
+                opacity: (decisao.trim().length < 50 || loading) ? 0.5 : 1,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                minHeight: 48,
+              }}
+            >
+              <Sparkles size={16} aria-hidden /> {loading ? 'Elaborando recurso...' : 'Gerar recurso'}
+            </button>
+          </div>
         </div>
 
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: 14, padding: 24, minHeight: 500 }}>

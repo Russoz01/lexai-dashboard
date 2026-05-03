@@ -19,6 +19,7 @@ import {
 import { PoweredByPralvex } from '@/components/ConfidenceBadge'
 import { AgentHero } from '@/components/AgentHero'
 import { AgentProgress, AGENT_STEPS } from '@/components/AgentProgress'
+import { SkeletonResult } from '@/components/Skeleton'
 import FontesCitadas, { type Fonte } from '@/components/FontesCitadas'
 
 interface Parecer {
@@ -317,33 +318,15 @@ export default function ConsultorPage() {
         </div>
       )}
 
-      {/* Loading skeleton */}
+      {/* Loading skeleton — migrado pra <SkeletonResult /> canonico em 2026-05-03.
+          Antes era 14 div skeleton-line inline (reinventava roda); agora alinha
+          com Redator/Resumidor/Pesquisador via componente compartilhado. */}
       {loading && (
         <div style={{ marginTop: 24 }}>
           <div style={{ marginBottom: 24 }}>
             <AgentProgress loading steps={[...AGENT_STEPS.consultor]} />
           </div>
-          <div className="section-card" style={{ padding: '28px 32px' }}>
-            <div className="skeleton-line" style={{ width: '65%', height: 24, marginBottom: 16 }} />
-            <div className="skeleton-line" style={{ width: '90%', height: 14, marginBottom: 8 }} />
-            <div className="skeleton-line" style={{ width: '80%', height: 14, marginBottom: 24 }} />
-            <div className="skeleton-line" style={{ width: '40%', height: 12, marginBottom: 12 }} />
-            <div className="skeleton-line" style={{ width: '100%', height: 14, marginBottom: 6 }} />
-            <div className="skeleton-line" style={{ width: '95%', height: 14, marginBottom: 6 }} />
-            <div className="skeleton-line" style={{ width: '88%', height: 14, marginBottom: 24 }} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div>
-                <div className="skeleton-line" style={{ width: '50%', height: 12, marginBottom: 10 }} />
-                <div className="skeleton-line" style={{ width: '100%', height: 14, marginBottom: 6 }} />
-                <div className="skeleton-line" style={{ width: '90%', height: 14, marginBottom: 6 }} />
-              </div>
-              <div>
-                <div className="skeleton-line" style={{ width: '50%', height: 12, marginBottom: 10 }} />
-                <div className="skeleton-line" style={{ width: '100%', height: 14, marginBottom: 6 }} />
-                <div className="skeleton-line" style={{ width: '85%', height: 14, marginBottom: 6 }} />
-              </div>
-            </div>
-          </div>
+          <SkeletonResult />
         </div>
       )}
 

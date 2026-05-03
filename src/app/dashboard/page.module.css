@@ -857,3 +857,116 @@
   .dashAtelierH1 { font-size: clamp(26px, 7vw, 32px); }
   .dashFinanceValue { font-size: 26px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   FirstRunHero — substitui ProvaCells "0/0/0/R$0,00" pra users novos
+   Editorial atelier: champagne + serif + cards quick-start
+   ═══════════════════════════════════════════════════════════════ */
+.dashFirstRun {
+  margin-bottom: 40px;
+  padding: 36px 40px 32px;
+  border: 1px solid var(--stone-line);
+  border-radius: 16px;
+  background:
+    radial-gradient(80% 60% at 0% 0%, rgba(212,174,106,0.10), transparent 60%),
+    radial-gradient(70% 55% at 100% 100%, rgba(245,232,211,0.08), transparent 60%),
+    var(--card-bg);
+  position: relative;
+  overflow: hidden;
+}
+.dashFirstRunHead { margin-bottom: 24px; }
+.dashFirstRunSerial {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 14px;
+}
+.dashFirstRunH2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(26px, 4.5vw, 34px);
+  font-weight: 500; line-height: 1.1; letter-spacing: -0.5px;
+  color: var(--text-primary); margin: 0 0 8px;
+}
+.dashFirstRunH2 em {
+  font-style: italic; font-weight: 400;
+  background: linear-gradient(90deg, #e6d4bd, #bfa68e, #8a6f55);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.dashFirstRunSub {
+  font-size: 14px; line-height: 1.55; color: var(--text-secondary);
+  margin: 0; max-width: 580px;
+}
+.dashFirstRunGrid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  margin-bottom: 18px;
+}
+.dashFirstRunCard {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 18px 18px 16px;
+  border: 1px solid var(--stone-line); border-radius: 12px;
+  background: var(--card-solid);
+  text-decoration: none; color: inherit;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  height: 100%;
+}
+@media (hover: hover) {
+  .dashFirstRunCard:hover {
+    border-color: var(--accent);
+    box-shadow: 0 12px 36px var(--shadow), 0 0 0 1px var(--accent-light);
+    transform: translateY(-3px);
+  }
+}
+.dashFirstRunCardIcon {
+  width: 38px; height: 38px; border-radius: 11px;
+  background: linear-gradient(135deg, rgba(212,174,106,0.18), rgba(122,95,72,0.08));
+  border: 1px solid var(--stone-line);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent-light2);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 14px rgba(212,174,106,0.18);
+}
+.dashFirstRunCardTitle {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic; font-weight: 500; font-size: 18px;
+  letter-spacing: -0.01em; color: var(--text-primary);
+  margin-top: 4px;
+}
+.dashFirstRunCardDesc {
+  font-size: 12.5px; line-height: 1.5; color: var(--text-muted);
+}
+.dashFirstRunCardCta {
+  margin-top: auto; padding-top: 8px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--accent);
+}
+.dashFirstRunSkip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-muted);
+  text-decoration: none;
+  padding-top: 6px; border-top: 1px dashed var(--stone-line); width: 100%;
+  margin-top: 4px;
+}
+.dashFirstRunSkip:hover { color: var(--accent); }
+
+@media (max-width: 768px) {
+  .dashFirstRun { padding: 26px 22px 22px; }
+}
+@media (max-width: 480px) {
+  .dashFirstRun { padding: 22px 18px 18px; }
+}
+
+/* AgentCard — hover gated em (hover: hover) pra evitar tap-then-tap glitch
+   no iOS Safari (antes era onMouseEnter inline que disparava no primeiro
+   tap, exigindo segundo tap pra navegar). */
+.dashAgentCard {
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+@media (hover: hover) {
+  .dashAgentCard:hover:not(.dashAgentCardLocked) {
+    border-color: var(--accent) !important;
+    box-shadow: 0 12px 36px var(--shadow), 0 0 0 1px var(--accent-light);
+  }
+}

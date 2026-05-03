@@ -175,20 +175,27 @@ export default function PareceristaPage() {
               {AREAS.map(a => <option key={a} value={a}>Direito {a}</option>)}
             </select>
           </div>
-          <button
-            onClick={gerar}
-            disabled={!consulta.trim() || loading}
-            style={{
-              width: '100%', padding: '12px 20px', borderRadius: 8,
-              background: 'var(--accent)', color: 'var(--bg-base)',
-              border: 'none', fontSize: 14, fontWeight: 600,
-              cursor: (!consulta.trim() || loading) ? 'not-allowed' : 'pointer',
-              opacity: (!consulta.trim() || loading) ? 0.5 : 1,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}
-          >
-            <Sparkles size={16} aria-hidden /> {loading ? 'Elaborando parecer...' : 'Gerar parecer'}
-          </button>
+          {/* Sticky CTA mobile — ancora no rodape em telas <768px. */}
+          <div className="sticky-cta-mobile">
+            <div className="sticky-cta-mobile-step">
+              {!consulta.trim() ? 'Descreva a consulta jurídica' : 'Pronto · gerar parecer'}
+            </div>
+            <button
+              onClick={gerar}
+              disabled={!consulta.trim() || loading}
+              style={{
+                width: '100%', padding: '12px 20px', borderRadius: 8,
+                background: 'var(--accent)', color: 'var(--bg-base)',
+                border: 'none', fontSize: 14, fontWeight: 600,
+                cursor: (!consulta.trim() || loading) ? 'not-allowed' : 'pointer',
+                opacity: (!consulta.trim() || loading) ? 0.5 : 1,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                minHeight: 48,
+              }}
+            >
+              <Sparkles size={16} aria-hidden /> {loading ? 'Elaborando parecer...' : 'Gerar parecer'}
+            </button>
+          </div>
         </div>
 
         {/* Output */}
