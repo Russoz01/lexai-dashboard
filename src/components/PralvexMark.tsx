@@ -51,15 +51,25 @@ export function PralvexMark({
   ) : (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/logo-p.svg"
+      // Prefere PNG da Higgsfield (logo-p.png) com fallback pra SVG vetorial,
+      // e fallback final pro selo PX text via onError. Quando Leonardo subir
+      // o PNG real em /public/logo-p.png, ele aparece automaticamente.
+      src="/logo-p.png"
       alt="Pralvex"
       width={Math.round(size * 0.78)}
       height={Math.round(size * 0.78)}
-      onError={() => setImgFailed(true)}
+      onError={(e) => {
+        // 1a falha: tenta SVG. 2a falha (SVG tambem ausente): cai no PX text.
+        const target = e.currentTarget
+        if (target.src.endsWith('.png')) {
+          target.src = '/logo-p.svg'
+        } else {
+          setImgFailed(true)
+        }
+      }}
       style={{
         objectFit: 'contain',
         display: 'block',
-        // sutil glow champagne sobre o monogram dourado em ambos os modes
         filter: `drop-shadow(0 0 8px ${tone}40)`,
       }}
     />

@@ -127,13 +127,15 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link href="/" className="group flex items-center gap-2.5">
             <div
-              className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent transition-all"
+              className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent transition-all overflow-hidden"
               style={{ border: '1px solid var(--border)' }}
             >
-              <Scale
-                className="size-4"
-                strokeWidth={1.6}
-                style={{ color: 'var(--accent)' }}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-p.svg"
+                alt="Pralvex"
+                className="size-6 object-contain"
+                style={{ filter: 'drop-shadow(0 0 6px rgba(191,166,142,0.35))' }}
               />
               {/* corner glints */}
               <span
@@ -500,13 +502,15 @@ export default function LandingPage() {
             <div className="col-span-2">
               <Link href="/" className="inline-flex items-center gap-2.5">
                 <div
-                  className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent"
+                  className="relative flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#bfa68e]/[0.12] to-transparent overflow-hidden"
                   style={{ border: '1px solid var(--border)' }}
                 >
-                  <Scale
-                    className="size-4"
-                    strokeWidth={1.6}
-                    style={{ color: 'var(--accent)' }}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/logo-p.svg"
+                    alt="Pralvex"
+                    className="size-6 object-contain"
+                    style={{ filter: 'drop-shadow(0 0 6px rgba(191,166,142,0.35))' }}
                   />
                 </div>
                 <span
