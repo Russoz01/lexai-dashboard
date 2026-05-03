@@ -51,7 +51,7 @@ export function PralvexMark({
   ) : (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/logo-p.png"
+      src="/logo-p.svg"
       alt="Pralvex"
       width={Math.round(size * 0.78)}
       height={Math.round(size * 0.78)}

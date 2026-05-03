@@ -357,10 +357,7 @@ export function LexAgentsBento() {
           </div>
           <h2 className="text-balance text-4xl font-medium tracking-tight text-white md:text-5xl">
             {ready.length} agentes,{' '}
-            <span
-              className="bg-gradient-to-br from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent"
-              style={{ WebkitBackgroundClip: 'text' }}
-            >
+            <span className="text-grad-accent italic">
               todos ativos
             </span>
             .

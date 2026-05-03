@@ -215,6 +215,27 @@
 .text-on-surface-muted { color: var(--text-secondary); }
 .border-on-surface { border-color: var(--border); }
 
+/* Gradient italic dourado adaptativo — usado em headings tipo
+   "Plano · em breve", "Casos · em breve" etc.
+   Em DARK: champagne brilhante (boa visibilidade sobre noir).
+   Em LIGHT: champagne saturado escuro (boa visibilidade sobre cream).
+   Audit fix 2026-05-02 — Leonardo apontou que serif italic ficava
+   "comendo a fonte" em light mode (gradient claro sobre cream). */
+.text-grad-accent {
+  background: linear-gradient(90deg, #e6d4bd 0%, #bfa68e 50%, #8a6f55 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+[data-theme="light"] .text-grad-accent {
+  background: linear-gradient(90deg, #6a5845 0%, #44372b 50%, #2e2418 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
 /* Landing nav sticky tematizada — substitui bg-black/80 hardcoded */
 .lex-landing-nav-scrolled {
   border-bottom: 1px solid var(--border);
@@ -223,20 +244,38 @@
   -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
-/* Em light mode, decorações de fundo (shaders WebGL, AmbientMesh dust,
-   headline-glow) são reduzidas em opacidade — manter "lines passando"
-   visíveis mas sutis em cream. Não escondemos mais (Leonardo apontou
-   que light mode deve manter o background editorial igual ao dark,
-   só com paleta cream em vez de noir). */
-[data-theme="light"] .lex-landing-shell .pralvex-shader,
-[data-theme="light"] .lex-landing-shell canvas {
-  opacity: 0.32;
+/* Light mode mantém TODA a animação decorativa (shaders WebGL,
+   AmbientMesh dust, headline-glow) com mesmas trajetórias do dark.
+   Só blend mode + opacidade adaptam pro fundo cream — multiply faz
+   as decorações dark-themed virarem tons sépia sobre o cream, mantendo
+   o mood editorial sem precisar reescrever os WebGL components.
+   Audit fix 2026-05-02 — Leonardo: "back animado no light mode tmb". */
+[data-theme="light"] .lex-landing-shell canvas,
+[data-theme="light"] .lex-landing-shell .pralvex-shader {
   mix-blend-mode: multiply;
-}
-[data-theme="light"] .lex-landing-shell .pralvex-mesh,
-[data-theme="light"] .lex-landing-shell .lex-headline-glow {
   opacity: 0.55;
-  filter: invert(1) hue-rotate(180deg);
+}
+[data-theme="light"] .lex-landing-shell .pralvex-mesh {
+  mix-blend-mode: multiply;
+  opacity: 0.72;
+  filter: saturate(0.85) hue-rotate(-8deg);
+}
+[data-theme="light"] .lex-landing-shell .lex-headline-glow {
+  mix-blend-mode: multiply;
+  opacity: 0.4;
+  filter: hue-rotate(-12deg) saturate(1.2);
+}
+/* Dust/sparkles decorativos — em light viram pontinhos champagne escuro */
+[data-theme="light"] .lex-landing-shell .pralvex-dust,
+[data-theme="light"] .lex-landing-shell .lex-figure[data-decoration],
+[data-theme="light"] .lex-landing-shell [class*="ambient-mesh"] {
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+/* Topo background do dashboard tematizado pra light */
+[data-theme="light"] .lex-topo-background {
+  mix-blend-mode: multiply;
+  opacity: 0.4;
 }
 
 /* ── Base reset ─────────────────────────────────────────────── */

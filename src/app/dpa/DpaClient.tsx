@@ -338,7 +338,7 @@ export default function DpaClient() {
           <h1 className="font-serif text-[clamp(40px,5.5vw,66px)] leading-[1.05] tracking-tight">
             Contrato de
             <br />
-            <em className="italic bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text text-transparent">
+            <em className="italic text-grad-accent">
               processamento de dados.
             </em>
           </h1>

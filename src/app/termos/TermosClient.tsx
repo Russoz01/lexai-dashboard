@@ -612,10 +612,7 @@ export default function TermosClient() {
           <h1 className="text-balance text-4xl font-medium leading-[1.1] tracking-tight md:text-5xl lg:text-6xl">
             <WordReveal text="Termos de" className="block" stagger={0.06} />
             <Reveal delay={0.35}>
-              <span
-                className="mt-1 block bg-gradient-to-br from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text text-transparent"
-                style={{ WebkitBackgroundClip: 'text' }}
-              >
+              <span className="mt-1 block text-grad-accent">
                 Uso
               </span>
             </Reveal>

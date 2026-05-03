@@ -343,7 +343,7 @@ export default function DocsClient() {
           <h1 className="font-serif text-[clamp(42px,6vw,80px)] leading-[1.05] tracking-tight">
             Documentacao
             <br />
-            <span className="italic bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text text-transparent">
+            <span className="italic text-grad-accent">
               do ofi&shy;cio.
             </span>
           </h1>

@@ -269,7 +269,7 @@ function LoginPageInner() {
               </div>
               <h1 className="mt-1 text-3xl font-light leading-tight tracking-tight md:text-4xl">
                 Reservar{' '}
-                <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
+                <em className="text-grad-accent italic">
                   acesso
                 </em>
               </h1>

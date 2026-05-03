@@ -161,7 +161,7 @@ export default function EmpresasPage() {
 
           <h1 className="text-balance text-5xl font-medium leading-[1.05] tracking-tight text-white sm:text-6xl" data-reveal>
             Seu escritório.<br />
-            <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">27 especialistas.</em><br />
+            <em className="text-grad-accent italic">27 especialistas.</em><br />
             Uma assinatura.
           </h1>
 

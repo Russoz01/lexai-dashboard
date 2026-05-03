@@ -147,7 +147,7 @@ export default function StatusClient() {
             Status da plataforma · MMXXVI
           </div>
           <h1 className="font-serif text-[clamp(42px,6vw,72px)] leading-[1.05] tracking-tight">
-            Tudo <em className="italic bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text text-transparent">funcionando</em>.
+            Tudo <em className="italic text-grad-accent">funcionando</em>.
           </h1>
           <p className="mt-5 max-w-2xl text-[15px] leading-[1.75] text-white/65">
             Metrica publica. Atualiza a cada 30s. Todos os componentes do

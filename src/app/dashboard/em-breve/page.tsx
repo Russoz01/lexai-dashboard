@@ -100,7 +100,7 @@ function EmBreveContent() {
           className="text-4xl font-light leading-[1.05] tracking-tight sm:text-5xl md:text-[3.5rem]"
           style={{ color: 'var(--text-primary)' }}
         >
-          <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
+          <em className="text-grad-accent italic">
             {label}
           </em>
           <span style={{ color: 'var(--text-muted)' }}> ·</span> em breve

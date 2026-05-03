@@ -124,7 +124,7 @@ export default function RoiCalculator() {
 
           <motion.h1 variants={heroItem} className="text-balance text-4xl font-light leading-[1.08] tracking-tight text-white sm:text-5xl md:text-[3.25rem]">
             Quanto seu escritório{' '}
-            <em className="bg-gradient-to-r from-[#e6d4bd] via-[#bfa68e] to-[#8a6f55] bg-clip-text italic text-transparent">
+            <em className="text-grad-accent italic">
               economiza
             </em>{' '}
             com a Pralvex?
