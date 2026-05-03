@@ -33,16 +33,25 @@ export async function middleware(request: NextRequest) {
   // Rotas publicas — acessiveis sem autenticacao
   const isPublic =
     pathname === '/' ||
+    pathname.startsWith('/intro') ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/auth') ||
+    pathname.startsWith('/reset-password') ||
     pathname.startsWith('/empresas') ||
     pathname.startsWith('/roi') ||
     pathname.startsWith('/sobre') ||
     pathname.startsWith('/privacidade') ||
     pathname.startsWith('/termos') ||
+    pathname.startsWith('/dpa') ||
+    pathname.startsWith('/docs') ||
+    pathname.startsWith('/status') ||
     pathname.startsWith('/share') ||
+    pathname.startsWith('/oc-advogados') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon') ||
+    pathname.startsWith('/logo') ||
+    pathname.startsWith('/apple-touch-icon') ||
+    pathname.startsWith('/themis') ||
     pathname === '/sitemap.xml' ||
     pathname === '/robots.txt'
 
