@@ -684,8 +684,14 @@ function VaultOverlay({
 
 export default function IntroPage() {
   const router = useRouter()
-  const prefersReduced = useReducedMotion() ?? false
-  const reduced = prefersReduced
+  // OVERRIDE prefers-reduced-motion (2026-05-03):
+  // Brave Shields forca reduced-motion = true como protecao de privacidade,
+  // o que deixa toda intro estatica (framer-motion fade direto, sem stagger).
+  // Intro e cinematic brand reveal — UX correto e SEMPRE animar (user pode
+  // pular via 'Pular intro' se nao quiser ver). Hardcoded false.
+  const router_unused_useReducedMotion = useReducedMotion // keep import alive
+  void router_unused_useReducedMotion
+  const reduced = false
   const [opening, setOpening] = useState(false)
   const [pushed, setPushed] = useState(false)
 

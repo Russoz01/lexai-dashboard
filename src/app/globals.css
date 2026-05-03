@@ -86,26 +86,6 @@
   --blur:           22px;
 }
 
-/* Light mode body — micro-gradientes champagne sobre cream
-   Adiciona profundidade editorial sutil ao fundo cream puro.
-   3 layers: radial top-left + radial bottom-right + linear vertical.
-   Cada um < 0.04 alpha pra nao competir com leitura.
-   Audit fix 2026-05-03 — Leonardo: "background light com micros gradientes". */
-[data-theme="light"] body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(ellipse 60% 50% at 12% 8%, rgba(191,166,142,0.08), transparent 55%),
-    radial-gradient(ellipse 50% 60% at 88% 92%, rgba(122,95,72,0.05), transparent 60%),
-    radial-gradient(circle 800px at 50% 0%, rgba(245,232,211,0.18), transparent 65%),
-    linear-gradient(180deg, rgba(255,251,243,0.5) 0%, transparent 30%, transparent 70%, rgba(239,231,218,0.4) 100%);
-}
-/* Garantir que conteudo fica acima do pseudo */
-[data-theme="light"] body > * { position: relative; z-index: 1; }
-
 /* ── Tokens — Light (atelier cream, opt-in via data-theme="light") ── */
 [data-theme="light"] {
   /* Type-scale fluid tokens (audit polish 2026-05-02)
@@ -235,6 +215,18 @@
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+/* Light mode — micro-gradientes champagne diretamente no surface-base
+   (body::before nao funcionava porque .surface-base cobria tudo opaco).
+   v2 (2026-05-03): aplicacao direta no shell de cada page. */
+[data-theme="light"] .surface-base {
+  background:
+    radial-gradient(ellipse 70% 55% at 15% 10%, rgba(191,166,142,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 70% at 85% 90%, rgba(122,95,72,0.12) 0%, transparent 65%),
+    radial-gradient(circle 1000px at 50% -10%, rgba(245,232,211,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 40% at 50% 110%, rgba(212,190,163,0.22) 0%, transparent 65%),
+    linear-gradient(180deg, #FFFBF3 0%, #F5EFE6 35%, #F5EFE6 65%, #EFE7DA 100%);
 }
 .surface-card {
   background: var(--card-bg);
