@@ -253,13 +253,56 @@
   -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
-/* Light mode — backgrounds animados GLOBAIS (2026-05-03)
-   Antes era escopado em .lex-landing-shell (só landing). Agora aplica
-   em TODA pagina: /sobre, /empresas, /privacidade, /termos, /login,
-   /reset-password, /not-found, /share, /docs, /dpa, /status, /roi.
-   Leonardo apontou que outras pages ficavam sem o background animado
-   que dark tinha. mix-blend-mode multiply faz decoracoes dark-themed
-   virarem tons sepia sobre cream, mantendo mood editorial. */
+/* Light mode — backgrounds animados GLOBAIS (2026-05-03 v2)
+   v1 targetava classes que NAO existiam (.pralvex-mesh, .pralvex-shader).
+   v2 (esta): targeta as classes REAIS usadas pelos components Pralvex
+   (verificado via Chrome MCP DOM inspection):
+     .lex-headline-glow, .lex-hero-gradient, .lex-figure, .lex-magnetic,
+     .lex-tilt, .lex-stage-float-in, .lex-line-draw, .lex-pipeline-dot,
+     .lex-bento-card, .lex-chip-pop, .lex-magnetic-glow
+   Plus elementos decorativos inline (aria-hidden=true + position absolute
+   + background gradient com champagne #bfa68e em rgba). */
+
+/* Lex-prefixed decorative classes — multiply blend pra adaptar cream */
+[data-theme="light"] .lex-headline-glow,
+[data-theme="light"] .lex-hero-gradient,
+[data-theme="light"] .lex-magnetic-glow,
+[data-theme="light"] .lex-tilt-glow {
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+  filter: saturate(0.9) hue-rotate(-6deg);
+}
+
+/* Animated lex-figure stages — sutilmente sepia em light */
+[data-theme="light"] .lex-stage-float-in,
+[data-theme="light"] .lex-line-draw,
+[data-theme="light"] .lex-pipeline-dot,
+[data-theme="light"] .lex-chip-pop {
+  /* mantem animacao + visibilidade — so leve adjust de saturacao */
+  filter: saturate(0.92);
+}
+
+/* Decorativos inline aria-hidden com radial gradient champagne */
+[data-theme="light"] [aria-hidden="true"][style*="radial-gradient"],
+[data-theme="light"] [aria-hidden="true"][class*="bg-[radial-gradient"],
+[data-theme="light"] [aria-hidden="true"][class*="bg-[linear-gradient"] {
+  mix-blend-mode: multiply;
+  opacity: 0.7;
+}
+
+/* Decorativos com z-index negativo (background layers do hero/empresas/sobre) */
+[data-theme="light"] [aria-hidden="true"].\-z-10,
+[data-theme="light"] [aria-hidden="true"].\-z-20,
+[data-theme="light"] [aria-hidden="true"].\-z-30,
+[data-theme="light"] [class*="-z-10"][aria-hidden="true"],
+[data-theme="light"] [class*="-z-20"][aria-hidden="true"],
+[data-theme="light"] [class*="-z-30"][aria-hidden="true"] {
+  mix-blend-mode: multiply;
+  opacity: 0.65;
+  filter: saturate(0.9);
+}
+
+/* ── Backups da v1 (mantém compat se houver classes legacy) ── */
 [data-theme="light"] canvas,
 [data-theme="light"] .pralvex-shader {
   mix-blend-mode: multiply;
