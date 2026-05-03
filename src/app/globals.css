@@ -258,6 +258,19 @@
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
+/* 2026-05-03 fix Leonardo: italic + background-clip:text cortava o ultimo
+   caractere pq glyph italic se inclina pra direita alem do bounding box.
+   Padding right + display inline-block resolve em TODAS superficies (8 modulos
+   em-breve + landing hero + sobre + login + empresas + 14 outros). Aplica so
+   em <em> ou .italic pra nao afetar texto reto. */
+em.text-grad-accent,
+i.text-grad-accent,
+.text-grad-accent.italic,
+.italic.text-grad-accent {
+  display: inline-block;
+  padding-right: 0.14em;
+  overflow: visible;
+}
 [data-theme="light"] .text-grad-accent {
   background: linear-gradient(90deg, #6a5845 0%, #44372b 50%, #2e2418 100%);
   -webkit-background-clip: text;

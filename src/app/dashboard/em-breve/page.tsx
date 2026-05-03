@@ -132,12 +132,23 @@ function EmBreveContent() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          // 2026-05-03 fix Leonardo: leading-[1.05] cortava primeira linha
-          // visualmente (especialmente em italic <em>). Sobe pra 1.15.
+          // 2026-05-03 fix Leonardo: italic + text-grad-accent (background-clip: text)
+          // cortava o ultimo caractere pq o glyph italic se inclina pra direita
+          // alem do bounding box do span. Adiciona padding-right + display
+          // inline-block + overflow visible no <em>. Reproduz pros 8 modulos
+          // (CNJ/Comparador/Flashcards/Plano/Casos/CRM/Jurimetria/Marketing) +
+          // 4 preview-only — todos usam mesmo template /em-breve.
           className="text-4xl font-light leading-[1.15] tracking-tight sm:text-5xl md:text-[3.5rem]"
           style={{ color: 'var(--text-primary)', paddingTop: '0.05em' }}
         >
-          <em className="text-grad-accent italic">
+          <em
+            className="text-grad-accent italic"
+            style={{
+              display: 'inline-block',
+              paddingRight: '0.15em',
+              overflow: 'visible',
+            }}
+          >
             {label}
           </em>
           <span style={{ color: 'var(--text-muted)' }}> ·</span> em breve
