@@ -7,6 +7,8 @@ import { parseAgentJSON } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 60_000
@@ -156,6 +158,11 @@ export async function POST(req: NextRequest) {
       userMessage += `\n\nContexto adicional fornecido pelo cliente:\n${contexto}`
     }
 
+    // Prefs injection (tom + área padrão) — sem cache porque varia por user
+    const prefs = usuarioId ? await getUserPreferences(supabase, usuarioId).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('consultor') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     // AbortController gives us a hard 60s cap instead of waiting for the
     // platform's request timeout. Without this, a stuck Anthropic call
     // holds the lambda until Vercel kills it and the user sees a generic
@@ -174,13 +181,14 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
           {
             type: 'text' as const,
             text: grounding.contextBlock,
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         tools: [WEB_SEARCH_TOOL],
         messages: [{ role: 'user', content: userMessage }],
@@ -222,6 +230,18 @@ export async function POST(req: NextRequest) {
       if (histErr) {
         safeLog.error('[API /consultor] historico insert error:', histErr.message, histErr.code)
       }
+
+      // Cross-agent memory (fire-forget — never blocks request)
+      const tituloOut = (parecerData?.titulo as string) || pergunta.slice(0, 80)
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'consultor',
+        resumo: buildMemorySummary('consultor', pergunta, tituloOut),
+        fatos: [
+          ...(area ? [{ key: 'area', value: area }] : []),
+          { key: 'titulo', value: String(tituloOut).slice(0, 120) },
+        ],
+        tags: extractMemoryTags('consultor', area, `${pergunta} ${tituloOut}`),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'consultor', plano).catch(() => {})

@@ -8,6 +8,8 @@ import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-uti
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -114,6 +116,11 @@ export async function POST(req: NextRequest) {
     const areaForGrounding = safeArea !== 'Todas' ? safeArea.toLowerCase() : undefined
     const grounding = buildGroundingContext(query, { area: areaForGrounding, topK: 10 })
     const gstats = groundingStats(grounding)
+
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('pesquisador') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       safeLog.debug('[API /pesquisar] grounding:', gstats)
@@ -131,7 +138,7 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
           {
@@ -140,6 +147,7 @@ export async function POST(req: NextRequest) {
             // Wave C5 fix: cache_control no grounding também
             cache_control: { type: 'ephemeral' as const },
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         tools: [WEB_SEARCH_TOOL],
         messages: [{ role: 'user', content: `Research topic: ${query}${filtros ? `\n\nFilters:\n${filtros}` : ''}` }],
@@ -164,13 +172,23 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId, agente: 'pesquisador',
         mensagem_usuario: `Pesquisa: ${query}`,
         resposta_agente: (pesquisa.enquadramento as string)?.slice(0, 200) || 'Pesquisa realizada',
       })
+      const enqOut = (pesquisa.enquadramento as string)?.slice(0, 160) || 'pesquisa realizada'
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'pesquisador',
+        resumo: buildMemorySummary('pesquisador', query, enqOut),
+        fatos: [
+          ...(safeArea !== 'Todas' ? [{ key: 'area', value: safeArea }] : []),
+          ...(safeTribunal !== 'Todos' ? [{ key: 'tribunal', value: safeTribunal }] : []),
+        ],
+        tags: extractMemoryTags('pesquisador', safeArea !== 'Todas' ? safeArea : undefined, query),
+      }).catch(() => {})
     }
 
     const validation = validateCitations(responseText)

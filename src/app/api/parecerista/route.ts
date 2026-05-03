@@ -8,6 +8,8 @@ import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/
 import { assertPlanAccess } from '@/lib/plan-access'
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -102,6 +104,11 @@ export async function POST(req: NextRequest) {
     let userMessage = `Consulta para parecer juridico:\n\n${consulta}`
     if (area.trim()) userMessage += `\n\nArea do Direito: ${area}`
 
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('parecerista') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     const grounding = buildGroundingContext(`${consulta} ${area}`, { area: area || undefined, topK: 10 })
     const gstats = groundingStats(grounding)
     if (process.env.NODE_ENV !== 'production') {
@@ -119,13 +126,14 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
           {
             type: 'text' as const,
             text: grounding.contextBlock,
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         tools: [WEB_SEARCH_TOOL],
         messages: [{ role: 'user', content: userMessage }],
@@ -147,7 +155,7 @@ export async function POST(req: NextRequest) {
     )
     const parecer = parsed?.parecer ?? parsed
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId,
@@ -155,6 +163,17 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Parecer: ${consulta.slice(0, 200)}${area ? ` (${area})` : ''}`,
         resposta_agente: parecer?.titulo || 'Parecer juridico',
       })
+
+      const tituloOut = (parecer?.titulo as string) || consulta.slice(0, 80)
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'parecerista',
+        resumo: buildMemorySummary('parecerista', consulta, tituloOut),
+        fatos: [
+          ...(area ? [{ key: 'area', value: area }] : []),
+          { key: 'titulo', value: String(tituloOut).slice(0, 120) },
+        ],
+        tags: extractMemoryTags('parecerista', area, `${consulta} ${tituloOut}`),
+      }).catch(() => {})
     }
 
     const validation = validateCitations(responseText)

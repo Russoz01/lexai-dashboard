@@ -6,6 +6,8 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON } from '@/lib/api-utils'
 import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { createAgentStream } from '@/lib/agent-stream'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -100,11 +102,16 @@ export async function POST(req: NextRequest) {
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
 
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('resumidor') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     // Wave C5: streaming opt-in via ?stream=1. Frontend lê NDJSON e mostra
     // chars recebidos em tempo real. Default mantém comportamento legacy.
     const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
     if (wantsStream) {
-      const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+      const usuarioId = usuarioIdEarly
       return createAgentStream<Record<string, unknown>>({
         client,
         agente: 'resumidor',
@@ -112,7 +119,8 @@ export async function POST(req: NextRequest) {
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 8192,
           system: [
-            { type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
           ],
           messages: [{ role: 'user', content: `Document to analyze:\n\n${texto}` }],
         },
@@ -127,6 +135,15 @@ export async function POST(req: NextRequest) {
               mensagem_usuario: `Analise: ${texto.slice(0, 100)}`,
               resposta_agente: typeof parsed.objeto === 'string' ? parsed.objeto.slice(0, 200) : 'Documento analisado',
             })
+            const objetoOut = typeof parsed.objeto === 'string' ? parsed.objeto.slice(0, 160) : 'documento analisado'
+            recordAgentMemory(supabase, usuarioId, {
+              agente: 'resumidor',
+              resumo: buildMemorySummary('resumidor', texto.slice(0, 160), objetoOut),
+              fatos: typeof parsed.classificacao === 'object' && parsed.classificacao
+                ? [{ key: 'tipo', value: String((parsed.classificacao as Record<string, unknown>).tipo || '').slice(0, 80) }]
+                : [],
+              tags: extractMemoryTags('resumidor', undefined, texto.slice(0, 800)),
+            }).catch(() => {})
           }
           events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})
         },
@@ -144,9 +161,10 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: `Document to analyze:\n\n${texto}` }],
       }, { signal: controller.signal })
@@ -162,7 +180,7 @@ export async function POST(req: NextRequest) {
     )
 
     // Save to historico (was missing — only agent without it)
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId,
@@ -170,6 +188,15 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Analise: ${texto.slice(0, 100)}`,
         resposta_agente: typeof analise.objeto === 'string' ? analise.objeto.slice(0, 200) : 'Documento analisado',
       })
+      const objetoOut2 = typeof analise.objeto === 'string' ? analise.objeto.slice(0, 160) : 'documento analisado'
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'resumidor',
+        resumo: buildMemorySummary('resumidor', texto.slice(0, 160), objetoOut2),
+        fatos: typeof analise.classificacao === 'object' && analise.classificacao
+          ? [{ key: 'tipo', value: String((analise.classificacao as Record<string, unknown>).tipo || '').slice(0, 80) }]
+          : [],
+        tags: extractMemoryTags('resumidor', undefined, texto.slice(0, 800)),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'resumidor', 'unknown').catch(() => {})

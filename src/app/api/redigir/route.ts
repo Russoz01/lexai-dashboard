@@ -8,6 +8,8 @@ import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableErro
 import { createAgentStream } from '@/lib/agent-stream'
 import { safeLog } from '@/lib/safe-log'
 import { validateOabContent } from '@/lib/oab-validator'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -92,10 +94,15 @@ export async function POST(req: NextRequest) {
 
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
 
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('redator') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     // Wave C5: streaming opt-in via ?stream=1
     const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
     if (wantsStream) {
-      const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+      const usuarioId = usuarioIdEarly
       return createAgentStream<Record<string, unknown>>({
         client,
         agente: 'redator',
@@ -103,7 +110,8 @@ export async function POST(req: NextRequest) {
           model: 'claude-sonnet-4-20250514',
           max_tokens: 8192,
           system: [
-            { type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
           ],
           messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
         },
@@ -117,6 +125,13 @@ export async function POST(req: NextRequest) {
               mensagem_usuario: `Redigir: ${TEMPLATES[template]}`,
               resposta_agente: (parsed.titulo as string) || TEMPLATES[template],
             })
+            const tituloOut = (parsed?.titulo as string) || TEMPLATES[template]
+            recordAgentMemory(supabase, usuarioId, {
+              agente: 'redator',
+              resumo: buildMemorySummary('redator', `${TEMPLATES[template]}: ${instrucoes.slice(0, 120)}`, tituloOut),
+              fatos: [{ key: 'tipo', value: template }, { key: 'titulo', value: String(tituloOut).slice(0, 120) }],
+              tags: extractMemoryTags('redator', template, instrucoes),
+            }).catch(() => {})
           }
           events.agentUsed(user.id, 'redator', 'unknown').catch(() => {})
         },
@@ -136,9 +151,10 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: `Type of document: ${TEMPLATES[template]}\n\nFacts of the case:\n${instrucoes}` }],
       }, { signal: controller.signal })
@@ -153,13 +169,20 @@ export async function POST(req: NextRequest) {
       { titulo: TEMPLATES[template], documento: responseText, referencias_legais: [], observacoes: ['Resposta nao estruturada'], tipo: template },
     )
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId, agente: 'redator',
         mensagem_usuario: `Redigir: ${TEMPLATES[template]}`,
         resposta_agente: peca.titulo || TEMPLATES[template],
       })
+      const tituloOut3 = (peca.titulo as string) || TEMPLATES[template]
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'redator',
+        resumo: buildMemorySummary('redator', `${TEMPLATES[template]}: ${instrucoes.slice(0, 120)}`, tituloOut3),
+        fatos: [{ key: 'tipo', value: template }, { key: 'titulo', value: String(tituloOut3).slice(0, 120) }],
+        tags: extractMemoryTags('redator', template, instrucoes),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'redator', 'unknown').catch(() => {})

@@ -6,6 +6,8 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, withRetry } from '@/lib/api-utils'
 import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { safeLog } from '@/lib/safe-log'
+import { getUserPreferences, getRecentMemory, formatMemoryForPrompt, recordAgentMemory } from '@/lib/preferences'
+import { buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -99,7 +101,7 @@ function tomPorFidelidade(fidelidade: Fidelidade): string {
   }
 }
 
-function buildSystemPrompt(fidelidade: Fidelidade): string {
+function buildSystemPrompt(fidelidade: Fidelidade, memoryContext: string = '', smartSuggestionsHint: string = ''): string {
   const now = new Date()
   const dataHora = now.toLocaleString('pt-BR', {
     timeZone: 'America/Sao_Paulo',
@@ -156,7 +158,7 @@ ${tomPorFidelidade(fidelidade)}
 HUMANIZACAO:
 - Cite o artigo/lei quando fizer sentido, mas explique por que importa para o caso.
 - Se algo for ambiguo, seja transparente: "Para responder com precisao eu precisaria de X".
-- Sugira o proximo passo natural quando possivel.`
+- Sugira o proximo passo natural quando possivel.${memoryContext}${smartSuggestionsHint}`
 }
 
 const ROUTING_TOOL = {
@@ -255,6 +257,35 @@ export async function POST(req: NextRequest) {
       { role: 'user', content: userContent },
     ]
 
+    // Resolve usuarioId early — usado tanto pra memory quanto pra historico
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+
+    // Inject memória recente + prefs no system prompt (fire-forget, fail-open)
+    let memoryContext = ''
+    let smartSuggestionsHint = ''
+    let prefsContext = ''
+    if (usuarioIdEarly) {
+      try {
+        const prefs = await getUserPreferences(supabase, usuarioIdEarly)
+        prefsContext = buildPreferencesContext(prefs)
+
+        if (prefs.smart_suggestions && prefs.memory_enabled) {
+          const memory = await getRecentMemory(supabase, usuarioIdEarly, { limit: 5 })
+          memoryContext = formatMemoryForPrompt(memory)
+
+          if (memory.length > 0) {
+            // Smart suggestion hint — orienta modelo a sugerir agente correlato
+            // baseado em padrão de uso recente. Ex: usuário usou Resumidor e
+            // agora pergunta sobre cláusulas → sugerir Risco/Redator via
+            // ferramenta rotear_agente quando faz sentido.
+            smartSuggestionsHint = `\n\nUSE A MEMÓRIA RECENTE PRA CONTEXTUALIZAR. Se o usuário continuar trabalho de uma interação anterior (ex: analisou contrato com Resumidor há pouco e agora pergunta sobre cláusulas), considere rotear pra agente complementar (Risco, Redator, Calculador) via tool rotear_agente. Cite explicitamente "no documento que você analisou há pouco..." quando útil.`
+          }
+        }
+      } catch {
+        // fail-open — chat continua sem memória se erro
+      }
+    }
+
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
 
@@ -269,7 +300,7 @@ export async function POST(req: NextRequest) {
     // Tool_use é resolvido APÓS stream completar — só então emite "agente".
     // ─────────────────────────────────────────────────────────────────
     if (wantsStream) {
-      const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+      const usuarioId = usuarioIdEarly
 
       const encoder = new TextEncoder()
       const stream = new ReadableStream({
@@ -301,7 +332,8 @@ export async function POST(req: NextRequest) {
                 // P1 audit fix (2026-05-02): cache_control ephemeral economiza
                 // ~80% input tokens em chat (agente mais chamado). Antes estava
                 // sem cache no hot path mais usado.
-                { type: 'text' as const, text: buildSystemPrompt(fidelidade), cache_control: { type: 'ephemeral' as const } },
+                { type: 'text' as const, text: buildSystemPrompt(fidelidade, memoryContext, smartSuggestionsHint), cache_control: { type: 'ephemeral' as const } },
+                ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
               ],
               tools: [ROUTING_TOOL],
               messages,
@@ -362,6 +394,16 @@ export async function POST(req: NextRequest) {
                     ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`.slice(0, 500)
                     : textoResposta.slice(0, 500),
                 })
+
+                const memOutS = rotear
+                  ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`
+                  : textoResposta.slice(0, 160)
+                recordAgentMemory(supabase, usuarioId, {
+                  agente: 'chat',
+                  resumo: buildMemorySummary('chat', mensagem.slice(0, 160), memOutS),
+                  fatos: rotear ? [{ key: 'rotou_para', value: rotear.agente }] : [],
+                  tags: extractMemoryTags('chat', undefined, mensagem),
+                }).catch(() => {})
               } catch (e: unknown) {
                 safeLog.error('[API /chat?stream=1] historico insert failed:', e instanceof Error ? e.message : String(e))
               }
@@ -410,7 +452,8 @@ export async function POST(req: NextRequest) {
       max_tokens: modo === 'complexo' ? 3500 : 1800,
       system: [
         // P1 audit fix: cache_control ephemeral também no legacy path.
-        { type: 'text' as const, text: buildSystemPrompt(fidelidade), cache_control: { type: 'ephemeral' as const } },
+        { type: 'text' as const, text: buildSystemPrompt(fidelidade, memoryContext, smartSuggestionsHint), cache_control: { type: 'ephemeral' as const } },
+        ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
       ],
       tools: [ROUTING_TOOL],
       messages,
@@ -453,7 +496,7 @@ export async function POST(req: NextRequest) {
           mensagem: textoResposta || 'Desculpe, nao consegui formular uma resposta. Tente reformular.',
         }
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId,
@@ -463,6 +506,17 @@ export async function POST(req: NextRequest) {
           ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`.slice(0, 500)
           : textoResposta.slice(0, 500),
       })
+
+      // Cross-agent memory — chat aprende padrões de uso pra smart suggestions
+      const memOut = rotear
+        ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`
+        : textoResposta.slice(0, 160)
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'chat',
+        resumo: buildMemorySummary('chat', mensagem.slice(0, 160), memOut),
+        fatos: rotear ? [{ key: 'rotou_para', value: rotear.agente }] : [],
+        tags: extractMemoryTags('chat', undefined, mensagem),
+      }).catch(() => {})
     }
 
     events.agentUsed(user.id, 'chat', rotear?.agente || 'direct').catch(() => {})

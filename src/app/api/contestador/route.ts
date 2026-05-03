@@ -9,6 +9,8 @@ import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { validateOabContent } from '@/lib/oab-validator'
+import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
+import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const REQUEST_TIMEOUT_MS = 90_000
@@ -124,6 +126,11 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
     const userMessage = `TESE DA INICIAL (autor):\n${teseInicial}\n\nTESE DE DEFESA (reu):\n${teseDefesa}\n\nElabore um esboco tecnico e completo de contestacao.`
 
+    const usuarioIdEarly = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const prefs = usuarioIdEarly ? await getUserPreferences(supabase, usuarioIdEarly).catch(() => null) : null
+    const prefsContext = buildPreferencesContext(prefs)
+    const enhancedSystem = buildAgentPreamble('contestador') + SYSTEM_PROMPT + buildAntiHallucinationFooter()
+
     const groundingQuery = `${teseInicial.slice(0, 1500)} ${teseDefesa.slice(0, 1500)}`
     const grounding = buildGroundingContext(groundingQuery, { topK: 12 })
     const gstats = groundingStats(grounding)
@@ -135,7 +142,7 @@ export async function POST(req: NextRequest) {
     // Wave C5: streaming opt-in via ?stream=1
     const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
     if (wantsStream) {
-      const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+      const usuarioId = usuarioIdEarly
       return createAgentStream<Record<string, unknown>>({
         client,
         agente: 'contestador',
@@ -143,10 +150,11 @@ export async function POST(req: NextRequest) {
           model: 'claude-sonnet-4-20250514',
           max_tokens: 8192,
           system: [
-            { type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
             // Wave C5 fix: cache_control no grounding também — sem isso, todo
             // request paga o block grande de novo (custo + latência).
             { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
           ],
           messages: [{ role: 'user', content: userMessage }],
         },
@@ -165,6 +173,13 @@ export async function POST(req: NextRequest) {
               mensagem_usuario: `Contestacao: ${teseInicial.slice(0, 200)}`,
               resposta_agente: (c?.titulo as string) || 'Contestacao elaborada',
             })
+            const tituloOut = (c?.titulo as string) || teseInicial.slice(0, 80)
+            recordAgentMemory(supabase, usuarioId, {
+              agente: 'contestador',
+              resumo: buildMemorySummary('contestador', teseInicial, tituloOut),
+              fatos: [{ key: 'titulo', value: String(tituloOut).slice(0, 120) }],
+              tags: extractMemoryTags('contestador', undefined, `${teseInicial} ${teseDefesa}`),
+            }).catch(() => {})
           }
           events.agentUsed(user.id, 'contestador', 'unknown').catch(() => {})
         },
@@ -181,13 +196,14 @@ export async function POST(req: NextRequest) {
         system: [
           {
             type: 'text' as const,
-            text: SYSTEM_PROMPT,
+            text: enhancedSystem,
             cache_control: { type: 'ephemeral' as const },
           },
           {
             type: 'text' as const,
             text: grounding.contextBlock,
           },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
         ],
         messages: [{ role: 'user', content: userMessage }],
       }, { signal: controller.signal })
@@ -203,7 +219,7 @@ export async function POST(req: NextRequest) {
     )
     const contestacao = ((parsed as Record<string, unknown>)?.contestacao ?? parsed) as Record<string, unknown>
 
-    const usuarioId = await resolveUsuarioIdServer(supabase, user.id, user.email, user.user_metadata?.nome)
+    const usuarioId = usuarioIdEarly
     if (usuarioId) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId,
@@ -211,6 +227,14 @@ export async function POST(req: NextRequest) {
         mensagem_usuario: `Contestacao: ${teseInicial.slice(0, 200)}`,
         resposta_agente: (contestacao?.titulo as string) || 'Contestacao elaborada',
       })
+
+      const tituloOut2 = (contestacao?.titulo as string) || teseInicial.slice(0, 80)
+      recordAgentMemory(supabase, usuarioId, {
+        agente: 'contestador',
+        resumo: buildMemorySummary('contestador', teseInicial, tituloOut2),
+        fatos: [{ key: 'titulo', value: String(tituloOut2).slice(0, 120) }],
+        tags: extractMemoryTags('contestador', undefined, `${teseInicial} ${teseDefesa}`),
+      }).catch(() => {})
     }
 
     const validation = validateCitations(responseText)
