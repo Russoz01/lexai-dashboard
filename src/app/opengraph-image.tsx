@@ -1,4 +1,5 @@
 ﻿import { ImageResponse } from 'next/og'
+import { SITE_URL } from '@/lib/site-url'
 
 // Next.js App Router native OG image generation
 // Size recommended by social platforms: 1200x630
