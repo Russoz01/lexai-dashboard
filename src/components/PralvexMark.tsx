@@ -1,17 +1,22 @@
-﻿'use client'
+'use client'
+
+import { useState } from 'react'
 
 /**
- * PralvexMark — selo PX editorial.
- * Substitui 100% das ocorrências do monograma LX herdado do LexAI.
+ * PralvexMark — selo Pralvex.
  *
- * variant="seal"  → quadrado com borda champagne + gradiente noir + letras PX
- * variant="bare"  → só as letras PX (usa quando o wrapper externo já tem o shell, ex.: .sidebar-brand .logo)
+ * v2.0 (2026-05-02): logo monogram dourado "P + balança" via /public/logo-p.png.
+ * Fallback automático pro selo PX editorial se o asset não estiver presente
+ * (onError do <img>).
+ *
+ * variant="seal" → quadrado com borda champagne + gradiente noir, contém logo
+ * variant="bare" → só a letra/imagem (use quando o wrapper externo já tem shell)
  */
 
 interface PralvexMarkProps {
   variant?: 'seal' | 'bare'
   size?: number
-  /** força cor custom (default: champagne #bfa68e) */
+  /** força cor custom no fallback PX text (default: champagne #bfa68e) */
   tone?: string
   className?: string
 }
@@ -22,9 +27,11 @@ export function PralvexMark({
   tone = '#bfa68e',
   className = '',
 }: PralvexMarkProps) {
+  const [imgFailed, setImgFailed] = useState(false)
   const fontSize = size >= 44 ? 14 : size >= 36 ? 12 : size >= 28 ? 10.5 : 9
 
-  const letters = (
+  // Inner content: logo image OR PX text fallback
+  const inner = imgFailed ? (
     <span
       aria-label="Pralvex"
       style={{
@@ -41,9 +48,24 @@ export function PralvexMark({
     >
       PX
     </span>
+  ) : (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/logo-p.png"
+      alt="Pralvex"
+      width={Math.round(size * 0.78)}
+      height={Math.round(size * 0.78)}
+      onError={() => setImgFailed(true)}
+      style={{
+        objectFit: 'contain',
+        display: 'block',
+        // sutil glow champagne sobre o monogram dourado em ambos os modes
+        filter: `drop-shadow(0 0 8px ${tone}40)`,
+      }}
+    />
   )
 
-  if (variant === 'bare') return letters
+  if (variant === 'bare') return inner
 
   return (
     <div
@@ -60,7 +82,7 @@ export function PralvexMark({
         boxShadow: `inset 0 1px 0 rgba(230,212,189,0.08), 0 4px 20px ${tone}33`,
       }}
     >
-      {letters}
+      {inner}
     </div>
   )
 }
