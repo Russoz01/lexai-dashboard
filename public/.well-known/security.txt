@@ -1,0 +1,10 @@
+Contact: mailto:contato@pralvex.com.br
+Expires: 2027-05-03T00:00:00Z
+Preferred-Languages: pt-BR, en
+Canonical: https://pralvex.com.br/.well-known/security.txt
+Policy: https://pralvex.com.br/privacidade
+
+# Pralvex security disclosure
+# Found a security issue? Email contato@pralvex.com.br with details.
+# We aim to acknowledge within 48h and fix critical issues in <7 days.
+# Please don't publicly disclose until we've patched.

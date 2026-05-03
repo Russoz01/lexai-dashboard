@@ -1,6 +1,6 @@
-﻿'use client'
+'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   FileCheck2,
   RotateCcw,
@@ -49,9 +49,17 @@ export default function PareceristaPage() {
   const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
   const [copiado, setCopiado] = useState(false)
 
+  // Demo P0-1 fix (2026-05-03): AbortController + timeout 90s.
+  const abortRef = useRef<AbortController | null>(null)
+  useEffect(() => () => { abortRef.current?.abort() }, [])
+
   async function gerar() {
     if (!consulta.trim() || loading) return
     setLoading(true)
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+    const tid = setTimeout(() => ac.abort(), 90_000)
     setParecer(null)
     setFontes([])
     setGroundingStats(null)
@@ -60,6 +68,7 @@ export default function PareceristaPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ consulta, area: area || undefined }),
+        signal: ac.signal,
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar parecer')
@@ -69,6 +78,7 @@ export default function PareceristaPage() {
     } catch (e: unknown) {
       toast('error', e instanceof Error ? e.message : 'Erro ao gerar parecer')
     } finally {
+      clearTimeout(tid)
       setLoading(false)
     }
   }

@@ -1,6 +1,6 @@
-﻿'use client'
+'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   FileEdit,
   AlertTriangle,
@@ -54,9 +54,17 @@ export default function RevisorPage() {
   const [fontes, setFontes] = useState<Fonte[]>([])
   const [groundingStats, setGroundingStats] = useState<{ topScore?: number; provisions?: number; sumulas?: number } | null>(null)
 
+  // Demo P0-1 fix (2026-05-03): AbortController + timeout 90s.
+  const abortRef = useRef<AbortController | null>(null)
+  useEffect(() => () => { abortRef.current?.abort() }, [])
+
   async function revisar() {
     if (documento.trim().length < 100 || loading) return
     setLoading(true)
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+    const tid = setTimeout(() => ac.abort(), 90_000)
     setRevisao(null)
     setFontes([])
     setGroundingStats(null)
@@ -65,6 +73,7 @@ export default function RevisorPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ documento, tipo: tipo || undefined }),
+        signal: ac.signal,
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro na revisao')
@@ -74,6 +83,7 @@ export default function RevisorPage() {
     } catch (e: unknown) {
       toast('error', e instanceof Error ? e.message : 'Erro na revisao')
     } finally {
+      clearTimeout(tid)
       setLoading(false)
     }
   }

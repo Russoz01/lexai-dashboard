@@ -1,6 +1,6 @@
-﻿'use client'
+'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Target,
   RotateCcw,
@@ -51,15 +51,24 @@ export default function EstrategistaPage() {
   const [plano, setPlano] = useState<Plano | null>(null)
   const [copiado, setCopiado] = useState(false)
 
+  // Demo P0-1 fix (2026-05-03): AbortController + timeout 90s.
+  const abortRef = useRef<AbortController | null>(null)
+  useEffect(() => () => { abortRef.current?.abort() }, [])
+
   async function gerar() {
     if (caso.trim().length < 50 || objetivo.trim().length < 10 || loading) return
     setLoading(true)
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+    const tid = setTimeout(() => ac.abort(), 90_000)
     setPlano(null)
     try {
       const res = await fetch('/api/estrategista', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ caso, objetivo }),
+        signal: ac.signal,
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar plano')
@@ -67,6 +76,7 @@ export default function EstrategistaPage() {
     } catch (e: unknown) {
       toast('error', e instanceof Error ? e.message : 'Erro ao gerar plano')
     } finally {
+      clearTimeout(tid)
       setLoading(false)
     }
   }
