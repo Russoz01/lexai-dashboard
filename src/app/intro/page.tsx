@@ -95,6 +95,35 @@ function HeroScene({ reduced }: { reduced: boolean }) {
         Pular intro <span aria-hidden="true">→</span>
       </Link>
 
+      {/* Layer 0 — Drone video background (cinematic loop) */}
+      {!reduced && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover opacity-55"
+          style={{
+            // Sutil cor champagne via blend pra integrar com a paleta editorial
+            mixBlendMode: 'screen',
+            filter: 'saturate(0.85) contrast(1.05) brightness(0.75)',
+          }}
+        >
+          <source src="/intro/drone-hero.mp4" type="video/mp4" />
+        </video>
+      )}
+      {/* Vignette escuro pra garantir leitura do texto */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 80% 70% at 50% 50%, rgba(10,10,10,0.18) 0%, rgba(10,10,10,0.55) 65%, rgba(10,10,10,0.85) 100%)',
+        }}
+      />
+
       {/* Layer 1 — dot grid */}
       <div
         aria-hidden="true"
@@ -689,13 +718,15 @@ export default function IntroPage() {
   }, [opening])
 
   // When the vault door animation is "done" (triggered via AnimatePresence
-  // exit callback OR the timeout safety net), route to /login.
+  // exit callback OR the timeout safety net), route to / (landing).
+  // 2026-05-02: Leonardo pediu redirect pra landing em vez de login —
+  // intro é entrada cinematográfica do brand, não funil de auth.
   useEffect(() => {
     if (!opening || pushed) return
     const t = window.setTimeout(
       () => {
         setPushed(true)
-        router.push('/login')
+        router.push('/')
       },
       reduced ? 120 : 1250,
     )
