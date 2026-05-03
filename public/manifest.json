@@ -1,0 +1,64 @@
+{
+  "name": "Pralvex — Inteligencia Juridica",
+  "short_name": "Pralvex",
+  "description": "Plataforma de IA juridica com agentes especializados em Direito brasileiro. Analise documentos, pesquise jurisprudencia, redija pecas.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8f5f0",
+  "theme_color": "#bfa68e",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "legal"],
+  "icons": [
+    {
+      "src": "/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Chat juridico",
+      "short_name": "Chat",
+      "description": "Orquestrador conversacional",
+      "url": "/dashboard/chat"
+    },
+    {
+      "name": "Resumir documento",
+      "short_name": "Resumidor",
+      "description": "Comprime contratos e acordaos",
+      "url": "/dashboard/resumidor"
+    },
+    {
+      "name": "Pesquisar jurisprudencia",
+      "short_name": "Pesquisador",
+      "description": "STF, STJ e tribunais",
+      "url": "/dashboard/pesquisador"
+    }
+  ]
+}

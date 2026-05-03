@@ -1,9 +1,11 @@
 ﻿import { ImageResponse } from 'next/og'
 import { SITE_URL } from '@/lib/site-url'
+import { AGENT_COUNT } from '@/lib/catalog'
 
 // Next.js App Router native OG image generation
 // Size recommended by social platforms: 1200x630
-export const runtime = 'edge'
+// edge runtime removido — AGENT_COUNT vem de catalog.ts que precisa node runtime
+// pra Array.filter complexo (audit elite 2026-05-03 #9).
 export const alt = 'Pralvex — Inteligencia juridica'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
@@ -141,7 +143,7 @@ export default async function OpenGraphImage() {
               display: 'flex',
             }}
           >
-            27 agentes de IA para escritorios de advocacia &mdash; analise de documentos,
+            {AGENT_COUNT.implemented} agentes de IA prontos para escritorios de advocacia &mdash; analise de documentos,
             jurisprudencia, pecas processuais, calculos e mais.
           </div>
         </div>

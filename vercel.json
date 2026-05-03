@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/trial-reminder",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/purge-memory",
+      "schedule": "0 6 * * 0"
     }
   ]
 }

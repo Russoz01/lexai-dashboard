@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next'
+﻿import type { Metadata, Viewport } from 'next'
 import { headers } from 'next/headers'
 import { DM_Sans, Playfair_Display } from 'next/font/google'
 import { ThemeProvider } from '@/context/ThemeContext'
@@ -48,6 +48,20 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   robots: { index: true, follow: true },
+  manifest: '/manifest.json',
+}
+
+// Viewport meta — pré-demo P0 fix 2026-05-03 (audit elite v4).
+// Sem isso, iPhone/iPad abre site com zoom desktop (200% zoom out).
+// initialScale=1 garante render mobile-first; userScalable não bloqueado
+// pra acessibilidade (WCAG 1.4.4 zoom até 200%).
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f8f5f0' },
+    { media: '(prefers-color-scheme: dark)', color: '#0e181c' },
+  ],
 }
 
 const faqJsonLd = {
