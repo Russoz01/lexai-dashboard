@@ -7,6 +7,7 @@ import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/
 import { buildGroundingContext, validateCitations, WEB_SEARCH_TOOL, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -154,6 +155,9 @@ export async function POST(req: NextRequest) {
       grounding_stats: { ...gstats, ...validation.stats },
     })
   } catch (err: unknown) {
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      return NextResponse.json(getDemoFallback('legislacao', { reason: err instanceof Error ? err.message : String(err) }))
+    }
     return safeError('legislacao', err)
   }
 }

@@ -8,6 +8,7 @@ import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -168,6 +169,9 @@ export async function POST(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
       safeLog.error('[API /revisor]', errName, msg)
+    }
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      return NextResponse.json(getDemoFallback('revisor', { reason: msg }))
     }
     if (errName === 'AbortError' || msg.toLowerCase().includes('aborted') || msg.toLowerCase().includes('timeout')) {
       return NextResponse.json({ error: 'O servico de IA demorou muito para responder. Tente um documento menor.' }, { status: 504 })

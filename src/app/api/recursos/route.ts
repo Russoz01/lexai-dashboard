@@ -4,8 +4,10 @@ import { createClient } from '@/lib/supabase/server'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
+import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
@@ -110,6 +112,51 @@ export async function POST(req: NextRequest) {
     const grounding = buildGroundingContext(decisao.slice(0, 2000), { topK: 8 })
     const gstats = groundingStats(grounding)
 
+    // P1-2 (audit elite IA): streaming opt-in via ?stream=1.
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = usuarioIdEarly
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'recursos',
+        params: {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8192,
+          system: [
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
+          ],
+          messages: [{ role: 'user', content: userMessage }],
+        },
+        fallback: { recurso: { titulo: TIPOS_RECURSO[tipo], razoes: { sintese_do_julgado: '' } } },
+        demoFallback: DEMO_FALLBACKS.recursos as Record<string, unknown>,
+        wrapResult: (parsed) => {
+          const r = ((parsed as Record<string, unknown>)?.recurso ?? parsed) as Record<string, unknown>
+          return { recurso: r }
+        },
+        onPersist: async (parsed) => {
+          const r = ((parsed as Record<string, unknown>)?.recurso ?? parsed) as Record<string, unknown>
+          if (usuarioId) {
+            const tituloR = (r?.titulo as string) || TIPOS_RECURSO[tipo]
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId,
+              agente: 'recursos',
+              mensagem_usuario: `Recurso: ${TIPOS_RECURSO[tipo]}`,
+              resposta_agente: tituloR,
+            })
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
+              agente: 'recursos',
+              resumo: buildMemorySummary('recursos', `${TIPOS_RECURSO[tipo]}: ${decisao.slice(0, 120)}`, tituloR),
+              fatos: [{ key: 'tipo', value: tipo }],
+              tags: extractMemoryTags('recursos', tipo, decisao),
+            }, { prefs }), 'recordAgentMemory:recursos')
+          }
+          fireAndForget(events.agentUsed(user.id, 'recursos', 'unknown'), 'events.agentUsed:recursos')
+        },
+      })
+    }
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
     let message: Anthropic.Messages.Message
@@ -177,6 +224,9 @@ export async function POST(req: NextRequest) {
       grounding_stats: { ...gstats, ...validation.stats },
     })
   } catch (err: unknown) {
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      return NextResponse.json(getDemoFallback('recursos', { reason: err instanceof Error ? err.message : String(err) }))
+    }
     return safeError('recursos', err)
   }
 }

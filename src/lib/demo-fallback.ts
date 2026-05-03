@@ -136,6 +136,188 @@ const FALLBACK_CHAT = {
   demo_fallback: true,
 }
 
+/* ──────────────────────────────────────────────────────────────────
+ * Wave R2 expansion (2026-05-03): 13 fallbacks novos pra cobrir
+ * todos os 21 agentes. Shape segue contrato da response real de
+ * cada route — front renderiza igual ao sucesso, mas com mensagem
+ * de baixa confianca + flag demo_fallback pra UI sinalizar.
+ * ────────────────────────────────────────────────────────────── */
+
+const FALLBACK_ESTRATEGISTA = {
+  plano: {
+    titulo: 'Plano Estrategico — Indisponivel',
+    cenario_atual: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
+    objetivos: [],
+    estrategia_principal: '',
+    fases: [],
+    riscos: [],
+    metricas_sucesso: [],
+    confianca: { nivel: 'baixa', nota: 'Resposta de fallback' },
+  },
+  fontes: [],
+  grounding_stats: {},
+  demo_fallback: true,
+}
+
+const FALLBACK_RECURSOS = {
+  recurso: {
+    titulo: 'Recurso — Modelo',
+    tipo: 'apelacao',
+    documento: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
+    teses: [],
+    fundamentacao: '',
+    pedidos: [],
+    confianca: { nivel: 'baixa' },
+  },
+  fontes: [],
+  grounding_stats: {},
+  demo_fallback: true,
+}
+
+const FALLBACK_AUDIENCIA = {
+  roteiro: {
+    titulo: 'Roteiro de Audiencia — Indisponivel',
+    fase: 'preliminares',
+    estrutura: [],
+    pontos_chave: ['Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.'],
+    perguntas_sugeridas: [],
+    objecoes_provaveis: [],
+    confianca: { nivel: 'baixa' },
+  },
+  fontes: [],
+  grounding_stats: {},
+  demo_fallback: true,
+}
+
+const FALLBACK_NEGOCIADOR = {
+  resultado: {
+    titulo: 'Estrategia de Negociacao — Indisponivel',
+    diagnostico: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
+    batna: '',
+    zopa: '',
+    taticas: [],
+    roteiro: [],
+    confianca: { nivel: 'baixa' },
+  },
+  oab_warnings: undefined,
+  demo_fallback: true,
+}
+
+const FALLBACK_CALCULADOR = {
+  resultado: {
+    tipo_calculo: 'indisponivel',
+    resumo: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
+    valores: [],
+    formula_utilizada: '',
+    fundamentacao: '',
+    confianca: { nivel: 'baixa' },
+  },
+  demo_fallback: true,
+}
+
+const FALLBACK_LEGISLACAO = {
+  resultado: {
+    dispositivo: 'Indisponivel',
+    texto_legal: '',
+    explicacao: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
+    exemplos_praticos: [],
+    jurisprudencia: [],
+    artigos_relacionados: [],
+    alteracoes_recentes: '',
+    observacoes: ['Resposta de fallback — IA temporariamente indisponivel'],
+    confianca: { nivel: 'baixa' },
+  },
+  fontes: [],
+  grounding_stats: {},
+  demo_fallback: true,
+}
+
+const FALLBACK_COMPLIANCE = {
+  parecer: {
+    titulo: 'Parecer de Compliance — Indisponivel',
+    score: 0,
+    nivel_risco: 'medio',
+    pontos_atencao: ['Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.'],
+    recomendacoes: [],
+    fundamentacao: '',
+    confianca: { nivel: 'baixa' },
+  },
+  fontes: [],
+  grounding_stats: {},
+  demo_fallback: true,
+}
+
+const FALLBACK_REVISOR = {
+  revisao: {
+    resumo: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
+    pontos_revisados: [],
+    sugestoes: [],
+    erros_identificados: [],
+    confianca: { nivel: 'baixa' },
+  },
+  fontes: [],
+  grounding_stats: {},
+  demo_fallback: true,
+}
+
+const FALLBACK_TRADUTOR = {
+  traducao: {
+    texto_traduzido: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
+    glossario: [],
+    notas_traducao: [],
+    confianca: { nivel: 'baixa' },
+  },
+  demo_fallback: true,
+}
+
+const FALLBACK_MARKETING_IA = {
+  conteudo: {
+    titulo: 'Conteudo de Marketing — Indisponivel',
+    variacoes: [
+      { texto: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.', plataforma: 'instagram', tom: 'institucional' },
+    ],
+    hashtags: [],
+    cta_sugerido: '',
+    confianca: { nivel: 'baixa' },
+  },
+  oab_violations: undefined,
+  demo_fallback: true,
+}
+
+const FALLBACK_ATENDIMENTO = {
+  roteiro: {
+    titulo: 'Roteiro de Entrevista — Indisponivel',
+    perguntas: ['Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.'],
+    pontos_atencao: [],
+    documentos_solicitar: [],
+    confianca: { nivel: 'baixa' },
+  },
+  demo_fallback: true,
+}
+
+const FALLBACK_PROFESSOR = {
+  relatorio: {
+    titulo: 'Monitor Legislativo — Indisponivel',
+    novidades_legislativas: [],
+    novidades_jurisprudenciais: [],
+    analise_impacto: { resumo_geral: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.' },
+    confianca: { nivel: 'baixa' },
+  },
+  demo_fallback: true,
+}
+
+const FALLBACK_SIMULADO = {
+  parecer: {
+    titulo: 'Parecer Simulado — Indisponivel',
+    enquadramento: 'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
+    fundamentacao: '',
+    conclusao: '',
+    teses_alternativas: [],
+    confianca: { nivel: 'baixa' },
+  },
+  demo_fallback: true,
+}
+
 export const DEMO_FALLBACKS = {
   resumidor: FALLBACK_RESUMIDOR,
   redator: FALLBACK_REDATOR,
@@ -145,6 +327,19 @@ export const DEMO_FALLBACKS = {
   risco: FALLBACK_RISCO,
   pesquisador: FALLBACK_PESQUISADOR,
   chat: FALLBACK_CHAT,
+  estrategista: FALLBACK_ESTRATEGISTA,
+  recursos: FALLBACK_RECURSOS,
+  audiencia: FALLBACK_AUDIENCIA,
+  negociador: FALLBACK_NEGOCIADOR,
+  calculador: FALLBACK_CALCULADOR,
+  legislacao: FALLBACK_LEGISLACAO,
+  compliance: FALLBACK_COMPLIANCE,
+  revisor: FALLBACK_REVISOR,
+  tradutor: FALLBACK_TRADUTOR,
+  'marketing-ia': FALLBACK_MARKETING_IA,
+  atendimento: FALLBACK_ATENDIMENTO,
+  professor: FALLBACK_PROFESSOR,
+  simulado: FALLBACK_SIMULADO,
 } as const
 
 export type DemoFallbackKey = keyof typeof DEMO_FALLBACKS

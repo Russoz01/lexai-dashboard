@@ -5,6 +5,7 @@ import { checkAndIncrementQuota } from '@/lib/quotas'
 import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { fireAndForget } from '@/lib/fire-and-forget'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { validateOabContent } from '@/lib/oab-validator'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
@@ -151,6 +152,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ resultado, oab_warnings })
   } catch (err: unknown) {
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      return NextResponse.json(getDemoFallback('negociador', { reason: err instanceof Error ? err.message : String(err) }))
+    }
     return safeError('negociar', err)
   }
 }

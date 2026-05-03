@@ -6,6 +6,8 @@ import { events } from '@/lib/analytics'
 import { resolveUsuarioIdServer, safeError, parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { assertPlanAccess } from '@/lib/plan-access'
+import { DEMO_FALLBACKS, getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
+import { createAgentStream } from '@/lib/agent-stream'
 import { buildGroundingContext, validateCitations, groundingStats } from '@/lib/legal-grounding'
 import { safeLog } from '@/lib/safe-log'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
@@ -119,6 +121,51 @@ export async function POST(req: NextRequest) {
     const grounding = buildGroundingContext(groundingQuery, { topK: 8 })
     const gstats = groundingStats(grounding)
 
+    // P1-2 (audit elite IA): streaming opt-in via ?stream=1.
+    const wantsStream = req.nextUrl.searchParams.get('stream') === '1'
+    if (wantsStream) {
+      const usuarioId = usuarioIdEarly
+      return createAgentStream<Record<string, unknown>>({
+        client,
+        agente: 'estrategista',
+        params: {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8192,
+          system: [
+            { type: 'text' as const, text: enhancedSystem, cache_control: { type: 'ephemeral' as const } },
+            { type: 'text' as const, text: grounding.contextBlock, cache_control: { type: 'ephemeral' as const } },
+            ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
+          ],
+          messages: [{ role: 'user', content: userMessage }],
+        },
+        fallback: { plano: { titulo: 'Plano estrategico', sintese_situacional: '' } },
+        demoFallback: DEMO_FALLBACKS.estrategista as Record<string, unknown>,
+        wrapResult: (parsed) => {
+          const p = ((parsed as Record<string, unknown>)?.plano ?? parsed) as Record<string, unknown>
+          return { plano: p }
+        },
+        onPersist: async (parsed) => {
+          const p = ((parsed as Record<string, unknown>)?.plano ?? parsed) as Record<string, unknown>
+          if (usuarioId) {
+            const tituloP = (p?.titulo as string) || 'Plano estrategico'
+            await supabase.from('historico').insert({
+              usuario_id: usuarioId,
+              agente: 'estrategista',
+              mensagem_usuario: `Plano: ${caso.slice(0, 200)}`,
+              resposta_agente: tituloP,
+            })
+            fireAndForget(recordAgentMemory(supabase, usuarioId, {
+              agente: 'estrategista',
+              resumo: buildMemorySummary('estrategista', caso.slice(0, 160), tituloP),
+              fatos: [{ key: 'objetivo', value: objetivo.slice(0, 120) }, { key: 'titulo', value: String(tituloP).slice(0, 120) }],
+              tags: extractMemoryTags('estrategista', undefined, `${caso} ${objetivo}`),
+            }, { prefs }), 'recordAgentMemory:estrategista')
+          }
+          fireAndForget(events.agentUsed(user.id, 'estrategista', 'unknown'), 'events.agentUsed:estrategista')
+        },
+      })
+    }
+
     // AbortController evita lambda travado em 300s sob 529 overload
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90_000)
@@ -184,6 +231,9 @@ export async function POST(req: NextRequest) {
       grounding_stats: { ...gstats, ...validation.stats },
     })
   } catch (err: unknown) {
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      return NextResponse.json(getDemoFallback('estrategista', { reason: err instanceof Error ? err.message : String(err) }))
+    }
     return safeError('estrategista', err)
   }
 }

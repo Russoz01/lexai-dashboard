@@ -6,6 +6,7 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { checkAndIncrementQuota } from '@/lib/quotas'
 import { userCanAccessAgent, getUpgradeMessage, getMinPlanFor } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError, type DemoFallbackKey, DEMO_FALLBACKS } from '@/lib/demo-fallback'
 
 /* ═════════════════════════════════════════════════════════════
  * withAgentAuth — v10.10 agent route guard
@@ -127,6 +128,14 @@ export function withAgentAuth(
       const msg = err instanceof Error ? err.message : 'Erro interno'
       // eslint-disable-next-line no-console
       safeLog.error(`[API /${agentSlug}]`, msg)
+
+      // Wave R2 fix (2026-05-03): demo fallback no wrapper cobre routes
+      // que usam withAgentAuth (audiencia, calcular, atendimento). Front
+      // renderiza igual ao sucesso, com flag demo_fallback ligada.
+      if (isDemoFallbackEnabled() && isRetryableError(err) && agentSlug in DEMO_FALLBACKS) {
+        const fallback = getDemoFallback(agentSlug as DemoFallbackKey, { reason: msg })
+        return NextResponse.json(fallback)
+      }
 
       // 529 / overloaded — erro esperado do Anthropic, não é bug
       if (err instanceof Error && (msg.includes('529') || msg.toLowerCase().includes('overloaded'))) {

@@ -6,6 +6,7 @@ import { parseAgentJSON, withRetry } from '@/lib/api-utils'
 import { assertPlanAccess } from '@/lib/plan-access'
 import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
+import { getDemoFallback, isDemoFallbackEnabled, isRetryableError } from '@/lib/demo-fallback'
 import { getUserPreferences, recordAgentMemory } from '@/lib/preferences'
 import { buildAgentPreamble, buildAntiHallucinationFooter, buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
 
@@ -229,6 +230,10 @@ export async function POST(req: NextRequest) {
     const errMsg = err instanceof Error ? err.message : String(err)
     const errStack = err instanceof Error ? err.stack?.split('\n').slice(0, 5).join(' | ') : undefined
     safeLog.error('[API /ensinar] unhandled:', errName, '-', errMsg, '|', errStack ?? '')
+
+    if (isDemoFallbackEnabled() && isRetryableError(err)) {
+      return NextResponse.json(getDemoFallback('professor', { reason: errMsg }))
+    }
 
     // Map common Anthropic SDK errors to actionable HTTP codes.
     const lower = errMsg.toLowerCase()
