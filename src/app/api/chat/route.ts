@@ -9,6 +9,9 @@ import { safeLog } from '@/lib/safe-log'
 import { fireAndForget } from '@/lib/fire-and-forget'
 import { getUserPreferences, getRecentMemory, formatMemoryForPrompt, recordAgentMemory } from '@/lib/preferences'
 import { buildPreferencesContext, extractMemoryTags, buildMemorySummary } from '@/lib/prompt-enhancers'
+import { retrieve } from '@/lib/legal-grounding/retrieval'
+import { validateOabContent } from '@/lib/oab-validator'
+import { addDiasUteisForenses } from '@/lib/feriados-br'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
@@ -201,6 +204,122 @@ const ROUTING_TOOL = {
     },
     required: ['agente', 'justificativa'],
   },
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+ * Tools auxiliares (audit elite IA P2-6 · RICE 240)
+ * Em vez de obrigar o usuario a sair do chat, modelo pode chamar
+ * essas ferramentas inline e devolver resposta tudo-num-fluxo.
+ * ───────────────────────────────────────────────────────────────────── */
+
+const SEARCH_JURISPRUDENCE_TOOL = {
+  name: 'search_jurisprudence',
+  description: 'Busca rapida no corpus legal local (Sumulas + dispositivos verificados de CF/CPC/CLT/CDC/CC/CP/Provimento 205) por termo. Use quando usuario perguntar sobre tese juridica, precedente ou sumula especifica e responder direto for melhor que rotear pro Pesquisador completo. Retorna ate 3 matches.',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      query: {
+        type: 'string' as const,
+        description: 'Termo de busca em portugues brasileiro. Ex: "responsabilidade civil objetiva", "prescricao trabalhista", "habeas corpus liberatorio".',
+      },
+      area: {
+        type: 'string' as const,
+        description: 'Area do direito opcional pra filtrar matches. Ex: "trabalhista", "civel", "penal".',
+      },
+    },
+    required: ['query'],
+  },
+}
+
+const CALCULATE_DEADLINE_TOOL = {
+  name: 'calculate_deadline',
+  description: 'Calcula uma data final adicionando N dias uteis (skip sabado/domingo + feriados nacionais BR) a uma data inicial. Use quando usuario perguntar prazo processual ou de notificacao.',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      data_inicial: {
+        type: 'string' as const,
+        description: 'Data inicial no formato YYYY-MM-DD. Ex: "2026-05-03".',
+      },
+      dias_uteis: {
+        type: 'number' as const,
+        description: 'Quantidade de dias uteis a adicionar. Ex: 15 pra contestacao.',
+      },
+    },
+    required: ['data_inicial', 'dias_uteis'],
+  },
+}
+
+const CHECK_OAB_COMPLIANCE_TOOL = {
+  name: 'check_oab_compliance',
+  description: 'Valida texto contra Provimento 205/2021 OAB (publicidade juridica). Detecta violacoes tipo "garantimos vitoria", "consulta gratis sem compromisso", "promocao". Use quando usuario pedir pra revisar texto de marketing/captacao antes de publicar.',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      texto: {
+        type: 'string' as const,
+        description: 'Texto a ser validado. Ate 5000 chars. Geralmente post de rede social, anuncio, email marketing.',
+      },
+    },
+    required: ['texto'],
+  },
+}
+
+const AUX_TOOLS = [SEARCH_JURISPRUDENCE_TOOL, CALCULATE_DEADLINE_TOOL, CHECK_OAB_COMPLIANCE_TOOL]
+
+/**
+ * Executa server-side as tools auxiliares.
+ * Retorna string formatada pronta pra ser tool_result.content.
+ */
+function executeAuxTool(name: string, input: Record<string, unknown>): string {
+  try {
+    if (name === 'search_jurisprudence') {
+      const query = String(input.query || '').slice(0, 500)
+      const area = typeof input.area === 'string' ? input.area : undefined
+      if (!query) return 'erro: query vazia'
+      const result = retrieve(query, { area, topK: 3 })
+      if (result.matches.length === 0) {
+        return 'Nenhum match no corpus local. Sugira pro usuario rotear pro Pesquisador completo (que usa web search).'
+      }
+      const lines = result.matches.map(m => {
+        if (m.provision) {
+          return `Art. ${m.provision.artigo} ${m.provision.diploma} (${m.provision.area}, score ${m.score}): ${m.provision.caput.slice(0, 200)}`
+        }
+        if (m.sumula) {
+          return `Sumula ${m.sumula.vinculante ? 'Vinculante ' : ''}${m.sumula.numero} ${m.sumula.tribunal} (score ${m.score}): ${m.sumula.texto.slice(0, 200)}`
+        }
+        return ''
+      }).filter(Boolean)
+      return lines.join('\n\n')
+    }
+
+    if (name === 'calculate_deadline') {
+      const dataInicial = String(input.data_inicial || '')
+      const dias = Number(input.dias_uteis)
+      if (!dataInicial || !Number.isFinite(dias)) return 'erro: data_inicial e dias_uteis obrigatorios'
+      const start = new Date(dataInicial + 'T12:00:00')
+      if (Number.isNaN(start.getTime())) return 'erro: data_inicial invalida (use YYYY-MM-DD)'
+      const final = addDiasUteisForenses(start, Math.floor(dias))
+      const yyyy = final.getFullYear()
+      const mm = String(final.getMonth() + 1).padStart(2, '0')
+      const dd = String(final.getDate()).padStart(2, '0')
+      return `Data final: ${dd}/${mm}/${yyyy} (${dias} dias uteis a partir de ${dataInicial}, descontando sabado/domingo + feriados nacionais BR + recesso forense 20/12-20/01).`
+    }
+
+    if (name === 'check_oab_compliance') {
+      const texto = String(input.texto || '').slice(0, 5000)
+      if (!texto) return 'erro: texto vazio'
+      const result = validateOabContent(texto)
+      if (result.ok) return 'OK — sem violacoes detectadas pelo Provimento 205/2021.'
+      const linhas = result.violations.map(v => `[${v.severity.toUpperCase()}] ${v.rule}: ${v.motivo}\n   trecho: "${v.trecho}"`)
+      return `Violacoes detectadas (${result.violations.length}):\n\n${linhas.join('\n\n')}\n\nReescreva removendo esses trechos antes de publicar.`
+    }
+
+    return 'erro: tool desconhecida'
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e)
+    return `erro na execucao: ${msg.slice(0, 200)}`
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -472,35 +591,66 @@ export async function POST(req: NextRequest) {
     // Modo legacy (não-streaming) — fallback p/ clients antigos
     // Wave C5: retry automático 3x com backoff em erros transientes.
     // ─────────────────────────────────────────────────────────────────
-    const response = await withRetry(() => client.messages.create({
-      model: modelo,
-      max_tokens: modo === 'complexo' ? 3500 : 1800,
-      system: [
-        // P0 cache fix (2026-05-03 review elite): mesmo split do stream path.
-        { type: 'text' as const, text: buildStableSystemPrompt(fidelidade), cache_control: { type: 'ephemeral' as const } },
-        { type: 'text' as const, text: buildVariableContext(memoryContext, smartSuggestionsHint) },
-        ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
-      ],
-      tools: [ROUTING_TOOL],
-      messages,
-    }))
-
+    // Multi-turn tool execution (P2-6 audit IA): modelo pode chamar aux tools
+    // (search_juris, calculate_deadline, check_oab) inline, server executa,
+    // devolve tool_result, e modelo continua resposta. Limit 3 rounds pra
+    // evitar loop infinito caso modelo bugue.
+    const turnMessages: Anthropic.MessageParam[] = [...messages]
     let textoResposta = ''
     let rotear: { agente: AgenteKey; justificativa: string; pre_prompt?: string } | null = null
+    const MAX_TOOL_ROUNDS = 3
 
-    for (const block of response.content) {
-      if (block.type === 'text') {
-        textoResposta += block.text
-      } else if (block.type === 'tool_use' && block.name === 'rotear_agente') {
-        const input = block.input as { agente?: string; justificativa?: string; pre_prompt?: string }
-        if (input.agente && input.agente in AGENTES_CATALOGO) {
-          rotear = {
-            agente: input.agente as AgenteKey,
-            justificativa: input.justificativa || '',
-            pre_prompt: input.pre_prompt,
+    for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+      const response = await withRetry(() => client.messages.create({
+        model: modelo,
+        max_tokens: modo === 'complexo' ? 3500 : 1800,
+        system: [
+          // P0 cache fix (2026-05-03 review elite): mesmo split do stream path.
+          { type: 'text' as const, text: buildStableSystemPrompt(fidelidade), cache_control: { type: 'ephemeral' as const } },
+          { type: 'text' as const, text: buildVariableContext(memoryContext, smartSuggestionsHint) },
+          ...(prefsContext ? [{ type: 'text' as const, text: prefsContext }] : []),
+        ],
+        tools: [ROUTING_TOOL, ...AUX_TOOLS],
+        messages: turnMessages,
+      }))
+
+      const toolUseBlocks: Array<{ id: string; name: string; input: Record<string, unknown> }> = []
+      let roundText = ''
+      for (const block of response.content) {
+        if (block.type === 'text') {
+          roundText += block.text
+        } else if (block.type === 'tool_use') {
+          if (block.name === 'rotear_agente') {
+            const input = block.input as { agente?: string; justificativa?: string; pre_prompt?: string }
+            if (input.agente && input.agente in AGENTES_CATALOGO) {
+              rotear = {
+                agente: input.agente as AgenteKey,
+                justificativa: input.justificativa || '',
+                pre_prompt: input.pre_prompt,
+              }
+            }
+          } else {
+            toolUseBlocks.push({
+              id: block.id,
+              name: block.name,
+              input: block.input as Record<string, unknown>,
+            })
           }
         }
       }
+      textoResposta += roundText
+
+      // Sem aux tools OU rotear: fim do loop
+      if (toolUseBlocks.length === 0 || rotear || response.stop_reason !== 'tool_use') break
+
+      // Executa aux tools + injeta tool_result, segue pra proxima rodada
+      turnMessages.push({ role: 'assistant', content: response.content })
+      const toolResults: Anthropic.ToolResultBlockParam[] = toolUseBlocks.map(t => ({
+        type: 'tool_result' as const,
+        tool_use_id: t.id,
+        content: executeAuxTool(t.name, t.input),
+      }))
+      turnMessages.push({ role: 'user', content: toolResults })
     }
 
     textoResposta = textoResposta.trim()
