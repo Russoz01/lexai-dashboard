@@ -93,7 +93,12 @@ const SUGESTOES: { Icon: LucideIcon; texto: string }[] = [
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
-  const [arquivo, setArquivo] = useState<{ nome: string; texto: string; paginas: number } | null>(null)
+  // Bug-fix urgente cliente (2026-05-04): refactor singular -> array.
+  // Antes: `arquivo: T | null` (1 anexo por vez, sem drag-drop, sem multi-select).
+  // Depois: `arquivos: T[]` + drag-drop + input multiple.
+  type Anexo = { nome: string; texto: string; paginas: number }
+  const [arquivos, setArquivos] = useState<Anexo[]>([])
+  const [isDragOver, setIsDragOver] = useState(false)
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
   const [parsingPdf, setParsingPdf] = useState(false)
@@ -159,57 +164,113 @@ export default function ChatPage() {
 
   useEffect(() => { autoResize() }, [input, autoResize])
 
-  async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    e.target.value = '' // Permite re-selecionar o mesmo arquivo
-    if (!file) return
-
-    setErro('')
-
+  // Processa 1 arquivo individual (PDF, TXT, MD). Retorna Anexo ou null em erro.
+  async function processarArquivo(file: File): Promise<Anexo | null> {
     if (file.size > 10 * 1024 * 1024) {
-      setErro('Arquivo muito grande. Limite de 10MB.')
-      return
+      setErro(`"${file.name}" muito grande. Limite de 10MB por arquivo.`)
+      return null
     }
-
     try {
       if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-        setParsingPdf(true)
         const { text, numPages } = await extractPdfWithMeta(file)
         if (text.length < 20) {
-          setErro('Não consegui extrair texto do PDF. O arquivo pode ser uma imagem escaneada.')
-          setParsingPdf(false)
-          return
+          setErro(`"${file.name}" sem texto extraível (pode ser PDF escaneado).`)
+          return null
         }
-        setArquivo({ nome: file.name, texto: text, paginas: numPages })
-        setParsingPdf(false)
-      } else if (file.type.startsWith('text/') || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+        return { nome: file.name, texto: text, paginas: numPages }
+      } else if (
+        file.type.startsWith('text/') ||
+        file.name.toLowerCase().endsWith('.txt') ||
+        file.name.toLowerCase().endsWith('.md')
+      ) {
         const text = await file.text()
         if (text.length < 10) {
-          setErro('Arquivo vazio ou muito pequeno.')
-          return
+          setErro(`"${file.name}" vazio ou muito pequeno.`)
+          return null
         }
-        setArquivo({ nome: file.name, texto: text, paginas: 0 })
+        return { nome: file.name, texto: text, paginas: 0 }
       } else {
-        setErro('Formato não suportado. Envie PDF, TXT ou MD.')
+        setErro(`"${file.name}" formato não suportado. Envie PDF, TXT ou MD.`)
+        return null
       }
     } catch (err) {
       safeLog.error('[chat/file]', err)
-      setErro('Erro ao ler arquivo. Tente novamente.')
-      setParsingPdf(false)
+      setErro(`Erro ao ler "${file.name}". Tente novamente.`)
+      return null
     }
+  }
+
+  async function processarFiles(files: FileList | File[]) {
+    const arr = Array.from(files)
+    if (arr.length === 0) return
+    setErro('')
+    setParsingPdf(true)
+    const novos: Anexo[] = []
+    for (const file of arr) {
+      const anexo = await processarArquivo(file)
+      if (anexo) novos.push(anexo)
+    }
+    if (novos.length > 0) {
+      setArquivos(prev => [...prev, ...novos])
+    }
+    setParsingPdf(false)
+  }
+
+  async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+    e.target.value = '' // permite re-selecionar mesmo arquivo
+    if (!files || files.length === 0) return
+    await processarFiles(files)
+  }
+
+  function onDragOver(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!isDragOver) setIsDragOver(true)
+  }
+
+  function onDragLeave(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+  }
+
+  async function onDrop(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+    const files = e.dataTransfer.files
+    if (files && files.length > 0) {
+      await processarFiles(files)
+    }
+  }
+
+  function removerArquivo(idx: number) {
+    setArquivos(prev => prev.filter((_, i) => i !== idx))
   }
 
   async function enviar(textoManual?: string) {
     const texto = (textoManual ?? input).trim()
-    if (!texto && !arquivo) return
+    if (!texto && arquivos.length === 0) return
     if (loading) return
 
     setErro('')
+    // Mensagem do user no historico mostra apenas o primeiro arquivo (compat retro).
+    // Lista completa segue no payload concatenado pra IA.
+    const primeiroArquivo = arquivos[0]
     const userMsg: Message = {
       id: nowId(),
       role: 'user',
       content: texto,
-      arquivo: arquivo ? { nome: arquivo.nome, paginas: arquivo.paginas, chars: arquivo.texto.length } : undefined,
+      arquivo: primeiroArquivo
+        ? {
+            nome: arquivos.length > 1
+              ? `${primeiroArquivo.nome} +${arquivos.length - 1} anexos`
+              : primeiroArquivo.nome,
+            paginas: primeiroArquivo.paginas,
+            chars: arquivos.reduce((acc, a) => acc + a.texto.length, 0),
+          }
+        : undefined,
       timestamp: Date.now(),
     }
 
@@ -231,8 +292,20 @@ export default function ChatPage() {
 
     setMessages(prev => [...prev, userMsg, assistantMsg])
     setInput('')
-    const arquivoSnapshot = arquivo
-    setArquivo(null)
+    // Concat texto de TODOS os anexos com headers `===arquivo: nome.pdf===` pra IA
+    // distinguir documentos. Backend recebe string unica em arquivoTexto (sem mudar API).
+    const arquivosSnapshot = arquivos
+    const arquivoTextoConcat = arquivosSnapshot.length > 0
+      ? arquivosSnapshot
+          .map(a => `===arquivo: ${a.nome}===\n${a.texto}`)
+          .join('\n\n')
+      : ''
+    const arquivoNomeConcat = arquivosSnapshot.length === 1
+      ? arquivosSnapshot[0].nome
+      : arquivosSnapshot.length > 1
+        ? `${arquivosSnapshot.length} anexos (${arquivosSnapshot.map(a => a.nome).join(', ')})`
+        : ''
+    setArquivos([])
     setLoading(true)
 
     // Wave C5 fix: aborta stream anterior se existir + cria novo controller
@@ -248,8 +321,8 @@ export default function ChatPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mensagem: texto,
-          arquivoTexto: arquivoSnapshot?.texto,
-          arquivoNome: arquivoSnapshot?.nome,
+          arquivoTexto: arquivoTextoConcat || undefined,
+          arquivoNome: arquivoNomeConcat || undefined,
           historico: historicoPayload,
           fidelidade,
           modo,
@@ -518,7 +591,36 @@ export default function ChatPage() {
       </div>
 
       {/* ── Composer ────────────────────────────────────── */}
-      <div className="chat-composer">
+      <div
+        className="chat-composer"
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+        style={isDragOver ? {
+          background: 'rgba(191,166,142,0.08)',
+          outline: '2px dashed var(--accent)',
+          outlineOffset: -8,
+          borderRadius: 12,
+        } : undefined}
+      >
+        {isDragOver && (
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(15,15,15,0.85)',
+            borderRadius: 12,
+            pointerEvents: 'none',
+            fontFamily: 'var(--font-mono, ui-monospace), monospace',
+            fontSize: 13,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            color: 'var(--accent)',
+            fontWeight: 700,
+          }}>
+            <Paperclip size={18} strokeWidth={2} aria-hidden style={{ marginRight: 10 }} />
+            Solte para anexar
+          </div>
+        )}
         {erro && (
           <div className="chat-error" role="alert">
             <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
@@ -616,28 +718,45 @@ export default function ChatPage() {
           )}
         </div>
 
-        {(arquivo || parsingPdf) && (
+        {parsingPdf && (
           <div className="chat-attached">
-            {parsingPdf ? (
-              <>
-                <RefreshCw size={18} strokeWidth={1.75} aria-hidden className="chat-spin" />
-                <span>Extraindo texto do PDF...</span>
-              </>
-            ) : arquivo ? (
-              <>
+            <RefreshCw size={18} strokeWidth={1.75} aria-hidden className="chat-spin" />
+            <span>Processando arquivo(s)...</span>
+          </div>
+        )}
+        {arquivos.length > 0 && !parsingPdf && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {arquivos.map((a, idx) => (
+              <div key={`${a.nome}-${idx}`} className="chat-attached">
                 <FileText size={18} strokeWidth={1.75} aria-hidden />
                 <div className="chat-attached-info">
-                  <div className="chat-attached-name">{arquivo.nome}</div>
+                  <div className="chat-attached-name">{a.nome}</div>
                   <div className="chat-attached-meta">
-                    {arquivo.paginas > 0 ? `${arquivo.paginas} páginas · ` : ''}
-                    {(arquivo.texto.length / 1000).toFixed(1)}k caracteres extraídos
+                    {a.paginas > 0 ? `${a.paginas} páginas · ` : ''}
+                    {(a.texto.length / 1000).toFixed(1)}k caracteres
                   </div>
                 </div>
-                <button className="chat-attached-remove" onClick={() => setArquivo(null)} aria-label="Remover anexo">
+                <button
+                  className="chat-attached-remove"
+                  onClick={() => removerArquivo(idx)}
+                  aria-label={`Remover ${a.nome}`}
+                  type="button"
+                >
                   <X size={18} strokeWidth={1.75} aria-hidden />
                 </button>
-              </>
-            ) : null}
+              </div>
+            ))}
+            {arquivos.length > 1 && (
+              <div style={{
+                fontSize: 11,
+                color: 'var(--text-muted)',
+                fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                letterSpacing: '0.06em',
+                paddingLeft: 4,
+              }}>
+                {arquivos.length} arquivos anexados · {(arquivos.reduce((acc, a) => acc + a.texto.length, 0) / 1000).toFixed(1)}k caracteres totais
+              </div>
+            )}
           </div>
         )}
 
@@ -656,7 +775,8 @@ export default function ChatPage() {
             type="file"
             accept=".pdf,.txt,.md,text/plain,text/markdown,application/pdf"
             onChange={onPickFile}
-            aria-label="Selecionar arquivo PDF, TXT ou Markdown"
+            multiple
+            aria-label="Selecionar arquivos PDF, TXT ou Markdown (multiplos permitidos)"
             style={{ display: 'none' }}
           />
 
@@ -675,7 +795,7 @@ export default function ChatPage() {
           <button
             className="chat-send"
             onClick={() => enviar()}
-            disabled={loading || parsingPdf || (!input.trim() && !arquivo)}
+            disabled={loading || parsingPdf || (!input.trim() && arquivos.length === 0)}
             type="button"
             aria-label="Enviar"
           >
