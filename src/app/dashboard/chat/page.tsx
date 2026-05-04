@@ -47,6 +47,12 @@ type Modo = 'simples' | 'complexo'
 
 const LS_FIDELIDADE = 'pralvex-chat-fidelidade'
 const LS_MODO = 'pralvex-chat-modo'
+// 2026-05-04 bug-fix cliente "sumiu meu chat": persiste mensagens da sessao
+// em localStorage. Reload/F5/fechar-aba mantem conversa. Limite 60 msgs
+// (cap historico recente, performance). Usuario clica "Nova conversa" pra
+// limpar manualmente.
+const LS_MESSAGES = 'pralvex-chat-messages'
+const MESSAGES_PERSIST_LIMIT = 60
 
 interface AgenteSugerido {
   key: string
@@ -127,14 +133,24 @@ export default function ChatPage() {
     }
   }, [])
 
-  // Hidrata as preferencias do localStorage no mount
+  // Hidrata as preferencias + mensagens do localStorage no mount
   useEffect(() => {
     try {
       const f = localStorage.getItem(LS_FIDELIDADE) as Fidelidade | null
       if (f && ['profissional', 'parceiro', 'casual'].includes(f)) setFidelidade(f)
       const m = localStorage.getItem(LS_MODO) as Modo | null
       if (m && ['simples', 'complexo'].includes(m)) setModo(m)
-    } catch { /* localStorage indisponivel — silent */ }
+      // Persistencia mensagens (bug-fix "sumiu meu chat")
+      const raw = localStorage.getItem(LS_MESSAGES)
+      if (raw) {
+        const parsed = JSON.parse(raw) as Message[]
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Sanity check: cada msg precisa ter id + role + content
+          const safe = parsed.filter(m => m && m.id && m.role && typeof m.content === 'string')
+          if (safe.length > 0) setMessages(safe)
+        }
+      }
+    } catch { /* localStorage indisponivel ou JSON corrupto — silent */ }
   }, [])
 
   // Persiste em mudanca
@@ -144,6 +160,17 @@ export default function ChatPage() {
   useEffect(() => {
     try { localStorage.setItem(LS_MODO, modo) } catch { /* silent */ }
   }, [modo])
+  // Persiste mensagens (cap MESSAGES_PERSIST_LIMIT pra performance + storage)
+  useEffect(() => {
+    try {
+      if (messages.length === 0) {
+        localStorage.removeItem(LS_MESSAGES)
+        return
+      }
+      const toSave = messages.slice(-MESSAGES_PERSIST_LIMIT)
+      localStorage.setItem(LS_MESSAGES, JSON.stringify(toSave))
+    } catch { /* localStorage cheio ou desabilitado — silent, nao bloqueia chat */ }
+  }, [messages])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })

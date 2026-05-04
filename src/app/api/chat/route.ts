@@ -477,7 +477,7 @@ export async function POST(req: NextRequest) {
           try {
             const anthStream = client.messages.stream({
               model: modelo,
-              max_tokens: modo === 'complexo' ? 3500 : 1800,
+              max_tokens: modo === 'complexo' ? 8192 : 4096,
               system: [
                 // P0 cache fix (2026-05-03 review elite): bloco estável SÓ varia
                 // por fidelidade (3 valores). cache_control ephemeral garante
