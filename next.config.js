@@ -9,6 +9,26 @@ const nextConfig = {
     // Required so instrumentation.ts loads the server/edge Sentry configs
     instrumentationHook: true,
   },
+  async redirects() {
+    // Demo polish (2026-05-03): prospect pode digitar /planos, /pricing, /precos
+    // direto na URL. Antes caia em 404. Agora redireciona pra anchor de pricing
+    // na home (#precos). Status 308 (permanent) — Google indexa redirect target.
+    return [
+      { source: '/planos', destination: '/#precos', permanent: true },
+      { source: '/pricing', destination: '/#precos', permanent: true },
+      { source: '/precos', destination: '/#precos', permanent: true },
+      { source: '/preco', destination: '/#precos', permanent: true },
+      { source: '/plans', destination: '/#precos', permanent: true },
+      // Variantes legacy LexAI -> Pralvex (pre-rebrand 2026-04-23)
+      { source: '/lexai', destination: '/', permanent: true },
+      { source: '/help', destination: '/suporte', permanent: true },
+      { source: '/contato', destination: '/suporte', permanent: true },
+      { source: '/about', destination: '/sobre', permanent: true },
+      { source: '/terms', destination: '/termos', permanent: true },
+      { source: '/privacy', destination: '/privacidade', permanent: true },
+      { source: '/support', destination: '/suporte', permanent: true },
+    ]
+  },
   async headers() {
     // CSP updated: + Sentry CDN/ingest, + Marketing pixels (Meta/GA4/LinkedIn)
     // pra Agent D MarketingPixels.tsx funcionar sem CSP block.

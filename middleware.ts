@@ -31,10 +31,12 @@ function hasSupabaseAuthCookie(request: NextRequest): boolean {
   return false
 }
 
+// Routes reais (verificadas via ls src/app/api/) — naming nem sempre bate com
+// slug do agente no catalog (ex: agente "Redator" -> rota /api/redigir).
 const PROTECTED_AGENT_ROUTES = [
   '/api/parecerista',
   '/api/consultor',
-  '/api/redator',
+  '/api/redigir',
   '/api/contestador',
   '/api/recursos',
   '/api/audiencia',
@@ -44,7 +46,7 @@ const PROTECTED_AGENT_ROUTES = [
   '/api/risco',
   '/api/pesquisar',
   '/api/resumir',
-  '/api/calculador',
+  '/api/calcular',
   '/api/legislacao',
   '/api/chat',
   '/api/marketing-ia',
@@ -53,6 +55,7 @@ const PROTECTED_AGENT_ROUTES = [
   '/api/ensinar',
   '/api/tradutor',
   '/api/compliance',
+  '/api/planilhas',
 ] as const
 
 export async function middleware(request: NextRequest) {
