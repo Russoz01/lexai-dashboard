@@ -10,8 +10,9 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
-  AlertCircle, CheckCircle2, Clock, CreditCard, Gem, Loader2, MinusCircle,
-  Rocket, RotateCcw, ShieldCheck, Smile, Sparkles, Star, XCircle, Zap,
+  AlertCircle, ArrowRight, CheckCircle2, Clock, CreditCard, Gem, Loader2,
+  MessageCircle, MinusCircle, Rocket, RotateCcw, ShieldCheck, Smile,
+  Sparkles, Star, XCircle, Zap,
   type LucideIcon,
 } from 'lucide-react'
 import { LexPricingGrid, type PlanoId } from '@/components/ui/lex-pricing-grid'
@@ -589,13 +590,13 @@ function PlanosPageInner() {
           fontSize: 26, fontStyle: 'italic', fontWeight: 500,
           color: 'var(--text-primary)', marginBottom: 10, letterSpacing: '-0.01em',
         }}>
-          garantia de 7 dias · ou o dinheiro de volta
+          atendimento direto · sem fila, sem chatbot
         </div>
         <div style={{
           maxWidth: 560, margin: '0 auto 18px',
           fontSize: 13.5, color: 'var(--text-muted)', lineHeight: 1.65,
         }}>
-          Teste todos os agentes sem risco. Se a Pralvex não economizar pelo menos 5 horas do seu trabalho na primeira semana, devolvemos 100% do valor. Sem perguntas, sem burocracia.
+          Fale com quem desenvolve o produto. Resposta em 4h úteis por WhatsApp ou email. Bug crítico em 1h. Cancele quando quiser sem multa, sem fidelidade, sem ligação com vendedor.
         </div>
         <div style={{
           display: 'flex', justifyContent: 'center', gap: 22, flexWrap: 'wrap',
@@ -646,12 +647,12 @@ function PlanosPageInner() {
           maxWidth: 540, margin: '0 auto 22px',
           fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6,
         }}>
-          Junte-se aos primeiros escritórios que já transformaram sua rotina. Comece em 30 segundos — sem cartão de crédito.
+          Junte-se aos primeiros escritórios que já transformaram sua rotina. Atendimento personalizado por WhatsApp em até 4h úteis.
         </div>
-        <button
-          type="button"
-          onClick={() => void iniciarCheckout(destaqueId)}
-          disabled={loadingPlan !== null}
+        <a
+          href="https://wa.me/5534993026456?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20a%20Pralvex"
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
             padding: '16px 30px', borderRadius: 12,
@@ -661,20 +662,17 @@ function PlanosPageInner() {
             fontSize: 12, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase',
             border: '1px solid rgba(212,174,106,0.5)',
             boxShadow: '0 16px 42px rgba(212,174,106,0.28)',
-            cursor: loadingPlan ? 'progress' : 'pointer',
-            opacity: loadingPlan ? 0.7 : 1,
-            transition: 'opacity 0.2s ease',
+            cursor: 'pointer',
+            transition: 'opacity 0.2s ease, transform 0.2s ease',
+            textDecoration: 'none',
           }}
         >
-          {loadingPlan === destaqueId ? (
-            <Loader2 size={15} strokeWidth={1.75} aria-hidden className="anim-spin" />
-          ) : (
-            <Rocket size={15} strokeWidth={1.75} aria-hidden />
-          )}
-          Demo 50 min grátis
-        </button>
+          <MessageCircle size={15} strokeWidth={1.75} aria-hidden />
+          Falar com comercial
+          <ArrowRight size={14} strokeWidth={2.2} aria-hidden />
+        </a>
         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 16 }}>
-          Cancele a qualquer momento · Sem cobrança durante a demo · Suporte em português
+          Resposta em 4h úteis · WhatsApp (34) 99302-6456 · Suporte em português
         </div>
       </div>
 

@@ -51,7 +51,7 @@ export function LexPricing() {
           >
             Astrea cobra R$ 1.379 por usuário com limite de documentos. A Pralvex cobra entre{' '}
             <span className="font-mono tabular-nums" style={{ color: 'var(--text-primary)' }}>R$ 599 e R$ 1.599</span>{' '}
-            por advogado registrado — Solo entry-tier, Firma com documentos ilimitados, Enterprise com agentes customizados. Demo grátis de 50 min, sem cartão.
+            por advogado registrado — Solo entry-tier, Firma com documentos ilimitados, Enterprise com agentes customizados. Atendimento direto por WhatsApp.
           </p>
         </Reveal>
 

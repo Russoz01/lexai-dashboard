@@ -27,7 +27,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: 'Pralvex — IA Jurídica para Advocacia Brasileira | 27 Agentes',
-  description: 'Plataforma de IA jurídica com 27 agentes treinados em PJe e Provimento 205 OAB. Demo grátis de 50 minutos, sem cartão.',
+  description: 'Plataforma de IA jurídica com 27 agentes treinados em PJe e Provimento 205 OAB. Atendimento direto por WhatsApp com quem desenvolve o produto.',
   authors: [{ name: 'Pralvex' }],
   openGraph: {
     title: 'Pralvex — Assistente Jurídico Inteligente',

@@ -24,7 +24,7 @@ import { AGENT_COUNT } from '@/lib/catalog'
 // de @/lib/catalog (fonte unica de verdade).
 const VALUE_PROPS = [
   { n: 'I', title: `${AGENT_COUNT.implemented} agentes afinados`, desc: `Treinados especificamente para o ordenamento jurídico brasileiro. ${AGENT_COUNT.preview} novos em construção.` },
-  { n: 'II', title: 'Demo 50 min grátis', desc: 'Experimente sem cartão. 50 minutos de acesso enterprise pra testar antes de assinar.' },
+  { n: 'II', title: 'Demo 50 min grátis', desc: '50 minutos de acesso enterprise pra testar todos os agentes antes de qualquer compromisso.' },
   { n: 'III', title: 'Segurança e LGPD', desc: 'Dados criptografados em trânsito e em repouso. Nunca utilizados em treinamento.' },
   { n: 'IV', title: 'Feito à mão', desc: 'Não somos mais um SaaS genérico. Somos um atelier.' },
 ]
@@ -314,7 +314,7 @@ function LoginPageInner() {
 
           <p className="mb-7 text-sm leading-relaxed text-on-surface-muted">
             {isSignUp
-              ? 'Crie sua conta. Demo de 50 min grátis, sem cartão. Apenas um profissional por vez.'
+              ? 'Crie sua conta. Demo de 50 min grátis pra testar antes de fechar plano. Apenas um profissional por vez.'
               : 'Bem-vindo de volta ao atelier. Entre para retomar seu gabinete digital.'}
           </p>
 
