@@ -875,7 +875,42 @@ export default function RedatorPage() {
             )}
             {peca && (
               <button className="btn-ghost" style={{ fontSize: 12, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5 }}
-                onClick={() => window.print()}>
+                onClick={() => {
+                  // Bug-fix 2026-05-04 (cliente "salva tela do chrome ao inves
+                  // de trazer a peca formatada"): window.print() captura toda
+                  // a pagina (sidebar+nav+header). Solucao: abrir nova aba com
+                  // SOMENTE a peca em HTML clean, depois print dela.
+                  const win = window.open('', '_blank')
+                  if (!win) {
+                    alert('Pop-up bloqueado. Permita pop-ups pra exportar PDF.')
+                    return
+                  }
+                  const titulo = (template || 'Peca Juridica').toUpperCase()
+                  const data = new Date().toLocaleDateString('pt-BR')
+                  const conteudoEscapado = peca.documento
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                  win.document.write(`<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><title>${titulo}</title>
+<style>
+  @page { size: A4; margin: 2.5cm 2cm; }
+  body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.6; color: #000; max-width: 21cm; margin: 0 auto; padding: 1cm; }
+  h1 { font-size: 14pt; text-align: center; text-transform: uppercase; margin: 0 0 24pt; letter-spacing: 0.5pt; }
+  .meta { text-align: right; font-size: 10pt; color: #555; margin-bottom: 16pt; }
+  pre { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.7; white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+  @media print {
+    body { padding: 0; }
+    .no-print { display: none !important; }
+  }
+</style></head><body>
+<div class="meta">${data}</div>
+<h1>${titulo}</h1>
+<pre>${conteudoEscapado}</pre>
+<script>window.onload=function(){setTimeout(function(){window.print()},250)}</script>
+</body></html>`)
+                  win.document.close()
+                }}>
                 <FileText size={14} strokeWidth={1.75} aria-hidden /> PDF
               </button>
             )}
