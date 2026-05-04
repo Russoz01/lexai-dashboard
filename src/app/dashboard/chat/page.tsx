@@ -370,16 +370,22 @@ export default function ChatPage() {
   }
 
   async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
-    // Debug 2026-05-04: cliente reportou "nao da pra anexar nada".
-    // eslint-disable-next-line no-console
-    console.log('[chat/upload] onPickFile triggered. Files:', e.target.files?.length, Array.from(e.target.files || []).map(f => `${f.name} (${f.type}, ${f.size}b)`))
-    const files = e.target.files
+    // CRITICAL FIX 2026-05-04 (cliente "nao da pra anexar"):
+    // ANTES: const files = e.target.files; e.target.value = ''; ...
+    // BUG: setting e.target.value='' invalidava a FileList capturada (browser
+    // spec — em Chromium-based, ref vira empty apos reset). Causa: log
+    // mostrava Files:1 mas branch len==0 disparava (false negative).
+    // FIX: Array.from() copia files PRA ARRAY antes de zerar input value.
+    // Array.from cria copia independente, nao afetada pelo reset.
+    const filesArray = e.target.files ? Array.from(e.target.files) : []
     e.target.value = '' // permite re-selecionar mesmo arquivo
-    if (!files || files.length === 0) {
+    // eslint-disable-next-line no-console
+    console.log('[chat/upload] onPickFile triggered. Files:', filesArray.length, filesArray.map(f => `${f.name} (${f.type}, ${f.size}b)`))
+    if (filesArray.length === 0) {
       setErro('Nenhum arquivo selecionado.')
       return
     }
-    await processarFiles(files)
+    await processarFiles(filesArray)
   }
 
   function onDragOver(e: React.DragEvent) {
