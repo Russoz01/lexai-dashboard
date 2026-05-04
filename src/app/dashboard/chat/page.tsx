@@ -261,12 +261,49 @@ export default function ChatPage() {
     try {
       // PDF
       if (file.type === 'application/pdf' || lower.endsWith('.pdf')) {
-        const { text, numPages } = await extractPdfWithMeta(file)
-        if (text.length < 20) {
-          setErro(`"${file.name}" sem texto extraível (pode ser PDF escaneado).`)
+        try {
+          const { text, numPages } = await extractPdfWithMeta(file)
+          if (text.length < 20) {
+            setErro(`"${file.name}" sem texto extraível. Pode ser PDF escaneado (imagem). Use OCR online (smallpdf, ilovepdf) pra converter pra texto antes.`)
+            return null
+          }
+          return { nome: file.name, texto: text, paginas: numPages }
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : ''
+          if (msg.toLowerCase().includes('password')) {
+            setErro(`"${file.name}" protegido por senha. Remova a senha primeiro (Adobe/Foxit/online).`)
+          } else if (msg.toLowerCase().includes('invalid pdf')) {
+            setErro(`"${file.name}" PDF corrompido ou invalido.`)
+          } else {
+            setErro(`Erro ao ler PDF "${file.name}". Tente abrir e salvar de novo.`)
+          }
           return null
         }
-        return { nome: file.name, texto: text, paginas: numPages }
+      }
+      // RTF (Rich Text — Word legacy, comum em escritorio juridico)
+      if (lower.endsWith('.rtf') || file.type === 'application/rtf' || file.type === 'text/rtf') {
+        const raw = await file.text()
+        // Strip RTF control words ({\rtf1\ansi\..) e grupos {} mantendo so texto.
+        // Implementacao basica — cobre 90% dos RTFs simples gerados por Word/LibreOffice.
+        const stripped = raw
+          .replace(/\\par[d]?/g, '\n')                  // paragrafos
+          .replace(/\\tab/g, '\t')                       // tabs
+          .replace(/\\'([0-9a-f]{2})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+          .replace(/\\u(-?\d+)\??/g, (_, n) => String.fromCharCode(Number(n)))
+          .replace(/\\[a-z]+-?\d* ?/g, '')               // outros control words
+          .replace(/[{}]/g, '')                          // grupos
+          .replace(/\n{3,}/g, '\n\n')                    // collapse newlines
+          .trim()
+        if (stripped.length < 10) {
+          setErro(`"${file.name}" RTF vazio ou nao foi possivel extrair texto.`)
+          return null
+        }
+        return { nome: file.name, texto: stripped, paginas: 0 }
+      }
+      // Imagens (JPG/PNG/HEIC/GIF/WEBP) — ainda nao suportado mas mensagem clara
+      if (file.type.startsWith('image/') || /\.(jpe?g|png|heic|gif|webp|bmp|tiff?)$/i.test(lower)) {
+        setErro(`"${file.name}" e imagem. Pra documento escaneado, use OCR (smallpdf.com/pdf-to-text) e cole o texto. Suporte direto a imagens em breve.`)
+        return null
       }
       // DOCX (Word moderno) — mammoth ja em deps
       if (
@@ -937,10 +974,10 @@ export default function ChatPage() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.txt,.md,.docx,.csv,.xlsx,.xls,.json,.xml,.html,.htm,text/plain,text/markdown,text/csv,text/html,application/json,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+            accept=".pdf,.txt,.md,.docx,.rtf,.csv,.xlsx,.xls,.json,.xml,.html,.htm,text/plain,text/markdown,text/csv,text/html,text/rtf,application/json,application/pdf,application/rtf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
             onChange={onPickFile}
             multiple
-            aria-label="Selecionar arquivos (PDF, DOCX, TXT, MD, CSV, XLSX, JSON) — multiplos permitidos"
+            aria-label="Selecionar arquivos (PDF, DOCX, RTF, TXT, MD, CSV, XLSX, JSON) — multiplos permitidos"
             style={{ display: 'none' }}
           />
 
