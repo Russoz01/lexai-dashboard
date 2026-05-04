@@ -43,7 +43,7 @@
 import { useState } from 'react'
 import {
   Check, X, CheckCircle2, CreditCard, Headphones, Loader2, RotateCcw,
-  ShieldCheck, Sparkles, TrendingUp, type LucideIcon,
+  ShieldCheck, Sparkles, TrendingUp, MessageCircle, ArrowRight, type LucideIcon,
 } from 'lucide-react'
 
 export type PlanoId = 'solo' | 'starter' | 'pro' | 'enterprise'
@@ -220,14 +220,24 @@ export function LexPricingGrid({
     annualEnabled ? 'annual' : 'monthly',
   )
 
+  // Track click pra micro-feedback visual antes de redirecionar pro WhatsApp.
+  // Sem isso, click parecia "morrer" antes de abrir nova aba (UX 200-400ms gap).
+  const [clickedPlan, setClickedPlan] = useState<PlanoId | null>(null)
+
   function handleClick(plano: Plano) {
     if (plano.id === currentPlanId) return
+    if (clickedPlan) return // anti-double-click
     // 2026-05-04 demo polish (Leonardo): Stripe offline. Click vai pra WhatsApp
     // comercial com mensagem pre-preenchida sobre o plano clicado. Reverter
     // pra checkout flow quando STRIPE_PRICE_*_ANNUAL estiverem criados.
+    setClickedPlan(plano.id)
     const planoLabel = plano.nome || plano.id
     const msg = `Olá, gostaria de saber mais sobre o plano ${planoLabel} da Pralvex.`
-    window.location.href = `https://wa.me/5534993026456?text=${encodeURIComponent(msg)}`
+    // Pequeno delay (180ms) pra usuario VER feedback visual antes do redirect.
+    // Sem isso, browser troca aba antes do botao mostrar loading state.
+    setTimeout(() => {
+      window.location.href = `https://wa.me/5534993026456?text=${encodeURIComponent(msg)}`
+    }, 180)
   }
 
   return (
@@ -548,12 +558,12 @@ export function LexPricingGrid({
                     opacity: isLoadingOther ? 0.5 : 1,
                   }}
                 >
-                  {isLoadingThis ? (
-                    <><Loader2 size={13} strokeWidth={2} className="animate-spin" aria-hidden /> Redirecionando...</>
+                  {isLoadingThis || clickedPlan === plano.id ? (
+                    <><Loader2 size={13} strokeWidth={2} className="animate-spin" aria-hidden /> Abrindo WhatsApp...</>
                   ) : isCurrentPlan ? (
                     <><CheckCircle2 size={13} strokeWidth={2} aria-hidden /> {getCtaLabel(plano.id, currentPlanId, plano.precoMensal, precoAtual)}</>
                   ) : (
-                    <>{getCtaLabel(plano.id, currentPlanId, plano.precoMensal, precoAtual)}</>
+                    <><MessageCircle size={13} strokeWidth={2} aria-hidden /> {getCtaLabel(plano.id, currentPlanId, plano.precoMensal, precoAtual)} <ArrowRight size={12} strokeWidth={2.2} aria-hidden /></>
                   )}
                 </button>
               </div>
