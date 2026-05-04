@@ -370,19 +370,29 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Reject early se arquivo for grotesco — antes era cap silencioso de 40k
-    // que ainda assim estourava budget. Agora rejeita explícito acima de 25k.
-    if (arquivoTexto && arquivoTexto.length > 25000) {
+    // 2026-05-04 multi-arquivo: cliente reportou que so dava pra anexar 1
+    // arquivo. Frontend agora envia N arquivos concatenados com headers
+    // ===arquivo: X===. Backend aumentou limite de 25k -> 50k pra acomodar
+    // 3-5 PDFs medios. Acima disso recomenda Resumidor (1 doc longo).
+    const MAX_ARQUIVO_CHARS = 50000
+    if (arquivoTexto && arquivoTexto.length > MAX_ARQUIVO_CHARS) {
       return NextResponse.json({
-        error: 'Arquivo muito grande pro chat (máximo ~25.000 caracteres). Use o Resumidor para documentos longos.',
+        error: `Anexos somam ${(arquivoTexto.length / 1000).toFixed(0)}k caracteres (limite ${MAX_ARQUIVO_CHARS / 1000}k). Reduza o numero de arquivos ou use o Resumidor para documentos longos.`,
       }, { status: 413 })
     }
 
-    // Monta o conteudo da mensagem do usuario (mensagem + arquivo se houver)
+    // Monta o conteudo da mensagem do usuario (mensagem + arquivo se houver).
+    // Se arquivoTexto vier com headers ===arquivo: X=== significa multi-doc;
+    // o LLM ja entende esse padrao como separacao de fontes (chain-of-thought
+    // ground truth: "Trate cada bloco ===arquivo: X=== como documento separado.").
     let userContent = mensagem.trim()
     if (arquivoTexto && arquivoTexto.length > 0) {
-      const snippet = arquivoTexto.slice(0, 25000)
-      userContent = `${userContent || 'Analise o documento a seguir.'}\n\n---\nDocumento anexado${arquivoNome ? ` (${arquivoNome})` : ''}:\n\n${snippet}`
+      const snippet = arquivoTexto.slice(0, MAX_ARQUIVO_CHARS)
+      const isMulti = snippet.includes('===arquivo:')
+      const header = isMulti
+        ? `Documentos anexados (${arquivoNome || 'multiplos'}). Cada bloco "===arquivo: X===" e um documento independente — analise todos e cruze informacoes quando relevante:`
+        : `Documento anexado${arquivoNome ? ` (${arquivoNome})` : ''}:`
+      userContent = `${userContent || 'Analise o(s) documento(s) a seguir.'}\n\n---\n${header}\n\n${snippet}`
     }
 
     // Monta o array de mensagens incluindo historico — cap por mensagem em 1500 chars

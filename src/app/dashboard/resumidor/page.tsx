@@ -198,8 +198,6 @@ export default function ResumidorPage() {
       toast('error', 'Selecione um arquivo PDF')
       return
     }
-    // Limite de tamanho — antes PDF de 50MB+ travava UI por 30s+ no parse.
-    // 10MB cobre 99% de pecas/contratos juridicos reais.
     const MAX_PDF_BYTES = 10 * 1024 * 1024
     if (file.size > MAX_PDF_BYTES) {
       toast('error', `PDF muito grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Limite: 10MB.`)
@@ -223,6 +221,66 @@ export default function ResumidorPage() {
       toast('error', 'Não foi possível ler o PDF')
     } finally {
       setCarregandoPdf(null)
+    }
+  }
+
+  // 2026-05-04 multi-arquivo (cliente reportou): single mode aceita N PDFs,
+  // concat com headers ===arquivo: X===\n. Compare mode (A/B) continua single
+  // por target (design intencional).
+  async function handlePdfFiles(files: FileList | File[], target: 'single' | 'A' | 'B') {
+    const arr = Array.from(files)
+    if (arr.length === 0) return
+    if (target !== 'single' || arr.length === 1) {
+      await handlePdfFile(arr[0], target)
+      return
+    }
+    // Multi-doc no modo single: concat com headers
+    setCarregandoPdf('single')
+    const blocos: string[] = []
+    let firstName = ''
+    for (const file of arr) {
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        toast('error', `"${file.name}" nao e PDF — pulado`)
+        continue
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast('error', `"${file.name}" >10MB — pulado`)
+        continue
+      }
+      try {
+        const { text } = await extractPdfWithMeta(file)
+        if (text.trim()) {
+          blocos.push(`===arquivo: ${file.name}===\n${text}`)
+          if (!firstName) firstName = file.name
+        }
+      } catch (e) {
+        safeLog.error('[resumidor multi-pdf]', e)
+        toast('error', `Erro lendo "${file.name}"`)
+      }
+    }
+    setCarregandoPdf(null)
+    if (blocos.length === 0) {
+      toast('error', 'Nenhum PDF valido foi carregado')
+      return
+    }
+    setTexto(blocos.join('\n\n'))
+    if (!titulo && firstName) {
+      const base = firstName.replace(/\.pdf$/i, '').slice(0, 80)
+      setTitulo(blocos.length > 1 ? `${base} +${blocos.length - 1} docs` : base)
+    }
+    toast('success', `${blocos.length} ${blocos.length === 1 ? 'PDF carregado' : 'PDFs carregados (concatenados)'}`)
+  }
+
+  function onDragOverResumidor(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+  async function onDropResumidor(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    const files = e.dataTransfer.files
+    if (files && files.length > 0) {
+      await handlePdfFiles(files, 'single')
     }
   }
 
@@ -813,10 +871,13 @@ export default function ResumidorPage() {
                       ref={fileInputRef}
                       type="file"
                       accept=".pdf,application/pdf"
+                      multiple
                       style={{ display: 'none' }}
                       onChange={(e) => {
-                        const f = e.target.files?.[0]
-                        if (f) handlePdfFile(f, 'single')
+                        const files = e.target.files
+                        if (files && files.length > 0) {
+                          void handlePdfFiles(files, 'single')
+                        }
                         e.target.value = ''
                       }}
                     />
