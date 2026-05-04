@@ -874,11 +874,13 @@ export default function ResumidorPage() {
                       multiple
                       style={{ display: 'none' }}
                       onChange={(e) => {
-                        const files = e.target.files
-                        if (files && files.length > 0) {
-                          void handlePdfFiles(files, 'single')
-                        }
+                        // CRITICAL bug-fix 2026-05-04: setting value=''
+                        // invalida FileList ref. Array.from copia primeiro.
+                        const filesArr = e.target.files ? Array.from(e.target.files) : []
                         e.target.value = ''
+                        if (filesArr.length > 0) {
+                          void handlePdfFiles(filesArr, 'single')
+                        }
                       }}
                     />
                   </div>

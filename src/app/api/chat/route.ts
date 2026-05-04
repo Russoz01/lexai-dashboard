@@ -135,18 +135,24 @@ REGRAS DE IDENTIDADE (OBRIGATORIAS — nunca quebre):
 
 PAPEL FUNCIONAL:
 1. CONVERSAR com o advogado — responder perguntas rapidas sobre conceitos juridicos, duvidas pontuais, orientacao geral, contexto de direito brasileiro.
-2. ROTEAR para o agente especialista certo via tool "rotear_agente" quando a tarefa exigir uma ferramenta especifica do atelier.
+2. ENCAMINHAR para o agente especialista certo via tool "rotear_agente" quando a tarefa exigir uma ferramenta especifica do gabinete.
+
+LINGUAGEM (CRITICO):
+- NUNCA use os termos "rotear", "rota", "roteamento", "routing", "endpoint", "API", "tool" ao falar com o usuario. Sao jargoes tecnicos que confundem o advogado.
+- Em vez disso, use: "vou chamar o agente X", "vou encaminhar isso pro especialista", "passo essa tarefa pro agente do gabinete que cuida disso", "deixa o agente Y assumir essa parte".
+- Quando explicar transferencia: "isso e uma analise mais profunda, vou abrir o agente [Nome] que e especialista em [tema]. Ele tem ferramentas especificas pra isso."
+- Tecnicamente o nome da tool e "rotear_agente" mas o usuario nunca deve ver essa palavra.
 
 AGENTES DISPONIVEIS (use a tool "rotear_agente" quando apropriado):
 ${Object.entries(AGENTES_CATALOGO).map(([k, v]) => `- ${k} (${v.diferencial}): ${v.quando}`).join('\n')}
 
 REGRAS DE DECISAO:
-- Pergunta rapida/conceitual ("o que e ZOPA?", "qual prazo da contestacao no CPC?") → responda voce mesmo, sem rotear.
-- Usuario enviou documento inteiro para analise → rotear para "resumidor".
-- Usuario pede para "escrever", "redigir", "minutar" peca → rotear para "redator".
-- Usuario busca "jurisprudencia", "precedente", "acordao", "STF", "STJ" → rotear para "pesquisador".
-- Usuario pede "calcular prazo", "juros", "correcao monetaria" → rotear para "calculador".
-- Quando rotear, explique em uma frase POR QUE aquele agente e o certo.
+- Pergunta rapida/conceitual ("o que e ZOPA?", "qual prazo da contestacao no CPC?") → responda voce mesmo, sem encaminhar.
+- Usuario enviou documento inteiro para analise → encaminhar para o agente "resumidor".
+- Usuario pede para "escrever", "redigir", "minutar" peca → encaminhar para o agente "redator".
+- Usuario busca "jurisprudencia", "precedente", "acordao", "STF", "STJ" → encaminhar para o agente "pesquisador".
+- Usuario pede "calcular prazo", "juros", "correcao monetaria" → encaminhar para o agente "calculador".
+- Quando encaminhar, explique em uma frase POR QUE aquele agente e o certo, em linguagem natural ("o resumidor e quem extrai cada clausula com risco contratual associado").
 - Nunca invente jurisprudencia, artigo de lei, numero de processo ou dado factual que voce nao tem certeza.
 - Responda SEMPRE em portugues brasileiro.
 
@@ -195,7 +201,7 @@ const ROUTING_TOOL = {
       },
       justificativa: {
         type: 'string' as const,
-        description: 'Uma frase curta (ate 160 caracteres) explicando POR QUE este agente e o certo para a tarefa do usuario. Em portugues brasileiro.',
+        description: 'Uma frase curta (ate 160 caracteres) explicando POR QUE este agente e o certo para a tarefa do usuario. Em portugues brasileiro NATURAL — NUNCA use as palavras "rotear", "rota", "roteamento", "endpoint", "API". Use linguagem de advogado: "ele e especialista em X", "ele tem ferramentas pra Y", "ele faz Z em segundos".',
       },
       pre_prompt: {
         type: 'string' as const,
@@ -279,7 +285,7 @@ function executeAuxTool(name: string, input: Record<string, unknown>): string {
       if (!query) return 'erro: query vazia'
       const result = retrieve(query, { area, topK: 3 })
       if (result.matches.length === 0) {
-        return 'Nenhum match no corpus local. Sugira pro usuario rotear pro Pesquisador completo (que usa web search).'
+        return 'Nenhum match no corpus local. Sugira pro usuario chamar o agente Pesquisador (especialista em jurisprudencia com web search), em linguagem natural — sem usar as palavras "rotear", "rota" ou jargao tecnico.'
       }
       const lines = result.matches.map(m => {
         if (m.provision) {
