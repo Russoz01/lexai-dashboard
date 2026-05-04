@@ -34,7 +34,10 @@ const nextConfig = {
     // pra Agent D MarketingPixels.tsx funcionar sem CSP block.
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://js.sentry-cdn.com https://static.cloudflareinsights.com https://www.clarity.ms https://*.clarity.ms https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com https://snap.licdn.com",
+      // 2026-05-04: removido cdnjs.cloudflare.com — PDF.js worker agora
+      // servido same-origin de /pdf/pdf.worker.min.mjs (commit c358e08).
+      // Reduz superficie de ataque CSP + funciona sob adblocker que filtra cdnjs.
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://browser.sentry-cdn.com https://js.sentry-cdn.com https://static.cloudflareinsights.com https://www.clarity.ms https://*.clarity.ms https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com https://snap.licdn.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
