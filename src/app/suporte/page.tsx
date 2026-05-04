@@ -39,7 +39,7 @@ import { SITE_URL } from '@/lib/site-url'
 export const metadata: Metadata = {
   title: 'Suporte · Pralvex',
   description:
-    'Atendimento Pralvex — email contato@pralvex.com.br, telefone (34) 99302-6456, WhatsApp. Resposta em ate 4h uteis. Politica de reembolso, cancelamento e SLA por categoria.',
+    'Atendimento Pralvex — email contato@pralvex.com.br, telefone (16) 99293-0299, WhatsApp (34) 99302-6456. Resposta em ate 4h uteis. Politica de reembolso, cancelamento e SLA por categoria.',
   alternates: { canonical: `${SITE_URL}/suporte` },
   openGraph: {
     title: 'Suporte · Pralvex',
@@ -71,8 +71,8 @@ const contactChannels = [
   {
     Icon: Phone,
     label: 'Telefone',
-    primary: '(34) 99302-6456',
-    href: 'tel:+5534993026456',
+    primary: '(16) 99293-0299',
+    href: 'tel:+5516992930299',
     sla: 'Atendimento direto · seg-sex 09h-18h',
     note: 'Use WhatsApp se preferir registro escrito do atendimento',
   },
@@ -183,7 +183,7 @@ const contactJsonLd = {
         '@type': 'ContactPoint',
         contactType: 'customer support',
         email: 'contato@pralvex.com.br',
-        telephone: '+55-34-99302-6456',
+        telephone: '+55-16-99293-0299',
         availableLanguage: ['Portuguese'],
         hoursAvailable: 'Mo-Fr 09:00-18:00 BRT',
         areaServed: 'BR',
@@ -506,7 +506,7 @@ export default function SuportePage() {
               Endereco fiscal
             </div>
             <div className="mt-2 text-[13.5px] leading-relaxed text-on-surface">
-              Pralvex · Vanix Corp
+              Pralvex
               <br />
               Ituverava · Sao Paulo · Brasil
               <br />

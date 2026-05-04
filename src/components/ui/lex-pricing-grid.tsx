@@ -189,18 +189,13 @@ function getBadgeLabel(planoId: PlanoId, currentPlanId?: PlanoId): string | null
 
 function getCtaLabel(
   planoId: PlanoId, currentPlanId: PlanoId | undefined,
-  precoPlano: number, precoAtual: number,
+  _precoPlano: number, _precoAtual: number,
 ): string {
-  if (!currentPlanId) {
-    // Landing / anônimo — todos os 3 planos entram via signup (sem cartao)
-    // e usam demo de 50 min gratis. Money-back garantido por 7 dias apos
-    // assinar (separado do trial pre-checkout).
-    return 'Demo 50 min grátis'
-  }
+  // 2026-05-04 demo polish (Leonardo): Stripe checkout offline temporariamente.
+  // Todos os CTAs apontam pra WhatsApp comercial. Pos-stripe-prices criado,
+  // reverter este getCtaLabel pra logica de pricing comparativo.
   if (planoId === currentPlanId) return 'Você está aqui'
-  if (precoAtual > precoPlano) return 'Mudar para este plano'
-  if (precoPlano > precoAtual) return 'Demo 50 min grátis'
-  return 'Mudar para este plano'
+  return 'Falar com comercial'
 }
 
 export function LexPricingGrid({
@@ -227,13 +222,12 @@ export function LexPricingGrid({
 
   function handleClick(plano: Plano) {
     if (plano.id === currentPlanId) return
-    if (onCheckout) {
-      onCheckout(plano.id, billingInterval)
-      return
-    }
-    // Fallback landing — todos os planos abrem signup. Trial 7 dias
-    // automatico no starter, demo de 50 min sem pagar nos demais.
-    window.location.href = `/login?next=${encodeURIComponent('/dashboard/planos')}`
+    // 2026-05-04 demo polish (Leonardo): Stripe offline. Click vai pra WhatsApp
+    // comercial com mensagem pre-preenchida sobre o plano clicado. Reverter
+    // pra checkout flow quando STRIPE_PRICE_*_ANNUAL estiverem criados.
+    const planoLabel = plano.nome || plano.id
+    const msg = `Olá, gostaria de saber mais sobre o plano ${planoLabel} da Pralvex.`
+    window.location.href = `https://wa.me/5534993026456?text=${encodeURIComponent(msg)}`
   }
 
   return (
