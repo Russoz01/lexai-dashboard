@@ -174,48 +174,31 @@ export default function ConfiguracoesPage() {
     }
     setCepLoading(true); setCepError(''); setCepResult(null)
 
-    // Bug fix (2026-05-03): tenta direto BrasilAPI + ViaCEP em sequencia,
-    // retornando dados validos do primeiro que responder com street nao-vazio.
-    // Antes confiava em lookupCEP wrapper que silentemente cai em null se
-    // o response da BrasilAPI tiver shape estranho (campo missing).
+    // Bug fix urgente (2026-05-04): cliente Brave/uBlock bloqueava fetch
+    // direto pra brasilapi.com.br + viacep.com.br (ERR_BLOCKED_BY_CLIENT).
+    // Trocado por proxy same-origin /api/cep/<digits>. Backend faz fallback
+    // BrasilAPI -> ViaCEP, cache 24h CDN, timeout 5s por API.
     try {
-      // 1ª tentativa: BrasilAPI v2 (mais rapido)
-      let data: { cep?: string; street?: string; neighborhood?: string; city?: string; state?: string } | null = null
-      try {
-        const r = await fetch(`https://brasilapi.com.br/api/cep/v2/${digits}`)
-        if (r.ok) data = await r.json()
-      } catch { /* network — tenta fallback */ }
-
-      // 2ª tentativa: ViaCEP (Correios oficial) — se BrasilAPI nao deu street
-      if (!data?.street) {
-        try {
-          const r = await fetch(`https://viacep.com.br/ws/${digits}/json/`)
-          if (r.ok) {
-            const v = await r.json() as { erro?: boolean; cep?: string; logradouro?: string; bairro?: string; localidade?: string; uf?: string }
-            if (!v.erro) {
-              data = {
-                cep: v.cep,
-                street: v.logradouro,
-                neighborhood: v.bairro,
-                city: v.localidade,
-                state: v.uf,
-              }
-            }
-          }
-        } catch { /* tudo falhou */ }
+      const r = await fetch(`/api/cep/${digits}`, { cache: 'force-cache' })
+      const data = await r.json() as {
+        ok?: boolean
+        cep?: string
+        logradouro?: string
+        bairro?: string
+        cidade?: string
+        uf?: string
+        error?: string
       }
-
-      if (!data || (!data.street && !data.city)) {
-        setCepError('CEP não encontrado.')
+      if (!r.ok || !data.ok) {
+        setCepError(data.error || 'CEP não encontrado.')
         return
       }
-
       setCepResult({
-        logradouro: data.street || '(sem logradouro)',
-        bairro: data.neighborhood || '(sem bairro)',
-        cidade: data.city || '—',
-        uf: data.state || '—',
-        cep: data.cep ? `${data.cep.slice(0, 5)}-${data.cep.slice(5)}`.replace('--', '-') : `${digits.slice(0, 5)}-${digits.slice(5)}`,
+        logradouro: data.logradouro || '(sem logradouro)',
+        bairro: data.bairro || '(sem bairro)',
+        cidade: data.cidade || '—',
+        uf: data.uf || '—',
+        cep: data.cep || `${digits.slice(0, 5)}-${digits.slice(5)}`,
       })
     } catch {
       setCepError('Erro ao consultar. Tente em 30s.')
