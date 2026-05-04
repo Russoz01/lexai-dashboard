@@ -348,6 +348,13 @@ export async function POST(req: NextRequest) {
     const mensagem: string = typeof body?.mensagem === 'string' ? body.mensagem : ''
     const arquivoTexto: string | undefined = typeof body?.arquivoTexto === 'string' ? body.arquivoTexto : undefined
     const arquivoNome: string | undefined = typeof body?.arquivoNome === 'string' ? body.arquivoNome : undefined
+    // 2026-05-04 migration 016: session_id agrupa rows historico da mesma conversa.
+    // Frontend gera UUID por sessao chat e envia em todas requests da conversa.
+    // Backend persiste em todas inserts pra reabrir via /api/historico/sessao.
+    // Validacao UUID v4 simples (regex) — invalido vira null = rows orfas (compat).
+    const sessionIdRaw = typeof body?.sessionId === 'string' ? body.sessionId : null
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    const sessionId: string | null = sessionIdRaw && UUID_RE.test(sessionIdRaw) ? sessionIdRaw : null
     // Hard-cap em 12 mensagens × 1500 chars (era 6, expandido p/ memoria mais
     // longa pos-Wave-C1 2026-05-02). Cap por msg em 1500 chars protege contra
     // input flood. 12 msg cobre conversa completa estilo "analise contrato →
@@ -543,6 +550,7 @@ export async function POST(req: NextRequest) {
                 await supabase.from('historico').insert({
                   usuario_id: usuarioId,
                   agente: 'chat',
+                  session_id: sessionId,
                   mensagem_usuario: mensagem.slice(0, 500) || `[arquivo ${arquivoNome || 'anexado'}]`,
                   resposta_agente: rotear
                     ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`.slice(0, 500)
@@ -687,6 +695,7 @@ export async function POST(req: NextRequest) {
       await supabase.from('historico').insert({
         usuario_id: usuarioId,
         agente: 'chat',
+        session_id: sessionId,
         mensagem_usuario: mensagem.slice(0, 500) || `[arquivo ${arquivoNome || 'anexado'}]`,
         resposta_agente: rotear
           ? `→ ${AGENTES_CATALOGO[rotear.agente].titulo}: ${rotear.justificativa}`.slice(0, 500)

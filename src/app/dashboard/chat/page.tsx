@@ -52,7 +52,22 @@ const LS_MODO = 'pralvex-chat-modo'
 // (cap historico recente, performance). Usuario clica "Nova conversa" pra
 // limpar manualmente.
 const LS_MESSAGES = 'pralvex-chat-messages'
+const LS_SESSION_ID = 'pralvex-chat-session-id'
 const MESSAGES_PERSIST_LIMIT = 60
+
+// Gera UUID v4 simples (browser native crypto). Fallback Math.random pra dev local
+// sem crypto.randomUUID (raro em Chrome/Firefox modernos).
+function genSessionId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // RFC4122 v4 fallback
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
 
 interface AgenteSugerido {
   key: string
@@ -108,6 +123,12 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
   const [parsingPdf, setParsingPdf] = useState(false)
+  // Migration 016 (2026-05-04): session_id agrupa exchanges da mesma conversa.
+  // Frontend gera UUID v4 quando inicia chat fresh, mantem mesmo durante toda
+  // a sessao. Persistido em localStorage junto com messages. Botao "Nova conversa"
+  // gera novo UUID. Param ?session=X carrega sessao do banco e usa o ID dela.
+  const [sessionId, setSessionId] = useState<string>('')
+  const [carregandoSessao, setCarregandoSessao] = useState(false)
 
   // Configuracoes do chat — persistem em localStorage
   // fidelidade: como o assistente trata voce (profissional/parceiro/casual)
@@ -133,8 +154,10 @@ export default function ChatPage() {
     }
   }, [])
 
-  // Hidrata as preferencias + mensagens do localStorage no mount
+  // Hidrata as preferencias + mensagens + sessionId do localStorage no mount.
+  // Tambem suporta query param ?session=<UUID> pra reabrir conversa do historico.
   useEffect(() => {
+    let restoredSessionId: string | null = null
     try {
       const f = localStorage.getItem(LS_FIDELIDADE) as Fidelidade | null
       if (f && ['profissional', 'parceiro', 'casual'].includes(f)) setFidelidade(f)
@@ -150,7 +173,41 @@ export default function ChatPage() {
           if (safe.length > 0) setMessages(safe)
         }
       }
+      restoredSessionId = localStorage.getItem(LS_SESSION_ID)
     } catch { /* localStorage indisponivel ou JSON corrupto — silent */ }
+
+    // Detecta ?session=<UUID> na URL (pra reabrir conversa do historico)
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const querySessionId = params.get('session')
+      if (querySessionId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(querySessionId)) {
+        // Carrega sessao do banco e substitui state local
+        setSessionId(querySessionId)
+        setCarregandoSessao(true)
+        fetch(`/api/historico/sessao?id=${encodeURIComponent(querySessionId)}`, { cache: 'no-store' })
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if (data?.ok && Array.isArray(data.messages)) {
+              setMessages(data.messages)
+              try { localStorage.setItem(LS_SESSION_ID, querySessionId) } catch { /* silent */ }
+            } else {
+              setErro('Conversa nao encontrada ou expirada.')
+            }
+          })
+          .catch(() => setErro('Erro ao carregar conversa do historico.'))
+          .finally(() => setCarregandoSessao(false))
+        return
+      }
+    }
+
+    // Sem ?session=, mantem ou cria sessionId local
+    if (restoredSessionId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(restoredSessionId)) {
+      setSessionId(restoredSessionId)
+    } else {
+      const novo = genSessionId()
+      setSessionId(novo)
+      try { localStorage.setItem(LS_SESSION_ID, novo) } catch { /* silent */ }
+    }
   }, [])
 
   // Persiste em mudanca
@@ -353,6 +410,7 @@ export default function ChatPage() {
           historico: historicoPayload,
           fidelidade,
           modo,
+          sessionId: sessionId || undefined,
         }),
         signal: ac.signal,
       })
@@ -475,6 +533,18 @@ export default function ChatPage() {
     if (!ok) return
     setMessages([])
     setErro('')
+    // Migration 016: nova conversa = novo session_id (rows seguintes ficam
+    // separadas no banco). Limpa LS_MESSAGES + atualiza LS_SESSION_ID.
+    const novoId = genSessionId()
+    setSessionId(novoId)
+    try {
+      localStorage.setItem(LS_SESSION_ID, novoId)
+      localStorage.removeItem(LS_MESSAGES)
+    } catch { /* silent */ }
+    // Limpa ?session= da URL se viemos do historico
+    if (typeof window !== 'undefined' && window.location.search.includes('session=')) {
+      window.history.replaceState({}, '', window.location.pathname)
+    }
   }
 
   function abrirAgenteComContexto(agente: AgenteSugerido) {
