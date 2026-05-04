@@ -141,10 +141,34 @@ export async function assertPlanAccess(
 ): Promise<Response | null> {
   const { data } = await supabase
     .from('usuarios')
-    .select('plano')
+    .select('plano, subscription_status, trial_ended_at')
     .eq('auth_user_id', authUserId)
     .maybeSingle()
-  const plano = (data as { plano?: string } | null)?.plano
+  const row = data as {
+    plano?: string
+    subscription_status?: string
+    trial_ended_at?: string | null
+  } | null
+  const plano = row?.plano
+  const subscription = row?.subscription_status
+  const trialEndedAt = row?.trial_ended_at
+
+  // Bug-fix CRITICO 2026-05-04 (cliente luisgaldiano em demo bloqueado de
+  // Parecerista). Antes: assertPlanAccess checava SOMENTE row.plano. Trial
+  // 50min sempre vinha com plano='free' + subscription='trialing'. Resultado:
+  // user em demo era bloqueado de TODOS agentes que exigem starter+, embora
+  // a promessa marketing seja "demo libera acesso enterprise por 50min".
+  //
+  // Fix: se subscription_status='trialing' E trial_ended_at no futuro,
+  // libera TODOS agentes (enterprise tier) durante o trial. Acabou trial,
+  // gate normal volta a aplicar baseado em row.plano.
+  if (subscription === 'trialing' && trialEndedAt) {
+    const trialEnd = new Date(trialEndedAt).getTime()
+    if (Number.isFinite(trialEnd) && trialEnd > Date.now()) {
+      return null // trial ativo = acesso total liberado
+    }
+  }
+
   if (userCanAccessAgent(plano, agentSlug)) return null
 
   const minPlan = getMinPlanFor(agentSlug)
