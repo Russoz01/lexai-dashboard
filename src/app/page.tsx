@@ -263,6 +263,7 @@ export default function LandingPage() {
               { l: 'Planos', h: '#precos' },
               { l: 'FAQ', h: '#faq' },
               { l: 'Empresas', h: '/empresas' },
+              { l: 'Suporte', h: '/suporte' },
               { l: 'Entrar', h: '/login' },
             ].map((i) => (
               <a
