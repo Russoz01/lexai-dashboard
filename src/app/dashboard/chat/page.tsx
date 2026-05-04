@@ -248,24 +248,93 @@ export default function ChatPage() {
 
   useEffect(() => { autoResize() }, [input, autoResize])
 
-  // Processa 1 arquivo individual (PDF, TXT, MD). Retorna Anexo ou null em erro.
+  // Processa 1 arquivo individual. Suporta PDF/TXT/MD/DOCX/CSV/XLSX/JSON/HTML.
+  // Bug-fix urgente cliente (2026-05-04 10:20): "nao da pra anexar documento, todos
+  // os tipos com erro". Cliente provavelmente arrastava DOCX/CSV/XLSX = rejeitado.
+  // Agora aceita virtualmente qualquer formato comum de documento juridico.
   async function processarArquivo(file: File): Promise<Anexo | null> {
     if (file.size > 10 * 1024 * 1024) {
       setErro(`"${file.name}" muito grande. Limite de 10MB por arquivo.`)
       return null
     }
+    const lower = file.name.toLowerCase()
     try {
-      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+      // PDF
+      if (file.type === 'application/pdf' || lower.endsWith('.pdf')) {
         const { text, numPages } = await extractPdfWithMeta(file)
         if (text.length < 20) {
           setErro(`"${file.name}" sem texto extraível (pode ser PDF escaneado).`)
           return null
         }
         return { nome: file.name, texto: text, paginas: numPages }
-      } else if (
+      }
+      // DOCX (Word moderno) — mammoth ja em deps
+      if (
+        lower.endsWith('.docx') ||
+        file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ) {
+        const mammoth = await import('mammoth')
+        const arrayBuffer = await file.arrayBuffer()
+        const result = await mammoth.extractRawText({ arrayBuffer })
+        const text = (result.value || '').trim()
+        if (text.length < 10) {
+          setErro(`"${file.name}" sem texto extraível.`)
+          return null
+        }
+        return { nome: file.name, texto: text, paginas: 0 }
+      }
+      // DOC (Word antigo, formato binario) — mammoth NAO suporta .doc legacy
+      if (lower.endsWith('.doc') || file.type === 'application/msword') {
+        setErro(`"${file.name}" formato .doc antigo nao suportado. Salva como .docx ou .pdf primeiro.`)
+        return null
+      }
+      // CSV — papaparse ja em deps
+      if (file.type === 'text/csv' || lower.endsWith('.csv')) {
+        const Papa = (await import('papaparse')).default
+        const csvText = await file.text()
+        const parsed = Papa.parse<string[]>(csvText, { skipEmptyLines: true })
+        const rows = (parsed.data || []) as string[][]
+        const text = rows.map(r => r.join(' | ')).join('\n')
+        if (text.length < 10) {
+          setErro(`"${file.name}" CSV vazio.`)
+          return null
+        }
+        return { nome: file.name, texto: text, paginas: 0 }
+      }
+      // XLSX (Excel) — xlsx ja em deps (lazy import pra nao inflar bundle main)
+      if (
+        lower.endsWith('.xlsx') ||
+        lower.endsWith('.xls') ||
+        file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+        file.type === 'application/vnd.ms-excel'
+      ) {
+        const XLSX = await import('xlsx')
+        const arrayBuffer = await file.arrayBuffer()
+        const wb = XLSX.read(arrayBuffer, { type: 'array' })
+        const partes: string[] = []
+        for (const sheetName of wb.SheetNames) {
+          const sheet = wb.Sheets[sheetName]
+          const csv = XLSX.utils.sheet_to_csv(sheet)
+          partes.push(`--- ${sheetName} ---\n${csv}`)
+        }
+        const text = partes.join('\n\n').trim()
+        if (text.length < 10) {
+          setErro(`"${file.name}" planilha vazia.`)
+          return null
+        }
+        return { nome: file.name, texto: text, paginas: 0 }
+      }
+      // TXT/MD/JSON/HTML/CSS/JS/TS/etc — qualquer texto plano
+      if (
         file.type.startsWith('text/') ||
-        file.name.toLowerCase().endsWith('.txt') ||
-        file.name.toLowerCase().endsWith('.md')
+        file.type === 'application/json' ||
+        file.type === 'application/xml' ||
+        lower.endsWith('.txt') ||
+        lower.endsWith('.md') ||
+        lower.endsWith('.json') ||
+        lower.endsWith('.xml') ||
+        lower.endsWith('.html') ||
+        lower.endsWith('.htm')
       ) {
         const text = await file.text()
         if (text.length < 10) {
@@ -273,10 +342,10 @@ export default function ChatPage() {
           return null
         }
         return { nome: file.name, texto: text, paginas: 0 }
-      } else {
-        setErro(`"${file.name}" formato não suportado. Envie PDF, TXT ou MD.`)
-        return null
       }
+      // Imagens, audio, video, etc — nao suportado mas mensagem clara
+      setErro(`"${file.name}" formato não suportado. Aceitos: PDF, DOCX, TXT, MD, CSV, XLSX, JSON.`)
+      return null
     } catch (err) {
       safeLog.error('[chat/file]', err)
       setErro(`Erro ao ler "${file.name}". Tente novamente.`)
@@ -301,9 +370,15 @@ export default function ChatPage() {
   }
 
   async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
+    // Debug 2026-05-04: cliente reportou "nao da pra anexar nada".
+    // eslint-disable-next-line no-console
+    console.log('[chat/upload] onPickFile triggered. Files:', e.target.files?.length, Array.from(e.target.files || []).map(f => `${f.name} (${f.type}, ${f.size}b)`))
     const files = e.target.files
     e.target.value = '' // permite re-selecionar mesmo arquivo
-    if (!files || files.length === 0) return
+    if (!files || files.length === 0) {
+      setErro('Nenhum arquivo selecionado.')
+      return
+    }
     await processarFiles(files)
   }
 
@@ -687,7 +762,11 @@ export default function ChatPage() {
         )}
       </div>
 
-      {/* ── Composer ────────────────────────────────────── */}
+      {/* ── Composer ──────────────────────────────────────
+          Debug 2026-05-04 cliente "nao da pra anexar nada":
+          Removido overlay drag-drop (suspeita interferencia com input click).
+          Drag-drop handlers continuam ativos (SEM overlay visivel) — feedback
+          visual apenas via outline tracejado quando isDragOver. */}
       <div
         className="chat-composer"
         onDragOver={onDragOver}
@@ -700,24 +779,6 @@ export default function ChatPage() {
           borderRadius: 12,
         } : undefined}
       >
-        {isDragOver && (
-          <div style={{
-            position: 'absolute', inset: 0, zIndex: 10,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(15,15,15,0.85)',
-            borderRadius: 12,
-            pointerEvents: 'none',
-            fontFamily: 'var(--font-mono, ui-monospace), monospace',
-            fontSize: 13,
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            color: 'var(--accent)',
-            fontWeight: 700,
-          }}>
-            <Paperclip size={18} strokeWidth={2} aria-hidden style={{ marginRight: 10 }} />
-            Solte para anexar
-          </div>
-        )}
         {erro && (
           <div className="chat-error" role="alert">
             <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
@@ -870,10 +931,10 @@ export default function ChatPage() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.txt,.md,text/plain,text/markdown,application/pdf"
+            accept=".pdf,.txt,.md,.docx,.csv,.xlsx,.xls,.json,.xml,.html,.htm,text/plain,text/markdown,text/csv,text/html,application/json,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
             onChange={onPickFile}
             multiple
-            aria-label="Selecionar arquivos PDF, TXT ou Markdown (multiplos permitidos)"
+            aria-label="Selecionar arquivos (PDF, DOCX, TXT, MD, CSV, XLSX, JSON) — multiplos permitidos"
             style={{ display: 'none' }}
           />
 
