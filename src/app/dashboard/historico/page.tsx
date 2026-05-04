@@ -41,6 +41,8 @@ interface HistoricoItem {
   resposta_agente: string | null
   tokens_usados: number | null
   created_at: string
+  // Migration 016 (2026-05-04): agrupa rows da mesma conversa chat.
+  session_id?: string | null
 }
 
 const BY_SLUG = new Map(CATALOG.map(item => [item.slug, item]))
@@ -134,8 +136,48 @@ export default function HistoricoPage() {
     return () => ac.abort()
   }, [carregar])
 
-  const historicoFiltrado = useMemo(() => {
-    return historico.filter(item => {
+  // Migration 016 (2026-05-04): agrupa rows agente='chat' com mesmo session_id
+  // em 1 card unico (vez de N cards separados). Outros agentes ficam single-row.
+  // GroupedItem extende HistoricoItem com count + msgs preview agregadas.
+  type GroupedItem = HistoricoItem & {
+    msg_count?: number
+    last_msg?: string
+  }
+
+  const historicoAgrupado = useMemo<GroupedItem[]>(() => {
+    const sessoesMap = new Map<string, HistoricoItem[]>() // session_id -> rows
+    const naoAgrupados: HistoricoItem[] = []
+
+    for (const row of historico) {
+      if (row.agente === 'chat' && row.session_id) {
+        const arr = sessoesMap.get(row.session_id) || []
+        arr.push(row)
+        sessoesMap.set(row.session_id, arr)
+      } else {
+        naoAgrupados.push(row)
+      }
+    }
+
+    const cardsSessoes: GroupedItem[] = Array.from(sessoesMap.entries()).map(([sessionId, rows]) => {
+      // rows ja vem ordenadas DESC do select. ultimo = primeiro da lista.
+      const ultima = rows[0]
+      const primeira = rows[rows.length - 1]
+      return {
+        ...ultima,
+        id: `session-${sessionId}`,
+        msg_count: rows.length * 2, // user + assistant por row
+        last_msg: ultima.mensagem_usuario,
+        // Mensagem inicial pra preview do card = primeira pergunta da sessao
+        mensagem_usuario: primeira.mensagem_usuario || ultima.mensagem_usuario,
+        resposta_agente: ultima.resposta_agente,
+        created_at: ultima.created_at,
+      }
+    })
+
+    const todosCards = [...cardsSessoes, ...naoAgrupados]
+    todosCards.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+    return todosCards.filter(item => {
       if (filtroAgente !== 'todos' && item.agente !== filtroAgente) return false
       if (filtro.trim()) {
         const q = filtro.toLowerCase().trim()
@@ -146,6 +188,9 @@ export default function HistoricoPage() {
       return true
     })
   }, [historico, filtro, filtroAgente])
+
+  // Compat: codigo abaixo usa `historicoFiltrado` — alias pro agrupado
+  const historicoFiltrado = historicoAgrupado
 
   const agentesUnicos = useMemo(
     () => Array.from(new Set(historico.map(i => i.agente))).sort(),
@@ -698,6 +743,28 @@ export default function HistoricoPage() {
                             {item.tokens_usados}t
                           </span>
                         )}
+                      {/* Badge "N mensagens" pra cards de session chat agrupada */}
+                      {item.agente === 'chat' && item.msg_count && item.msg_count > 2 && (
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            padding: '2px 8px',
+                            borderRadius: 999,
+                            background: 'rgba(191,166,142,0.10)',
+                            border: '1px solid rgba(191,166,142,0.22)',
+                            fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                            fontSize: 9,
+                            letterSpacing: '0.16em',
+                            textTransform: 'uppercase',
+                            color: 'var(--accent)',
+                            fontWeight: 600,
+                          }}
+                        >
+                          {item.msg_count} msgs
+                        </span>
+                      )}
                     </div>
                     <p
                       style={{
@@ -749,10 +816,45 @@ export default function HistoricoPage() {
                       }}
                       style={{ overflow: 'hidden' }}
                     >
+                      {/* Botao "Continuar conversa" pra cards chat com session_id.
+                          Migration 016: redireciona pra /dashboard/chat?session=<UUID>
+                          que carrega messages da sessao do banco. */}
+                      {item.agente === 'chat' && item.session_id && (
+                        <div
+                          style={{
+                            padding: '14px 20px 0 76px',
+                            borderTop: '1px solid var(--stone-line)',
+                          }}
+                        >
+                          <a
+                            href={`/dashboard/chat?session=${encodeURIComponent(item.session_id)}`}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              padding: '8px 14px',
+                              borderRadius: 8,
+                              background: 'linear-gradient(135deg, rgba(245,232,211,0.12), rgba(191,166,142,0.08))',
+                              border: '1px solid rgba(212,174,106,0.4)',
+                              color: 'var(--accent)',
+                              fontFamily: 'var(--font-mono, ui-monospace), monospace',
+                              fontSize: 11,
+                              letterSpacing: '0.14em',
+                              textTransform: 'uppercase',
+                              fontWeight: 700,
+                              textDecoration: 'none',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            Continuar conversa
+                            <span aria-hidden style={{ marginLeft: 2 }}>→</span>
+                          </a>
+                        </div>
+                      )}
                       <div
                         style={{
                           padding: '0 20px 18px 76px',
-                          borderTop: '1px solid var(--stone-line)',
+                          borderTop: item.agente === 'chat' && item.session_id ? 'none' : '1px solid var(--stone-line)',
                           paddingTop: 16,
                           background:
                             'linear-gradient(to bottom, rgba(191,166,142,0.04), transparent 60%)',
